@@ -1,0 +1,21 @@
+<qschem>
+  <!-- This is a 1x opamp passthrough -->
+  <circuit>
+    <component x="10" y="15" type="opamp" orient="0"
+               name="V1" id="001"/>
+    <port x="5" y="15" type="flag" id="002" label="In"/>
+    <port x="25" y="17" type="flag" id="003" label="Out"/>
+    <junction x="22" y="17" id="004"/>
+    <connection start="002" end="001:VinP"/>
+    <connection start="001:VinM" end="004" through="10,25 22,25"/>
+    <connection start="004" end="001:Vout"/>
+    <connection start="004" end="003"/>
+  </circuit>
+  <parts>
+    <part id="006" name="U1" virtuals="001"
+          package="dip:8" actual="opamp:dual:standard" model="OPA2350"/>
+    <!-- This “actual” defines that pin 4 goes to net Vee and
+         pin 8 to net Vcc. This is a dual opamp, but the second virtual
+         component is not used here. -->
+  </parts>
+</qschem>

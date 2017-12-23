@@ -1,0 +1,31 @@
+<qschem>
+  <!-- This is a simple RC filter -->
+  <circuit>
+    <component x="10" y="15" type="resistor" orient="0"
+               name="R1" value="10k" id="001"/>
+    <component x="15" y="18" type="capacitor:polarized" orient="1"
+               name="C1" value="100n" id="002"/>
+    <component x="5" y="15" type="connector:2" orient="1"
+               name="J1" id="003" label="Input"/>
+    <port x="15" y="27" name="Vee" type="ground" id="004"/>
+    <component x="25" y="15" type="connector:2" orient="1"
+               name="J2" id="005" label="Output"/>
+    <junction x="15" y="15" id="006"/>
+    <junction x="15" y="25" id="007"/>
+    <connection start="001:2" end="006"/>
+    <connection start="006" end="002:1"/>
+    <connection start="006" end="005:1"/>
+    <connection start="002:2" end="007"/>
+    <connection start="003:1" end="001:1"/>
+    <connection start="003:2" end="007" through="5,25"/>
+    <connection start="005:2" end="007" through="25,25"/>
+    <connection start="007" end="004"/>
+  </circuit>
+
+  <parts>
+    <part id="001" package="resistor:axial:0.4" vendor="DigiKey" partno="xxx-ND"/>
+    <part id="002" package="capacitor:radial:0.1" vendor="Mouser" partno="..."/>
+    <part id="003" package="connector:bnc:panel-ra-insulated"/>
+    <part id="005" package="connector:bnc:panel-ra-insulated"/>
+  </parts>
+</qschem>
