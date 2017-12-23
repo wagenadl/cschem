@@ -31,6 +31,12 @@ PartLibrary::PartLibrary(QString fn) {
   scanParts(svg_);
 
   getBBoxes(fn);
+
+  for (auto p: partslist_) {
+    qDebug() << "Relative pins for" << p->name() << p->bbox().size();
+    for (auto n: p->pins().keys())
+      qDebug() << "  " << n << p->pinPosition(n);
+  }
 }
 
 PartLibrary::~PartLibrary() {
@@ -45,7 +51,7 @@ void PartLibrary::scanParts(XmlElement const *src) {
       Part *part = new Part(src);
       partslist_.append(part);
       parts_[part->name()] = part;
-      qDebug() << "Got part" << part->name() << "with pins" << part->pinNames() << "at" << part->pinPositions();
+      qDebug() << "Got part" << part->name() << "with pins" << part->pins();
     }
   }
   for (auto c: src->children())
@@ -57,7 +63,7 @@ void PartLibrary::getBBoxes(QString fn) {
   QSvgRenderer svg(fn);
   for (auto p: partslist_) {
     QString id = p->element()->attributes().value("id").toString();
-    p->setBBox(svg.boundsOnElement(id));
+    p->setBBox(svg.boundsOnElement(id).toAlignedRect().adjusted(-2,-2,2,2));
     qDebug() << "bbox on " << p->name() << id << p->bbox();
   }
 }
@@ -82,17 +88,30 @@ QString PartLibrary::partSvg(QString name) {
         sr.writeNamespace(nsd.namespaceUri().toString(),
                           nsd.prefix().toString());
     }
-    sr.writeAttribute("width", QString("%1").arg(ceil(bb.width())));
-    sr.writeAttribute("height", QString("%1").arg(ceil(bb.height())));
-    
-    elt->writeStartElement(sr);
+    sr.writeAttribute("width", QString("%1").arg(bb.width()));
+    sr.writeAttribute("height", QString("%1").arg(bb.height()));
+    sr.writeAttribute("viewBox", QString("0 0 %1 %2")
+                      .arg(bb.width()).arg(bb.height()));
+
+    sr.writeStartElement("g");
     sr.writeAttribute("transform",
                       QString("translate(%1,%2)").
                       arg(-bb.left()).arg(-bb.top()));
-    elt->writeChildren(sr);
+
+    /* This should be improved to suppress the pins */
+    elt->writeStartElement(sr);
+    for (auto c: elt->children()) {
+      if (c->element()
+          && c->element()->attributes().value("inkscape:label").startsWith("pin")) {
+        // skip
+      } else {
+        c->write(sr);
+      }
+    }
     elt->writeEndElement(sr);
-    
-    sr.writeEndElement();
+
+    sr.writeEndElement(); // g [transform]
+    sr.writeEndElement(); // svg
     sr.writeEndDocument();
   }
   

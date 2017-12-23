@@ -12,10 +12,10 @@ void Part::scanPins(XmlElement const *elt) {
   if (elt->qualifiedName()=="circle") {
     QString label = elt->attributes().value("inkscape:label").toString();
     if (label.startsWith("pin")) {
-      pinNames_.append(label.mid(4));
+      QString name = label.mid(4);
       QString x = elt->attributes().value("cx").toString();
       QString y = elt->attributes().value("cy").toString();
-      pinPositions_.append(QPoint(x.toInt(), y.toInt()));
+      pins_[name] = QPoint(x.toInt(), y.toInt());
     }
   }
   for (auto e: elt->children()) 
@@ -24,12 +24,12 @@ void Part::scanPins(XmlElement const *elt) {
 }
 
 QPoint Part::pinPosition(QString pinname) const {
-  for (int i=0; i<pinNames_.size(); i++)
-    if (pinNames_[i]==pinname)
-      return pinPositions_[i];
-  return QPoint(0,0);
+  if (pins_.contains(pinname))
+    return pins_[pinname] - bbox_.topLeft();
+  else
+    return QPoint();
 }
 
-void Part::setBBox(QRectF b) {
+void Part::setBBox(QRect b) {
   bbox_ = b;
 }
