@@ -6,7 +6,7 @@
 XmlNode::XmlNode(QXmlStreamReader &src): type_(Type::Invalid), element_(0) {
   if (src.isStartElement()) {
     type_ = Type::Element;
-    element_ = new XmlElement(src);
+    element_ = QSharedPointer<XmlElement>(new XmlElement(src));
   } else if (src.isCharacters()) {
     type_ = Type::Text;
     text_ = src.text().toString();
@@ -14,8 +14,6 @@ XmlNode::XmlNode(QXmlStreamReader &src): type_(Type::Invalid), element_(0) {
 }
 
 XmlNode::~XmlNode() {
-  if (type_ == Type::Element)
-    delete element_;
 }
 
 void XmlNode::write(QXmlStreamWriter &writer) const {
@@ -40,4 +38,8 @@ QString XmlNode::toString() const {
   write(writer);
   writer.writeEndDocument();
   return result;
+}
+
+XmlElement *XmlNode::element() const {
+  return element_.data();
 }

@@ -18,9 +18,9 @@ void Part::scanPins(XmlElement const *elt) {
       pins_[name] = QPoint(x.toInt(), y.toInt());
     }
   }
-  for (auto e: elt->children()) 
-    if (e->element())
-      scanPins(e->element());
+  for (auto &e: elt->children()) 
+    if (e.element())
+      scanPins(e.element());
 }
 
 QPoint Part::pinPosition(QString pinname) const {

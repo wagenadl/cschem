@@ -23,14 +23,12 @@ XmlElement::XmlElement(QXmlStreamReader &src):
     } else if (src.isEndDocument()) {
       qDebug() << "Unexpected end of document at line" << src.lineNumber();
     } else {
-      children_.append(new XmlNode(src));
+      children_.append(XmlNode(src));
     }
   }
 }
      
 XmlElement::~XmlElement() {
-  for (auto c: children_)
-    delete c;
 }
 
 void XmlElement::write(QXmlStreamWriter &dst) const {
@@ -54,8 +52,8 @@ void XmlElement::writeStartElement(QXmlStreamWriter &dst) const {
 }
 
 void XmlElement::writeChildren(QXmlStreamWriter &dst) const {
-  for (auto c: children_)
-    c->write(dst);
+  for (auto &c: children_)
+    c.write(dst);
 }
 
 void XmlElement::writeEndElement(QXmlStreamWriter &dst) const {

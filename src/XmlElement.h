@@ -15,7 +15,7 @@ public:
   // endElement.
   ~XmlElement();
   bool isValid() const { return valid_; }
-  QList<XmlNode *> children() const { return children_; }
+  QList<XmlNode> const &children() const { return children_; }
   QString qualifiedName() const { return qualifiedName_; }
   QXmlStreamAttributes attributes() const { return attributes_; }
   QXmlStreamNamespaceDeclarations namespaceDeclarations() const {
@@ -29,7 +29,7 @@ private:
   QString qualifiedName_;
   QXmlStreamAttributes attributes_;
   QXmlStreamNamespaceDeclarations namespaceDeclarations_;
-  QList<XmlNode *> children_;
+  QList<XmlNode> children_;
 };
 
 #endif

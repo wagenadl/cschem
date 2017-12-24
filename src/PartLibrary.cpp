@@ -54,9 +54,9 @@ void PartLibrary::scanParts(XmlElement const *src) {
       qDebug() << "Got part" << part->name() << "with pins" << part->pins();
     }
   }
-  for (auto c: src->children())
-    if (c->element())
-      scanParts(c->element());
+  for (auto &c: src->children())
+    if (c.element())
+      scanParts(c.element());
 }
 
 void PartLibrary::getBBoxes(QString fn) {
@@ -100,12 +100,12 @@ QString PartLibrary::partSvg(QString name) {
 
     /* This should be improved to suppress the pins */
     elt->writeStartElement(sr);
-    for (auto c: elt->children()) {
-      if (c->element()
-          && c->element()->attributes().value("inkscape:label").startsWith("pin")) {
+    for (auto &c: elt->children()) {
+      if (c.element()
+          && c.element()->attributes().value("inkscape:label").startsWith("pin")) {
         // skip
       } else {
-        c->write(sr);
+        c.write(sr);
       }
     }
     elt->writeEndElement(sr);
