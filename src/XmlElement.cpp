@@ -3,18 +3,44 @@
 #include "XmlElement.h"
 #include <QDebug>
 
-XmlElement::XmlElement(QXmlStreamReader &src):
-  valid_(false) {
+class XmlElementData: public QSharedData {
+public:
+  XmlElementData(): valid(false) {}
+public:
+  bool valid;
+  QString qualifiedName;
+  QXmlStreamAttributes attributes;
+  QXmlStreamNamespaceDeclarations namespaceDeclarations;
+  QList<XmlNode> children;
+};
+
+XmlElement::XmlElement() {
+  d = new XmlElementData();
+}
+
+XmlElement::XmlElement(XmlElement const &o) {
+  d = o.d;
+}
+
+XmlElement &XmlElement::operator=(XmlElement const &o) {
+  d = o.d;
+  return *this;
+}
+
+XmlElement::~XmlElement() {
+}
+
+XmlElement::XmlElement(QXmlStreamReader &src): XmlElement() {
   if (!src.isStartElement())
     return;
-  qualifiedName_ = src.qualifiedName().toString();
-  attributes_ = src.attributes();
-  namespaceDeclarations_ = src.namespaceDeclarations();
+  d->qualifiedName = src.qualifiedName().toString();
+  d->attributes = src.attributes();
+  d->namespaceDeclarations = src.namespaceDeclarations();
   while (!src.atEnd()) {
     src.readNext();
     if (src.isEndElement()) {
-      if (src.qualifiedName() == qualifiedName_) {
-        valid_ = true;
+      if (src.qualifiedName() == d->qualifiedName) {
+        d->valid = true;
         return;
       } else {
         qDebug() << "Unexpected closing tag at line" << src.lineNumber();
@@ -23,13 +49,31 @@ XmlElement::XmlElement(QXmlStreamReader &src):
     } else if (src.isEndDocument()) {
       qDebug() << "Unexpected end of document at line" << src.lineNumber();
     } else {
-      children_.append(XmlNode(src));
+      d->children.append(XmlNode(src));
     }
   }
 }
-     
-XmlElement::~XmlElement() {
+
+bool XmlElement::isValid() const {
+  return d->valid;
 }
+
+QList<XmlNode> const &XmlElement::children() const {
+  return d->children;
+}
+
+QString XmlElement::qualifiedName() const {
+  return d->qualifiedName;
+}
+
+QXmlStreamAttributes XmlElement::attributes() const {
+  return d->attributes;
+}
+
+QXmlStreamNamespaceDeclarations XmlElement::namespaceDeclarations() const {
+  return d->namespaceDeclarations;
+}
+
 
 void XmlElement::write(QXmlStreamWriter &dst) const {
   writeStartElement(dst);
@@ -38,9 +82,9 @@ void XmlElement::write(QXmlStreamWriter &dst) const {
 }
   
 void XmlElement::writeStartElement(QXmlStreamWriter &dst) const {
-  dst.writeStartElement(qualifiedName_);
-  dst.writeAttributes(attributes_);
-  for (auto nsd: namespaceDeclarations_) {
+  dst.writeStartElement(d->qualifiedName);
+  dst.writeAttributes(d->attributes);
+  for (auto nsd: d->namespaceDeclarations) {
     if (nsd.prefix()=="") {
       qDebug() << "writing default namespace" << nsd.namespaceUri();
       dst.writeDefaultNamespace(nsd.namespaceUri().toString());
@@ -52,7 +96,7 @@ void XmlElement::writeStartElement(QXmlStreamWriter &dst) const {
 }
 
 void XmlElement::writeChildren(QXmlStreamWriter &dst) const {
-  for (auto &c: children_)
+  for (auto &c: d->children)
     c.write(dst);
 }
 

@@ -4,32 +4,33 @@
 
 #define XMLELEMENT_H
 
+#include <QSharedData>
 #include <QXmlStreamReader>
 #include <QList>
 #include "XmlNode.h"
 
+class XmlElementData;
+
 class XmlElement {
 public:
+  XmlElement();
   XmlElement(QXmlStreamReader &src);
+  XmlElement(XmlElement const &);
+  XmlElement &operator=(XmlElement const &);
   // src must point to startElement. On return, points to corresponding
   // endElement.
   ~XmlElement();
-  bool isValid() const { return valid_; }
-  QList<XmlNode> const &children() const { return children_; }
-  QString qualifiedName() const { return qualifiedName_; }
-  QXmlStreamAttributes attributes() const { return attributes_; }
-  QXmlStreamNamespaceDeclarations namespaceDeclarations() const {
-    return namespaceDeclarations_; }
+  bool isValid() const;
+  QList<XmlNode> const &children() const;
+  QString qualifiedName() const;
+  QXmlStreamAttributes attributes() const;
+  QXmlStreamNamespaceDeclarations namespaceDeclarations() const;
   void write(QXmlStreamWriter &dst) const;
   void writeStartElement(QXmlStreamWriter &dst) const;
   void writeChildren(QXmlStreamWriter &dst) const;
   void writeEndElement(QXmlStreamWriter &dst) const;
 private:
-  bool valid_;
-  QString qualifiedName_;
-  QXmlStreamAttributes attributes_;
-  QXmlStreamNamespaceDeclarations namespaceDeclarations_;
-  QList<XmlNode> children_;
+  QSharedDataPointer<XmlElementData> d;
 };
 
 #endif

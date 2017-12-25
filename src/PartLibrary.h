@@ -13,12 +13,12 @@ public:
   QMap<QString, Part const *> parts() const { return parts_; }
   QString partSvg(QString name);
 private:
-  void scanParts(XmlElement const *src);
+  void scanParts(XmlElement const &src);
   void getBBoxes(QString fn);
 private:
-  QList<Part *> partslist_;
+  QList<Part> partslist_;
   QMap<QString, Part const *> parts_;
-  XmlElement *svg_;
+  XmlElement svg_;
 };
 
 #endif

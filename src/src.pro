@@ -21,3 +21,4 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # Input
 HEADERS += Part.h PartLibrary.h XmlElement.h XmlNode.h
 SOURCES += Part.cpp PartLibrary.cpp XmlElement.cpp XmlNode.cpp libtest.cpp
+

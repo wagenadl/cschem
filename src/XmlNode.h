@@ -5,7 +5,9 @@
 #define XMLNODE_H
 
 #include <QXmlStreamReader>
-#include <QSharedPointer>
+#include <QSharedData>
+
+class XmlNodeData;
 
 class XmlNode {
 public:
@@ -15,18 +17,19 @@ public:
     Text,
   };
 public:
+  XmlNode();
   XmlNode(QXmlStreamReader &src);
-  XmlNode(): type_(Type::Invalid) {}
+  XmlNode(XmlNode const &);
+  XmlNode &operator=(XmlNode const &);
   ~XmlNode();
-  Type type() const { return type_; }
-  class XmlElement *element() const;
-  QString text() const { return text_; }
+  Type type() const;
+  class XmlElement const &element() const;
+  class XmlElement &element();
+  QString text() const;
   void write(QXmlStreamWriter &writer) const;
   QString toString() const;
 private:
-  Type type_;
-  QSharedPointer<class XmlElement> element_;
-  QString text_;
+  QSharedDataPointer<XmlNodeData> d;
 };
 
 #endif

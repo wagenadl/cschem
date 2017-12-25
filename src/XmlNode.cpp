@@ -3,26 +3,63 @@
 #include "XmlNode.h"
 #include "XmlElement.h"
 
-XmlNode::XmlNode(QXmlStreamReader &src): type_(Type::Invalid), element_(0) {
+class XmlNodeData: public QSharedData {
+public:
+  XmlNodeData(): type(XmlNode::Type::Invalid) { }
+public:
+  XmlNode::Type type;
+  XmlElement element;
+  QString text;
+};
+
+XmlNode::XmlNode() {
+  d = new XmlNodeData;
+}
+
+XmlNode::XmlNode(XmlNode const &o) {
+  d = o.d;
+}
+
+XmlNode &XmlNode::operator=(XmlNode const &o) {
+  d = o.d;
+  return *this;
+}
+
+XmlNode::XmlNode(QXmlStreamReader &src): XmlNode() {
   if (src.isStartElement()) {
-    type_ = Type::Element;
-    element_ = QSharedPointer<XmlElement>(new XmlElement(src));
+    d->type = Type::Element;
+    d->element = XmlElement(src);
   } else if (src.isCharacters()) {
-    type_ = Type::Text;
-    text_ = src.text().toString();
+    d->type = Type::Text;
+    d->text = src.text().toString();
   }
 }
 
 XmlNode::~XmlNode() {
 }
 
+XmlNode::Type XmlNode::type() const {
+  return d->type;
+}
+XmlElement const &XmlNode::element() const {
+  return d->element;
+}
+
+XmlElement &XmlNode::element() {
+  return d->element;
+}
+
+QString XmlNode::text() const {
+  return d->text;
+}
+
 void XmlNode::write(QXmlStreamWriter &writer) const {
-  switch (type_) {
+  switch (d->type) {
   case Type::Text:
-    writer.writeCharacters(text_);
+    writer.writeCharacters(d->text);
     break;
   case Type::Element:
-    element_->write(writer);
+    d->element.write(writer);
     break;
   default:
     break;
@@ -38,8 +75,4 @@ QString XmlNode::toString() const {
   write(writer);
   writer.writeEndDocument();
   return result;
-}
-
-XmlElement *XmlNode::element() const {
-  return element_.data();
 }

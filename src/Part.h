@@ -6,25 +6,25 @@
 
 #include "XmlElement.h"
 #include <QRect>
+#include <QSharedDataPointer>
 
 class Part {
 public:
-  Part(XmlElement const *elt);
-  XmlElement const *element() const { return elt_; }
-  QString name() const { return name_; }
-  QMap<QString, QPoint> pins() const { return pins_; }
+  Part(XmlElement const &elt);
+  ~Part();
+  Part(Part const &);
+  Part &operator=(Part const &);
+  XmlElement const &element() const;
+  QString name() const;
+  QMap<QString, QPoint> const &pins() const;
   QPoint pinPosition(QString pinname) const;
-  bool isValid() const { return valid_; }
+  bool isValid() const;
   void setBBox(QRect);
-  QRect bbox() const { return bbox_; }
+  QRect bbox() const;
 private:
-  void scanPins(XmlElement const *elt);
+  void scanPins(XmlElement const &elt);
 private:
-  XmlElement const *elt_;
-  QString name_;
-  QMap<QString, QPoint> pins_;
-  bool valid_;
-  QRect bbox_;
+  QSharedDataPointer<class PartData> d;
 };
 
 #endif
