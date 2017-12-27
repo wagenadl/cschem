@@ -5,7 +5,7 @@
 
 int main() {
   PartLibrary pl("../doc/libeg.svg");
-  qDebug() << "Got parts: " << pl.parts().size();
+  qDebug() << "Got parts: " << pl.partNames().size();
   QString svg = pl.partSvg("part:diode");
   QFile f("../doc/diodee.svg");
   f.open(QFile::WriteOnly);

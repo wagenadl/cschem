@@ -32,22 +32,25 @@ PartLibrary::PartLibrary(QString fn) {
 
   for (auto p: partslist_) {
     qDebug() << "Relative pins for" << p.name() << p.bbox().size();
-    for (auto n: p.pins().keys())
+    for (auto n: p.pinNames())
       qDebug() << "  " << n << p.pinPosition(n);
   }
 }
 
 PartLibrary::~PartLibrary() {
+  for (auto r: renderers_)
+    delete r;
 }
 
 void PartLibrary::scanParts(XmlElement const &src) {
   if (src.qualifiedName()=="g") {
     QString label = src.attributes().value("inkscape:label").toString();
-    if (label.startsWith("part:") || label.startsWith("port:")) {
+    if (label.startsWith("part:") || label.startsWith("port:")
+        || label=="junction") {
       partslist_.append(Part(src));
       Part const *part = &partslist_.last();
       parts_[part->name()] = part;
-      qDebug() << "Got part" << part->name() << "with pins" << part->pins();
+      qDebug() << "Got part" << part->name() << "with pins" << part->pinNames();
     }
   }
   for (auto &c: src.children())
@@ -57,14 +60,25 @@ void PartLibrary::scanParts(XmlElement const &src) {
 
 void PartLibrary::getBBoxes(QString fn) {
   QSvgRenderer svg(fn);
-  for (auto p: partslist_) {
+  for (auto &p: partslist_) {
     QString id = p.element().attributes().value("id").toString();
     p.setBBox(svg.boundsOnElement(id).toAlignedRect().adjusted(-2,-2,2,2));
     qDebug() << "bbox on " << p.name() << id << p.bbox();
   }
 }
 
-QString PartLibrary::partSvg(QString name) {
+QStringList PartLibrary::partNames() const {
+  return parts_.keys();
+}
+
+Part PartLibrary::part(QString name) const {
+  if (parts_.contains(name))
+    return *parts_[name];
+  else
+    return Part();
+}
+
+QByteArray PartLibrary::partSvg(QString name) const {
   if (!parts_.contains(name))
     return "";
 
@@ -72,7 +86,7 @@ QString PartLibrary::partSvg(QString name) {
   QRectF bb = p->bbox();
   XmlElement const &elt = p->element();
 
-  QString res;
+  QByteArray res;
   {
     QXmlStreamWriter sr(&res);
     sr.writeStartDocument("1.0", false);
@@ -112,4 +126,20 @@ QString PartLibrary::partSvg(QString name) {
   }
   
   return res;
+}
+
+QSvgRenderer *PartLibrary::renderer(QString name) const {
+  if (renderers_.contains(name))
+    return renderers_[name];
+
+  if (!parts_.contains(name))
+    return 0;
+
+  QSvgRenderer *r = new QSvgRenderer(partSvg(name));
+  renderers_[name ] = r;
+  return r;
+}
+
+int PartLibrary::scale() const {
+  return 7; // infer this from part drawings?
 }

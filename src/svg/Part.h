@@ -11,13 +11,15 @@
 class Part {
 public:
   Part(XmlElement const &elt);
+  Part();
   ~Part();
   Part(Part const &);
   Part &operator=(Part const &);
   XmlElement const &element() const;
   QString name() const;
-  QMap<QString, QPoint> const &pins() const;
-  QPoint pinPosition(QString pinname) const;
+  QPoint pinPosition(QString pinname) const; // relative to bbox
+  QStringList pinNames() const; // sorted
+  QPoint origin() const; // position of first pin
   bool isValid() const;
   void setBBox(QRect);
   QRect bbox() const;

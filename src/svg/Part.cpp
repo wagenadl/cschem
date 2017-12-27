@@ -12,12 +12,16 @@ public:
   bool valid;
   QRect bbox;
 };
-  
-Part::Part(XmlElement const &elt) {
-  d = new PartData();
+
+Part::Part() {
+  d = new PartData;
+}
+
+Part::Part(XmlElement const &elt): Part() {
   d->elt = elt;
   d->name = elt.attributes().value("inkscape:label").toString();
   scanPins(elt);
+  d->valid = true;
 }
 
 Part::~Part() {
@@ -47,6 +51,16 @@ void Part::scanPins(XmlElement const &elt) {
       scanPins(e.element());
 }
 
+QStringList Part::pinNames() const {
+  QStringList lst(d->pins.keys()); // QMap sorts its keys
+  return lst;
+}
+
+QPoint Part::origin() const {
+  QStringList l = d->pins.keys();
+  return l.isEmpty() ? QPoint() : pinPosition(l.first());
+}
+
 QPoint Part::pinPosition(QString pinname) const {
   if (d->pins.contains(pinname))
     return d->pins[pinname] - d->bbox.topLeft();
@@ -64,10 +78,6 @@ XmlElement const &Part::element() const {
 
 QString Part::name() const {
   return d->name;
-}
-
-QMap<QString, QPoint> const &Part::pins() const {
-  return d->pins;
 }
 
 bool Part::isValid() const {

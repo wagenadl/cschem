@@ -9,9 +9,14 @@
 class PartLibrary {
 public:
   PartLibrary(QString fn);
+  PartLibrary(PartLibrary const &) = delete;
+  PartLibrary const &operator=(PartLibrary const &) = delete;
   ~PartLibrary();
-  QMap<QString, Part const *> parts() const { return parts_; }
-  QString partSvg(QString name);
+  QStringList partNames() const;
+  Part part(QString) const;
+  QByteArray partSvg(QString name) const;
+  class QSvgRenderer *renderer(QString name) const;
+  int scale() const;
 private:
   void scanParts(XmlElement const &src);
   void getBBoxes(QString fn);
@@ -19,6 +24,7 @@ private:
   QList<Part> partslist_;
   QMap<QString, Part const *> parts_;
   XmlElement svg_;
+  mutable QMap<QString, QSvgRenderer *> renderers_;
 };
 
 #endif
