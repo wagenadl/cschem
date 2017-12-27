@@ -21,11 +21,11 @@ void Scene::setCircuit(Circuit *c) {
   rebuild();
 }
 
-void Scene::createSvgItem(int id, QPoint pos, QString typ) {
+void Scene::createElement(int id, QPoint pos, QString sym) {
   double s = lib.scale();
-  Part const &p = lib.part(typ);
+  Part const &p = lib.part(sym);
   if (p.isValid()) {
-    QSvgRenderer *r = lib.renderer(typ);
+    QSvgRenderer *r = lib.renderer(sym);
     if (!r)
       qDebug() << "Cannot construct renderer for component. Will crash";
     auto *group = new QGraphicsItemGroup;
@@ -51,7 +51,7 @@ void Scene::createSvgItem(int id, QPoint pos, QString typ) {
     group->setPos(s * pos);
     items[id] = group;
   } else {
-    qDebug() << "Cannot render" << typ;
+    qDebug() << "Cannot render" << sym;
   }
 }
   
@@ -65,15 +65,9 @@ void Scene::rebuild() {
   if (!circuit)
     return;
 
-  for (auto &c: circuit->components())
-    createSvgItem(c.id(), c.position(), "part:" + c.type());
+  for (auto &c: circuit->elements())
+    createElement(c.id(), c.position(), c.symbol());
   
-  for (auto &c: circuit->ports()) 
-    createSvgItem(c.id(), c.position(), "port:" + c.type());
-
-  for (auto &c: circuit->junctions()) 
-    createSvgItem(c.id(), c.position(), "junction");
-
   for (auto &c: circuit->connections())
     createConnection(c);
 }
@@ -83,23 +77,14 @@ QPoint Scene::pinPosition(int partid, QString pin) const {
     return QPoint();
   Part part;
   QPoint pos;
-  if (circuit->components().contains(partid)) {
-    Component const &c(circuit->components()[partid]);
-    part = lib.part("part:" + c.type());
-    pos = c.position();
-  } else if (circuit->ports().contains(partid)) {
-    Port const &c(circuit->ports()[partid]);
-    part = lib.part("port:" + c.type());
-    pos = c.position();
-  } else if (circuit->junctions().contains(partid)) {
-    Junction const &c(circuit->junctions()[partid]);
-    part = lib.part("junction");
-    pos = c.position();
-  }
-  if (part.isValid())
+  if (circuit->elements().contains(partid)) {
+    Element const &c(circuit->elements()[partid]);
+    Part part = lib.part(c.symbol());
+    QPoint pos = c.position();
     return lib.scale() * pos + part.pinPosition(pin) - part.origin();
-  else
+  } else {
     return QPoint();
+  }
 }
 
 void Scene::createConnection(Connection const &c) {

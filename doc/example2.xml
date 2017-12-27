@@ -2,20 +2,23 @@
   <!-- This is a 1x opamp passthrough -->
   <circuit>
     <component x="10" y="15" type="opamp" orient="0"
-               name="V1" id="001"/>
+               name="U1" id="001"/>
     <port x="5" y="15" type="flag" id="002" label="In"/>
     <port x="25" y="17" type="flag" id="003" label="Out"/>
     <junction x="22" y="17" id="004"/>
-    <connection start="002" end="001:VinP"/>
-    <connection start="001:VinM" end="004" through="10,25 22,25"/>
-    <connection start="004" end="001:Vout"/>
-    <connection start="004" end="003"/>
+    <connection id="7" from="002" to="001:VinP"/>
+    <connection id="8" from="001:VinM" to="004" via="10,25 22,25"/>
+    <connection id="9" from="004" to="001:Vout"/>
+    <connection id="11" from="004" to="003"/>
   </circuit>
   <parts>
-    <part id="006" name="U1" virtuals="001"
-          package="dip:8" actual="opamp:dual:standard" model="OPA2350"/>
-    <!-- This “actual” defines that pin 4 goes to net Vee and
+    <container id="006" name="U1" components="001" type="opamp:dual:standard"/>
+    <!-- This “container” defines that pin 4 goes to net Vee and
          pin 8 to net Vcc. This is a dual opamp, but the second virtual
-         component is not used here. -->
+         component is not used here. The container may have the same name
+         as one of the contained components, but this is the only allowed
+         double use of names. It is also OK if the container has a
+         different name altogether. -->
+    <package id="006" package="dip:8" mfgpart="OPA2350"/>
   </parts>
 </qschem>

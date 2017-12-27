@@ -7,9 +7,7 @@ class CircuitData: public QSharedData {
 public:
   CircuitData() { }
 public:
-  QMap<int, Component> components;
-  QMap<int, Port> ports;
-  QMap<int, Junction> junctions;
+  QMap<int, Element> elements;
   QMap<int, Connection> connections;
 };  
 
@@ -25,16 +23,11 @@ Circuit::Circuit(QXmlStreamReader &src): Circuit() {
   while (!src.atEnd()) {
     src.readNext();
     if (src.isStartElement()) {
-      if (src.name()=="component") {
-        Component c(src);
-        d->components[c.id()] = c;
-      } else if (src.name()=="port") {
-        Port c(src);
-        d->ports[c.id()] = c;
-      } else if (src.name()=="junction") {
-        Junction c(src);
-        d->junctions[c.id()] = c;
-      } else if (src.name()=="connection") {
+      auto n = src.name();
+      if (n=="component" || n=="port" || n=="junction") {
+        Element c(src);
+        d->elements[c.id()] = c;
+      } else if (n=="connection") {
         Connection c(src);
         d->connections[c.id()] = c;
       } else {
@@ -59,28 +52,12 @@ Circuit &Circuit::operator=(Circuit const &o) {
 Circuit::~Circuit() {
 }
 
-QMap<int, class Component> const &Circuit::components() const {
-  return d->components;
+QMap<int, class Element> const &Circuit::elements() const {
+  return d->elements;
 }
 
-QMap<int, class Component> &Circuit::components() {
-  return d->components;
-}
-
-QMap<int, class Port> const &Circuit::ports() const {
-  return d->ports;
-}
-
-QMap<int, class Port> &Circuit::ports() {
-  return d->ports;
-}
-
-QMap<int, class Junction> const &Circuit::junctions() const {
-  return d->junctions;
-}
-  
-QMap<int, class Junction> &Circuit::junctions() {
-  return d->junctions;
+QMap<int, class Element> &Circuit::elements() {
+  return d->elements;
 }
 
 QMap<int, class Connection> const &Circuit::connections() const {
@@ -98,11 +75,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
   
 QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
   sr.writeStartElement("circuit");
-  for (auto const &c: c.components())
-    sr << c;
-  for (auto const &c: c.ports())
-    sr << c;
-  for (auto const &c: c.junctions())
+  for (auto const &c: c.elements())
     sr << c;
   for (auto const &c: c.connections())
     sr << c;

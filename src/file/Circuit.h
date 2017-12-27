@@ -6,9 +6,7 @@
 
 #include <QSharedData>
 #include <QXmlStreamReader>
-#include "Component.h"
-#include "Port.h"
-#include "Junction.h"
+#include "Element.h"
 #include "Connection.h"
 #include <QMap>
 
@@ -20,12 +18,8 @@ public:
   Circuit &operator=(Circuit const &);
   ~Circuit();
 public:
-  QMap<int, class Component> const &components() const;
-  QMap<int, class Component> &components();
-  QMap<int, class Port> const &ports() const;
-  QMap<int, class Port> &ports();
-  QMap<int, class Junction> const &junctions() const;
-  QMap<int, class Junction> &junctions();
+  QMap<int, class Element> const &elements() const;
+  QMap<int, class Element> &elements();
   QMap<int, class Connection> const &connections() const;
   QMap<int, class Connection> &connections();
 private:
@@ -34,6 +28,5 @@ private:
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Circuit const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Circuit &);
-
 
 #endif

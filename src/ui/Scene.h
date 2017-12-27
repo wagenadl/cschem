@@ -15,7 +15,7 @@ public:
   void setCircuit(Circuit *);
   void rebuild();
 private:
-  void createSvgItem(int id, QPoint pos, QString typ);
+  void createElement(int id, QPoint pos, QString sym);
   void createConnection(Connection const &);
   QPoint pinPosition(int partid, QString pin) const;
 private:

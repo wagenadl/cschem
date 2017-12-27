@@ -12,8 +12,8 @@ CONFIG += debug
 # Input
 HEADERS += svg/Part.h svg/PartLibrary.h svg/XmlElement.h svg/XmlNode.h
 SOURCES += svg/Part.cpp svg/PartLibrary.cpp svg/XmlElement.cpp svg/XmlNode.cpp
-HEADERS += file/Component.h file/Port.h file/Junction.h file/Circuit.h
-SOURCES += file/Component.cpp file/Port.cpp file/Junction.cpp file/Circuit.cpp
+HEADERS += file/Element.h file/Circuit.h
+SOURCES += file/Element.cpp file/Circuit.cpp
 HEADERS += file/IDFactory.h file/Connection.h file/Parts.h
 SOURCES += file/IDFactory.cpp file/Connection.cpp file/Parts.cpp
 HEADERS += file/Container.h file/Package.h file/Schem.h file/FileIO.h
