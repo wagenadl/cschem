@@ -70,6 +70,25 @@ Circuit *Scene::circuit() {
   return circ;
 }
 
+void Scene::tentativelyMoveSelection(QPointF delta) {
+  QSet<int> selection;
+  for (int id: elts.keys())
+    if (elts[id]->isSelected())
+      selection << id;
+    
+  QSet<int> internalcons = circ->connectionsIn(selection);
+  QSet<int> fromcons = circ->connectionsFrom(selection) - internalcons;
+  QSet<int> tocons = circ->connectionsTo(selection) - internalcons;
+
+  for (int id: internalcons)
+    conns[id]->temporaryTranslate(delta);
+  for (int id: fromcons)
+    conns[id]->temporaryTranslateFrom(delta);
+  for (int id: tocons)
+    conns[id]->temporaryTranslateTo(delta);
+}
+
+
 void Scene::moveSelection(QPointF delta) {
   QPoint dd = (delta/lib->scale()).toPoint();
 
@@ -77,7 +96,8 @@ void Scene::moveSelection(QPointF delta) {
   for (int id: elts.keys())
     if (elts[id]->isSelected())
       selection << id;
-    
+
+  
   if (!dd.isNull()) {
     // must actually change circuit
     for (int id: selection)
@@ -89,9 +109,6 @@ void Scene::moveSelection(QPointF delta) {
   for (int id: selection)
     elts[id]->rebuild();
 
-  QSet<int> cids;
-  cids = circ->connectionsFrom(selection);
-  cids += circ->connectionsTo(selection);
-  for (int id: cids)
+  for (int id: circ->connectionsFrom(selection) + circ->connectionsTo(selection))
     conns[id]->rebuild();
 }

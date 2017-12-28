@@ -15,6 +15,9 @@ public:
 public:
   class Scene *scene();
   void rebuild();
+  void temporaryTranslate(QPointF delta);
+  void temporaryTranslateFrom(QPointF delta);
+  void temporaryTranslateTo(QPointF delta);
 private:
   class SceneConnectionData *d;
 };

@@ -19,6 +19,7 @@ public:
     name = 0;
     value = 0;
     label = 0;
+    dragmoved = false;
   }
 public:
   Scene *scene;
@@ -28,6 +29,8 @@ public:
   QGraphicsTextItem *name;
   QGraphicsTextItem *value;
   QGraphicsTextItem *label;
+public:
+  bool dragmoved;
 };
 
 SceneElement::SceneElement(class Scene *parent, Element const &elt) {
@@ -73,7 +76,7 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
   setAcceptHoverEvents(true);
   setFlag(ItemIsMovable);
   setFlag(ItemIsSelectable);
-  setFlag(ItemSendsGeometryChanges);
+  //  setFlag(ItemSendsGeometryChanges);
   setCacheMode(DeviceCoordinateCache);
 }
 
@@ -114,34 +117,33 @@ void SceneElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *e) {
   QGraphicsItemGroup::hoverLeaveEvent(e);
 }
 
-QVariant SceneElement::itemChange(GraphicsItemChange chg, const QVariant &v) {
-  switch (chg) {
-  case ItemPositionHasChanged:
-    qDebug() << "itemChange" << d->id << v;
-    break;
-  default:
-    break;
-  }
-  return QGraphicsItemGroup::itemChange(chg, v);
-}
-
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
+  d->dragmoved = false;
   qDebug() << "Mouse press" << e->pos() << pos();
   QGraphicsItemGroup::mousePressEvent(e);
 }
 
 void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "Mouse move" << e->pos() << pos();
+  QPointF newpos = pos();
+  QPointF oldpos = d->scene->library()->scale()
+    * d->scene->circuit()->elements()[d->id].position();
+  qDebug() << "Mouse move" << newpos << oldpos;
   QGraphicsItemGroup::mouseMoveEvent(e);
+
+  if (d->dragmoved || newpos != oldpos) {
+    qDebug() << "Position changed";
+    d->scene->tentativelyMoveSelection(newpos - oldpos);
+    d->dragmoved = true;
+  }
 }
 
 void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   QPointF newpos = pos();
   QPointF oldpos = d->scene->library()->scale()
     * d->scene->circuit()->elements()[d->id].position();
-  qDebug() << "Mouse release" << e->pos() << newpos << oldpos;
+  qDebug() << "Mouse release" << newpos << oldpos;
   QGraphicsItemGroup::mouseReleaseEvent(e);
-  if (newpos != oldpos) {
+  if (d->dragmoved || newpos != oldpos) {
     qDebug() << "Position changed";
     d->scene->moveSelection(newpos - oldpos);
   }

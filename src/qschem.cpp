@@ -13,6 +13,8 @@ int main(int argc, char **argv) {
   FileIO::saveSchematic("/tmp/eg.xml", s);
   QApplication app(argc, argv);
   QGraphicsView view;
+  view.setInteractive(true);
+  view.setDragMode(QGraphicsView::RubberBandDrag);
   Scene scene(&lib);
   scene.setCircuit(&s.circuit());
   view.setScene(&scene);

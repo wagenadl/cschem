@@ -19,6 +19,7 @@ public:
   Circuit *circuit();
   QPoint pinPosition(int partid, QString pin) const;
   void moveSelection(QPointF delta);
+  void tentativelyMoveSelection(QPointF delta);
 private:
   PartLibrary const *lib;
   Circuit *circ;
