@@ -138,3 +138,9 @@ QList<QPoint> &Connection::via() {
 void Connection::setVia(QList<QPoint> const &v) {
   d->via = v;
 }
+
+void Connection::translate(QPoint delta) {
+  for (QPoint &p: d->via)
+    p += delta;
+}
+      

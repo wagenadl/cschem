@@ -31,6 +31,7 @@ public:
   void setTo(int id, QString pin);
   QList<QPoint> &via();
   void setVia(QList<QPoint> const &);
+  void translate(QPoint delta);
 private:
   QSharedDataPointer<class ConnectionData> d;
 };

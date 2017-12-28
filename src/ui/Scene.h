@@ -11,17 +11,19 @@
 
 class Scene: public QGraphicsScene {
 public:
-  Scene(PartLibrary const &lib, QObject *parent=0);
+  Scene(PartLibrary const *lib, QObject *parent=0);
   void setCircuit(Circuit *);
   void rebuild();
-private:
-  void createElement(int id, QPoint pos, QString sym);
-  void createConnection(Connection const &);
+  PartLibrary const *library() const;
+  Circuit const *circuit() const;
+  Circuit *circuit();
   QPoint pinPosition(int partid, QString pin) const;
+  void moveSelection(QPointF delta);
 private:
-  PartLibrary const &lib;
-  Circuit *circuit;
-  QMap<int, QGraphicsItem *> items;
+  PartLibrary const *lib;
+  Circuit *circ;
+  QMap<int, class SceneElement *> elts;
+  QMap<int, class SceneConnection *> conns;
 };
 
 #endif

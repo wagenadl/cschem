@@ -44,6 +44,7 @@ public:
   void setLabel(QString);
   void setId(int); // should only be used for well-controlled renumber op
   void setRotation(int);
+  void translate(QPoint delta);
 private:
   QSharedDataPointer<class ElementData> d;
 };

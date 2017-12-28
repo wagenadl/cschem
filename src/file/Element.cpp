@@ -110,6 +110,10 @@ void Element::setPosition(QPoint p) {
   d->position = p;
 }
 
+void Element::translate(QPoint delta) {
+  d->position += delta;
+}
+
 void Element::setSubtype(QString t) {
   d->subtype = t;
 }

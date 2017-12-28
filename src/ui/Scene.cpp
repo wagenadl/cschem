@@ -2,104 +2,96 @@
 
 #include "Scene.h"
 #include <QDebug>
-#include <QGraphicsSvgItem>
-#include <QGraphicsEllipseItem>
-#include <QGraphicsItemGroup>
-#include <QGraphicsPathItem>
+#include "SceneElement.h"
+#include "SceneConnection.h"
 
-Scene::Scene(PartLibrary const &lib, QObject *parent):
+Scene::Scene(PartLibrary const *lib, QObject *parent):
   QGraphicsScene(parent),
   lib(lib) {
-  circuit = 0;
+  circ = 0;
 }
 
 void Scene::setCircuit(Circuit *c) {
-  for (auto i: items)
+  for (auto i: elts)
     delete i;
-  items.clear();
-  circuit = c;
+  elts.clear();
+  for (auto i: conns)
+    delete i;
+  conns.clear();
+  circ = c;
   rebuild();
 }
 
-void Scene::createElement(int id, QPoint pos, QString sym) {
-  double s = lib.scale();
-  Part const &p = lib.part(sym);
-  if (p.isValid()) {
-    QSvgRenderer *r = lib.renderer(sym);
-    if (!r)
-      qDebug() << "Cannot construct renderer for component. Will crash";
-    auto *group = new QGraphicsItemGroup;
-    QPoint o = p.origin();
-    QList<QAbstractGraphicsShapeItem *> pins;
-    for (QString name: p.pinNames()) {
-      QPoint pt = p.pinPosition(name) - o;
-      qDebug() << name << pt;
-      pins << new QGraphicsEllipseItem(QRectF(pt - QPointF(s,s),
-                                              2*QSizeF(s, s)),
-                                       group);
-    }
-    for (auto p: pins)
-      p->setBrush(QBrush(QColor(255, 128, 128, 128)));
-    for (auto p: pins)
-      p->setPen(QPen(Qt::NoPen));
-
-    auto *item = new QGraphicsSvgItem(group);
-    item->setSharedRenderer(r);
-    item->setPos(-o);
-
-    addItem(group);
-    group->setPos(s * pos);
-    items[id] = group;
-  } else {
-    qDebug() << "Cannot render" << sym;
-  }
-}
-  
 
 void Scene::rebuild() {
   /* We should be able to do better than start afresh in general, but for now: */
-  for (auto i: items)
+  for (auto i: elts)
     delete i;
-  items.clear();
+  elts.clear();
+  for (auto i: conns)
+    delete i;
+  conns.clear();
 
-  if (!circuit)
+  if (!circ)
     return;
 
-  for (auto &c: circuit->elements())
-    createElement(c.id(), c.position(), c.symbol());
+  for (auto const &c: circ->elements()) 
+    elts[c.id()] = new SceneElement(this, c);
   
-  for (auto &c: circuit->connections())
-    createConnection(c);
+  for (auto const &c: circ->connections())
+    conns[c.id()] = new SceneConnection(this, c);
 }
 
 QPoint Scene::pinPosition(int partid, QString pin) const {
-  if (!circuit)
+  if (!circ)
     return QPoint();
   Part part;
   QPoint pos;
-  if (circuit->elements().contains(partid)) {
-    Element const &c(circuit->elements()[partid]);
-    Part part = lib.part(c.symbol());
+  if (circ->elements().contains(partid)) {
+    Element const &c(circ->elements()[partid]);
+    Part const &part = lib->part(c.symbol());
     QPoint pos = c.position();
-    return lib.scale() * pos + part.pinPosition(pin) - part.origin();
+    return lib->scale() * pos + part.pinPosition(pin) - part.origin();
   } else {
     return QPoint();
   }
 }
 
-void Scene::createConnection(Connection const &c) {
-  QPointF x0 = pinPosition(c.fromId(), c.fromPin());
-  QPointF x1 = pinPosition(c.toId(), c.toPin());
-  qDebug() << c.fromId() << c.fromPin() << x0 << c.toId() << c.toPin() << x1;
-  qDebug() << c.via();
-  QPainterPath pp(x0);
-  for (QPoint p: c.via())
-    pp.lineTo(lib.scale()*p);
-  pp.lineTo(x1);
-  
-  auto *item = new QGraphicsPathItem(pp);
-  item->setPen(QPen(QColor(0,0,0), lib.scale()/2.0,
-                     Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
-  addItem(item);
-  items[c.id()] = item;
+
+PartLibrary const *Scene::library() const {
+  return lib;
+}
+
+Circuit const *Scene::circuit() const {
+  return circ;
+}
+
+Circuit *Scene::circuit() {
+  return circ;
+}
+
+void Scene::moveSelection(QPointF delta) {
+  QPoint dd = (delta/lib->scale()).toPoint();
+
+  QSet<int> selection;
+  for (int id: elts.keys())
+    if (elts[id]->isSelected())
+      selection << id;
+    
+  if (!dd.isNull()) {
+    // must actually change circuit
+    for (int id: selection)
+      circ->elements()[id].translate(dd);
+    for (int id: circ->connectionsIn(selection))
+      circ->connections()[id].translate(dd);
+  }
+
+  for (int id: selection)
+    elts[id]->rebuild();
+
+  QSet<int> cids;
+  cids = circ->connectionsFrom(selection);
+  cids += circ->connectionsTo(selection);
+  for (int id: cids)
+    conns[id]->rebuild();
 }

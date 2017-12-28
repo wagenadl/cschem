@@ -82,3 +82,63 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
   sr.writeEndElement();
   return sr;
 }
+
+void Circuit::insert(Element const &e) {
+  d->elements[e.id()] = e;
+}
+
+void Circuit::insert(Connection const &e) {
+  d->connections[e.id()] = e;
+}
+
+void Circuit::remove(int id) {
+  if (d->elements.contains(id)) {
+    d->elements.remove(id);
+    QList<int> cids;
+    for (auto const &c: connections()) 
+      if (c.fromId()==id || c.toId()==id)
+        cids << c.id();
+    for (int cid: cids)
+      d->connections.remove(cid);
+  } else if (d->connections.contains(id)) {
+    d->connections.remove(id);
+  } else {
+    qDebug() << "Nothing to remove for " << id;
+  }
+}
+
+QSet<int> Circuit::connectionsTo(QSet<int> ids) const {
+  QSet<int> cids;
+  for (auto const &c: d->connections) 
+    if (ids.contains(c.toId()))
+      cids << c.id();
+  return cids;
+}
+
+QSet<int> Circuit::connectionsFrom(QSet<int> ids) const {
+  QSet<int> cids;
+  for (auto const &c: d->connections) 
+    if (ids.contains(c.fromId()))
+      cids << c.id();
+  return cids;
+}
+
+QSet<int> Circuit::connectionsIn(QSet<int> ids) const {
+  QSet<int> cids;
+  for (auto const &c: d->connections) 
+    if (ids.contains(c.toId()) && ids.contains(c.fromId()))
+      cids << c.id();
+  return cids;
+}
+
+void Circuit::translate(QSet<int> ids, QPoint delta) {
+  for (int id: ids)
+    d->elements[id].setPosition(d->elements[id].position() + delta);
+  for (int id: connectionsIn(ids)) {
+    QList<QPoint> &via(d->connections[id].via());
+    for (QPoint &p: via)
+      p += delta;
+  }
+}
+
+  
