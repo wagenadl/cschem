@@ -26,6 +26,8 @@ public:
   QMap<int, class SceneElement *> const &elements() const;
   QMap<int, class SceneConnection *> const &connections() const;
   void enablePinHighlighting(bool hl=true);
+  int elementAt(QPointF scenepos) const;
+  QString pinAt(QPointF scenepos, int elementId) const;
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
@@ -35,6 +37,8 @@ private:
   void keyPressOnElement(class SceneElement *, QKeyEvent *);
   void keyPressOnConnection(class SceneConnection *, QKeyEvent *);
   void keyPressAnywhere(QKeyEvent *);
+  void finalizeConnection(int fromPart, QString fromPin,
+			  int toPart, QString toPin);  
 private:
   PartLibrary const *lib;
   Circuit *circ;

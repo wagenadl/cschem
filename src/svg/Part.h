@@ -19,10 +19,11 @@ public:
   QString name() const;
   QPoint pinPosition(QString pinname) const; // relative to bbox
   QStringList pinNames() const; // sorted
-  QPoint origin() const; // position of first pin
+  QPoint origin() const; // position of first pin relative to bbox
   bool isValid() const;
   void setBBox(QRect);
-  QRect bbox() const;
+  QRect bbox() const; // in original svg
+  QRect shiftedBBox() const; // bbox as if first pin were at (0,0)
 private:
   void scanPins(XmlElement const &elt);
 private:

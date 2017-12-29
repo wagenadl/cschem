@@ -197,42 +197,51 @@ void Scene::keyPressOnConnection(class SceneConnection *con, QKeyEvent *e) {
 
 void Scene::keyPressAnywhere(QKeyEvent *) {
 }
+
+int Scene::elementAt(QPointF scenepos) const {
+  for (auto e: elts)
+    if (e->boundingRect().contains(e->mapFromScene(scenepos)))
+      return e->id();
+  return -1;
+}
+
+static double L2(QPointF p) {
+  return p.x()*p.x() + p.y()*p.y();
+}
+
+QString Scene::pinAt(QPointF scenepos, int elementId) const {
+  if (!elts.contains(elementId))
+    return "";
+  QString sym = circ->element(elementId).symbol();
+  Part const &part = library()->part(sym);
+  double r = library()->scale();
+  for (auto p: part.pinNames()) 
+    if (L2(scenepos - pinPosition(elementId, p)) < r*r)
+      return p;
+  return "-";
+}
   
 void Scene::addConnection(int fromPart, QString fromPin, QPointF to) {
-  int toPart = -1;
-  for (auto e: elts) {
-    if (e->boundingRect().contains(e->mapFromScene(to))) {
-      toPart = e->id();
-      break;
-    }
-  }
-  if (toPart < 0) {
-    qDebug() << "Not adding connection";
-    return;
-  }
+  int toPart = elementAt(to);
+  QString toPin = pinAt(to, toPart);
 
-  QString sym = circ->element(toPart).symbol();
-  Part const &part = library()->part(sym);
-  double dist = 1e9;
-  QString toPin = "";
-  for (auto p: part.pinNames()) {
-    double dd = (to - pinPosition(toPart, p)).manhattanLength();
-    if (dd<dist) {
-      toPin = p;
-      dist = dd;
-    }
+  if (toPart>0 && toPin!="-") {
+    finalizeConnection(fromPart, fromPin, toPart, toPin);
+  } else {
+    // keep going
   }
-  qDebug() << "Drop near" << toPart << toPin;
-  if (toPart != fromPart || toPin != fromPin) {
-    // create new connection
-    Connection c;
-    c.setFromId(fromPart);
-    c.setFromPin(fromPin);
-    c.setToId(toPart);
-    c.setToPin(toPin);
-    circ->connections()[c.id()] = c;
-    conns[c.id()] = new SceneConnection(this, c);    
-  }
+}
+
+void Scene::finalizeConnection(int fromPart, QString fromPin,
+			       int toPart, QString toPin) {
+  if (toPart == fromPart && toPin != fromPin)
+    return; // circular
+  
+  Connection c = Router(lib).autoroute(circ->element(fromPart), fromPin,
+				       circ->element(toPart), toPin,
+				       *circ);
+  circ->connections()[c.id()] = c;  
+  conns[c.id()] = new SceneConnection(this, c);    
 }
 
 void Scene::updateOverPin(QPointF p, int elt, bool allowJunction) {

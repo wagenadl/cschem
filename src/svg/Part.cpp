@@ -61,6 +61,12 @@ QPoint Part::origin() const {
   return l.isEmpty() ? QPoint() : pinPosition(l.first());
 }
 
+QRect Part::shiftedBBox() const {
+  QStringList l = d->pins.keys();
+  return d->bbox.translated(l.isEmpty() ? -d->bbox.topLeft()
+			    : - d->pins[l.first()]);
+}
+
 QPoint Part::pinPosition(QString pinname) const {
   if (d->pins.contains(pinname))
     return d->pins[pinname] - d->bbox.topLeft();

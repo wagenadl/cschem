@@ -11,8 +11,17 @@ class Router {
 public:
   Router(class PartLibrary const *lib);
   Connection reroute(int conid, class Circuit const &origcirc,
-                     class Circuit const &newcirc);
+                     class Circuit const &newcirc) const;
   QPoint pinPosition(class Element const &elt, QString pin) const;
+  QPoint preferredDirection(class Element const &elt, QString pin) const;
+  Connection autoroute(class Element const &from, QString fromPin,
+		       class Element const &to, QString toPin,
+		       class Circuit const &circ) const;
+  QRectF elementBBox(class Element const &elt) const;
+private:
+  QPoint awayFromCM(class Part const &part, QString pin) const;
+  int isSIP(Part const &part) const;
+  QString nearestNeighbor(Part const &part, QString pin) const;
 private:
   class PartLibrary const *lib;  
 };
