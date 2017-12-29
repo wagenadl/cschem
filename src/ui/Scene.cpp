@@ -4,6 +4,7 @@
 #include <QDebug>
 #include "SceneElement.h"
 #include "SceneConnection.h"
+#include "svg/Router.h"
 
 Scene::Scene(PartLibrary const *lib, QObject *parent):
   QGraphicsScene(parent),
@@ -43,18 +44,10 @@ void Scene::rebuild() {
 }
 
 QPoint Scene::pinPosition(int partid, QString pin) const {
-  if (!circ)
+  if (circ && circ->elements().contains(partid))
+    return Router(lib).pinPosition(circ->element(partid), pin);
+  else 
     return QPoint();
-  Part part;
-  QPoint pos;
-  if (circ->elements().contains(partid)) {
-    Element const &c(circ->elements()[partid]);
-    Part const &part = lib->part(c.symbol());
-    QPoint pos = c.position();
-    return lib->scale() * pos + part.pinPosition(pin) - part.origin();
-  } else {
-    return QPoint();
-  }
 }
 
 
@@ -70,12 +63,16 @@ Circuit *Scene::circuit() {
   return circ;
 }
 
-void Scene::tentativelyMoveSelection(QPointF delta) {
+QSet<int> Scene::selectedElements() const {
   QSet<int> selection;
   for (int id: elts.keys())
     if (elts[id]->isSelected())
       selection << id;
-    
+  return selection;
+}
+
+void Scene::tentativelyMoveSelection(QPointF delta) {
+  QSet<int> selection = selectedElements();
   QSet<int> internalcons = circ->connectionsIn(selection);
   QSet<int> fromcons = circ->connectionsFrom(selection) - internalcons;
   QSet<int> tocons = circ->connectionsTo(selection) - internalcons;
@@ -88,27 +85,45 @@ void Scene::tentativelyMoveSelection(QPointF delta) {
     conns[id]->temporaryTranslateTo(delta);
 }
 
-
 void Scene::moveSelection(QPointF delta) {
   QPoint dd = (delta/lib->scale()).toPoint();
 
-  QSet<int> selection;
-  for (int id: elts.keys())
-    if (elts[id]->isSelected())
-      selection << id;
-
+  QSet<int> selection = selectedElements();
+  QSet<int> internalcons = circ->connectionsIn(selection);
+  QSet<int> fromcons = circ->connectionsFrom(selection) - internalcons;
+  QSet<int> tocons = circ->connectionsTo(selection) - internalcons;
   
   if (!dd.isNull()) {
     // must actually change circuit
+    QMap<int, Element> origFrom;
+    QMap<int, Element> origTo;
+    Circuit origCirc(*circ);
+
+    for (int id: fromcons)
+      origFrom[id] = circ->element(circ->connection(id).fromId());
+    for (int id: tocons)
+      origTo[id] = circ->element(circ->connection(id).toId());
+    
     for (int id: selection)
-      circ->elements()[id].translate(dd);
-    for (int id: circ->connectionsIn(selection))
-      circ->connections()[id].translate(dd);
+      circ->element(id).translate(dd);
+    for (int id: internalcons)
+      circ->connection(id).translate(dd);
+
+    Router router(lib);
+    for (int id: fromcons) 
+      circ->connection(id) = router.reroute(id, origCirc, *circ);
+    for (int id: tocons) 
+      circ->connection(id) = router.reroute(id, origCirc, *circ);
   }
 
   for (int id: selection)
     elts[id]->rebuild();
 
-  for (int id: circ->connectionsFrom(selection) + circ->connectionsTo(selection))
+  for (int id: internalcons + fromcons + tocons)
     conns[id]->rebuild();
 }
+
+void Scene::keyPressEvent(QKeyEvent *e) {
+  qDebug() << "Scene::keypress" << e->key() ;
+}
+

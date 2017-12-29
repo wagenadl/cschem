@@ -102,44 +102,54 @@ QList<QPoint> const &Connection::via() const {
 }
 
 void Connection::setId(int id) {
+  d.detach();
   d->id = id;
 }
 
 void Connection::setFromId(int id) {
+  d.detach();
   d->fromId = id;
 }
 
 void Connection::setToId(int id) {
+  d.detach();
   d->toId = id;
 }
 
 void Connection::setFromPin(QString pin) {
+  d.detach();
   d->fromPin = pin;
 }
 
 void Connection::setToPin(QString pin) {
+  d.detach();
   d->toPin = pin;
 }
 
 void Connection::setFrom(int id, QString pin) {
+  d.detach();
   d->fromId = id;
   d->fromPin = pin;
 }
 
 void Connection::setTo(int id, QString pin) {
+  d.detach();
   d->toId = id;
   d->toPin = pin;
 }
 
 QList<QPoint> &Connection::via() {
+  d.detach();
   return d->via;
 }
 
 void Connection::setVia(QList<QPoint> const &v) {
+  d.detach();
   d->via = v;
 }
 
 void Connection::translate(QPoint delta) {
+  d.detach();
   for (QPoint &p: d->via)
     p += delta;
 }

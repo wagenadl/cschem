@@ -14,10 +14,12 @@ public:
   ~SceneConnection();
 public:
   class Scene *scene();
+  int id() const;
   void rebuild();
   void temporaryTranslate(QPointF delta);
   void temporaryTranslateFrom(QPointF delta);
   void temporaryTranslateTo(QPointF delta);
+  void setLineWidth(double frac = 1.0);
 private:
   class SceneConnectionData *d;
 };

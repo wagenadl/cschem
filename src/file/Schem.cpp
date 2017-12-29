@@ -54,6 +54,7 @@ Circuit const &Schem::circuit() const {
 }
 
 Circuit &Schem::circuit() {
+  d.detach();
   return d->circuit;
 }
 
@@ -62,6 +63,7 @@ Parts const &Schem::parts() const {
 }
 
 Parts &Schem::parts() {
+  d.detach();
   return d->parts;
 }
 

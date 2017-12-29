@@ -20,6 +20,8 @@ public:
   QPoint pinPosition(int partid, QString pin) const;
   void moveSelection(QPointF delta);
   void tentativelyMoveSelection(QPointF delta);
+  QSet<int> selectedElements() const;
+  void keyPressEvent(QKeyEvent *) override;
 private:
   PartLibrary const *lib;
   Circuit *circ;

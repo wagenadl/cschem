@@ -14,6 +14,7 @@ public:
   ~SceneElement();
 public:
   class Scene *scene();
+  int id() const;
   void showPins();
   void hidePins();
   void showName();

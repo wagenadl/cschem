@@ -46,6 +46,7 @@ XmlElement const &XmlNode::element() const {
 }
 
 XmlElement &XmlNode::element() {
+  d.detach();
   return d->element;
 }
 

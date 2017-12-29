@@ -46,6 +46,7 @@ int Container::id() const {
 }
 
 void Container::setId(int id) {
+  d.detach();
   d->id = id;
 }
 
@@ -62,18 +63,22 @@ QList<int> const &Container::components() const {
 }
 
 QList<int> &Container::components() {
+  d.detach();
   return d->components;
 }
 
 void Container::setName(QString n) {
+  d.detach();
   d->name = n;
 }
 
 void Container::setComponents(QList<int> const &l) {
+  d.detach();
   d->components = l;
 }
 
 void Container::setType(QString t) {
+  d.detach();
   d->type = t;
 }
 

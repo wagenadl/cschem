@@ -57,6 +57,7 @@ QMap<int, class Container> const &Parts::containers() const {
 }
 
 QMap<int, class Container> &Parts::containers() {
+  d.detach();
   return d->containers;
 }
 
@@ -65,6 +66,7 @@ QMap<int, class Package> const &Parts::packages() const {
 }
 
 QMap<int, class Package> &Parts::packages() {
+  d.detach();
   return d->packages;
 }
 

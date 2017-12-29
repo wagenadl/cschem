@@ -10,6 +10,8 @@
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsSceneMouseEvent>
 
+#define HOVEREFFECT 0
+
 class SceneElementData {
 public:
   SceneElementData() {
@@ -76,7 +78,6 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
   setAcceptHoverEvents(true);
   setFlag(ItemIsMovable);
   setFlag(ItemIsSelectable);
-  //  setFlag(ItemSendsGeometryChanges);
   setCacheMode(DeviceCoordinateCache);
 }
 
@@ -101,11 +102,13 @@ void SceneElement::hoverEnterEvent(QGraphicsSceneHoverEvent *e) {
     else
       p->setBrush(QBrush(QColor(255, 128, 128, 128)));
   }
-  
+
+  #if HOVEREFFECT
   auto *ef = new QGraphicsColorizeEffect;
   ef->setColor(QColor(128, 255, 128));
   ef->setStrength(.5);
   d->element->setGraphicsEffect(ef);
+  #endif
   QGraphicsItemGroup::hoverEnterEvent(e);
 }
 
@@ -113,7 +116,9 @@ void SceneElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *e) {
   qDebug() << "Leave" << d->id << isSelected();
   for (auto p: d->pins)
     p->setBrush(QBrush(QColor(255, 128, 128, 0)));
+  #if HOVEREFFECT
   d->element->setGraphicsEffect(0);
+  #endif
   QGraphicsItemGroup::hoverLeaveEvent(e);
 }
 
@@ -154,3 +159,10 @@ void SceneElement::rebuild() {
          * d->scene->circuit()->elements()[d->id].position());
 }
 
+Scene *SceneElement::scene() {
+  return d->scene;
+}
+
+int SceneElement::id() const {
+  return d->id;
+}

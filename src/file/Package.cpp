@@ -69,26 +69,32 @@ QString Package::manufacturer() const {
 }
 
 void Package::setPackage(QString s) {
+  d.detach();
   d->package = s;
 }
 
 void Package::setVendor(QString s) {
+  d.detach();
   d->vendor = s;
 }
 
 void Package::setPartno(QString s) {
+  d.detach();
   d->partno = s;
 }
 
 void Package::setMfgPart(QString s) {
+  d.detach();
   d->mfgpart = s;
 }
 
 void Package::setManufacturer(QString s) {
+  d.detach();
   d->manufacturer = s;
 }
 
 void Package::setId(int id) {
+  d.detach();
   d->id = id;
 }
 

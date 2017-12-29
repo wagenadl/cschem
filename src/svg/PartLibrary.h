@@ -17,6 +17,7 @@ public:
   QByteArray partSvg(QString name) const;
   class QSvgRenderer *renderer(QString name) const;
   int scale() const;
+  double lineWidth() const;
 private:
   void scanParts(XmlElement const &src);
   void getBBoxes(QString fn);

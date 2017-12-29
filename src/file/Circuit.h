@@ -35,6 +35,10 @@ public:
   QMap<int, class Element> &elements();
   QMap<int, class Connection> const &connections() const;
   QMap<int, class Connection> &connections();
+  Element const &element(int) const;
+  Element &element(int);
+  Connection const &connection(int) const;
+  Connection &connection(int);
 private:
   QSharedDataPointer<class CircuitData> d;
 };

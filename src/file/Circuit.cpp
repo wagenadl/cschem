@@ -84,14 +84,17 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
 }
 
 void Circuit::insert(Element const &e) {
+  d.detach();
   d->elements[e.id()] = e;
 }
 
 void Circuit::insert(Connection const &e) {
+  d.detach();
   d->connections[e.id()] = e;
 }
 
 void Circuit::remove(int id) {
+  d.detach();
   if (d->elements.contains(id)) {
     d->elements.remove(id);
     QList<int> cids;
@@ -132,6 +135,7 @@ QSet<int> Circuit::connectionsIn(QSet<int> ids) const {
 }
 
 void Circuit::translate(QSet<int> ids, QPoint delta) {
+  d.detach();
   for (int id: ids)
     d->elements[id].setPosition(d->elements[id].position() + delta);
   for (int id: connectionsIn(ids)) {
@@ -141,4 +145,24 @@ void Circuit::translate(QSet<int> ids, QPoint delta) {
   }
 }
 
-  
+Element const &Circuit::element(int id) const {
+  static Element ne;
+  auto it(d->elements.find(id));
+  return it == d->elements.end() ? ne : *it;
+}
+
+Element &Circuit::element(int id) {
+  d.detach();
+  return d->elements[id];
+}
+
+Connection const &Circuit::connection(int id) const {
+  static Connection ne;
+  auto it(d->connections.find(id));
+  return it == d->connections.end() ? ne : *it;
+}
+
+Connection &Circuit::connection(int id) {
+  d.detach();
+  return d->connections[id];
+}

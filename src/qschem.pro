@@ -20,5 +20,7 @@ HEADERS += file/Container.h file/Package.h file/Schem.h file/FileIO.h
 SOURCES += file/Container.cpp file/Package.cpp file/Schem.cpp file/FileIO.cpp
 HEADERS += ui/Scene.h ui/SceneElement.h ui/SceneConnection.h
 SOURCES += ui/Scene.cpp ui/SceneElement.cpp ui/SceneConnection.cpp
+HEADERS += svg/Router.h
+SOURCES += svg/Router.cpp
 SOURCES += qschem.cpp	
 RESOURCES += qschem.qrc

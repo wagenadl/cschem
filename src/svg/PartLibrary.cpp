@@ -143,3 +143,7 @@ QSvgRenderer *PartLibrary::renderer(QString name) const {
 int PartLibrary::scale() const {
   return 7; // infer this from part drawings?
 }
+
+double PartLibrary::lineWidth() const {
+  return 2.5;
+}

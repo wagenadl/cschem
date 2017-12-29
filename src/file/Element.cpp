@@ -107,34 +107,42 @@ int Element::rotation() const {
 }
 
 void Element::setPosition(QPoint p) {
+  d.detach();
   d->position = p;
 }
 
 void Element::translate(QPoint delta) {
+  d.detach();
   d->position += delta;
 }
 
 void Element::setSubtype(QString t) {
+  d.detach();
   d->subtype = t;
 }
 
 void Element::setValue(QString v) {
+  d.detach();
   d->value = v;
 }
 
 void Element::setName(QString n) {
+  d.detach();
   d->name = n;
 }
 
 void Element::setLabel(QString l) {
+  d.detach();
   d->label = l;
 }
 
 void Element::setId(int id) {
+  d.detach();
   d->id = id;
 }
 
 void Element::setRotation(int o) {
+  d.detach();
   d->rotation = o;
 }
 
