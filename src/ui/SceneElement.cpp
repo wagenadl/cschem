@@ -10,21 +10,6 @@
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsSceneMouseEvent>
 
-class SceneElementPin: public QGraphicsEllipseItem {
-public:
-  SceneElementPin(QPointF c, double r, QString id, SceneElement *parent):
-    QGraphicsEllipseItem(QRectF(c - QPointF(r, r), 2*QSizeF(r, r))),
-    id(id), parent(parent) {
-    setBrush(QBrush(QColor(255, 128, 128, 0))); // initially invisible
-    setPen(QPen(Qt::NoPen));
-  }  
-private:
-  QString id;
-  SceneElement *parent;
-};
-
-
-
 class SceneElementData {
 public:
   SceneElementData() {
@@ -42,7 +27,6 @@ public:
   Scene *scene;
   int id;
   QGraphicsSvgItem *element;
-  QMap<QString, QGraphicsEllipseItem *> pins;
   QGraphicsTextItem *name;
   QGraphicsTextItem *value;
   QGraphicsTextItem *label;
@@ -62,28 +46,19 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
   QString sym = elt.symbol();
 
   PartLibrary const *lib = d->scene->library();
-  Part const &p = lib->part(sym);
-  double s = lib->scale();
-  if (!p.isValid()) {
+  Part const &part = lib->part(sym);
+  if (!part.isValid())
     qDebug() << "Cannot find svg for symbol" << sym;
-  }
+  double s = lib->scale();
+  QPoint o = part.origin();
 
   QSvgRenderer *r = lib->renderer(sym);
-  if (!r) {
-    qDebug() << "Cannot construct renderer for symbol" << sym;
-    return;
-  }
-  QPoint o = p.origin();
-  for (QString name: p.pinNames()) {
-    QPoint pt = p.pinPosition(name) - o;
-    qDebug() << name << pt;
-    auto *e = new SceneElementPin(pt, s, name, this);
-    addToGroup(e);
-    d->pins[name] = e;
-  }
 
   d->element = new QGraphicsSvgItem;
-  d->element->setSharedRenderer(r);
+  if (r)
+    d->element->setSharedRenderer(r);
+  else
+    qDebug() << "Cannot construct renderer for symbol" << sym;    
   d->element->setPos(-o);
   addToGroup(d->element);
 
@@ -100,33 +75,6 @@ SceneElement::~SceneElement() {
   delete d;
 }
 
-void SceneElement::showPin(QString pid) {
-  qDebug() << "show pin" << d->id << isSelected();
-  if (!d->pins.contains(pid))
-    return;
-  auto p = d->pins[pid];
-  bool got = false;
-  for (auto const &c: d->scene->circuit()->connections()) {
-    if ((c.fromId()==d->id && c.fromPin()==pid)
-        || (c.toId()==d->id && c.toPin()==pid)) {
-      got = true;
-      break;
-    }
-  }
-  if (got)
-    p->setBrush(QBrush(QColor(128, 255, 128, 128)));
-  else
-    p->setBrush(QBrush(QColor(255, 128, 128, 128)));
-}
-
-void SceneElement::hidePin(QString pid) {
-  qDebug() << "Hide pin" << d->id << isSelected();
-  if (!d->pins.contains(pid))
-    return;
-  auto p = d->pins[pid];
-  p->setBrush(QBrush(QColor(255, 128, 128, 0)));
-}
-
 static double L2(QPointF p) {
   return p.x()*p.x() + p.y()*p.y();
 }
@@ -136,10 +84,13 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->onpin = false;
   qDebug() << "Mouse press" << e->pos() << pos();
   QPointF pinpos;
-  if (scene()->circuit()->element(d->id).type() != Element::Type::Junction) {
-    double s = scene()->library()->scale();
-    for (QString pid: d->pins.keys()) {
-      pinpos = mapFromScene(scene()->pinPosition(d->id, pid));
+  auto const &elem = d->scene->circuit()->element(d->id);
+  auto const &part = d->scene->library()->part(elem.symbol());
+  
+  if (elem.type() != Element::Type::Junction) {
+    double s = d->scene->library()->scale();
+    for (QString pid: part.pinNames()) {
+      pinpos = mapFromScene(d->scene->pinPosition(d->id, pid));
       qDebug() << pid << "?" << pinpos << e->pos() << s;
       if (L2(pinpos - e->pos()) <= s*s) {
         d->onpin = true;
@@ -191,14 +142,15 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     if (d->dragline) {
       delete d->dragline;
       d->dragline = 0;
-      scene()->addConnection(d->id, d->onpinId, e->scenePos());
+      d->scene->addConnection(d->id, d->onpinId, e->scenePos());
     } else {
       qDebug() << "No drag line??";
     }
   } else {
+    auto const &lib = d->scene->library();
+    auto const &circ = d->scene->circuit();
     QPointF newpos = pos();
-    QPointF oldpos = d->scene->library()->scale()
-      * d->scene->circuit()->elements()[d->id].position();
+    QPointF oldpos = lib->scale() * circ->elements()[d->id].position();
     qDebug() << "Mouse release" << newpos << oldpos;
     QGraphicsItemGroup::mouseReleaseEvent(e);
     if (d->dragmoved || newpos != oldpos) {
@@ -209,8 +161,9 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void SceneElement::rebuild() {
-  setPos(d->scene->library()->scale()
-         * d->scene->circuit()->elements()[d->id].position());
+  auto const &lib = d->scene->library();
+  auto const &circ = d->scene->circuit();
+  setPos(lib->scale() * circ->elements()[d->id].position());
 }
 
 Scene *SceneElement::scene() {

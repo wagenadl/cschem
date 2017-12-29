@@ -6,11 +6,14 @@
 #include "SceneConnection.h"
 #include "svg/Router.h"
 #include <QGraphicsSceneMouseEvent>
+#include "HoverPin.h"
 
 Scene::Scene(PartLibrary const *lib, QObject *parent):
   QGraphicsScene(parent),
   lib(lib) {
   circ = 0;
+  hoverpin = new HoverPin(this);
+  addItem(hoverpin);
 }
 
 void Scene::setCircuit(Circuit *c) {
@@ -231,44 +234,14 @@ void Scene::addConnection(int fromPart, QString fromPin, QPointF to) {
   }
 }
 
-static double L2(QPointF p) {
-  return p.x()*p.x() + p.y()*p.y();
+void Scene::updateOverPin(QPointF p, int elt) {
+  hoverpin->updateHover(p, elt);
 }
 
-void Scene::updateOverPin(QPointF p, int part) {
-  if (part<0) {
-    for (auto elt: elts) {
-      if (elt->boundingRect().contains(elt->mapFromScene(p))) {
-        part = elt->id();
-        break;
-      }
-    }
-  }
-  QString pin;
-  double dd = 1e9;
-  double r = lib->scale();
-  
-  if (elts.contains(part)) {
-    Part sym = lib->part(circ->element(part).symbol());
-    for (auto pn: sym.pinNames()) {
-      double ddd = L2(pinPosition(part, pn) - p);
-      if (ddd<dd) {
-        dd = ddd;
-        pin = pn;
-      }
-    }
-  }
-  if (dd > r*r)
-    part = -1;
-  
-  if (part != hoverelt || pin!=hoverpin) {
-    if (elts.contains(hoverelt))
-      elts[hoverelt]->hidePin(hoverpin);
-    if (elts.contains(part))
-      elts[part]->showPin(pin);
-    hoverelt = part;
-    hoverpin = pin;
-  }
+QMap<int, class SceneElement *> const &Scene::elements() const {
+  return elts;
 }
 
-
+QMap<int, class SceneConnection *> const &Scene::connections() const {
+  return conns;
+}

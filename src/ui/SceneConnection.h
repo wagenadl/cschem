@@ -21,8 +21,6 @@ public:
   void temporaryTranslateTo(QPointF delta);
   void setLineWidth(double frac = 1.0);
 protected:
-  void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
 private:
   class SceneConnectionData *d;
 };

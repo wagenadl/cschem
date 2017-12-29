@@ -22,7 +22,9 @@ public:
   void tentativelyMoveSelection(QPointF delta);
   QSet<int> selectedElements() const;
   void addConnection(int fromPart, QString fromPin, QPointF to);
-  void updateOverPin(QPointF scenepos, int part=-1);
+  void updateOverPin(QPointF scenepos, int elt=-1);
+  QMap<int, class SceneElement *> const &elements() const;
+  QMap<int, class SceneConnection *> const &connections() const;
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
@@ -38,8 +40,7 @@ private:
   QMap<int, class SceneElement *> elts;
   QMap<int, class SceneConnection *> conns;
   QPointF mousexy;
-  int hoverelt;
-  QString hoverpin;
+  class HoverPin *hoverpin;
 };
 
 #endif

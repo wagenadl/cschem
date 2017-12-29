@@ -15,8 +15,6 @@ public:
 public:
   class Scene *scene();
   int id() const;
-  void showPin(QString);
-  void hidePin(QString);
   void showName();
   void hideName();
   void showValue();
