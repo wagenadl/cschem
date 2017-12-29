@@ -49,6 +49,8 @@ SceneConnection::SceneConnection(class Scene *parent, Connection const &c) {
   setPen(QPen(QColor(0,0,0), lib->lineWidth(),
               Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
   parent->addItem(this);
+
+  setAcceptHoverEvents(true);
 }
 
 void SceneConnection::rebuild() {
@@ -116,3 +118,12 @@ Scene *SceneConnection::scene() {
 int SceneConnection::id() const {
   return d->id;
 }
+
+void SceneConnection::hoverEnterEvent(QGraphicsSceneHoverEvent *e) {
+  qDebug() << "Enter connection" << d->id;
+}
+
+void SceneConnection::hoverLeaveEvent(QGraphicsSceneHoverEvent *e) {
+  qDebug() << "Leave connection" << d->id;
+}
+

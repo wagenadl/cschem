@@ -5,6 +5,7 @@
 #include "SceneElement.h"
 #include "SceneConnection.h"
 #include "svg/Router.h"
+#include <QGraphicsSceneMouseEvent>
 
 Scene::Scene(PartLibrary const *lib, QObject *parent):
   QGraphicsScene(parent),
@@ -123,7 +124,108 @@ void Scene::moveSelection(QPointF delta) {
     conns[id]->rebuild();
 }
 
-void Scene::keyPressEvent(QKeyEvent *e) {
-  qDebug() << "Scene::keypress" << e->key() ;
+void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
+  mousexy = e->scenePos();
+  QGraphicsScene::mousePressEvent(e);
 }
 
+void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
+  mousexy = e->scenePos();
+  QGraphicsScene::mouseMoveEvent(e);
+}
+
+void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
+  mousexy = e->scenePos();
+  QGraphicsScene::mouseReleaseEvent(e);
+}
+
+void Scene::keyPressEvent(QKeyEvent *e) {
+  if (focusItem()==0) {
+    QGraphicsItem *item = itemAt(mousexy, QTransform());
+    while (item && item->parentItem())
+      item = item->parentItem();
+
+    SceneElement *elt = dynamic_cast<SceneElement *>(item);
+    SceneConnection *con = dynamic_cast<SceneConnection *>(item);
+
+    if (elt)
+      keyPressOnElement(elt, e);
+    else if (con)
+      keyPressOnConnection(con, e);
+
+    keyPressAnywhere(e);
+  } else {
+    QGraphicsScene::keyPressEvent(e);
+  }
+}
+
+void Scene::keyPressOnElement(class SceneElement *elt, QKeyEvent *e) {
+  int id = elt->id();
+  switch (e->key()) {
+  case Qt::Key_Delete: {
+    delete elts[id];
+    elts.remove(id);
+    circ->elements().remove(id);
+    QSet<int> cc;
+    for (auto &c: circ->connections()) 
+      if (c.fromId()==id || c.toId()==id)
+        cc << c.id();
+    for (int id: cc) {
+      delete conns[id];
+      conns.remove(id);
+      circ->connections().remove(id);
+    }
+  } break;
+  }
+}
+
+void Scene::keyPressOnConnection(class SceneConnection *con, QKeyEvent *e) {
+  int id = con->id();
+  switch (e->key()) {
+  case Qt::Key_Delete: {
+    delete conns[id];
+    conns.remove(id);
+    circ->connections().remove(id);
+  } break;
+  }
+}
+
+void Scene::keyPressAnywhere(QKeyEvent *) {
+}
+  
+void Scene::addConnection(int fromPart, QString fromPin, QPointF to) {
+  int toPart = -1;
+  for (auto e: elts) {
+    if (e->boundingRect().contains(e->mapFromScene(to))) {
+      toPart = e->id();
+      break;
+    }
+  }
+  if (toPart < 0) {
+    qDebug() << "Not adding connection";
+    return;
+  }
+
+  QString sym = circ->element(toPart).symbol();
+  Part const &part = library()->part(sym);
+  double dist = 1e9;
+  QString toPin = "";
+  for (auto p: part.pinNames()) {
+    double dd = (to - pinPosition(toPart, p)).manhattanLength();
+    if (dd<dist) {
+      toPin = p;
+      dist = dd;
+    }
+  }
+  qDebug() << "Drop near" << toPart << toPin;
+  if (toPart != fromPart || toPin != fromPin) {
+    // create new connection
+    Connection c;
+    c.setFromId(fromPart);
+    c.setFromPin(fromPin);
+    c.setToId(toPart);
+    c.setToPin(toPin);
+    circ->connections()[c.id()] = c;
+    conns[c.id()] = new SceneConnection(this, c);    
+  }
+}

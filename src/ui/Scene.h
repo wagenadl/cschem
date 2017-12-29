@@ -21,12 +21,22 @@ public:
   void moveSelection(QPointF delta);
   void tentativelyMoveSelection(QPointF delta);
   QSet<int> selectedElements() const;
+  void addConnection(int fromPart, QString fromPin, QPointF to);
+protected:
   void keyPressEvent(QKeyEvent *) override;
+  void mousePressEvent(QGraphicsSceneMouseEvent *) override;
+  void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+private:
+  void keyPressOnElement(class SceneElement *, QKeyEvent *);
+  void keyPressOnConnection(class SceneConnection *, QKeyEvent *);
+  void keyPressAnywhere(QKeyEvent *);
 private:
   PartLibrary const *lib;
   Circuit *circ;
   QMap<int, class SceneElement *> elts;
   QMap<int, class SceneConnection *> conns;
+  QPointF mousexy;
 };
 
 #endif
