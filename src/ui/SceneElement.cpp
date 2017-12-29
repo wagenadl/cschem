@@ -22,6 +22,18 @@ public:
     dragmoved = false;
     onpin = false;
     dragline = 0;
+    hovering = false;
+    showhover = true;
+  }
+public:
+  void markHover() {
+    if (hovering && showhover && !dragline) {
+      auto *ef = new QGraphicsColorizeEffect;
+      ef->setColor(QColor(0, 128, 255));
+      element->setGraphicsEffect(ef);
+    } else {
+      element->setGraphicsEffect(0);    
+    }
   }
 public:
   Scene *scene;
@@ -35,6 +47,8 @@ public:
   QString onpinId;
   bool dragmoved;
   QGraphicsLineItem *dragline;
+  bool hovering;
+  bool showhover;
 };
 
 SceneElement::SceneElement(class Scene *parent, Element const &elt) {
@@ -65,6 +79,11 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
   parent->addItem(this);
   setPos(s * pos);
 
+  if (sym == "junction")
+    setZValue(20);
+  else
+    setZValue(10);
+  
   setAcceptHoverEvents(true);
   setFlag(ItemIsMovable);
   setFlag(ItemIsSelectable);
@@ -107,7 +126,9 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     d->dragline = new QGraphicsLineItem(QLineF(pinpos, e->pos()), this);
     qDebug() << d->dragline->line();
     addToGroup(d->dragline);
+    d->markHover();
   } else {
+    d->scene->enablePinHighlighting(false);
     QGraphicsItemGroup::mousePressEvent(e);
   }
 }
@@ -142,11 +163,13 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     if (d->dragline) {
       delete d->dragline;
       d->dragline = 0;
+      d->markHover();
       d->scene->addConnection(d->id, d->onpinId, e->scenePos());
     } else {
       qDebug() << "No drag line??";
     }
   } else {
+    d->scene->enablePinHighlighting(true);
     auto const &lib = d->scene->library();
     auto const &circ = d->scene->circuit();
     QPointF newpos = pos();
@@ -172,5 +195,27 @@ Scene *SceneElement::scene() {
 
 int SceneElement::id() const {
   return d->id;
+}
+
+void SceneElement::showHover() {
+  d->showhover = true;
+  d->markHover();
+}
+
+void SceneElement::hideHover() {
+  d->showhover = false;
+  d->markHover();
+}
+ 
+void SceneElement::hoverEnterEvent(QGraphicsSceneHoverEvent *e) {
+  d->hovering = true;
+  d->markHover();
+  QGraphicsItemGroup::hoverEnterEvent(e);
+}
+
+void SceneElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *e) {
+  d->hovering =false;
+  d->markHover();
+  QGraphicsItemGroup::hoverLeaveEvent(e);
 }
 

@@ -17,7 +17,7 @@ static double L2(QPointF p) {
   return p.x()*p.x() + p.y()*p.y();
 }
 
-void HoverPin::updateHover(QPointF p, int elt1) {
+void HoverPin::updateHover(QPointF p, int elt1, bool allowJunction) {
   auto const &elts = scene->elements();
   auto const &lib = scene->library();
   auto const &circ = scene->circuit();
@@ -36,27 +36,31 @@ void HoverPin::updateHover(QPointF p, int elt1) {
   QPointF pin1pos;
   
   if (elts.contains(elt1)) {
-    Part const &part = lib->part(circ->element(elt1).symbol());
-    for (auto pn: part.pinNames()) {
-      QPointF pp = scene->pinPosition(elt1, pn);
-      double d = L2(pp - p);
-      if (d<d1) {
-        d1 = d;
-        pin1 = pn;
-	pin1pos = pp;
+    QString sym = circ->element(elt1).symbol();
+    if (sym == "junction" && !allowJunction) {
+      elt1 = -1; // don't hover pin over junctions
+    } else {
+      Part const &part = lib->part(sym);
+      for (auto pn: part.pinNames()) {
+	QPointF pp = scene->pinPosition(elt1, pn);
+	double d = L2(pp - p);
+	if (d<d1) {
+	  d1 = d;
+	  pin1 = pn;
+	  pin1pos = pp;
+	}
       }
+      if (d1 > r*r)
+	elt1 = -1;
     }
-    if (d1 > r*r)
-      elt1 = -1;
   } else {
     elt1 = -1;
   }
   
   if (elt1 != elt || pin1 != pin) {
-    qDebug() << elt1 << pin1 << pin1pos << p;
     if (elt1>0) {
       setRect(QRectF(pin1pos - QPointF(r, r), 2 * QSizeF(r, r)));
-      setBrush(QColor(0, 128, 255, 255));
+      setBrush(QColor(0, 255, 128, 255));
     } else {
       setBrush(QColor(128, 128, 128, 0));
     }

@@ -14,6 +14,7 @@ Scene::Scene(PartLibrary const *lib, QObject *parent):
   circ = 0;
   hoverpin = new HoverPin(this);
   addItem(hoverpin);
+  hoverpinenabled = true;
 }
 
 void Scene::setCircuit(Circuit *c) {
@@ -134,7 +135,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   mousexy = e->scenePos();
-  updateOverPin(e->scenePos());
+  updateOverPin(e->scenePos(), -1, e->buttons()!=0);
   QGraphicsScene::mouseMoveEvent(e);
 }
 
@@ -234,8 +235,16 @@ void Scene::addConnection(int fromPart, QString fromPin, QPointF to) {
   }
 }
 
-void Scene::updateOverPin(QPointF p, int elt) {
-  hoverpin->updateHover(p, elt);
+void Scene::updateOverPin(QPointF p, int elt, bool allowJunction) {
+  int elt0 = hoverpin->element();
+  hoverpin->updateHover(p, elt, allowJunction);
+  int elt1 = hoverpin->element();
+  if (elt0!=elt1) {
+    if (elts.contains(elt0))
+      elts[elt0]->showHover();
+    if (elts.contains(elt1) && hoverpinenabled)
+      elts[elt1]->hideHover();
+  }
 }
 
 QMap<int, class SceneElement *> const &Scene::elements() const {
@@ -244,4 +253,12 @@ QMap<int, class SceneElement *> const &Scene::elements() const {
 
 QMap<int, class SceneConnection *> const &Scene::connections() const {
   return conns;
+}
+
+void Scene::enablePinHighlighting(bool hl) {
+  hoverpinenabled = hl;
+  if (hl)
+    hoverpin->show();
+  else
+    hoverpin->hide();
 }

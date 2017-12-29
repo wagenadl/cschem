@@ -4,9 +4,9 @@
 
 #define SCENECONNECTION_H
 
-#include <QGraphicsPathItem>
+#include <QGraphicsItemGroup>
 
-class SceneConnection: public QGraphicsPathItem {
+class SceneConnection: public QGraphicsItemGroup {
 public:
   SceneConnection(class Scene *parent, class Connection const &);
   SceneConnection(SceneConnection const &) = delete;
@@ -21,6 +21,10 @@ public:
   void temporaryTranslateTo(QPointF delta);
   void setLineWidth(double frac = 1.0);
 protected:
+  void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
+  void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
+private:
+  void setPath(class QPolygonF const &);
 private:
   class SceneConnectionData *d;
 };

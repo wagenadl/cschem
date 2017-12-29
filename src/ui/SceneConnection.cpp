@@ -1,24 +1,46 @@
 // SceneConnection.cpp
 
 #include "SceneConnection.h"
-#include <QGraphicsPathItem>
+#include <QGraphicsLineItem>
 #include "file/Connection.h"
 #include "svg/PartLibrary.h"
 #include "Scene.h"
 #include <QDebug>
+#include <QGraphicsColorizeEffect>
+#include <QGraphicsSceneHoverEvent>
 
-#define SIMPLETEMP 0
+class SCSegment: public QGraphicsLineItem {
+public:
+  SCSegment(QGraphicsItem *parent=0): QGraphicsLineItem(parent) {
+    setAcceptHoverEvents(true);
+  }
+  void hoverEnterEvent(QGraphicsSceneHoverEvent *e) override {
+    auto *ef = new QGraphicsColorizeEffect;
+    ef->setColor(QColor(0, 128, 255));
+    setGraphicsEffect(ef);
+    qDebug() << "Segment hover enter" << line();
+    QGraphicsLineItem::hoverEnterEvent(e);
+  }
+  void hoverLeaveEvent(QGraphicsSceneHoverEvent *e) override {
+    setGraphicsEffect(0);    
+    qDebug() << "Segment hover leave" << line();
+    QGraphicsLineItem::hoverLeaveEvent(e);
+  }
+};  
 
 class SceneConnectionData {
 public:
   SceneConnectionData() {
     scene = 0;
     id = 0;
+    hoverseg = 0;
   }
   QPolygonF path();
 public:
   Scene *scene;
+  QList<SCSegment *> segments;
   int id;
+  SCSegment *hoverseg;
 };
 
 QPolygonF SceneConnectionData::path() {
@@ -43,64 +65,63 @@ SceneConnection::SceneConnection(class Scene *parent, Connection const &c) {
   d->scene = parent;
   d->id = c.id();
 
-  PartLibrary const *lib = parent->library();
-
   rebuild();
-  setPen(QPen(QColor(0,0,0), lib->lineWidth(),
-              Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
   parent->addItem(this);
+  setAcceptHoverEvents(true);
+}
+
+void SceneConnection::setPath(QPolygonF const &path) {
+  PartLibrary const *lib = d->scene->library();
+
+  while (d->segments.size() > path.size() - 1)
+    delete d->segments.takeLast();
+
+  for (int k=1; k<path.size(); k++) {
+    if (k-1 >= d->segments.size()) {
+      d->segments << new SCSegment;
+      d->scene->addItem(d->segments.last());
+      addToGroup(d->segments.last());
+    }
+    auto *seg = d->segments[k-1];
+    seg->setLine(QLineF(path[k-1], path[k]));
+    seg->setPen(QPen(QColor(0,0,0), lib->lineWidth(),
+		     Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
+  }
 }
 
 void SceneConnection::rebuild() {
-  auto path = d->path();
-  QPainterPath pp(path.takeFirst());
-  for (auto p: path)
-    pp.lineTo(p);
-  setPath(pp);
+  setPath(d->path());
   setLineWidth();
 }
 
 void SceneConnection::temporaryTranslate(QPointF delta) {
   auto path = d->path();
   path.translate(delta);
-  QPainterPath pp(path.takeFirst());
-  for (auto p: path)
-    pp.lineTo(p);
-  setPath(pp);
+  setPath(path);
   setLineWidth(.5);
 }
 
 void SceneConnection::setLineWidth(double frac) {
+  if (d->segments.isEmpty())
+    return;
   PartLibrary const *lib = scene()->library();
-  QPen p = pen();
+  QPen p = d->segments.first()->pen();
   p.setWidthF(lib->lineWidth() *frac);
-  setPen(p);
+  for (auto *seg: d->segments)
+    seg->setPen(p);
 }
 
 void SceneConnection::temporaryTranslateFrom(QPointF delta) {
   auto path = d->path();
-  QPainterPath pp(path.takeFirst() + delta);
-#if SIMPLETEMP
-  pp.lineTo(path.last());
-#else
-  for (auto p: path)
-    pp.lineTo(p);
-#endif
-  setPath(pp);
+  path.first() += delta;
+  setPath(path);
   setLineWidth(.5);
 }
 
 void SceneConnection::temporaryTranslateTo(QPointF delta) {
   auto path = d->path();
-  QPainterPath pp(path.takeFirst());
   path.last() += delta;
-#if SIMPLETEMP
-  pp.lineTo(path.last());
-#else
-  for (auto p: path)
-    pp.lineTo(p);
-#endif
-  setPath(pp);
+  setPath(path);
   setLineWidth(.5);
 }
 
@@ -115,5 +136,29 @@ Scene *SceneConnection::scene() {
 
 int SceneConnection::id() const {
   return d->id;
+}
+
+void SceneConnection::hoverEnterEvent(QGraphicsSceneHoverEvent *e) {
+  qDebug() << "Connection hover enter" << id();
+  // For some reason, children don't receive hover events. So I'm doing
+  // it myself. This implementation is imperfect: mouseMoveEvents should
+  // be traced too.
+  for (auto *seg: d->segments) {
+    if (seg->contains(seg->mapFromParent(e->pos()))) {
+      seg->hoverEnterEvent(e);
+      d->hoverseg = seg;
+      break;
+    }
+  }
+  QGraphicsItemGroup::hoverEnterEvent(e);
+}
+
+void SceneConnection::hoverLeaveEvent(QGraphicsSceneHoverEvent *e) {
+  qDebug() << "Connection hover leave" << id();
+  if (d->segments.contains(d->hoverseg)) {
+    d->hoverseg->hoverLeaveEvent(e);
+    d->hoverseg = 0;
+  }
+  QGraphicsItemGroup::hoverLeaveEvent(e);
 }
 
