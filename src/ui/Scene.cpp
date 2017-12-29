@@ -131,6 +131,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   mousexy = e->scenePos();
+  updateOverPin(e->scenePos());
   QGraphicsScene::mouseMoveEvent(e);
 }
 
@@ -229,3 +230,45 @@ void Scene::addConnection(int fromPart, QString fromPin, QPointF to) {
     conns[c.id()] = new SceneConnection(this, c);    
   }
 }
+
+static double L2(QPointF p) {
+  return p.x()*p.x() + p.y()*p.y();
+}
+
+void Scene::updateOverPin(QPointF p, int part) {
+  if (part<0) {
+    for (auto elt: elts) {
+      if (elt->boundingRect().contains(elt->mapFromScene(p))) {
+        part = elt->id();
+        break;
+      }
+    }
+  }
+  QString pin;
+  double dd = 1e9;
+  double r = lib->scale();
+  
+  if (elts.contains(part)) {
+    Part sym = lib->part(circ->element(part).symbol());
+    for (auto pn: sym.pinNames()) {
+      double ddd = L2(pinPosition(part, pn) - p);
+      if (ddd<dd) {
+        dd = ddd;
+        pin = pn;
+      }
+    }
+  }
+  if (dd > r*r)
+    part = -1;
+  
+  if (part != hoverelt || pin!=hoverpin) {
+    if (elts.contains(hoverelt))
+      elts[hoverelt]->hidePin(hoverpin);
+    if (elts.contains(part))
+      elts[part]->showPin(pin);
+    hoverelt = part;
+    hoverpin = pin;
+  }
+}
+
+

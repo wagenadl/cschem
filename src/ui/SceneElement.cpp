@@ -10,8 +10,6 @@
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsSceneMouseEvent>
 
-#define HOVEREFFECT 0
-
 class SceneElementPin: public QGraphicsEllipseItem {
 public:
   SceneElementPin(QPointF c, double r, QString id, SceneElement *parent):
@@ -19,11 +17,13 @@ public:
     id(id), parent(parent) {
     setBrush(QBrush(QColor(255, 128, 128, 0))); // initially invisible
     setPen(QPen(Qt::NoPen));
-  }
+  }  
 private:
   QString id;
   SceneElement *parent;
 };
+
+
 
 class SceneElementData {
 public:
@@ -100,41 +100,31 @@ SceneElement::~SceneElement() {
   delete d;
 }
 
-void SceneElement::hoverEnterEvent(QGraphicsSceneHoverEvent *e) {
-  qDebug() << "Enter" << d->id << isSelected();
-  for (QString pid: d->pins.keys()) {
-    auto p = d->pins[pid];
-    bool got = false;
-    for (auto const &c: d->scene->circuit()->connections()) {
-      if ((c.fromId()==d->id && c.fromPin()==pid)
-          || (c.toId()==d->id && c.toPin()==pid)) {
-        got = true;
-        break;
-      }
+void SceneElement::showPin(QString pid) {
+  qDebug() << "show pin" << d->id << isSelected();
+  if (!d->pins.contains(pid))
+    return;
+  auto p = d->pins[pid];
+  bool got = false;
+  for (auto const &c: d->scene->circuit()->connections()) {
+    if ((c.fromId()==d->id && c.fromPin()==pid)
+        || (c.toId()==d->id && c.toPin()==pid)) {
+      got = true;
+      break;
     }
-    if (got)
-      p->setBrush(QBrush(QColor(128, 255, 128, 128)));
-    else
-      p->setBrush(QBrush(QColor(255, 128, 128, 128)));
   }
-
-  #if HOVEREFFECT
-  auto *ef = new QGraphicsColorizeEffect;
-  ef->setColor(QColor(128, 255, 128));
-  ef->setStrength(.5);
-  d->element->setGraphicsEffect(ef);
-  #endif
-  QGraphicsItemGroup::hoverEnterEvent(e);
+  if (got)
+    p->setBrush(QBrush(QColor(128, 255, 128, 128)));
+  else
+    p->setBrush(QBrush(QColor(255, 128, 128, 128)));
 }
 
-void SceneElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *e) {
-  qDebug() << "Leave" << d->id << isSelected();
-  for (auto p: d->pins)
-    p->setBrush(QBrush(QColor(255, 128, 128, 0)));
-  #if HOVEREFFECT
-  d->element->setGraphicsEffect(0);
-  #endif
-  QGraphicsItemGroup::hoverLeaveEvent(e);
+void SceneElement::hidePin(QString pid) {
+  qDebug() << "Hide pin" << d->id << isSelected();
+  if (!d->pins.contains(pid))
+    return;
+  auto p = d->pins[pid];
+  p->setBrush(QBrush(QColor(255, 128, 128, 0)));
 }
 
 static double L2(QPointF p) {

@@ -15,8 +15,8 @@ public:
 public:
   class Scene *scene();
   int id() const;
-  void showPins();
-  void hidePins();
+  void showPin(QString);
+  void hidePin(QString);
   void showName();
   void hideName();
   void showValue();
@@ -25,8 +25,6 @@ public:
   void hideLabel();
   void rebuild();
 protected:
-  void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
