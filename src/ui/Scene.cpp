@@ -15,6 +15,24 @@ public:
     hoverpin = 0;
     hoverpinenabled = true;
   }
+  bool undo() {
+    if (undobuffer.isEmpty())
+      return false;
+    redobuffer << *circ;
+    *circ = undobuffer.takeLast();
+    return true;
+  }
+  bool redo() {
+    if (redobuffer.isEmpty())
+      return false;
+    undobuffer << *circ;
+    *circ = redobuffer.takeLast();
+    return true;
+  }
+  void preact() {
+    undobuffer << *circ;
+    redobuffer.clear();
+  }
 public:
   PartLibrary const *lib;
   Circuit *circ;
@@ -23,6 +41,8 @@ public:
   QPointF mousexy;
   class HoverPin *hoverpin;
   bool hoverpinenabled;
+  QList<Circuit> undobuffer;
+  QList<Circuit> redobuffer;
 };
 
 Scene::~Scene() {
@@ -119,6 +139,7 @@ void Scene::moveSelection(QPointF delta) {
   
   if (!dd.isNull()) {
     // must actually change circuit
+    d->preact();
     QMap<int, Element> origFrom;
     QMap<int, Element> origTo;
     Circuit origCirc(*d->circ);
@@ -187,6 +208,7 @@ void Scene::keyPressOnElement(class SceneElement *elt, QKeyEvent *e) {
   int id = elt->id();
   switch (e->key()) {
   case Qt::Key_Delete: {
+    d->preact();
     delete d->elts[id];
     d->elts.remove(id);
     d->circ->elements().remove(id);
@@ -207,6 +229,7 @@ void Scene::keyPressOnConnection(class SceneConnection *con, QKeyEvent *e) {
   int id = con->id();
   switch (e->key()) {
   case Qt::Key_Delete: {
+    d->preact();
     delete d->conns[id];
     d->conns.remove(id);
     d->circ->connections().remove(id);
@@ -214,7 +237,20 @@ void Scene::keyPressOnConnection(class SceneConnection *con, QKeyEvent *e) {
   }
 }
 
-void Scene::keyPressAnywhere(QKeyEvent *) {
+void Scene::keyPressAnywhere(QKeyEvent *e) {
+  switch (e->key()) {
+  case Qt::Key_Z:
+    if (e->modifiers() & Qt::ControlModifier) {
+      if (e->modifiers() & Qt::ShiftModifier) {
+	if (d->redo())
+	  rebuild();
+      } else {
+	if (d->undo())
+	  rebuild();
+      }
+    }
+    break;
+  }
 }
 
 int Scene::elementAt(QPointF scenepos) const {
@@ -255,6 +291,8 @@ void Scene::finalizeConnection(int fromPart, QString fromPin,
 			       int toPart, QString toPin) {
   if (toPart == fromPart && toPin != fromPin)
     return; // circular
+
+  d->preact();
   
   Connection c = Router(d->lib).autoroute(d->circ->element(fromPart), fromPin,
 					  d->circ->element(toPart), toPin,
