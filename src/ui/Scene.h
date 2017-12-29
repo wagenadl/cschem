@@ -12,6 +12,7 @@
 class Scene: public QGraphicsScene {
 public:
   Scene(PartLibrary const *lib, QObject *parent=0);
+  ~Scene();
   void setCircuit(Circuit *);
   void rebuild();
   PartLibrary const *library() const;
@@ -40,13 +41,7 @@ private:
   void finalizeConnection(int fromPart, QString fromPin,
 			  int toPart, QString toPin);  
 private:
-  PartLibrary const *lib;
-  Circuit *circ;
-  QMap<int, class SceneElement *> elts;
-  QMap<int, class SceneConnection *> conns;
-  QPointF mousexy;
-  class HoverPin *hoverpin;
-  bool hoverpinenabled;
+  class SceneData *d;
 };
 
 #endif

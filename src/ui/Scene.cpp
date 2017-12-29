@@ -8,145 +8,164 @@
 #include <QGraphicsSceneMouseEvent>
 #include "HoverPin.h"
 
+class SceneData {
+public:
+  SceneData(PartLibrary const *lib): lib(lib) {
+    circ = 0;
+    hoverpin = 0;
+    hoverpinenabled = true;
+  }
+public:
+  PartLibrary const *lib;
+  Circuit *circ;
+  QMap<int, class SceneElement *> elts;
+  QMap<int, class SceneConnection *> conns;
+  QPointF mousexy;
+  class HoverPin *hoverpin;
+  bool hoverpinenabled;
+};
+
+Scene::~Scene() {
+  delete d;
+}
+  
 Scene::Scene(PartLibrary const *lib, QObject *parent):
-  QGraphicsScene(parent),
-  lib(lib) {
-  circ = 0;
-  hoverpin = new HoverPin(this);
-  addItem(hoverpin);
-  hoverpinenabled = true;
+  QGraphicsScene(parent) {
+  d = new SceneData(lib);
+  d->hoverpin = new HoverPin(this);
+  addItem(d->hoverpin);
 }
 
 void Scene::setCircuit(Circuit *c) {
-  for (auto i: elts)
+  for (auto i: d->elts)
     delete i;
-  elts.clear();
-  for (auto i: conns)
+  d->elts.clear();
+  for (auto i: d->conns)
     delete i;
-  conns.clear();
-  circ = c;
+  d->conns.clear();
+  d->circ = c;
   rebuild();
 }
 
 
 void Scene::rebuild() {
   /* We should be able to do better than start afresh in general, but for now: */
-  for (auto i: elts)
+  for (auto i: d->elts)
     delete i;
-  elts.clear();
-  for (auto i: conns)
+  d->elts.clear();
+  for (auto i: d->conns)
     delete i;
-  conns.clear();
+  d->conns.clear();
 
-  if (!circ)
+  if (!d->circ)
     return;
 
-  for (auto const &c: circ->elements()) 
-    elts[c.id()] = new SceneElement(this, c);
+  for (auto const &c: d->circ->elements()) 
+    d->elts[c.id()] = new SceneElement(this, c);
   
-  for (auto const &c: circ->connections())
-    conns[c.id()] = new SceneConnection(this, c);
+  for (auto const &c: d->circ->connections())
+    d->conns[c.id()] = new SceneConnection(this, c);
 }
 
 QPoint Scene::pinPosition(int partid, QString pin) const {
-  if (circ && circ->elements().contains(partid))
-    return Router(lib).pinPosition(circ->element(partid), pin);
+  if (d->circ && d->circ->elements().contains(partid))
+    return Router(d->lib).pinPosition(d->circ->element(partid), pin);
   else 
     return QPoint();
 }
 
 
 PartLibrary const *Scene::library() const {
-  return lib;
+  return d->lib;
 }
 
 Circuit const *Scene::circuit() const {
-  return circ;
+  return d->circ;
 }
 
 Circuit *Scene::circuit() {
-  return circ;
+  return d->circ;
 }
 
 QSet<int> Scene::selectedElements() const {
   QSet<int> selection;
-  for (int id: elts.keys())
-    if (elts[id]->isSelected())
+  for (int id: d->elts.keys())
+    if (d->elts[id]->isSelected())
       selection << id;
   return selection;
 }
 
 void Scene::tentativelyMoveSelection(QPointF delta) {
   QSet<int> selection = selectedElements();
-  QSet<int> internalcons = circ->connectionsIn(selection);
-  QSet<int> fromcons = circ->connectionsFrom(selection) - internalcons;
-  QSet<int> tocons = circ->connectionsTo(selection) - internalcons;
+  QSet<int> internalcons = d->circ->connectionsIn(selection);
+  QSet<int> fromcons = d->circ->connectionsFrom(selection) - internalcons;
+  QSet<int> tocons = d->circ->connectionsTo(selection) - internalcons;
 
   for (int id: internalcons)
-    conns[id]->temporaryTranslate(delta);
+    d->conns[id]->temporaryTranslate(delta);
   for (int id: fromcons)
-    conns[id]->temporaryTranslateFrom(delta);
+    d->conns[id]->temporaryTranslateFrom(delta);
   for (int id: tocons)
-    conns[id]->temporaryTranslateTo(delta);
+    d->conns[id]->temporaryTranslateTo(delta);
 }
 
 void Scene::moveSelection(QPointF delta) {
-  QPoint dd = (delta/lib->scale()).toPoint();
+  QPoint dd = (delta/d->lib->scale()).toPoint();
 
   QSet<int> selection = selectedElements();
-  QSet<int> internalcons = circ->connectionsIn(selection);
-  QSet<int> fromcons = circ->connectionsFrom(selection) - internalcons;
-  QSet<int> tocons = circ->connectionsTo(selection) - internalcons;
+  QSet<int> internalcons = d->circ->connectionsIn(selection);
+  QSet<int> fromcons = d->circ->connectionsFrom(selection) - internalcons;
+  QSet<int> tocons = d->circ->connectionsTo(selection) - internalcons;
   
   if (!dd.isNull()) {
     // must actually change circuit
     QMap<int, Element> origFrom;
     QMap<int, Element> origTo;
-    Circuit origCirc(*circ);
+    Circuit origCirc(*d->circ);
 
     for (int id: fromcons)
-      origFrom[id] = circ->element(circ->connection(id).fromId());
+      origFrom[id] = d->circ->element(d->circ->connection(id).fromId());
     for (int id: tocons)
-      origTo[id] = circ->element(circ->connection(id).toId());
+      origTo[id] = d->circ->element(d->circ->connection(id).toId());
     
     for (int id: selection)
-      circ->element(id).translate(dd);
+      d->circ->element(id).translate(dd);
     for (int id: internalcons)
-      circ->connection(id).translate(dd);
+      d->circ->connection(id).translate(dd);
 
-    Router router(lib);
+    Router router(d->lib);
     for (int id: fromcons) 
-      circ->connection(id) = router.reroute(id, origCirc, *circ);
+      d->circ->connection(id) = router.reroute(id, origCirc, *d->circ);
     for (int id: tocons) 
-      circ->connection(id) = router.reroute(id, origCirc, *circ);
+      d->circ->connection(id) = router.reroute(id, origCirc, *d->circ);
   }
 
   for (int id: selection)
-    elts[id]->rebuild();
+    d->elts[id]->rebuild();
 
   for (int id: internalcons + fromcons + tocons)
-    conns[id]->rebuild();
+    d->conns[id]->rebuild();
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
-  mousexy = e->scenePos();
+  d->mousexy = e->scenePos();
   QGraphicsScene::mousePressEvent(e);
 }
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
-  mousexy = e->scenePos();
+  d->mousexy = e->scenePos();
   updateOverPin(e->scenePos(), -1, e->buttons()!=0);
   QGraphicsScene::mouseMoveEvent(e);
 }
 
 void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
-  mousexy = e->scenePos();
+  d->mousexy = e->scenePos();
   QGraphicsScene::mouseReleaseEvent(e);
 }
 
 void Scene::keyPressEvent(QKeyEvent *e) {
   if (focusItem()==0) {
-    QGraphicsItem *item = itemAt(mousexy, QTransform());
+    QGraphicsItem *item = itemAt(d->mousexy, QTransform());
     while (item && item->parentItem())
       item = item->parentItem();
 
@@ -168,17 +187,17 @@ void Scene::keyPressOnElement(class SceneElement *elt, QKeyEvent *e) {
   int id = elt->id();
   switch (e->key()) {
   case Qt::Key_Delete: {
-    delete elts[id];
-    elts.remove(id);
-    circ->elements().remove(id);
+    delete d->elts[id];
+    d->elts.remove(id);
+    d->circ->elements().remove(id);
     QSet<int> cc;
-    for (auto &c: circ->connections()) 
+    for (auto &c: d->circ->connections()) 
       if (c.fromId()==id || c.toId()==id)
         cc << c.id();
     for (int id: cc) {
-      delete conns[id];
-      conns.remove(id);
-      circ->connections().remove(id);
+      delete d->conns[id];
+      d->conns.remove(id);
+      d->circ->connections().remove(id);
     }
   } break;
   }
@@ -188,9 +207,9 @@ void Scene::keyPressOnConnection(class SceneConnection *con, QKeyEvent *e) {
   int id = con->id();
   switch (e->key()) {
   case Qt::Key_Delete: {
-    delete conns[id];
-    conns.remove(id);
-    circ->connections().remove(id);
+    delete d->conns[id];
+    d->conns.remove(id);
+    d->circ->connections().remove(id);
   } break;
   }
 }
@@ -199,7 +218,7 @@ void Scene::keyPressAnywhere(QKeyEvent *) {
 }
 
 int Scene::elementAt(QPointF scenepos) const {
-  for (auto e: elts)
+  for (auto e: d->elts)
     if (e->boundingRect().contains(e->mapFromScene(scenepos)))
       return e->id();
   return -1;
@@ -210,9 +229,9 @@ static double L2(QPointF p) {
 }
 
 QString Scene::pinAt(QPointF scenepos, int elementId) const {
-  if (!elts.contains(elementId))
+  if (!d->elts.contains(elementId))
     return "";
-  QString sym = circ->element(elementId).symbol();
+  QString sym = d->circ->element(elementId).symbol();
   Part const &part = library()->part(sym);
   double r = library()->scale();
   for (auto p: part.pinNames()) 
@@ -237,37 +256,37 @@ void Scene::finalizeConnection(int fromPart, QString fromPin,
   if (toPart == fromPart && toPin != fromPin)
     return; // circular
   
-  Connection c = Router(lib).autoroute(circ->element(fromPart), fromPin,
-				       circ->element(toPart), toPin,
-				       *circ);
-  circ->connections()[c.id()] = c;  
-  conns[c.id()] = new SceneConnection(this, c);    
+  Connection c = Router(d->lib).autoroute(d->circ->element(fromPart), fromPin,
+					  d->circ->element(toPart), toPin,
+					  *d->circ);
+  d->circ->connections()[c.id()] = c;  
+  d->conns[c.id()] = new SceneConnection(this, c);    
 }
 
 void Scene::updateOverPin(QPointF p, int elt, bool allowJunction) {
-  int elt0 = hoverpin->element();
-  hoverpin->updateHover(p, elt, allowJunction);
-  int elt1 = hoverpin->element();
+  int elt0 = d->hoverpin->element();
+  d->hoverpin->updateHover(p, elt, allowJunction);
+  int elt1 = d->hoverpin->element();
   if (elt0!=elt1) {
-    if (elts.contains(elt0))
-      elts[elt0]->showHover();
-    if (elts.contains(elt1) && hoverpinenabled)
-      elts[elt1]->hideHover();
+    if (d->elts.contains(elt0))
+      d->elts[elt0]->showHover();
+    if (d->elts.contains(elt1) && d->hoverpinenabled)
+      d->elts[elt1]->hideHover();
   }
 }
 
 QMap<int, class SceneElement *> const &Scene::elements() const {
-  return elts;
+  return d->elts;
 }
 
 QMap<int, class SceneConnection *> const &Scene::connections() const {
-  return conns;
+  return d->conns;
 }
 
 void Scene::enablePinHighlighting(bool hl) {
-  hoverpinenabled = hl;
+  d->hoverpinenabled = hl;
   if (hl)
-    hoverpin->show();
+    d->hoverpin->show();
   else
-    hoverpin->hide();
+    d->hoverpin->hide();
 }
