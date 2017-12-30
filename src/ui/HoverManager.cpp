@@ -150,7 +150,11 @@ void HoverManagerData::update() {
     pinpos = scene->pinPosition(elt, pin);
     ensurePinMarker();
     pinMarker->setRect(QRectF(pinpos - QPointF(r, r), 2 * QSizeF(r, r)));
-    pinMarker->setBrush(QColor(0, 255, 128, 255));
+    int N = scene->circuit().connectionsOn(elt, pin).size();
+    if (N==0)
+      pinMarker->setBrush(QColor(255, 64, 0));
+    else
+      pinMarker->setBrush(QColor(0, 255, 128));
     if (hoverCon)
       hoverCon->unhover();
     hoverCon = 0;

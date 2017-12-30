@@ -28,6 +28,7 @@ public:
   QString pinAt(QPointF scenepos, int elementId) const;
   // returns "-" if none
   int connectionAt(QPointF scenepos, int *segmentp=0) const;
+  void modifyConnection(int id, QPolygonF path);
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;

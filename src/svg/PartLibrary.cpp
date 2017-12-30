@@ -176,3 +176,18 @@ QRectF PartLibrary::upscale(QRect r) const {
 double PartLibrary::lineWidth() const {
   return 2.5;
 }
+
+QPolygonF PartLibrary::simplifyPath(QPolygonF pp) const {
+  for (auto &p: pp)
+    p = nearestGrid(p);
+  
+  int n = 1;
+  while (n<pp.size() - 1) {
+    if ((pp[n-1].x()==pp[n].x() && pp[n+1].x()==pp[n].x())
+        || (pp[n-1].y()==pp[n].y() && pp[n+1].y()==pp[n].y()))
+      pp.removeAt(n);
+    else
+      n++;
+  }
+  return pp;
+}

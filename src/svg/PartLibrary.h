@@ -23,6 +23,7 @@ public:
   QRectF upscale(QRect) const;
   QPointF nearestGrid(QPointF) const;
   double lineWidth() const;
+  QPolygonF simplifyPath(QPolygonF) const;
 private:
   void scanParts(XmlElement const &src);
   void getBBoxes(QString fn);

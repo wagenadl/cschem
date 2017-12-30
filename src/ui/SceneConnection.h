@@ -4,9 +4,9 @@
 
 #define SCENECONNECTION_H
 
-#include <QGraphicsItem>
+#include <QGraphicsItemGroup>
 
-class SceneConnection: public QGraphicsItem {
+class SceneConnection: public QGraphicsItemGroup {
 public:
   SceneConnection(class Scene *parent, class Connection const &);
   SceneConnection(SceneConnection const &) = delete;
@@ -23,6 +23,10 @@ public:
   int segmentAt(QPointF) const; // -1 if none
   void hover(int seg);
   void unhover();
+protected:
+  void mousePressEvent(QGraphicsSceneMouseEvent *) override;
+  void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
 public:
   void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;
   QRectF boundingRect() const override;  

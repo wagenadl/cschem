@@ -454,3 +454,18 @@ QMap<int, class SceneElement *> const &Scene::elements() const {
 QMap<int, class SceneConnection *> const &Scene::connections() const {
   return d->conns;
 }
+
+void Scene::modifyConnection(int id, QPolygonF newpath) {
+  qDebug() << newpath << id;
+  if (!connections().contains(id))
+    return;
+  Connection &con(d->circ.connection(id));
+  newpath.removeFirst();
+  newpath.removeLast();
+  QList<QPoint> pp;
+  for (auto p: newpath)
+    pp << d->lib->downscale(p);
+  con.setVia(pp);
+  d->conns[id]->rebuild();
+  qDebug() << "rebuilt";
+}
