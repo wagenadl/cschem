@@ -32,6 +32,7 @@ public:
   QList<QPoint> &via();
   void setVia(QList<QPoint> const &);
   void translate(QPoint delta);
+  void reverse();
 private:
   QSharedDataPointer<class ConnectionData> d;
 };

@@ -154,3 +154,14 @@ void Connection::translate(QPoint delta) {
     p += delta;
 }
       
+void Connection::reverse() {
+  Connection c0 = *this;
+  d.detach();
+  d->via.clear();
+  for (auto p: c0.via())
+    d->via.prepend(p);
+  d->fromId = c0.toId();
+  d->fromPin = c0.toPin();
+  d->toId = c0.fromId();
+  d->toPin = c0.fromPin();
+}

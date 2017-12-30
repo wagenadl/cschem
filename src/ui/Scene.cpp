@@ -16,6 +16,12 @@ public:
     hoverpinEnabled = true;
     connbuilder = 0;
   }
+  QPoint pinPosition(int id, QString pin) const {
+    if (circ.elements().contains(id))
+      return Router(lib).pinPosition(circ.element(id), pin);
+    else 
+      return QPoint();
+  }
   bool undo() {
     if (undobuffer.isEmpty())
       return false;
@@ -34,6 +40,9 @@ public:
     undobuffer << circ;
     redobuffer.clear();
   }
+  void deleteElement(int id);
+  void deleteConnection(int id);
+  void considerDroppingJunction(int id);
 public:
   PartLibrary const *lib;
   Circuit circ;
@@ -46,6 +55,68 @@ public:
   QList<Circuit> redobuffer;
   ConnBuilder *connbuilder;
 };
+
+void SceneData::deleteElement(int id) {
+  QSet<int> cc;
+  for (auto &c: circ.connections()) {
+    if (c.fromId()==id) {
+      c.setFromId(0); // make dangling
+      c.via().prepend(lib->downscale(pinPosition(id, c.fromPin())));
+      cc << c.id();
+    }
+    if (c.toId()==id) {
+      c.setToId(0); // make dangling
+      c.via().append(lib->downscale(pinPosition(id, c.toPin())));
+      cc << c.id();
+    }
+  }
+
+  for (int id: cc) 
+    conns[id]->rebuild();
+  delete elts[id];
+  elts.remove(id);
+  circ.elements().remove(id);
+}  
+
+void SceneData::deleteConnection(int id) {
+  auto con(circ.connection(id)); // grab the connection for testing junctions
+
+  delete conns[id];
+  conns.remove(id);
+  circ.connections().remove(id);
+  
+  int from = con.fromId();
+  if (circ.element(from).type() == Element::Type::Junction)
+    considerDroppingJunction(from);
+
+  int to = con.toId();
+  if (circ.element(to).type() == Element::Type::Junction) 
+    considerDroppingJunction(to);
+}
+
+void SceneData::considerDroppingJunction(int id) {
+  QList<int> cons = circ.connectionsOn(id, "").toList();
+  if (cons.size()==2) {
+    // reconnect what would be dangling
+    auto con1(circ.connection(cons[0]));
+    auto con2(circ.connection(cons[1]));
+    if (con1.fromId() == id)
+      con1.reverse();
+    if (con2.toId() == id)
+      con2.reverse();
+
+    con1.setToId(con2.toId());
+    con1.setToPin(con2.toPin());
+    con1.via() += con2.via();
+    circ.connections().remove(cons[1]);
+    circ.connection(cons[0]) = con1;
+    conns[cons[0]]->rebuild();
+    delete conns[cons[1]];
+    conns.remove(cons[1]);
+  }
+  if (cons.size() <= 2)
+    deleteElement(id);
+}  
 
 Scene::~Scene() {
   delete d;
@@ -87,10 +158,7 @@ void Scene::rebuild() {
 }
 
 QPoint Scene::pinPosition(int partid, QString pin) const {
-  if (d->circ.elements().contains(partid))
-    return Router(d->lib).pinPosition(d->circ.element(partid), pin);
-  else 
-    return QPoint();
+  return d->pinPosition(partid, pin);
 }
 
 
@@ -243,21 +311,10 @@ void Scene::keyPressEvent(QKeyEvent *e) {
 void Scene::keyPressOnElement(class SceneElement *elt, QKeyEvent *e) {
   int id = elt->id();
   switch (e->key()) {
-  case Qt::Key_Delete: {
+  case Qt::Key_Delete:
     d->preact();
-    delete d->elts[id];
-    d->elts.remove(id);
-    d->circ.elements().remove(id);
-    QSet<int> cc;
-    for (auto &c: d->circ.connections()) 
-      if (c.fromId()==id || c.toId()==id)
-        cc << c.id();
-    for (int id: cc) {
-      delete d->conns[id];
-      d->conns.remove(id);
-      d->circ.connections().remove(id);
-    }
-  } break;
+    d->deleteElement(id);
+    break;
   }
 }
 
@@ -266,9 +323,7 @@ void Scene::keyPressOnConnection(class SceneConnection *con, QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_Delete: {
     d->preact();
-    delete d->conns[id];
-    d->conns.remove(id);
-    d->circ.connections().remove(id);
+    d->deleteConnection(id);
   } break;
   }
 }
