@@ -25,6 +25,11 @@ public:
   void ensureEndJunction();
   int ensureJunctionFor(int id, QString pin, QPointF pt);
   QPolygonF simplifiedPoints() const;
+  void fixPenultimate();
+  QGraphicsLineItem *newSegment();
+  bool considerCompletion();
+  void forceCompletion(int elt, QString pin);
+  void forceDanglingCompletion();
 public:
   Scene *scene;
   Circuit circ;
@@ -35,6 +40,51 @@ public:
   QString fromPin, toPin;
   QList<QGraphicsLineItem *> segments;
 };
+
+void ConnBuilderData::fixPenultimate() {
+  QLineF l = segments.last()->line();
+  points << l.p1();
+}
+
+QGraphicsLineItem *ConnBuilderData::newSegment() {
+  QLineF l = segments.last()->line();
+  auto *gli = new QGraphicsLineItem;
+  gli->setPen(defaultPen());
+  gli->setLine(QLineF(l.p2(), l.p2()));
+  segments << gli;
+  return gli;  
+}
+
+bool ConnBuilderData::considerCompletion() {
+  QLineF l = segments.last()->line();
+  int elt = scene->elementAt(l.p2());
+  qDebug() << "at" << elt;
+  if (elt>0) {
+    QString pin = scene->pinAt(l.p2(), elt);
+    qDebug() << "at" << elt << pin;
+    if (pin != "-") {
+      forceCompletion(elt, pin);
+      return true;
+    }
+  }
+  return false;
+}
+
+void ConnBuilderData::forceCompletion(int elt, QString pin) {
+  points << scene->pinPosition(elt, pin);
+  toId = elt;
+  toPin = pin;
+  ensureEndJunction();
+  buildConnection();
+}
+
+void ConnBuilderData::forceDanglingCompletion() {
+  QLineF l = segments.last()->line();
+  points << l.p2();
+  toId = 0;
+  toPin = "";
+  buildConnection();
+}
 
 QPolygonF ConnBuilderData::simplifiedPoints() const {
   QPolygonF pp = points;
@@ -186,7 +236,8 @@ void ConnBuilder::keyPress(QKeyEvent *e) {
     break;
   case Qt::Key_Return:
     qDebug() << "ConnBuilder: complete";
-    d->toId = 0; // end in air
+    if (!d->considerCompletion())
+      d->forceDanglingCompletion();
     break;
   }
 }
@@ -221,28 +272,9 @@ void ConnBuilder::mousePress(QGraphicsSceneMouseEvent *e) {
 
 void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *e) {
   qDebug() << "ConnBuilder: release " << e->scenePos();
-  QLineF l = d->segments.last()->line();
-  d->points << l.p1();
-
-  auto *gli = new QGraphicsLineItem;
-  gli->setPen(defaultPen());
-  gli->setLine(QLineF(l.p2(), l.p2()));
-  d->segments << gli;
-  addToGroup(gli);
-
-  int elt = d->scene->elementAt(l.p2());
-  qDebug() << "at" << elt;
-  if (elt>0) {
-    QString pin = d->scene->pinAt(l.p2(), elt);
-    qDebug() << "at" << elt << pin;
-    if (pin != "-") {
-      d->points << d->scene->pinPosition(elt, pin);
-      d->toId = elt;
-      d->toPin = pin;
-      d->ensureEndJunction();
-      d->buildConnection();
-    }
-  }
+  d->fixPenultimate();
+  addToGroup(d->newSegment());
+  d->considerCompletion();
 }
 
 bool ConnBuilder::isComplete() const {

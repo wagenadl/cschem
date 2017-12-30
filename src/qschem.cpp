@@ -15,5 +15,6 @@ int main(int argc, char **argv) {
   QApplication app(argc, argv);
   Editor editor(&lib, &s);
   editor.show();
+  editor.resize(editor.size()*2);
   return app.exec();
 }
