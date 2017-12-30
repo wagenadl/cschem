@@ -10,15 +10,15 @@
 Router::Router(PartLibrary const *lib): lib(lib) {
 }
 
-QPoint Router::pinPosition(Element const &elt, QString pin) const {
+QPointF Router::pinPosition(Element const &elt, QString pin) const {
   Part const &part = lib->part(elt.symbol());
-  QPoint pos = elt.position();
+  QPointF pos = elt.position();
   return lib->scale() * pos + part.pinPosition(pin) - part.origin();
 }
 
 QRectF Router::elementBBox(Element const &elt) const {
   Part const &part = lib->part(elt.symbol());
-  QPoint pos = elt.position();
+  QPointF pos = elt.position();
   qDebug() << "ebbox" << pos << part.shiftedBBox();
   return part.shiftedBBox().translated(lib->scale() * pos);
 }
@@ -49,10 +49,10 @@ Connection Router::reroute(int conid,
   Element const &origTo = origcirc.elements()[con.toId()];
   Element const &newTo = newcirc.elements()[con.toId()];
 
-  QPoint origStart = pinPosition(origFrom, con.fromPin()) / lib->scale();
-  QPoint origEnd = pinPosition(origTo, con.toPin()) / lib->scale();
-  QPoint newStart = pinPosition(newFrom, con.fromPin()) / lib->scale();
-  QPoint newEnd = pinPosition(newTo, con.toPin()) / lib->scale();
+  QPoint origStart = lib->downscale(pinPosition(origFrom, con.fromPin()));
+  QPoint origEnd = lib->downscale(pinPosition(origTo, con.toPin()));
+  QPoint newStart = lib->downscale(pinPosition(newFrom, con.fromPin()));
+  QPoint newEnd = lib->downscale(pinPosition(newTo, con.toPin()));
 
   QList<QPoint> via = con.via();
 
@@ -93,8 +93,8 @@ Connection Router::reroute(int conid,
 }
 
 QPoint Router::awayFromCM(Part const &part, QString pin) const {
-  QRect bb = part.shiftedBBox();
-  QPoint delta(part.pinPosition(pin) - part.origin() - bb.center());
+  QRectF bb = part.shiftedBBox();
+  QPointF delta(part.pinPosition(pin) - part.origin() - bb.center());
   qDebug() << "cmdif" << part.name() << pin << delta;
   if (abs(delta.x()) > abs(delta.y()))
     return QPoint(delta.x() > 0 ? 1 : -1, 0);
@@ -105,11 +105,11 @@ QPoint Router::awayFromCM(Part const &part, QString pin) const {
 int Router::isSIP(Part const &part) const {
   bool samex = true;
   bool samey = true;
-  QPoint o = part.origin();
+  QPointF o = part.origin();
   int x = o.x();
   int y = o.y();
   for (auto pin: part.pinNames()) {
-    QPoint p = part.pinPosition(pin);
+    QPointF p = part.pinPosition(pin);
     if (p.x() != x)
       samex = false;
     if (p.y() != y)
@@ -131,7 +131,7 @@ QString Router::nearestNeighbor(Part const &part, QString pin) const {
   QStringList pins = part.pinNames();
   QString nearest;
   double dd = 1e9;
-  QPoint p0 = part.pinPosition(pin);
+  QPointF p0 = part.pinPosition(pin);
   for (auto p: pins) {
     if (p!=pin) {
       double delta = L2(part.pinPosition(p) - p0);
@@ -170,8 +170,8 @@ QPoint Router::preferredDirection(class Element const &elt, QString pin) const {
     case 2: // vertically oriented SIP
       return QPoint(0, part.origin().y() > part.bbox().center().y() ? 1 : -1);
     default: {
-      QPoint deltaCM = part.pinPosition(pin) - part.bbox().center();
-      QPoint deltaNearest = part.pinPosition(pin)
+      QPointF deltaCM = part.pinPosition(pin) - part.bbox().center();
+      QPointF deltaNearest = part.pinPosition(pin)
 	- part.pinPosition(nearestNeighbor(part, pin));
       if (abs(deltaNearest.x()) > abs(deltaNearest.y()))
 	// pins are likely arranged in horizontal lines
@@ -197,8 +197,8 @@ Connection Router::autoroute(class Element const &from, QString fromPin,
   // should take case where to is a junction separately
   // (right now, "from" cannot be a junction)
   
-  QPoint fromP = pinPosition(from, fromPin) / lib->scale();
-  QPoint toP = pinPosition(to, toPin) / lib->scale();
+  QPoint fromP = lib->downscale(pinPosition(from, fromPin));
+  QPoint toP = lib->downscale(pinPosition(to, toPin));
   QPoint midP = (fromP + toP) / 2;
   QList<QPoint> via;
 

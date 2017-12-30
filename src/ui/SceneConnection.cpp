@@ -13,6 +13,8 @@ class SCSegment: public QGraphicsLineItem {
 public:
   SCSegment(QGraphicsItem *parent=0): QGraphicsLineItem(parent) {
     setAcceptHoverEvents(true);
+    // setFlag(ItemIsMovable);
+    setCacheMode(DeviceCoordinateCache);
   }
   void hoverEnterEvent(QGraphicsSceneHoverEvent *e) override {
     auto *ef = new QGraphicsColorizeEffect;
@@ -25,6 +27,19 @@ public:
     setGraphicsEffect(0);    
     qDebug() << "Segment hover leave" << line();
     QGraphicsLineItem::hoverLeaveEvent(e);
+  }
+  void mousePressEvent(QGraphicsSceneMouseEvent *e) override {
+    scene()->clearSelection();
+    qDebug() << "SCSegment mouse press" << e->scenePos() << e->pos();
+    QGraphicsLineItem::mousePressEvent(e);
+  }
+  void mouseMoveEvent(QGraphicsSceneMouseEvent *e) override {
+    qDebug() << "SCSegment mouse move" << e->scenePos() << e->pos();
+    QGraphicsLineItem::mouseMoveEvent(e);
+  }
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *e) override {
+    qDebug() << "SCSegment mouse release" << e->scenePos() << e->pos();
+    QGraphicsLineItem::mouseReleaseEvent(e);
   }
 };  
 
@@ -79,7 +94,6 @@ SceneConnection::SceneConnection(class Scene *parent, Connection const &c) {
 
   rebuild();
   parent->addItem(this);
-  setAcceptHoverEvents(true);
 }
 
 void SceneConnection::setPath(QPolygonF const &path) {
@@ -90,9 +104,7 @@ void SceneConnection::setPath(QPolygonF const &path) {
 
   for (int k=1; k<path.size(); k++) {
     if (k-1 >= d->segments.size()) {
-      d->segments << new SCSegment;
-      d->scene->addItem(d->segments.last());
-      addToGroup(d->segments.last());
+      d->segments << new SCSegment(this);
     }
     auto *seg = d->segments[k-1];
     seg->setLine(QLineF(path[k-1], path[k]));
@@ -158,27 +170,10 @@ int SceneConnection::id() const {
   return d->id;
 }
 
-void SceneConnection::hoverEnterEvent(QGraphicsSceneHoverEvent *e) {
-  qDebug() << "Connection hover enter" << id();
-  // For some reason, children don't receive hover events. So I'm doing
-  // it myself. This implementation is imperfect: mouseMoveEvents should
-  // be traced too.
-  for (auto *seg: d->segments) {
-    if (seg->contains(seg->mapFromParent(e->pos()))) {
-      seg->hoverEnterEvent(e);
-      d->hoverseg = seg;
-      break;
-    }
-  }
-  QGraphicsItemGroup::hoverEnterEvent(e);
+void SceneConnection::paint(QPainter *, QStyleOptionGraphicsItem const *,
+                            QWidget *) {
 }
 
-void SceneConnection::hoverLeaveEvent(QGraphicsSceneHoverEvent *e) {
-  qDebug() << "Connection hover leave" << id();
-  if (d->segments.contains(d->hoverseg)) {
-    d->hoverseg->hoverLeaveEvent(e);
-    d->hoverseg = 0;
-  }
-  QGraphicsItemGroup::hoverLeaveEvent(e);
+QRectF SceneConnection::boundingRect() const {
+  return QRectF();
 }
-

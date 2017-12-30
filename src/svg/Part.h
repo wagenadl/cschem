@@ -5,7 +5,7 @@
 #define PART_H
 
 #include "XmlElement.h"
-#include <QRect>
+#include <QRectF>
 #include <QSharedDataPointer>
 
 class Part {
@@ -17,13 +17,16 @@ public:
   Part &operator=(Part const &);
   XmlElement const &element() const;
   QString name() const;
-  QPoint pinPosition(QString pinname) const; // relative to bbox
+  QPointF pinPosition(QString pinname) const; // relative to bbox
   QStringList pinNames() const; // sorted
-  QPoint origin() const; // position of first pin relative to bbox
+  QPointF origin() const; // position of first pin relative to bbox
   bool isValid() const;
-  void setBBox(QRect);
-  QRect bbox() const; // in original svg
-  QRect shiftedBBox() const; // bbox as if first pin were at (0,0)
+  void setBBox(QRectF);
+  QRectF bbox() const; // in original svg
+  QRectF shiftedBBox() const; // bbox as if first pin were at (0,0)
+  QString contentsSvgId() const;
+  QString pinSvgId(QString pinname) const;
+  void setAbsPinPosition(QString pinname, QPointF pos);
 private:
   void scanPins(XmlElement const &elt);
 private:

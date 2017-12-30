@@ -12,7 +12,7 @@ public:
   Router(class PartLibrary const *lib);
   Connection reroute(int conid, class Circuit const &origcirc,
                      class Circuit const &newcirc) const;
-  QPoint pinPosition(class Element const &elt, QString pin) const;
+  QPointF pinPosition(class Element const &elt, QString pin) const;
   QPoint preferredDirection(class Element const &elt, QString pin) const;
   Connection autoroute(class Element const &from, QString fromPin,
 		       class Element const &to, QString toPin,

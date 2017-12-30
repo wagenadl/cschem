@@ -8,9 +8,11 @@ public:
 public:
   XmlElement elt;
   QString name;
-  QMap<QString, QPoint> pins;
+  QMap<QString, QPointF> pins;
   bool valid;
-  QRect bbox;
+  QRectF bbox;
+  QString groupId;
+  QMap<QString, QString> pinIds;
 };
 
 Part::Part() {
@@ -20,7 +22,10 @@ Part::Part() {
 Part::Part(XmlElement const &elt): Part() {
   d->elt = elt;
   d->name = elt.attributes().value("inkscape:label").toString();
-  scanPins(elt);
+  for (auto &e: elt.children()) 
+    if (e.type()==XmlNode::Type::Element)
+      scanPins(e.element());
+
   d->valid = true;
 }
 
@@ -43,12 +48,12 @@ void Part::scanPins(XmlElement const &elt) {
       QString name = label.mid(4);
       QString x = elt.attributes().value("cx").toString();
       QString y = elt.attributes().value("cy").toString();
-      d->pins[name] = QPoint(x.toInt(), y.toInt());
+      d->pins[name] = QPointF(x.toInt(), y.toInt());
+      d->pinIds[name] = elt.attributes().value("id").toString();
     }
+  } else if (elt.qualifiedName()=="g") {
+    d->groupId = elt.attributes().value("id").toString();
   }
-  for (auto &e: elt.children()) 
-    if (e.type()==XmlNode::Type::Element)
-      scanPins(e.element());
 }
 
 QStringList Part::pinNames() const {
@@ -56,25 +61,41 @@ QStringList Part::pinNames() const {
   return lst;
 }
 
-QPoint Part::origin() const {
-  QStringList l = d->pins.keys();
-  return l.isEmpty() ? QPoint() : pinPosition(l.first());
+QString Part::pinSvgId(QString pinname) const {
+  if (d->pinIds.contains(pinname))
+    return d->pinIds[pinname];
+  else
+    return "";
 }
 
-QRect Part::shiftedBBox() const {
+QString Part::contentsSvgId() const {
+  return d->groupId;
+}
+
+QPointF Part::origin() const {
+  QStringList l = d->pins.keys();
+  return l.isEmpty() ? QPointF() : pinPosition(l.first());
+}
+
+QRectF Part::shiftedBBox() const {
   QStringList l = d->pins.keys();
   return d->bbox.translated(l.isEmpty() ? -d->bbox.topLeft()
 			    : - d->pins[l.first()]);
 }
 
-QPoint Part::pinPosition(QString pinname) const {
+QPointF Part::pinPosition(QString pinname) const {
   if (d->pins.contains(pinname))
     return d->pins[pinname] - d->bbox.topLeft();
   else
-    return QPoint();
+    return QPointF();
 }
 
-void Part::setBBox(QRect b) {
+void Part::setAbsPinPosition(QString pinname, QPointF pos) {
+  if (d->pins.contains(pinname))
+    d->pins[pinname] = pos;
+}
+
+void Part::setBBox(QRectF b) {
   d->bbox = b;
 }
 
@@ -90,6 +111,6 @@ bool Part::isValid() const {
   return d->valid;
 }
 
-QRect Part::bbox() const {
+QRectF Part::bbox() const {
   return d->bbox;
 }

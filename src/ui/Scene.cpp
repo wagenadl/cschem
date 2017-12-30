@@ -16,7 +16,7 @@ public:
     hoverpinEnabled = true;
     connbuilder = 0;
   }
-  QPoint pinPosition(int id, QString pin) const {
+  QPointF pinPosition(int id, QString pin) const {
     if (circ.elements().contains(id))
       return Router(lib).pinPosition(circ.element(id), pin);
     else 
@@ -157,7 +157,7 @@ void Scene::rebuild() {
     d->conns[c.id()] = new SceneConnection(this, c);
 }
 
-QPoint Scene::pinPosition(int partid, QString pin) const {
+QPointF Scene::pinPosition(int partid, QString pin) const {
   return d->pinPosition(partid, pin);
 }
 

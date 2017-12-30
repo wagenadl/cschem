@@ -61,9 +61,18 @@ void PartLibrary::scanParts(XmlElement const &src) {
 void PartLibrary::getBBoxes(QString fn) {
   QSvgRenderer svg(fn);
   for (auto &p: partslist_) {
-    QString id = p.element().attributes().value("id").toString();
-    p.setBBox(svg.boundsOnElement(id).toAlignedRect().adjusted(-2,-2,2,2));
+    QString id = p.contentsSvgId();
+    if (id=="")
+      id = p.element().attributes().value("id").toString();
+    p.setBBox(svg.boundsOnElement(id).toAlignedRect().adjusted(-2, -2, 2, 2));
     qDebug() << "bbox on " << p.name() << id << p.bbox();
+    for (QString pin: p.pinNames()) {
+      QString id = p.pinSvgId(pin);
+      if (id!="") {
+        auto c = svg.boundsOnElement(id).center();
+        p.setAbsPinPosition(pin, c);
+      }
+    }
   }
 }
 

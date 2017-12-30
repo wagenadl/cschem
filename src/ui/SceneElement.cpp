@@ -59,7 +59,7 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
   if (!part.isValid())
     qDebug() << "Cannot find svg for symbol" << sym;
   double s = lib->scale();
-  QPoint o = part.origin();
+  QPointF o = part.origin();
 
   QSvgRenderer *r = lib->renderer(sym);
 
@@ -89,9 +89,9 @@ SceneElement::~SceneElement() {
   delete d;
 }
 
-static double L2(QPointF p) {
-  return p.x()*p.x() + p.y()*p.y();
-}
+// static double L2(QPointF p) {
+//   return p.x()*p.x() + p.y()*p.y();
+// }
 
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
