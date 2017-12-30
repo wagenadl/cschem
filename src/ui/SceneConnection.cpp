@@ -35,7 +35,9 @@ public:
     id = 0;
     hoverseg = 0;
   }
-  QPolygonF path();
+  QPolygonF path() const;
+  bool danglingStart() const;
+  bool danglingEnd() const;
 public:
   Scene *scene;
   QList<SCSegment *> segments;
@@ -43,7 +45,17 @@ public:
   SCSegment *hoverseg;
 };
 
-QPolygonF SceneConnectionData::path() {
+bool SceneConnectionData::danglingStart() const {
+  Connection const &c = scene->circuit().connections()[id];
+  return c.fromId() <= 0;
+}
+
+bool SceneConnectionData::danglingEnd() const {
+  Connection const &c = scene->circuit().connections()[id];
+  return c.toId() <= 0;
+}
+
+QPolygonF SceneConnectionData::path() const {
   Connection const &c = scene->circuit().connections()[id];
   PartLibrary const *lib = scene->library();
   
@@ -92,6 +104,14 @@ void SceneConnection::setPath(QPolygonF const &path) {
 void SceneConnection::rebuild() {
   setPath(d->path());
   setLineWidth();
+  if (d->danglingStart())
+    d->segments.first()->hide();
+  else
+    d->segments.first()->show();
+  if (d->danglingEnd())
+    d->segments.last()->hide();
+  else
+    d->segments.last()->show();
 }
 
 void SceneConnection::temporaryTranslate(QPointF delta) {

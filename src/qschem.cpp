@@ -6,19 +6,14 @@
 #include <QApplication>
 #include <QGraphicsView>
 #include "ui/Scene.h"
+#include "ui/Editor.h"
 
 int main(int argc, char **argv) {
   PartLibrary lib(":parts.svg");
   Schem s(FileIO::loadSchematic("../doc/example.xml"));
   FileIO::saveSchematic("/tmp/eg.xml", s);
   QApplication app(argc, argv);
-  QGraphicsView view;
-  view.setInteractive(true);
-  view.setDragMode(QGraphicsView::RubberBandDrag);
-  Scene scene(&lib);
-  scene.setCircuit(s.circuit());
-  view.setScene(&scene);
-  view.scale(4, 4);
-  view.show();
+  Editor editor(&lib, &s);
+  editor.show();
   return app.exec();
 }

@@ -7,12 +7,14 @@
 #include "svg/Router.h"
 #include <QGraphicsSceneMouseEvent>
 #include "HoverPin.h"
+#include "ConnBuilder.h"
 
 class SceneData {
 public:
   SceneData(PartLibrary const *lib): lib(lib) {
     hoverpin = 0;
-    hoverpinenabled = true;
+    hoverpinEnabled = true;
+    connbuilder = 0;
   }
   bool undo() {
     if (undobuffer.isEmpty())
@@ -39,9 +41,10 @@ public:
   QMap<int, class SceneConnection *> conns;
   QPointF mousexy;
   class HoverPin *hoverpin;
-  bool hoverpinenabled;
+  bool hoverpinEnabled;
   QList<Circuit> undobuffer;
   QList<Circuit> redobuffer;
+  ConnBuilder *connbuilder;
 };
 
 Scene::~Scene() {
@@ -166,21 +169,58 @@ void Scene::moveSelection(QPointF delta) {
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->mousexy = e->scenePos();
-  QGraphicsScene::mousePressEvent(e);
+  updateOverPin(e->scenePos(), -1, (e->modifiers() & Qt::ShiftModifier)
+                || d->connbuilder);
+  if (d->connbuilder) {
+    qDebug() << "Scene::mousePress";
+    d->connbuilder->mousePress(e);
+    update();
+  } else {
+    if (d->hoverpin->element()>0) {
+      d->connbuilder = new ConnBuilder(this);
+      addItem(d->connbuilder);
+      d->connbuilder->start(e->scenePos(),
+                            d->hoverpin->element(), d->hoverpin->pinName());
+    } else {
+      QGraphicsScene::mousePressEvent(e);
+    }
+  }
 }
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   d->mousexy = e->scenePos();
-  updateOverPin(e->scenePos(), -1, e->buttons()!=0);
-  QGraphicsScene::mouseMoveEvent(e);
+  updateOverPin(e->scenePos(), -1, e->buttons() != 0
+                || (e->modifiers() & Qt::ShiftModifier)
+                || d->connbuilder);
+  if (d->connbuilder) {
+    d->connbuilder->mouseMove(e);
+    update();
+  } else {
+    QGraphicsScene::mouseMoveEvent(e);
+  }
 }
 
 void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   d->mousexy = e->scenePos();
-  QGraphicsScene::mouseReleaseEvent(e);
+  if (d->connbuilder) {
+    d->connbuilder->mouseRelease(e);
+    update();
+    if (d->connbuilder->isComplete())
+      finalizeConnection();
+  } else {
+    QGraphicsScene::mouseReleaseEvent(e);
+    updateOverPin(e->scenePos(), -1, e->modifiers() & Qt::ShiftModifier);
+  }
 }
 
 void Scene::keyPressEvent(QKeyEvent *e) {
+  if (d->connbuilder) {
+    d->connbuilder->keyPress(e);
+    if (d->connbuilder->isComplete())
+      finalizeConnection();
+    return;
+  }
+  
   if (focusItem()==0) {
     QGraphicsItem *item = itemAt(d->mousexy, QTransform());
     while (item && item->parentItem())
@@ -262,39 +302,35 @@ static double L2(QPointF p) {
 
 QString Scene::pinAt(QPointF scenepos, int elementId) const {
   if (!d->elts.contains(elementId))
-    return "";
+    return "-";
   QString sym = d->circ.element(elementId).symbol();
   Part const &part = library()->part(sym);
   double r = library()->scale();
-  for (auto p: part.pinNames()) 
-    if (L2(scenepos - pinPosition(elementId, p)) < r*r)
+  for (auto p: part.pinNames())
+    if (L2(scenepos - pinPosition(elementId, p)) <= 1.1*r*r)
       return p;
   return "-";
 }
   
-void Scene::addConnection(int fromPart, QString fromPin, QPointF to) {
-  int toPart = elementAt(to);
-  QString toPin = pinAt(to, toPart);
 
-  if (toPart>0 && toPin!="-") {
-    finalizeConnection(fromPart, fromPin, toPart, toPin);
-  } else {
-    // keep going
+void Scene::finalizeConnection() {
+  if (!d->connbuilder->isAbandoned()) {
+    d->preact();
+    for (auto c: d->connbuilder->junctions()) {
+      d->circ.elements()[c.id()] = c;  
+      if (d->elts.contains(c.id()))
+        delete d->elts[c.id()];
+      d->elts[c.id()] = new SceneElement(this, c);
+    }
+    for (auto c: d->connbuilder->connections()) {
+      d->circ.connections()[c.id()] = c;  
+      if (d->conns.contains(c.id()))
+        delete d->conns[c.id()];
+      d->conns[c.id()] = new SceneConnection(this, c);
+    }
   }
-}
-
-void Scene::finalizeConnection(int fromPart, QString fromPin,
-			       int toPart, QString toPin) {
-  if (toPart == fromPart && toPin != fromPin)
-    return; // circular
-
-  d->preact();
-  
-  Connection c = Router(d->lib).autoroute(d->circ.element(fromPart), fromPin,
-					  d->circ.element(toPart), toPin,
-					  d->circ);
-  d->circ.connections()[c.id()] = c;  
-  d->conns[c.id()] = new SceneConnection(this, c);    
+  delete d->connbuilder;
+  d->connbuilder = 0;
 }
 
 void Scene::updateOverPin(QPointF p, int elt, bool allowJunction) {
@@ -304,7 +340,7 @@ void Scene::updateOverPin(QPointF p, int elt, bool allowJunction) {
   if (elt0!=elt1) {
     if (d->elts.contains(elt0))
       d->elts[elt0]->showHover();
-    if (d->elts.contains(elt1) && d->hoverpinenabled)
+    if (d->elts.contains(elt1) && d->hoverpinEnabled)
       d->elts[elt1]->hideHover();
   }
 }
@@ -318,7 +354,7 @@ QMap<int, class SceneConnection *> const &Scene::connections() const {
 }
 
 void Scene::enablePinHighlighting(bool hl) {
-  d->hoverpinenabled = hl;
+  d->hoverpinEnabled = hl;
   if (hl)
     d->hoverpin->show();
   else

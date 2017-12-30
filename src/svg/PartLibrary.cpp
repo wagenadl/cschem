@@ -144,6 +144,26 @@ int PartLibrary::scale() const {
   return 7; // infer this from part drawings?
 }
 
+QPoint PartLibrary::downscale(QPointF p) const {
+  return (p/scale()).toPoint();
+}
+
+QPointF PartLibrary::upscale(QPoint p) const {
+  return QPointF(p*scale());
+}
+
+QPointF PartLibrary::nearestGrid(QPointF p) const {
+  return upscale(downscale(p));
+}
+
+QRect PartLibrary::downscale(QRectF r) const {
+  return QRect(downscale(r.topLeft()), downscale(r.bottomRight()));
+}
+
+QRectF PartLibrary::upscale(QRect r) const {
+  return QRectF(upscale(r.topLeft()), upscale(r.bottomRight()));
+}
+
 double PartLibrary::lineWidth() const {
   return 2.5;
 }

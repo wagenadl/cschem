@@ -110,6 +110,15 @@ void Circuit::remove(int id) {
   }
 }
 
+QSet<int> Circuit::connectionsOn(int id, QString pin) const {
+  QSet<int> cids;
+  for (auto const &c: d->connections) 
+    if ((c.fromId()==id && c.fromPin()==pin)
+        || (c.toId()==id && c.toPin()==pin))
+      cids << c.id();
+  return cids;
+}
+
 QSet<int> Circuit::connectionsTo(QSet<int> ids) const {
   QSet<int> cids;
   for (auto const &c: d->connections) 

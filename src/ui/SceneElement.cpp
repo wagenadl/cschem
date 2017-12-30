@@ -20,14 +20,12 @@ public:
     value = 0;
     label = 0;
     dragmoved = false;
-    onpin = false;
-    dragline = 0;
     hovering = false;
     showhover = true;
   }
 public:
   void markHover() {
-    if (hovering && showhover && !dragline) {
+    if (hovering && showhover) {
       auto *ef = new QGraphicsColorizeEffect;
       ef->setColor(QColor(0, 128, 255));
       element->setGraphicsEffect(ef);
@@ -43,10 +41,7 @@ public:
   QGraphicsTextItem *value;
   QGraphicsTextItem *label;
 public:
-  bool onpin;
-  QString onpinId;
   bool dragmoved;
-  QGraphicsLineItem *dragline;
   bool hovering;
   bool showhover;
 };
@@ -100,86 +95,36 @@ static double L2(QPointF p) {
 
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
-  d->onpin = false;
   qDebug() << "Mouse press" << e->pos() << pos();
-  QPointF pinpos;
-  auto const &elem = d->scene->circuit().element(d->id);
-  auto const &part = d->scene->library()->part(elem.symbol());
-  
-  if (elem.type() != Element::Type::Junction) {
-    double s = d->scene->library()->scale();
-    for (QString pid: part.pinNames()) {
-      pinpos = mapFromScene(d->scene->pinPosition(d->id, pid));
-      qDebug() << pid << "?" << pinpos << e->pos() << s;
-      if (L2(pinpos - e->pos()) <= s*s) {
-        d->onpin = true;
-        d->onpinId = pid;
-        qDebug() << "  on pin" << pid;
-        break;
-      }
-    }
-  }
-  
-  if (d->onpin) {
-    if (d->dragline)
-      qDebug() << "Previous dragline exists";
-    d->dragline = new QGraphicsLineItem(QLineF(pinpos, e->pos()), this);
-    qDebug() << d->dragline->line();
-    addToGroup(d->dragline);
-    d->markHover();
-  } else {
-    d->scene->enablePinHighlighting(false);
-    QGraphicsItemGroup::mousePressEvent(e);
-  }
+  d->scene->enablePinHighlighting(false);
+  QGraphicsItemGroup::mousePressEvent(e);
 }
 
 void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
-  if (d->onpin) {
-    qDebug() << "Mouse move on pin";
-    if (d->dragline) {
-      QLineF l = d->dragline->line();
-      d->dragline->setLine(QLineF(l.p1(), e->pos()));
-    } else {
-      qDebug() << "no drag line??";
-    }
-  } else {
-    QPointF newpos = pos();
-    QPointF oldpos = d->scene->library()->scale()
-      * d->scene->circuit().elements()[d->id].position();
-    qDebug() << "Mouse move" << newpos << oldpos;
-    QGraphicsItemGroup::mouseMoveEvent(e);
-    
-    if (d->dragmoved || newpos != oldpos) {
-      qDebug() << "Position changed";
-      d->scene->tentativelyMoveSelection(newpos - oldpos);
-      d->dragmoved = true;
-    }
+  QPointF newpos = pos();
+  QPointF oldpos = d->scene->library()->scale()
+    * d->scene->circuit().elements()[d->id].position();
+  qDebug() << "Mouse move" << newpos << oldpos;
+  QGraphicsItemGroup::mouseMoveEvent(e);
+  
+  if (d->dragmoved || newpos != oldpos) {
+    qDebug() << "Position changed";
+    d->scene->tentativelyMoveSelection(newpos - oldpos);
+    d->dragmoved = true;
   }
 }
 
 void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
-  if (d->onpin) {
-    qDebug() << "Mouse release on pin";
-    if (d->dragline) {
-      delete d->dragline;
-      d->dragline = 0;
-      d->markHover();
-      d->scene->addConnection(d->id, d->onpinId, e->scenePos());
-    } else {
-      qDebug() << "No drag line??";
-    }
-  } else {
-    d->scene->enablePinHighlighting(true);
-    auto const &lib = d->scene->library();
-    auto const &circ = d->scene->circuit();
-    QPointF newpos = pos();
-    QPointF oldpos = lib->scale() * circ.elements()[d->id].position();
-    qDebug() << "Mouse release" << newpos << oldpos;
-    QGraphicsItemGroup::mouseReleaseEvent(e);
-    if (d->dragmoved || newpos != oldpos) {
-      qDebug() << "Position changed";
-      d->scene->moveSelection(newpos - oldpos);
-    }
+  d->scene->enablePinHighlighting(true);
+  auto const &lib = d->scene->library();
+  auto const &circ = d->scene->circuit();
+  QPointF newpos = pos();
+  QPointF oldpos = lib->scale() * circ.elements()[d->id].position();
+  qDebug() << "Mouse release" << newpos << oldpos;
+  QGraphicsItemGroup::mouseReleaseEvent(e);
+  if (d->dragmoved || newpos != oldpos) {
+    qDebug() << "Position changed";
+    d->scene->moveSelection(newpos - oldpos);
   }
 }
 

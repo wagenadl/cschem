@@ -17,6 +17,11 @@ public:
   QByteArray partSvg(QString name) const;
   class QSvgRenderer *renderer(QString name) const;
   int scale() const;
+  QPoint downscale(QPointF) const;
+  QPointF upscale(QPoint) const;
+  QRect downscale(QRectF) const;
+  QRectF upscale(QRect) const;
+  QPointF nearestGrid(QPointF) const;
   double lineWidth() const;
 private:
   void scanParts(XmlElement const &src);

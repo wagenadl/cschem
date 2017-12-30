@@ -10,18 +10,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += debug
 
 # Input
-HEADERS += svg/Part.h svg/PartLibrary.h svg/XmlElement.h svg/XmlNode.h
+HEADERS += svg/Part.h   svg/PartLibrary.h   svg/XmlElement.h   svg/XmlNode.h
 SOURCES += svg/Part.cpp svg/PartLibrary.cpp svg/XmlElement.cpp svg/XmlNode.cpp
-HEADERS += file/Element.h file/Circuit.h
+HEADERS += file/Element.h   file/Circuit.h
 SOURCES += file/Element.cpp file/Circuit.cpp
-HEADERS += file/IDFactory.h file/Connection.h file/Parts.h
+HEADERS += file/IDFactory.h   file/Connection.h   file/Parts.h
 SOURCES += file/IDFactory.cpp file/Connection.cpp file/Parts.cpp
-HEADERS += file/Container.h file/Package.h file/Schem.h file/FileIO.h
+HEADERS += file/Container.h   file/Package.h   file/Schem.h   file/FileIO.h
 SOURCES += file/Container.cpp file/Package.cpp file/Schem.cpp file/FileIO.cpp
-HEADERS += ui/Scene.h ui/SceneElement.h ui/SceneConnection.h
+HEADERS += ui/Scene.h   ui/SceneElement.h   ui/SceneConnection.h
 SOURCES += ui/Scene.cpp ui/SceneElement.cpp ui/SceneConnection.cpp
-HEADERS += ui/HoverPin.h
-SOURCES += ui/HoverPin.cpp
+HEADERS += ui/HoverPin.h   ui/ConnBuilder.h   ui/Editor.h
+SOURCES += ui/HoverPin.cpp ui/ConnBuilder.cpp ui/Editor.cpp
 HEADERS += svg/Router.h
 SOURCES += svg/Router.cpp
 SOURCES += qschem.cpp	

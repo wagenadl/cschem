@@ -16,8 +16,8 @@ public:
   ~Connection();
 public:
   int id() const;
-  int fromId() const;
-  int toId() const;
+  int fromId() const; // zero if dangling
+  int toId() const; // zero if dangling
   QString fromPin() const;
   QString toPin() const;
   QList<QPoint> const &via() const;

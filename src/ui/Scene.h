@@ -22,13 +22,13 @@ public:
   void moveSelection(QPointF delta);
   void tentativelyMoveSelection(QPointF delta);
   QSet<int> selectedElements() const;
-  void addConnection(int fromPart, QString fromPin, QPointF to);
   void updateOverPin(QPointF scenepos, int elt=-1, bool allowJunction=false);
   QMap<int, class SceneElement *> const &elements() const;
   QMap<int, class SceneConnection *> const &connections() const;
   void enablePinHighlighting(bool hl=true);
   int elementAt(QPointF scenepos) const;
   QString pinAt(QPointF scenepos, int elementId) const;
+  // returns "-" if none
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
@@ -38,8 +38,7 @@ private:
   void keyPressOnElement(class SceneElement *, QKeyEvent *);
   void keyPressOnConnection(class SceneConnection *, QKeyEvent *);
   void keyPressAnywhere(QKeyEvent *);
-  void finalizeConnection(int fromPart, QString fromPin,
-			  int toPart, QString toPin);  
+  void finalizeConnection();
 private:
   class SceneData *d;
 };
