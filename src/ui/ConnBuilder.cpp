@@ -87,16 +87,7 @@ void ConnBuilderData::forceDanglingCompletion() {
 }
 
 QPolygonF ConnBuilderData::simplifiedPoints() const {
-  QPolygonF pp = points;
-  int n = 1;
-  while (n<pp.size() - 1) {
-    if ((pp[n-1].x()==pp[n].x() && pp[n+1].x()==pp[n].x())
-        || (pp[n-1].y()==pp[n].y() && pp[n+1].y()==pp[n].y()))
-      pp.removeAt(n);
-    else
-      n++;
-  }
-  return pp;
+  return scene->library()->simplifyPath(points);
 }
 
 void ConnBuilderData::buildConnection() {
