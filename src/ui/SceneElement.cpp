@@ -20,14 +20,13 @@ public:
     value = 0;
     label = 0;
     dragmoved = false;
-    hovering = false;
-    showhover = true;
+    hover = false;
   }
 public:
   void markHover() {
-    if (hovering && showhover) {
+    if (hover) {
       auto *ef = new QGraphicsColorizeEffect;
-      ef->setColor(QColor(0, 128, 255));
+      ef->setColor(QColor(64, 192, 255));
       element->setGraphicsEffect(ef);
     } else {
       element->setGraphicsEffect(0);    
@@ -42,8 +41,7 @@ public:
   QGraphicsTextItem *label;
 public:
   bool dragmoved;
-  bool hovering;
-  bool showhover;
+  bool hover;
 };
 
 SceneElement::SceneElement(class Scene *parent, Element const &elt) {
@@ -79,7 +77,6 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
   else
     setZValue(10);
   
-  setAcceptHoverEvents(true);
   setFlag(ItemIsMovable);
   setFlag(ItemIsSelectable);
   setCacheMode(DeviceCoordinateCache);
@@ -96,7 +93,6 @@ SceneElement::~SceneElement() {
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
   qDebug() << "Mouse press" << e->pos() << pos();
-  d->scene->enablePinHighlighting(false);
   QGraphicsItemGroup::mousePressEvent(e);
 }
 
@@ -115,7 +111,6 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
-  d->scene->enablePinHighlighting(true);
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
   QPointF newpos = pos();
@@ -142,25 +137,17 @@ int SceneElement::id() const {
   return d->id;
 }
 
-void SceneElement::showHover() {
-  d->showhover = true;
-  d->markHover();
+
+void SceneElement::hover() {
+  if (!d->hover) {
+    d->hover = true;
+    d->markHover();
+  }
 }
 
-void SceneElement::hideHover() {
-  d->showhover = false;
-  d->markHover();
+void SceneElement::unhover() {
+  if (d->hover) {
+    d->hover = false;
+    d->markHover();
+  }
 }
- 
-void SceneElement::hoverEnterEvent(QGraphicsSceneHoverEvent *e) {
-  d->hovering = true;
-  d->markHover();
-  QGraphicsItemGroup::hoverEnterEvent(e);
-}
-
-void SceneElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *e) {
-  d->hovering =false;
-  d->markHover();
-  QGraphicsItemGroup::hoverLeaveEvent(e);
-}
-

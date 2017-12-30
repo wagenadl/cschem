@@ -6,14 +6,13 @@
 #include "SceneConnection.h"
 #include "svg/Router.h"
 #include <QGraphicsSceneMouseEvent>
-#include "HoverPin.h"
+#include "HoverManager.h"
 #include "ConnBuilder.h"
 
 class SceneData {
 public:
   SceneData(PartLibrary const *lib): lib(lib) {
-    hoverpin = 0;
-    hoverpinEnabled = true;
+    hovermanager = 0;
     connbuilder = 0;
   }
   QPointF pinPosition(int id, QString pin) const {
@@ -49,14 +48,15 @@ public:
   QMap<int, class SceneElement *> elts;
   QMap<int, class SceneConnection *> conns;
   QPointF mousexy;
-  class HoverPin *hoverpin;
-  bool hoverpinEnabled;
+  HoverManager *hovermanager;
   QList<Circuit> undobuffer;
   QList<Circuit> redobuffer;
   ConnBuilder *connbuilder;
 };
 
 void SceneData::deleteElement(int id) {
+  hovermanager->unhover();
+
   QSet<int> cc;
   for (auto &c: circ.connections()) {
     if (c.fromId()==id) {
@@ -79,6 +79,8 @@ void SceneData::deleteElement(int id) {
 }  
 
 void SceneData::deleteConnection(int id) {
+  hovermanager->unhover();
+  
   auto con(circ.connection(id)); // grab the connection for testing junctions
 
   delete conns[id];
@@ -95,6 +97,8 @@ void SceneData::deleteConnection(int id) {
 }
 
 void SceneData::considerDroppingJunction(int id) {
+  hovermanager->unhover();
+
   QList<int> cons = circ.connectionsOn(id, "").toList();
   if (cons.size()==2) {
     // reconnect what would be dangling
@@ -125,8 +129,7 @@ Scene::~Scene() {
 Scene::Scene(PartLibrary const *lib, QObject *parent):
   QGraphicsScene(parent) {
   d = new SceneData(lib);
-  d->hoverpin = new HoverPin(this);
-  addItem(d->hoverpin);
+  d->hovermanager = new HoverManager(this);
 }
 
 void Scene::setCircuit(Circuit const &c) {
@@ -236,19 +239,24 @@ void Scene::moveSelection(QPointF delta) {
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
+  qDebug() << "Scene: mousePress" << e->scenePos();
   d->mousexy = e->scenePos();
-  updateOverPin(e->scenePos(), -1, (e->modifiers() & Qt::ShiftModifier)
-                || d->connbuilder);
+  d->hovermanager->setPrimaryPurpose((d->connbuilder ||
+                                      e->modifiers() & Qt::ShiftModifier)
+                                     ? HoverManager::Purpose::Connecting
+                                     : HoverManager::Purpose::Moving);
+  d->hovermanager->update(e->scenePos());
+
   if (d->connbuilder) {
-    qDebug() << "Scene::mousePress";
     d->connbuilder->mousePress(e);
     update();
   } else {
-    if (d->hoverpin->element()>0) {
+    if (d->hovermanager->onPin()) {
       d->connbuilder = new ConnBuilder(this);
       addItem(d->connbuilder);
       d->connbuilder->start(e->scenePos(),
-                            d->hoverpin->element(), d->hoverpin->pinName());
+                            d->hovermanager->element(),
+                            d->hovermanager->pin());
     } else {
       QGraphicsScene::mousePressEvent(e);
     }
@@ -256,10 +264,15 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
+  qDebug() << "Scene: mouseMove" << e->scenePos();
   d->mousexy = e->scenePos();
-  updateOverPin(e->scenePos(), -1, e->buttons() != 0
-                || (e->modifiers() & Qt::ShiftModifier)
-                || d->connbuilder);
+  d->hovermanager->setPrimaryPurpose((d->connbuilder ||
+                                      e->modifiers() & Qt::ShiftModifier)
+                                     ? HoverManager::Purpose::Connecting
+                                     : e->buttons()
+                                     ? HoverManager::Purpose::None
+                                     : HoverManager::Purpose::Moving);
+  d->hovermanager->update(e->scenePos());
   if (d->connbuilder) {
     d->connbuilder->mouseMove(e);
     update();
@@ -269,19 +282,43 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
+  qDebug() << "Scene: mouseRelease" << e->scenePos();
   d->mousexy = e->scenePos();
+  d->hovermanager->setPrimaryPurpose((d->connbuilder ||
+                                      e->modifiers() & Qt::ShiftModifier)
+                                     ? HoverManager::Purpose::Connecting
+                                     : HoverManager::Purpose::Moving);
+  d->hovermanager->update(e->scenePos());
   if (d->connbuilder) {
     d->connbuilder->mouseRelease(e);
     update();
     if (d->connbuilder->isComplete())
       finalizeConnection();
+    d->hovermanager->setPrimaryPurpose((d->connbuilder ||
+                                        e->modifiers() & Qt::ShiftModifier)
+                                       ? HoverManager::Purpose::Connecting
+                                       : HoverManager::Purpose::Moving);
   } else {
     QGraphicsScene::mouseReleaseEvent(e);
-    updateOverPin(e->scenePos(), -1, e->modifiers() & Qt::ShiftModifier);
   }
 }
 
+void Scene::keyReleaseEvent(QKeyEvent *e) {
+  // for whatever reason, releasing shift produces a key event with key==0
+  // and modifiers() still containing shift. Useless.
+  if (e->key()==Qt::Key_Shift
+      && d->hovermanager->primaryPurpose() != HoverManager::Purpose::None)      
+    d->hovermanager->setPrimaryPurpose(d->connbuilder
+                                       ? HoverManager::Purpose::Connecting
+                                       : HoverManager::Purpose::Moving);
+  QGraphicsScene::keyReleaseEvent(e);
+}
+
 void Scene::keyPressEvent(QKeyEvent *e) {
+  if (e->key()==Qt::Key_Shift
+      && d->hovermanager->primaryPurpose() != HoverManager::Purpose::None)
+    d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::Connecting);
+
   if (d->connbuilder) {
     d->connbuilder->keyPress(e);
     if (d->connbuilder->isComplete())
@@ -345,9 +382,13 @@ void Scene::keyPressAnywhere(QKeyEvent *e) {
 }
 
 int Scene::elementAt(QPointF scenepos) const {
+  if (!itemAt(scenepos, QTransform()))
+    return -1; // shortcut in case nothing there at all
+  
   for (auto e: d->elts)
     if (e->boundingRect().contains(e->mapFromScene(scenepos)))
       return e->id();
+
   return -1;
 }
 
@@ -366,7 +407,25 @@ QString Scene::pinAt(QPointF scenepos, int elementId) const {
       return p;
   return "-";
 }
+
+int Scene::connectionAt(QPointF scenepos, int *segp) const {
+  if (segp)
+    *segp = -1;
   
+  if (!itemAt(scenepos, QTransform()))
+    return -1; // shortcut in case nothing there at all
+  
+ for (auto c: d->conns) {
+   int seg = c->segmentAt(scenepos);
+   if (seg>=0) {
+     if (segp)
+       *segp = seg;
+     return c->id();
+   }
+ }
+ 
+ return -1;
+}
 
 void Scene::finalizeConnection() {
   if (!d->connbuilder->isAbandoned()) {
@@ -388,30 +447,10 @@ void Scene::finalizeConnection() {
   d->connbuilder = 0;
 }
 
-void Scene::updateOverPin(QPointF p, int elt, bool allowJunction) {
-  int elt0 = d->hoverpin->element();
-  d->hoverpin->updateHover(p, elt, allowJunction);
-  int elt1 = d->hoverpin->element();
-  if (elt0!=elt1) {
-    if (d->elts.contains(elt0))
-      d->elts[elt0]->showHover();
-    if (d->elts.contains(elt1) && d->hoverpinEnabled)
-      d->elts[elt1]->hideHover();
-  }
-}
-
 QMap<int, class SceneElement *> const &Scene::elements() const {
   return d->elts;
 }
 
 QMap<int, class SceneConnection *> const &Scene::connections() const {
   return d->conns;
-}
-
-void Scene::enablePinHighlighting(bool hl) {
-  d->hoverpinEnabled = hl;
-  if (hl)
-    d->hoverpin->show();
-  else
-    d->hoverpin->hide();
 }

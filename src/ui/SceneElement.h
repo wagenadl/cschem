@@ -22,11 +22,9 @@ public:
   void showLabel();
   void hideLabel();
   void rebuild();
-  void showHover();
-  void hideHover();
+  void hover();
+  void unhover();
 protected:
-  void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;

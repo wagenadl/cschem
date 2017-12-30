@@ -20,6 +20,9 @@ public:
   void temporaryTranslateFrom(QPointF delta);
   void temporaryTranslateTo(QPointF delta);
   void setLineWidth(double frac = 1.0);
+  int segmentAt(QPointF) const; // -1 if none
+  void hover(int seg);
+  void unhover();
 public:
   void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;
   QRectF boundingRect() const override;  

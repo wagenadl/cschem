@@ -12,6 +12,7 @@ Editor::Editor(class PartLibrary const *lib, Schem *schem, QWidget *parent):
   scene->setCircuit(schem->circuit());
   setScene(scene);
   scale(2, 2);
+  setMouseTracking(true);
 }
 
 Editor::~Editor() {

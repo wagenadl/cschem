@@ -12,21 +12,8 @@
 class SCSegment: public QGraphicsLineItem {
 public:
   SCSegment(QGraphicsItem *parent=0): QGraphicsLineItem(parent) {
-    setAcceptHoverEvents(true);
     // setFlag(ItemIsMovable);
     setCacheMode(DeviceCoordinateCache);
-  }
-  void hoverEnterEvent(QGraphicsSceneHoverEvent *e) override {
-    auto *ef = new QGraphicsColorizeEffect;
-    ef->setColor(QColor(0, 128, 255));
-    setGraphicsEffect(ef);
-    qDebug() << "Segment hover enter" << line();
-    QGraphicsLineItem::hoverEnterEvent(e);
-  }
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent *e) override {
-    setGraphicsEffect(0);    
-    qDebug() << "Segment hover leave" << line();
-    QGraphicsLineItem::hoverLeaveEvent(e);
   }
   void mousePressEvent(QGraphicsSceneMouseEvent *e) override {
     scene()->clearSelection();
@@ -176,4 +163,37 @@ void SceneConnection::paint(QPainter *, QStyleOptionGraphicsItem const *,
 
 QRectF SceneConnection::boundingRect() const {
   return QRectF();
+}
+
+int SceneConnection::segmentAt(QPointF p) const {
+  for (int k=0; k<d->segments.size(); k++)
+    if (d->segments[k]->boundingRect().contains(p))
+      return k;
+  return -1;
+}
+
+void SceneConnection::hover(int seg) {
+  if (seg<0 || seg>=d->segments.size())
+    return;
+  if (d->segments[seg] == d->hoverseg)
+    return;
+  unhover();
+
+  d->hoverseg = d->segments[seg];
+
+  PartLibrary const *lib = d->scene->library();
+  d->hoverseg->setPen(QPen(QColor(64, 192, 255), 3*lib->lineWidth(),
+                           Qt::SolidLine, Qt::RoundCap));
+
+  
+}
+
+void SceneConnection::unhover() {
+  if (!d->hoverseg)
+    return;
+  
+  PartLibrary const *lib = d->scene->library();
+  d->hoverseg->setPen(QPen(QColor(0, 0, 0), lib->lineWidth(),
+                           Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
+  d->hoverseg = 0;
 }
