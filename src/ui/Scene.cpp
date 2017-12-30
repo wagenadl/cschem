@@ -11,31 +11,30 @@
 class SceneData {
 public:
   SceneData(PartLibrary const *lib): lib(lib) {
-    circ = 0;
     hoverpin = 0;
     hoverpinenabled = true;
   }
   bool undo() {
     if (undobuffer.isEmpty())
       return false;
-    redobuffer << *circ;
-    *circ = undobuffer.takeLast();
+    redobuffer << circ;
+    circ = undobuffer.takeLast();
     return true;
   }
   bool redo() {
     if (redobuffer.isEmpty())
       return false;
-    undobuffer << *circ;
-    *circ = redobuffer.takeLast();
+    undobuffer << circ;
+    circ = redobuffer.takeLast();
     return true;
   }
   void preact() {
-    undobuffer << *circ;
+    undobuffer << circ;
     redobuffer.clear();
   }
 public:
   PartLibrary const *lib;
-  Circuit *circ;
+  Circuit circ;
   QMap<int, class SceneElement *> elts;
   QMap<int, class SceneConnection *> conns;
   QPointF mousexy;
@@ -56,7 +55,7 @@ Scene::Scene(PartLibrary const *lib, QObject *parent):
   addItem(d->hoverpin);
 }
 
-void Scene::setCircuit(Circuit *c) {
+void Scene::setCircuit(Circuit const &c) {
   for (auto i: d->elts)
     delete i;
   d->elts.clear();
@@ -77,19 +76,16 @@ void Scene::rebuild() {
     delete i;
   d->conns.clear();
 
-  if (!d->circ)
-    return;
-
-  for (auto const &c: d->circ->elements()) 
+  for (auto const &c: d->circ.elements()) 
     d->elts[c.id()] = new SceneElement(this, c);
   
-  for (auto const &c: d->circ->connections())
+  for (auto const &c: d->circ.connections())
     d->conns[c.id()] = new SceneConnection(this, c);
 }
 
 QPoint Scene::pinPosition(int partid, QString pin) const {
-  if (d->circ && d->circ->elements().contains(partid))
-    return Router(d->lib).pinPosition(d->circ->element(partid), pin);
+  if (d->circ.elements().contains(partid))
+    return Router(d->lib).pinPosition(d->circ.element(partid), pin);
   else 
     return QPoint();
 }
@@ -99,11 +95,11 @@ PartLibrary const *Scene::library() const {
   return d->lib;
 }
 
-Circuit const *Scene::circuit() const {
+Circuit const &Scene::circuit() const {
   return d->circ;
 }
 
-Circuit *Scene::circuit() {
+Circuit &Scene::circuit() {
   return d->circ;
 }
 
@@ -117,9 +113,9 @@ QSet<int> Scene::selectedElements() const {
 
 void Scene::tentativelyMoveSelection(QPointF delta) {
   QSet<int> selection = selectedElements();
-  QSet<int> internalcons = d->circ->connectionsIn(selection);
-  QSet<int> fromcons = d->circ->connectionsFrom(selection) - internalcons;
-  QSet<int> tocons = d->circ->connectionsTo(selection) - internalcons;
+  QSet<int> internalcons = d->circ.connectionsIn(selection);
+  QSet<int> fromcons = d->circ.connectionsFrom(selection) - internalcons;
+  QSet<int> tocons = d->circ.connectionsTo(selection) - internalcons;
 
   for (int id: internalcons)
     d->conns[id]->temporaryTranslate(delta);
@@ -133,32 +129,32 @@ void Scene::moveSelection(QPointF delta) {
   QPoint dd = (delta/d->lib->scale()).toPoint();
 
   QSet<int> selection = selectedElements();
-  QSet<int> internalcons = d->circ->connectionsIn(selection);
-  QSet<int> fromcons = d->circ->connectionsFrom(selection) - internalcons;
-  QSet<int> tocons = d->circ->connectionsTo(selection) - internalcons;
+  QSet<int> internalcons = d->circ.connectionsIn(selection);
+  QSet<int> fromcons = d->circ.connectionsFrom(selection) - internalcons;
+  QSet<int> tocons = d->circ.connectionsTo(selection) - internalcons;
   
   if (!dd.isNull()) {
     // must actually change circuit
     d->preact();
     QMap<int, Element> origFrom;
     QMap<int, Element> origTo;
-    Circuit origCirc(*d->circ);
+    Circuit origCirc(d->circ);
 
     for (int id: fromcons)
-      origFrom[id] = d->circ->element(d->circ->connection(id).fromId());
+      origFrom[id] = d->circ.element(d->circ.connection(id).fromId());
     for (int id: tocons)
-      origTo[id] = d->circ->element(d->circ->connection(id).toId());
+      origTo[id] = d->circ.element(d->circ.connection(id).toId());
     
     for (int id: selection)
-      d->circ->element(id).translate(dd);
+      d->circ.element(id).translate(dd);
     for (int id: internalcons)
-      d->circ->connection(id).translate(dd);
+      d->circ.connection(id).translate(dd);
 
     Router router(d->lib);
     for (int id: fromcons) 
-      d->circ->connection(id) = router.reroute(id, origCirc, *d->circ);
+      d->circ.connection(id) = router.reroute(id, origCirc, d->circ);
     for (int id: tocons) 
-      d->circ->connection(id) = router.reroute(id, origCirc, *d->circ);
+      d->circ.connection(id) = router.reroute(id, origCirc, d->circ);
   }
 
   for (int id: selection)
@@ -211,15 +207,15 @@ void Scene::keyPressOnElement(class SceneElement *elt, QKeyEvent *e) {
     d->preact();
     delete d->elts[id];
     d->elts.remove(id);
-    d->circ->elements().remove(id);
+    d->circ.elements().remove(id);
     QSet<int> cc;
-    for (auto &c: d->circ->connections()) 
+    for (auto &c: d->circ.connections()) 
       if (c.fromId()==id || c.toId()==id)
         cc << c.id();
     for (int id: cc) {
       delete d->conns[id];
       d->conns.remove(id);
-      d->circ->connections().remove(id);
+      d->circ.connections().remove(id);
     }
   } break;
   }
@@ -232,7 +228,7 @@ void Scene::keyPressOnConnection(class SceneConnection *con, QKeyEvent *e) {
     d->preact();
     delete d->conns[id];
     d->conns.remove(id);
-    d->circ->connections().remove(id);
+    d->circ.connections().remove(id);
   } break;
   }
 }
@@ -267,7 +263,7 @@ static double L2(QPointF p) {
 QString Scene::pinAt(QPointF scenepos, int elementId) const {
   if (!d->elts.contains(elementId))
     return "";
-  QString sym = d->circ->element(elementId).symbol();
+  QString sym = d->circ.element(elementId).symbol();
   Part const &part = library()->part(sym);
   double r = library()->scale();
   for (auto p: part.pinNames()) 
@@ -294,10 +290,10 @@ void Scene::finalizeConnection(int fromPart, QString fromPin,
 
   d->preact();
   
-  Connection c = Router(d->lib).autoroute(d->circ->element(fromPart), fromPin,
-					  d->circ->element(toPart), toPin,
-					  *d->circ);
-  d->circ->connections()[c.id()] = c;  
+  Connection c = Router(d->lib).autoroute(d->circ.element(fromPart), fromPin,
+					  d->circ.element(toPart), toPin,
+					  d->circ);
+  d->circ.connections()[c.id()] = c;  
   d->conns[c.id()] = new SceneConnection(this, c);    
 }
 

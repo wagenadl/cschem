@@ -13,11 +13,11 @@ class Scene: public QGraphicsScene {
 public:
   Scene(PartLibrary const *lib, QObject *parent=0);
   ~Scene();
-  void setCircuit(Circuit *);
+  void setCircuit(Circuit const &);
   void rebuild();
   PartLibrary const *library() const;
-  Circuit const *circuit() const;
-  Circuit *circuit();
+  Circuit const &circuit() const;
+  Circuit &circuit();
   QPoint pinPosition(int partid, QString pin) const;
   void moveSelection(QPointF delta);
   void tentativelyMoveSelection(QPointF delta);

@@ -36,7 +36,7 @@ void HoverPin::updateHover(QPointF p, int elt1, bool allowJunction) {
   QPointF pin1pos;
   
   if (elts.contains(elt1)) {
-    QString sym = circ->element(elt1).symbol();
+    QString sym = circ.element(elt1).symbol();
     if (sym == "junction" && !allowJunction) {
       elt1 = -1; // don't hover pin over junctions
     } else {

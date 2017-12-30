@@ -44,7 +44,7 @@ public:
 };
 
 QPolygonF SceneConnectionData::path() {
-  Connection const &c = scene->circuit()->connections()[id];
+  Connection const &c = scene->circuit().connections()[id];
   PartLibrary const *lib = scene->library();
   
   QPointF x0 = scene->pinPosition(c.fromId(), c.fromPin());

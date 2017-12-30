@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
   view.setInteractive(true);
   view.setDragMode(QGraphicsView::RubberBandDrag);
   Scene scene(&lib);
-  scene.setCircuit(&s.circuit());
+  scene.setCircuit(s.circuit());
   view.setScene(&scene);
   view.scale(4, 4);
   view.show();

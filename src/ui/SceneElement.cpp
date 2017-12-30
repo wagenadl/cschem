@@ -103,7 +103,7 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->onpin = false;
   qDebug() << "Mouse press" << e->pos() << pos();
   QPointF pinpos;
-  auto const &elem = d->scene->circuit()->element(d->id);
+  auto const &elem = d->scene->circuit().element(d->id);
   auto const &part = d->scene->library()->part(elem.symbol());
   
   if (elem.type() != Element::Type::Junction) {
@@ -145,7 +145,7 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   } else {
     QPointF newpos = pos();
     QPointF oldpos = d->scene->library()->scale()
-      * d->scene->circuit()->elements()[d->id].position();
+      * d->scene->circuit().elements()[d->id].position();
     qDebug() << "Mouse move" << newpos << oldpos;
     QGraphicsItemGroup::mouseMoveEvent(e);
     
@@ -173,7 +173,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     auto const &lib = d->scene->library();
     auto const &circ = d->scene->circuit();
     QPointF newpos = pos();
-    QPointF oldpos = lib->scale() * circ->elements()[d->id].position();
+    QPointF oldpos = lib->scale() * circ.elements()[d->id].position();
     qDebug() << "Mouse release" << newpos << oldpos;
     QGraphicsItemGroup::mouseReleaseEvent(e);
     if (d->dragmoved || newpos != oldpos) {
@@ -186,7 +186,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 void SceneElement::rebuild() {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
-  setPos(lib->scale() * circ->elements()[d->id].position());
+  setPos(lib->scale() * circ.elements()[d->id].position());
 }
 
 Scene *SceneElement::scene() {
