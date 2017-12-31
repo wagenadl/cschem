@@ -153,15 +153,41 @@ void Connection::translate(QPoint delta) {
   for (QPoint &p: d->via)
     p += delta;
 }
-      
+
+Connection Connection::reversed() const {
+  Connection con = *this;
+  QList<QPoint> v;
+  for (auto p: via())
+    v.prepend(p);
+  con.setFrom(to());
+  con.setTo(from());
+  con.setVia(v);
+  return con;
+}
+
 void Connection::reverse() {
-  Connection c0 = *this;
-  d.detach();
-  d->via.clear();
-  for (auto p: c0.via())
-    d->via.prepend(p);
-  d->fromId = c0.toId();
-  d->fromPin = c0.toPin();
-  d->toId = c0.fromId();
-  d->toPin = c0.fromPin();
+  *this = reversed();
+}
+
+PinID Connection::from() const {
+  return PinID(d->fromId, d->fromPin);
+}
+
+PinID Connection::to() const {
+  return PinID(d->fromId, d->fromPin);
+}
+
+void Connection::setFrom(PinID pp) {
+  d->fromId = pp.element();
+  d->fromPin = pp.pin();
+}
+
+void Connection::setTo(PinID pp) {
+  d->toId = pp.element();
+  d->toPin = pp.pin();
+}
+
+bool Connection::isEquivalentTo(Connection const &o) const {
+  return (from()==o.from() && to()==o.to())
+    ||  (from()==o.to() && to()==o.from());
 }

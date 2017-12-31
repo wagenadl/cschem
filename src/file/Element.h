@@ -28,7 +28,7 @@ public:
 public:
   QPoint position() const;
   Type type() const;
-  QString tag() const;
+  QString tag() const; // component/port/junction
   QString subtype() const;
   QString symbol() const;
   QString value() const;

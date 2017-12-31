@@ -6,6 +6,7 @@
 
 #include <QSharedData>
 #include <QXmlStreamReader>
+#include "PinID.h"
 
 class Connection {
 public:
@@ -21,7 +22,13 @@ public:
   QString fromPin() const;
   QString toPin() const;
   QList<QPoint> const &via() const;
+  PinID from() const;
+  PinID to() const;
+  bool isEquivalentTo(Connection const &) const;
+  Connection reversed() const;
 public:
+  void setFrom(PinID);
+  void setTo(PinID);
   void setId(int);
   void setFromId(int);
   void setToId(int);
