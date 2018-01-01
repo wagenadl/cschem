@@ -5,15 +5,30 @@
 class PartData: public QSharedData {
 public:
   PartData(): valid(false) { }
+  void newshift();
 public:
   XmlElement elt;
   QString name;
-  QMap<QString, QPointF> pins;
+  QMap<QString, QPointF> pins; // svg coordinates
+  QMap<QString, QPointF> shpins; // shifted coords (origin=first pin)
   bool valid;
-  QRectF bbox;
+  QRectF bbox; // svg coords
+  QRectF shbbox; // shifted coords (origin=first pin)
   QString groupId;
   QMap<QString, QString> pinIds;
+  QString originId;
 };
+
+void PartData::newshift() {
+  QStringList pp = pinIds.keys();
+  if (pp.isEmpty())
+    return;
+  originId = pp.first();
+  QPointF origin = pins[originId];
+  shbbox = bbox.translated(-origin);
+  for (QString p: pp)
+    shpins[p] = pins[p] - origin;
+}
 
 Part::Part() {
   d = new PartData;
@@ -25,7 +40,7 @@ Part::Part(XmlElement const &elt): Part() {
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
       scanPins(e.element());
-
+  d->newshift();
   d->valid = true;
 }
 
@@ -72,30 +87,38 @@ QString Part::contentsSvgId() const {
   return d->groupId;
 }
 
-QPointF Part::origin() const {
+QPointF Part::bbOrigin() const {
   QStringList l = d->pins.keys();
-  return l.isEmpty() ? QPointF() : pinPosition(l.first());
+  return l.isEmpty() ? QPointF() : bbPinPosition(l.first());
 }
 
 QRectF Part::shiftedBBox() const {
-  QStringList l = d->pins.keys();
-  return d->bbox.translated(l.isEmpty() ? -d->bbox.topLeft()
-			    : - d->pins[l.first()]);
+  return d->shbbox;
 }
 
-QPointF Part::pinPosition(QString pinname) const {
+QPointF Part::shiftedPinPosition(QString pinname) const {
+  return d->shpins.contains(pinname)
+    ? d->shpins[pinname]
+    : QPointF();
+}
+    
+
+QPointF Part::bbPinPosition(QString pinname) const {
   if (d->pins.contains(pinname))
     return d->pins[pinname] - d->bbox.topLeft();
   else
     return QPointF();
 }
 
-void Part::setAbsPinPosition(QString pinname, QPointF pos) {
-  if (d->pins.contains(pinname))
-    d->pins[pinname] = pos;
+void Part::setSvgPinPosition(QString pinname, QPointF pos) {
+  if (!d->pins.contains(pinname))
+    return;
+  d->pins[pinname] = pos;
+  if (pinname == d->originId)
+    d->newshift();
 }
 
-void Part::setBBox(QRectF b) {
+void Part::setSvgBBox(QRectF b) {
   d->bbox = b;
 }
 
@@ -111,6 +134,7 @@ bool Part::isValid() const {
   return d->valid;
 }
 
-QRectF Part::bbox() const {
+QRectF Part::svgBBox() const {
   return d->bbox;
 }
+

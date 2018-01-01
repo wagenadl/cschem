@@ -29,12 +29,6 @@ PartLibrary::PartLibrary(QString fn) {
   scanParts(svg_);
 
   getBBoxes(fn);
-
-  for (auto p: partslist_) {
-    qDebug() << "Relative pins for" << p.name() << p.bbox().size();
-    for (auto n: p.pinNames())
-      qDebug() << "  " << n << p.pinPosition(n);
-  }
 }
 
 PartLibrary::~PartLibrary() {
@@ -64,13 +58,12 @@ void PartLibrary::getBBoxes(QString fn) {
     QString id = p.contentsSvgId();
     if (id=="")
       id = p.element().attributes().value("id").toString();
-    p.setBBox(svg.boundsOnElement(id).toAlignedRect().adjusted(-2, -2, 2, 2));
-    qDebug() << "bbox on " << p.name() << id << p.bbox();
+    p.setSvgBBox(svg.boundsOnElement(id).toAlignedRect());
     for (QString pin: p.pinNames()) {
       QString id = p.pinSvgId(pin);
       if (id!="") {
         auto c = svg.boundsOnElement(id).center();
-        p.setAbsPinPosition(pin, c);
+        p.setSvgPinPosition(pin, c);
       }
     }
   }
@@ -92,7 +85,7 @@ QByteArray PartLibrary::partSvg(QString name) const {
     return "";
 
   Part const *p = parts_[name];
-  QRectF bb = p->bbox();
+  QRectF bb = p->svgBBox();
   XmlElement const &elt = p->element();
 
   QByteArray res;

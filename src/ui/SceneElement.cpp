@@ -57,7 +57,6 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
   if (!part.isValid())
     qDebug() << "Cannot find svg for symbol" << sym;
   double s = lib->scale();
-  QPointF o = part.origin();
 
   QSvgRenderer *r = lib->renderer(sym);
 
@@ -66,7 +65,7 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
     d->element->setSharedRenderer(r);
   else
     qDebug() << "Cannot construct renderer for symbol" << sym;    
-  d->element->setPos(-o);
+  d->element->setPos(part.shiftedBBox().topLeft());
   addToGroup(d->element);
 
   parent->addItem(this);

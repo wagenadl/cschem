@@ -14,9 +14,6 @@ public:
                      class Circuit const &newcirc) const;
   QPointF pinPosition(class Element const &elt, QString pin) const;
   QPoint preferredDirection(class Element const &elt, QString pin) const;
-  Connection autoroute(class Element const &from, QString fromPin,
-		       class Element const &to, QString toPin,
-		       class Circuit const &circ) const;
   QRectF elementBBox(class Element const &elt) const;
 private:
   QPoint awayFromCM(class Part const &part, QString pin) const;

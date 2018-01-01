@@ -17,16 +17,21 @@ public:
   Part &operator=(Part const &);
   XmlElement const &element() const;
   QString name() const;
-  QPointF pinPosition(QString pinname) const; // relative to bbox
+  QPointF bbPinPosition(QString pinname) const; // relative to TL of bbox
   QStringList pinNames() const; // sorted
-  QPointF origin() const; // position of first pin relative to bbox
+  QPointF bbOrigin() const; // position of first pin relative to TL of bbox
   bool isValid() const;
-  void setBBox(QRectF);
-  QRectF bbox() const; // in original svg
+  void setSvgBBox(QRectF); // we cannot figure that out ourselves, so unless
+  // this is specified, we cannot report bbox information
+  QRectF svgBBox() const; // in original svg
+  QPointF shiftedPinPosition(QString pinname) const;
+  // as if first pin were at (0,0)
   QRectF shiftedBBox() const; // bbox as if first pin were at (0,0)
   QString contentsSvgId() const;
   QString pinSvgId(QString pinname) const;
-  void setAbsPinPosition(QString pinname, QPointF pos);
+  void setSvgPinPosition(QString pinname, QPointF pos);
+  // we can _guess_, but are not smart enough to deal with transforms, so
+  // setting it with this function is better.
 private:
   void scanPins(XmlElement const &elt);
 private:

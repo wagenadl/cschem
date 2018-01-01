@@ -13,7 +13,7 @@ Router::Router(PartLibrary const *lib): lib(lib) {
 QPointF Router::pinPosition(Element const &elt, QString pin) const {
   Part const &part = lib->part(elt.symbol());
   QPointF pos = elt.position();
-  return lib->scale() * pos + part.pinPosition(pin) - part.origin();
+  return lib->scale() * pos + part.shiftedPinPosition(pin);
 }
 
 QRectF Router::elementBBox(Element const &elt) const {
@@ -93,8 +93,7 @@ Connection Router::reroute(int conid,
 }
 
 QPoint Router::awayFromCM(Part const &part, QString pin) const {
-  QRectF bb = part.shiftedBBox();
-  QPointF delta(part.pinPosition(pin) - part.origin() - bb.center());
+  QPointF delta(part.shiftedPinPosition(pin) - part.shiftedBBox().center());
   qDebug() << "cmdif" << part.name() << pin << delta;
   if (abs(delta.x()) > abs(delta.y()))
     return QPoint(delta.x() > 0 ? 1 : -1, 0);
@@ -102,23 +101,23 @@ QPoint Router::awayFromCM(Part const &part, QString pin) const {
     return QPoint(0, delta.y() > 0 ? 1 : -1);
 }
 
+#define SIPHorizontal 1
+#define SIPVertical 2
+
 int Router::isSIP(Part const &part) const {
   bool samex = true;
   bool samey = true;
-  QPointF o = part.origin();
-  int x = o.x();
-  int y = o.y();
   for (auto pin: part.pinNames()) {
-    QPointF p = part.pinPosition(pin);
-    if (p.x() != x)
+    QPointF p = part.shiftedPinPosition(pin);
+    if (p.x() != 0)
       samex = false;
-    if (p.y() != y)
+    if (p.y() != 0)
       samey = false;
   }
   if (samex)
-    return 1;
+    return SIPVertical;
   else if (samey)
-    return 2;
+    return SIPHorizontal;
   else
     return 0;
 }
@@ -131,10 +130,10 @@ QString Router::nearestNeighbor(Part const &part, QString pin) const {
   QStringList pins = part.pinNames();
   QString nearest;
   double dd = 1e9;
-  QPointF p0 = part.pinPosition(pin);
+  QPointF p0 = part.shiftedPinPosition(pin);
   for (auto p: pins) {
     if (p!=pin) {
-      double delta = L2(part.pinPosition(p) - p0);
+      double delta = L2(part.shiftedPinPosition(p) - p0);
       if (delta < dd) {
 	dd = delta;
 	nearest = p;
@@ -156,24 +155,25 @@ QPoint Router::preferredDirection(class Element const &elt, QString pin) const {
     return awayFromCM(part, pin);
   case 3: // complex case. could be opamp, 7805, or SIP
     switch (isSIP(part)) {
-    case 1: // horizontally oriented SIP
-      return QPoint(part.origin().x() > part.bbox().center().x() ? 1 : -1, 0);
-    case 2: // vertically oriented SIP
-      return QPoint(0, part.origin().y() > part.bbox().center().y() ? 1 : -1);
+    case SIPVertical:
+      return QPoint(part.shiftedBBox().center().x() < 0 ? 1 : -1, 0);
+    case SIPHorizontal:
+      return QPoint(0, part.shiftedBBox().center().y() < 0 ? 1 : -1);
     default:
       return awayFromCM(part, pin);
     } break;
   default:
     switch (isSIP(part)) {
-    case 1: // horizontally oriented SIP
-      return QPoint(part.origin().x() > part.bbox().center().x() ? 1 : -1, 0);
-    case 2: // vertically oriented SIP
-      return QPoint(0, part.origin().y() > part.bbox().center().y() ? 1 : -1);
+    case SIPVertical:
+      return QPoint(part.shiftedBBox().center().x() < 0 ? 1 : -1, 0);
+    case SIPHorizontal:
+      return QPoint(0, part.shiftedBBox().center().y() < 0 ? 1 : -1);
     default: {
-      QPointF deltaCM = part.pinPosition(pin) - part.bbox().center();
-      QPointF deltaNearest = part.pinPosition(pin)
-	- part.pinPosition(nearestNeighbor(part, pin));
-      if (abs(deltaNearest.x()) > abs(deltaNearest.y()))
+      QPointF deltaCM = part.shiftedPinPosition(pin)
+        - part.shiftedBBox().center();
+      QPointF deltaNearest = part.shiftedPinPosition(pin)
+	- part.shiftedPinPosition(nearestNeighbor(part, pin));
+      if (abs(deltaNearest.x()) < abs(deltaNearest.y()))
 	// pins are likely arranged in horizontal lines
 	return QPoint(0, deltaCM.y() > 0 ? 1 : -1);
       else
@@ -183,105 +183,4 @@ QPoint Router::preferredDirection(class Element const &elt, QString pin) const {
   }
   }
   return QPoint(1, 0); // arbitrary. shouldn't be reached
-}
-
-Connection Router::autoroute(class Element const &from, QString fromPin,
-			     class Element const &to, QString toPin,
-			     class Circuit const &) const {
-  
-  QPoint startDir = preferredDirection(from, fromPin);
-  QPoint endDir = preferredDirection(to, toPin);
-  qDebug() << "ar from" << from.symbol() << from.id() << fromPin << startDir;
-  qDebug() << "ar to" << to.symbol() << to.id() << toPin << endDir;
-
-  // should take case where to is a junction separately
-  // (right now, "from" cannot be a junction)
-  
-  QPoint fromP = lib->downscale(pinPosition(from, fromPin));
-  QPoint toP = lib->downscale(pinPosition(to, toPin));
-  QPoint midP = (fromP + toP) / 2;
-  QList<QPoint> via;
-
-  switch (QPoint::dotProduct(startDir, endDir)) {
-  case 0:
-    qDebug() << "t0" << startDir;
-    // one horizontal, other vertical
-    // this could be easy with a single corner, if there is space
-    if (QPoint::dotProduct(toP - fromP, startDir) > 0
-	&& QPoint::dotProduct(fromP - toP, endDir) > 0) {
-      if (startDir.x()==0)
-	via << QPoint(fromP.x(), toP.y());
-      else
-	via << QPoint(toP.x(), fromP.y());
-    } else {
-      // complicated
-    }
-    break;
-  case -1:
-    // pointing in opposite directions
-    if (QPoint::dotProduct(toP-fromP, startDir) > 0) {
-    qDebug() << "t-1 elbow" << startDir;
-      // have space for an elbow
-      if (startDir.y()==0)
-	via << QPoint(midP.x(), fromP.y()) << QPoint(midP.x(), toP.y());
-      else
-	via << QPoint(fromP.x(), midP.y()) << QPoint(toP.x(), midP.y());
-    } else {
-      qDebug() << "t-1 circle" << startDir;
-      // must route in a circle
-      /* (Actually, it might be possible to go in between the elements,
-	 but I haven't explored that yet.)
-      */
-      QRectF bb0 = elementBBox(from) | elementBBox(to);
-      QRect bb
-	= QRectF(bb0.topLeft() / lib->scale(), bb0.bottomRight() / lib->scale())
-	.toRect();
-      bb += QMargins(2, 2, 2, 2);
-      qDebug() << elementBBox(from) << elementBBox(from) << bb;
-      if (startDir.y()==0) {
-	// horizontal orientation
-	int dyTop = abs(bb.top() - fromP.y()) + abs(bb.top() - toP.y());
-	int dyBot = abs(bb.bottom() - fromP.y()) + abs(bb.bottom() - toP.y());
-	int midY = dyTop < dyBot ? bb.top() : bb.bottom();
-	via << fromP + startDir;
-	via << QPoint(fromP.x(), midY) + startDir;
-	via << QPoint(toP.x(), midY) + endDir;
-	via << toP + endDir;
-      } else {
-	// vertical orientation
-	int dxleft = abs(bb.left() - fromP.y()) + abs(bb.left() - toP.y());
-	int dxright = abs(bb.right() - fromP.y()) + abs(bb.right() - toP.y());
-	int midX = dxleft < dxright ? bb.left() : bb.right();
-	via << fromP + startDir;
-	via << QPoint(midX, fromP.y()) + startDir;
-	via << QPoint(midX, toP.y()) + endDir;
-	via << toP + endDir;
-      }
-    }
-    break;
-  case 1: { // pointing in the same direction
-    qDebug() << "t1" << startDir << midP;
-    QPoint midP = (QPoint::dotProduct(toP-fromP, startDir) > 0) ? toP : fromP;
-    if (startDir.y()==0) {
-      // horizontal direction
-      via << QPoint(midP.x(), fromP.y()) + startDir;
-      via << QPoint(midP.x(), toP.y()) + startDir;
-    } else {
-      via << QPoint(fromP.x(), midP.y()) + startDir;
-      via << QPoint(toP.x(), midP.y()) + startDir;
-    }
-  } break;
-  }
-
-  Connection c;
-  c.setFromId(from.id());
-  c.setFromPin(fromPin);
-  c.setToId(to.id());
-  c.setToPin(toPin);
-  c.setVia(via);
-
-  qDebug() << from.symbol() << from.id() << fromPin << fromP;
-  qDebug() << "  " << via;
-  qDebug() << "  " << to.symbol() << to.id() << toPin << toP;
-  return c;
 }
