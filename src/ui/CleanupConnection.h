@@ -12,12 +12,14 @@ public:
   CleanupConnection(CleanupConnection const &) = delete;
   CleanupConnection &operator=(CleanupConnection const &) = delete;
   ~CleanupConnection();
-  void cleanup(int con);
-  /* This moves (or copies) junctions to remove overlapping segments.
-   */
+public:
   QSet<int> affectedConnections(); // new, modified, or deleted
-  QSet<int> affectedJunctions(); // new, modified, or deleted
+  QSet<int> affectedElements(); // new, modified, or deleted
   Circuit const &updatedCircuit();
+public:
+  void deleteConnection(int con);
+  void deleteElement(int elt);
+  void removeImmediateRedundancy(int con);
 private:
   class CCData *d;
 };

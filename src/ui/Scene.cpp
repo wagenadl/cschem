@@ -8,10 +8,12 @@
 #include <QGraphicsSceneMouseEvent>
 #include "HoverManager.h"
 #include "ConnBuilder.h"
+#include "svg/CircuitMod.h"
 
 class SceneData {
 public:
-  SceneData(PartLibrary const *lib): lib(lib) {
+  SceneData(Scene *scene, PartLibrary const *lib):
+    scene(scene), lib(lib) {
     hovermanager = 0;
     connbuilder = 0;
   }
@@ -41,8 +43,9 @@ public:
   }
   void deleteElement(int id);
   void deleteConnection(int id);
-  void considerDroppingJunction(int id);
+  void rebuildAsNeeded(CircuitMod const &cm);
 public:
+  Scene *scene;
   PartLibrary const *lib;
   Circuit circ;
   QMap<int, class SceneElement *> elts;
@@ -54,76 +57,45 @@ public:
   ConnBuilder *connbuilder;
 };
 
-void SceneData::deleteElement(int id) {
-  hovermanager->unhover();
-
-  QSet<int> cc;
-  for (auto &c: circ.connections()) {
-    if (c.fromId()==id) {
-      c.setFromId(0); // make dangling
-      c.via().prepend(lib->downscale(pinPosition(id, c.fromPin())));
-      cc << c.id();
-    }
-    if (c.toId()==id) {
-      c.setToId(0); // make dangling
-      c.via().append(lib->downscale(pinPosition(id, c.toPin())));
-      cc << c.id();
+void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
+  for (int id: cm.affectedConnections()) {
+    if (circ.connections().contains(id)) {
+      if (conns.contains(id))
+        conns[id]->rebuild();
+      else
+        conns[id] = new SceneConnection(scene, circ.connection(id));
+    } else {
+      delete conns[id];
+      conns.remove(id);
     }
   }
+  for (int id: cm.affectedElements()) {
+    if (circ.elements().contains(id)) {
+      if (elts.contains(id))
+        elts[id]->rebuild();
+      else
+        elts[id] = new SceneElement(scene, circ.element(id));
+    } else {
+      delete elts[id];
+      elts.remove(id);
+    }
+  }
+}
 
-  for (int id: cc) 
-    conns[id]->rebuild();
-  delete elts[id];
-  elts.remove(id);
-  circ.elements().remove(id);
+void SceneData::deleteElement(int id) {
+  hovermanager->unhover();
+  CircuitMod cm(circ, lib);
+  cm.deleteElement(id);
+  circ = cm.circuit();
+  rebuildAsNeeded(cm);
 }  
 
 void SceneData::deleteConnection(int id) {
   hovermanager->unhover();
-  
-  Connection con(circ.connection(id)); // grab the connection for testing junctions
-
-  delete conns[id];
-  conns.remove(id);
-  circ.connections().remove(id);
-  
-  int from = con.fromId();
-  if (circ.element(from).type() == Element::Type::Junction)
-    considerDroppingJunction(from);
-
-  int to = con.toId();
-  if (circ.element(to).type() == Element::Type::Junction) 
-    considerDroppingJunction(to);
-}
-
-void SceneData::considerDroppingJunction(int id) {
-  hovermanager->unhover();
-
-  QList<int> cons = circ.connectionsOn(id, "").toList();
-  if (cons.size()==2) {
-    // reconnect what would be dangling
-    Connection con1(circ.connection(cons[0]));
-    Connection con2(circ.connection(cons[1]));
-    qDebug() << id << "prefirst" << con1.report() << "presecond" << con2.report();
-    if (con1.fromId() == id)
-      con1.reverse();
-    if (con2.toId() == id)
-      con2.reverse();
-
-    qDebug() << id << "first" << con1.report() << "second" << con2.report();
-    
-    con1.setToId(con2.toId());
-    con1.setToPin(con2.toPin());
-    con1.via() += con2.via();
-    circ.connections().remove(cons[1]);
-    circ.connection(cons[0]) = con1;
-    qDebug() << "combined" << con1.report();
-    conns[cons[0]]->rebuild();
-    delete conns[cons[1]];
-    conns.remove(cons[1]);
-  }
-  if (cons.size() <= 2)
-    deleteElement(id);
+  CircuitMod cm(circ,lib);
+  cm.deleteConnection(id);
+  circ = cm.circuit();
+  rebuildAsNeeded(cm);
 }  
 
 Scene::~Scene() {
@@ -132,7 +104,7 @@ Scene::~Scene() {
   
 Scene::Scene(PartLibrary const *lib, QObject *parent):
   QGraphicsScene(parent) {
-  d = new SceneData(lib);
+  d = new SceneData(this, lib);
   d->hovermanager = new HoverManager(this);
 }
 

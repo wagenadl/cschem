@@ -10,15 +10,17 @@ public:
   CCData(Scene *scene): scene(scene) {
     circ = scene->circuit();
   }
+  void deleteConnection(int con);
+  void deleteElement(int elt);
   void removeImmediateRedundancy(int con);
-  void perhapsRewirePointlessJunction(int elt);
-  void removeJunctionWithCrossRewire(int elt);
-  void removeDanglingConnections();
+  void rewirePointlessJunction(int elt);
+  void deleteJunctionWithCrossRewire(int elt);
+  void deleteDanglingConnections();
   void rewireOverlapping(int con);
 public:
   Scene *scene;
   QSet<int> acons;
-  QSet<int> ajuncs;
+  QSet<int> aelts;
   Circuit circ;
 };
 
@@ -48,11 +50,18 @@ QSet<int> CleanupConnection::affectedConnections() {
   return d->acons;
 }
 
-QSet<int> CleanupConnection::affectedJunctions() {
-  return d->ajuncs;
+QSet<int> CleanupConnection::affectedElements() {
+  return d->aelts;
 }
 
 Circuit const &CleanupConnection::updatedCircuit() {
   return d->circ;
 }
 
+void CleanupConnection::deleteConnection(int con) {
+  d->deleteConnection(con);
+}
+
+void CleanupConnection::deleteElement(int elt) {
+  d->deleteElement(elt);
+}
