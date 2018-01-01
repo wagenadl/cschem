@@ -15,6 +15,7 @@ public:
   Connection(QXmlStreamReader &src);
   Connection &operator=(Connection const &);
   ~Connection();
+  QString report() const;
 public:
   int id() const;
   int fromId() const; // zero if dangling

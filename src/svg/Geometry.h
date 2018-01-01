@@ -10,8 +10,8 @@
 
 class Geometry {
 public:
-  Geometry(class Circuit const &, class PartLibrary *);
-  ~Geometry;
+  Geometry(class Circuit const &, class PartLibrary const *);
+  ~Geometry();
   Geometry(Geometry const &) = delete;
   Geometry operator=(Geometry const &) = delete;
   QPoint pinPosition(int elt, QString pin) const;

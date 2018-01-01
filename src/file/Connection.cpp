@@ -3,6 +3,7 @@
 #include "Connection.h"
 #include "IDFactory.h"
 #include <QPoint>
+#include <QDebug>
 
 class ConnectionData: public QSharedData {
 public:
@@ -156,16 +157,19 @@ void Connection::translate(QPoint delta) {
 
 Connection Connection::reversed() const {
   Connection con = *this;
+  qDebug() << "reversed" << con.report();
   QList<QPoint> v;
   for (auto p: via())
     v.prepend(p);
   con.setFrom(to());
   con.setTo(from());
   con.setVia(v);
+  qDebug() << "=>" << con.report();
   return con;
 }
 
 void Connection::reverse() {
+  d.detach();
   *this = reversed();
 }
 
@@ -174,15 +178,17 @@ PinID Connection::from() const {
 }
 
 PinID Connection::to() const {
-  return PinID(d->fromId, d->fromPin);
+  return PinID(d->toId, d->toPin);
 }
 
 void Connection::setFrom(PinID pp) {
+  d.detach();
   d->fromId = pp.element();
   d->fromPin = pp.pin();
 }
 
 void Connection::setTo(PinID pp) {
+  d.detach();
   d->toId = pp.element();
   d->toPin = pp.pin();
 }
@@ -191,3 +197,12 @@ bool Connection::isEquivalentTo(Connection const &o) const {
   return (from()==o.from() && to()==o.to())
     ||  (from()==o.to() && to()==o.from());
 }
+
+QString Connection::report() const {
+  QString x = QString("%1:%2 - ").arg(fromId()).arg(fromPin());
+  for (auto v: via())
+    x += QString("%1,%2 ").arg(v.x()).arg(v.y());
+  x += QString("- %1:%2").arg(toId()).arg(toPin());
+  return x;
+}
+

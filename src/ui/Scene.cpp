@@ -81,7 +81,7 @@ void SceneData::deleteElement(int id) {
 void SceneData::deleteConnection(int id) {
   hovermanager->unhover();
   
-  auto con(circ.connection(id)); // grab the connection for testing junctions
+  Connection con(circ.connection(id)); // grab the connection for testing junctions
 
   delete conns[id];
   conns.remove(id);
@@ -102,18 +102,22 @@ void SceneData::considerDroppingJunction(int id) {
   QList<int> cons = circ.connectionsOn(id, "").toList();
   if (cons.size()==2) {
     // reconnect what would be dangling
-    auto con1(circ.connection(cons[0]));
-    auto con2(circ.connection(cons[1]));
+    Connection con1(circ.connection(cons[0]));
+    Connection con2(circ.connection(cons[1]));
+    qDebug() << id << "prefirst" << con1.report() << "presecond" << con2.report();
     if (con1.fromId() == id)
       con1.reverse();
     if (con2.toId() == id)
       con2.reverse();
 
+    qDebug() << id << "first" << con1.report() << "second" << con2.report();
+    
     con1.setToId(con2.toId());
     con1.setToPin(con2.toPin());
     con1.via() += con2.via();
     circ.connections().remove(cons[1]);
     circ.connection(cons[0]) = con1;
+    qDebug() << "combined" << con1.report();
     conns[cons[0]]->rebuild();
     delete conns[cons[1]];
     conns.remove(cons[1]);
