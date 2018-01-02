@@ -4,11 +4,11 @@
 #include <QDebug>
 #include "SceneElement.h"
 #include "SceneConnection.h"
-#include "svg/Router.h"
 #include <QGraphicsSceneMouseEvent>
 #include "HoverManager.h"
 #include "ConnBuilder.h"
 #include "svg/CircuitMod.h"
+#include "svg/Geometry.h"
 
 class SceneData {
 public:
@@ -19,7 +19,7 @@ public:
   }
   QPointF pinPosition(int id, QString pin) const {
     if (circ.elements().contains(id))
-      return Router(lib).pinPosition(circ.element(id), pin);
+      return lib->upscale(Geometry(circ, lib).pinPosition(id, pin));
     else 
       return QPoint();
   }
@@ -58,6 +58,7 @@ public:
 };
 
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
+  circ = cm.circuit();
   for (int id: cm.affectedConnections()) {
     if (circ.connections().contains(id)) {
       if (conns.contains(id))
@@ -86,15 +87,13 @@ void SceneData::deleteElement(int id) {
   hovermanager->unhover();
   CircuitMod cm(circ, lib);
   cm.deleteElement(id);
-  circ = cm.circuit();
   rebuildAsNeeded(cm);
 }  
 
 void SceneData::deleteConnection(int id) {
   hovermanager->unhover();
-  CircuitMod cm(circ,lib);
+  CircuitMod cm(circ, lib);
   cm.deleteConnection(id);
-  circ = cm.circuit();
   rebuildAsNeeded(cm);
 }  
 
@@ -186,32 +185,26 @@ void Scene::moveSelection(QPointF delta) {
   if (!dd.isNull()) {
     // must actually change circuit
     d->preact();
-    QMap<int, Element> origFrom;
-    QMap<int, Element> origTo;
     Circuit origCirc(d->circ);
+    CircuitMod cm(d->circ, d->lib);
+    for (int id: selection)
+      cm.translateElement(id, dd);
+    for (int id: internalcons)
+      cm.translateConnection(id, dd);
 
     for (int id: fromcons)
-      origFrom[id] = d->circ.element(d->circ.connection(id).fromId());
+      cm.reroute(id, origCirc);
     for (int id: tocons)
-      origTo[id] = d->circ.element(d->circ.connection(id).toId());
-    
+      cm.reroute(id, origCirc);
+
+    d->rebuildAsNeeded(cm);
+  } else {
+    // restore stuff
     for (int id: selection)
-      d->circ.element(id).translate(dd);
-    for (int id: internalcons)
-      d->circ.connection(id).translate(dd);
-
-    Router router(d->lib);
-    for (int id: fromcons) 
-      d->circ.connection(id) = router.reroute(id, origCirc, d->circ);
-    for (int id: tocons) 
-      d->circ.connection(id) = router.reroute(id, origCirc, d->circ);
+      d->elts[id]->rebuild();
+    for (int id: internalcons + fromcons + tocons)
+      d->conns[id]->rebuild();
   }
-
-  for (int id: selection)
-    d->elts[id]->rebuild();
-
-  for (int id: internalcons + fromcons + tocons)
-    d->conns[id]->rebuild();
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
@@ -438,7 +431,7 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
   Connection &con(d->circ.connection(id));
   newpath.removeFirst();
   newpath.removeLast();
-  QList<QPoint> pp;
+  QPolygon pp;
   for (auto p: newpath)
     pp << d->lib->downscale(p);
   con.setVia(pp);

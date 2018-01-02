@@ -148,7 +148,7 @@ void Circuit::translate(QSet<int> ids, QPoint delta) {
   for (int id: ids)
     d->elements[id].setPosition(d->elements[id].position() + delta);
   for (int id: connectionsIn(ids)) {
-    QList<QPoint> &via(d->connections[id].via());
+    QPolygon &via(d->connections[id].via());
     for (QPoint &p: via)
       p += delta;
   }

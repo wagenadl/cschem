@@ -7,6 +7,7 @@
 #include <QSharedData>
 #include <QXmlStreamReader>
 #include "PinID.h"
+#include <QPolygon>
 
 class Connection {
 public:
@@ -22,11 +23,14 @@ public:
   int toId() const; // zero if dangling
   QString fromPin() const;
   QString toPin() const;
-  QList<QPoint> const &via() const;
+  QPolygon const &via() const;
   PinID from() const;
   PinID to() const;
   bool isEquivalentTo(Connection const &) const;
-  Connection reversed() const;
+  bool isNull() const;
+  bool isDangling() const;
+  bool isCircular() const;
+  Connection reversed() const; // does *not* assign a new ID
 public:
   void setFrom(PinID);
   void setTo(PinID);
@@ -37,8 +41,8 @@ public:
   void setToPin(QString);
   void setFrom(int id, QString pin);
   void setTo(int id, QString pin);
-  QList<QPoint> &via();
-  void setVia(QList<QPoint> const &);
+  QPolygon &via();
+  void setVia(QVector<QPoint> const &);
   void translate(QPoint delta);
   void reverse();
 private:

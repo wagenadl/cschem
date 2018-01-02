@@ -16,6 +16,9 @@ public:
   Geometry operator=(Geometry const &) = delete;
   QPoint pinPosition(int elt, QString pin) const;
   QPolygon connectionPath(int con) const;
+  QPolygon connectionPath(class Connection const &con) const;
+public:
+  static QPolygon simplifiedPath(QPolygon path);
 private:
   class GeometryData *d;
 };

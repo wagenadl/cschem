@@ -107,7 +107,7 @@ void ConnBuilderData::buildConnection() {
     pp.removeFirst();
   if (toId>0)
     pp.removeLast();
-  QList<QPoint> via;
+  QPolygon via;
   for (auto p: pp)
     via << scene->library()->downscale(p);
   c.setVia(via);

@@ -5,6 +5,7 @@
 #define CIRCUITMOD_H
 
 #include <QSet>
+#include <QPoint>
 
 class CircuitMod {
 public:
@@ -12,10 +13,18 @@ public:
   CircuitMod(CircuitMod const &) = delete;
   CircuitMod &operator=(CircuitMod const &) = delete;
   ~CircuitMod();
-  void deleteElement(int id);
-  void deleteConnection(int id);
-  bool removePointlessJunction(int id); // true if removed
-  void deleteAnyDuplicatesOfConnection(int id);
+  bool deleteElement(int eltid);
+  bool deleteConnection(int conid);
+  bool removePointlessJunction(int eltid); // true if removed
+  bool removeConnectionsEquivalentTo(int conid);
+  bool adjustOverlappingConnections(int conid);
+  bool simplifyConnection(int conid);
+  bool removeIfCircular(int conid);
+  bool removeIfDangling(int conid);
+  bool removeAllDanglingOrCircular();
+  bool translateElement(int eltid, QPoint dd);
+  bool translateConnection(int conid, QPoint dd);
+  bool reroute(int conid, class Circuit const &origcirc);
 public:
   QSet<int> affectedConnections() const; // new, modified, or deleted
   QSet<int> affectedElements() const; // new, modified, or deleted

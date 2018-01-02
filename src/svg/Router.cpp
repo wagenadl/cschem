@@ -23,7 +23,7 @@ QRectF Router::elementBBox(Element const &elt) const {
   return part.shiftedBBox().translated(lib->scale() * pos);
 }
 
-static QList<QPoint> simplify(QPoint p0, QList<QPoint> lst, QPoint pn) {
+static QPolygon simplify(QPoint p0, QPolygon lst, QPoint pn) {
   lst.prepend(p0);
   lst.append(pn);
   int n = 1;
@@ -54,7 +54,7 @@ Connection Router::reroute(int conid,
   QPoint newStart = lib->downscale(pinPosition(newFrom, con.fromPin()));
   QPoint newEnd = lib->downscale(pinPosition(newTo, con.toPin()));
 
-  QList<QPoint> via = con.via();
+  QPolygon via = con.via();
 
   if (via.isEmpty()) {
     // might have to create elbow

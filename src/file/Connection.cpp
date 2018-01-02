@@ -7,15 +7,34 @@
 
 class ConnectionData: public QSharedData {
 public:
-  ConnectionData(): id(IDFactory::instance().newId()) { }
+  ConnectionData(): id(IDFactory::instance().newId()) {
+    fromId = toId = 0;
+  }
 public:
   int id;
   int fromId;
   int toId;
   QString fromPin;
   QString toPin;
-  QList<QPoint> via;
+  QPolygon via;
 };
+
+bool Connection::isNull() const {
+  return d->fromId==0 && d->toId==0
+    && d->fromPin.isEmpty() && d->toPin.isEmpty()
+    && d->via.isEmpty();
+}
+
+bool Connection::isDangling() const {
+  return d->fromId<=0 || d->toId<=0;
+}
+
+bool Connection::isCircular() const {
+  return (d->fromId>0 && d->fromId==d->toId)
+    || ((d->fromId<=0 || d->toId<=0) && d->via.isEmpty())
+    || (d->fromId<=0 && d->toId<=0
+        && (d->via.isEmpty() || d->via.first()==d->via.last()));
+}
 
 Connection::Connection() {
   d = new ConnectionData();
@@ -98,7 +117,7 @@ QString Connection::toPin() const {
   return d->toPin;
 }
 
-QList<QPoint> const &Connection::via() const {
+QPolygon const &Connection::via() const {
   return d->via;
 }
 
@@ -139,12 +158,12 @@ void Connection::setTo(int id, QString pin) {
   d->toPin = pin;
 }
 
-QList<QPoint> &Connection::via() {
+QPolygon &Connection::via() {
   d.detach();
   return d->via;
 }
 
-void Connection::setVia(QList<QPoint> const &v) {
+void Connection::setVia(QVector<QPoint> const &v) {
   d.detach();
   d->via = v;
 }
@@ -158,7 +177,7 @@ void Connection::translate(QPoint delta) {
 Connection Connection::reversed() const {
   Connection con = *this;
   qDebug() << "reversed" << con.report();
-  QList<QPoint> v;
+  QPolygon v;
   for (auto p: via())
     v.prepend(p);
   con.setFrom(to());
