@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsSceneMouseEvent>
+#include "Style.h"
 
 class SceneElementData {
 public:
@@ -26,7 +27,7 @@ public:
   void markHover() {
     if (hover) {
       auto *ef = new QGraphicsColorizeEffect;
-      ef->setColor(QColor(64, 192, 255));
+      ef->setColor(Style::elementHoverColor());
       element->setGraphicsEffect(ef);
     } else {
       element->setGraphicsEffect(0);    

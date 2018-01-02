@@ -26,7 +26,7 @@ public:
   void ensureEndJunction();
   int ensureJunctionFor(int id, QString pin, QPointF pt);
   QPolygonF simplifiedPoints() const;
-  void fixPenultimate();
+  bool fixPenultimate(); // false if there is nothing to fix yet
   QGraphicsLineItem *newSegment();
   bool considerCompletion();
   void forceCompletion(int elt, QString pin);
@@ -43,9 +43,15 @@ public:
   QList<QGraphicsLineItem *> segments;
 };
 
-void ConnBuilderData::fixPenultimate() {
+bool ConnBuilderData::fixPenultimate() {
+  if (segments.size()==2
+      && segments[0]->line().length() < scene->library()->scale()
+      && segments[1]->line().length() < scene->library()->scale())
+    return false;
+      
   QLineF l = segments.last()->line();
   points << l.p1();
+  return true;
 }
 
 QGraphicsLineItem *ConnBuilderData::newSegment() {
@@ -69,11 +75,52 @@ bool ConnBuilderData::considerCompletion() {
       return true;
     }
   }
+  int seg;
+  int c = scene->connectionAt(l.p2(), &seg);
+  if (c>0) {
+    Connection tgt(circ.connection(c));
+    if (tgt.danglingStart())
+      seg++; // so seg=0 is always pre-vias
+    Element junc = Element::junction(scene->library()->downscale(l.p2()));
+    Connection tgt1;
+    tgt1.setTo(tgt.to());
+    tgt.setTo(junc.id());
+    tgt1.setFrom(junc.id());
+    QPolygon via = tgt.via();
+    QPolygon via1;
+    while (via.size() > seg)
+      via1.prepend(via.takeLast());
+    if (via.size()>=1 && via.last()==junc.position())
+      via.removeLast();
+    if (via1.size()>=1 && via1.first()==junc.position())
+      via1.removeFirst();
+    tgt.setVia(via);
+    tgt1.setVia(via1);
+
+    qDebug() << "onto line" << junc.report();
+    qDebug() << "  " << tgt.report() << tgt.isNull() << tgt.isCircular(); 
+    qDebug() << "  " << tgt1.report() << tgt1.isNull() << tgt1.isCircular(); 
+
+    if (tgt.isCircular())
+      circ.remove(tgt.id());
+    else
+      circ.insert(tgt);
+    connections << tgt.id();
+    if (!tgt1.isCircular()) {
+      circ.insert(tgt1);
+      connections << tgt1.id();
+    }
+    circ.insert(junc);
+    junctions << junc.id();
+    forceCompletion(junc.id(), "");
+    return true;
+  }
   return false;
 }
 
 void ConnBuilderData::forceCompletion(int elt, QString pin) {
-  points << scene->pinPosition(elt, pin);
+  if (elt>0)
+    points << scene->pinPosition(elt, pin);
   toId = elt;
   toPin = pin;
   ensureEndJunction();
@@ -119,9 +166,6 @@ void ConnBuilderData::buildConnection() {
 }
 
 void ConnBuilderData::ensureStartJunction() {
-  if (fromId<=0 || circ.element(fromId).type() == Element::Type::Junction)
-    return;
-
   int jid = ensureJunctionFor(fromId, fromPin, points.first());
   if (jid>0) {
     fromId = jid;
@@ -130,9 +174,6 @@ void ConnBuilderData::ensureStartJunction() {
 }
 
 void ConnBuilderData::ensureEndJunction() {
-  if (toId<=0 || circ.element(toId).type() == Element::Type::Junction)
-    return;
-
   int jid = ensureJunctionFor(toId, toPin, points.last());
   if (jid>0) {
     toId = jid;
@@ -141,9 +182,15 @@ void ConnBuilderData::ensureEndJunction() {
 }
 
 int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
+  // Creates a junction at a pin of an existing element to avoid
+  // multiple connections to that pin.
+  if (id<=0)
+    return -1; // don't worry if dangling
+  if (circ.element(id).type() == Element::Type::Junction)
+    return -1; // easy if already junction
   QSet<int> othercons = circ.connectionsOn(id, pin);
   if (othercons.isEmpty())
-    return -1;
+    return -1; // nothing there, so no need
 
   qDebug() << "othercons" << othercons;
   
@@ -231,6 +278,7 @@ void ConnBuilder::keyPress(QKeyEvent *e) {
     break;
   case Qt::Key_Return:
     qDebug() << "ConnBuilder: complete";
+    d->fixPenultimate();
     if (!d->considerCompletion())
       d->forceDanglingCompletion();
     break;
@@ -246,14 +294,17 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
   auto *gli1 = d->segments[N-2];
   auto *gli2 = d->segments[N-1];
   QPointF p1;
-  if (N==2) {
+  int L = d->points.size();
+  qDebug() << N << L;
+  if (N==2 || L<2) {
     // arbitrary direction for now
     p1 = (abs(dp.x()) > abs(dp.y()))
       ? QPoint(p.x(), p0.y())
       : QPoint(p0.x(), p.y());
   } else {
-    // should we enforce a corner? not right now
-    p1 = (abs(dp.x()) > abs(dp.y()))
+    QPointF dp0 = p0 - d->points[L-2];
+    // enforce a corner
+    p1 = (abs(dp0.x()) < abs(dp0.y()))
       ? QPoint(p.x(), p0.y())
       : QPoint(p0.x(), p.y());
   }
@@ -267,7 +318,8 @@ void ConnBuilder::mousePress(QGraphicsSceneMouseEvent *e) {
 
 void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *e) {
   qDebug() << "ConnBuilder: release " << e->scenePos();
-  d->fixPenultimate();
+  if (!d->fixPenultimate())
+    return;
   addToGroup(d->newSegment());
   d->considerCompletion();
 }

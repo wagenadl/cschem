@@ -25,14 +25,27 @@ bool Connection::isNull() const {
 }
 
 bool Connection::isDangling() const {
-  return d->fromId<=0 || d->toId<=0;
+  return danglingStart() || danglingEnd();
+}
+
+bool Connection::danglingStart() const {
+  return d->fromId<=0;
+}
+
+bool Connection::danglingEnd() const {
+  return d->toId<=0;
 }
 
 bool Connection::isCircular() const {
+  /* Circular means either:
+     (1) beginning and ending at same pin
+     (2) fully dangling and beginning and ending at same point
+     (3) dangling and zero-length
+   */
   return (d->fromId>0 && d->fromId==d->toId)
     || ((d->fromId<=0 || d->toId<=0) && d->via.isEmpty())
     || (d->fromId<=0 && d->toId<=0
-        && (d->via.isEmpty() || d->via.first()==d->via.last()));
+        && (d->via.size()<=1 || d->via.first()==d->via.last()));
 }
 
 Connection::Connection() {

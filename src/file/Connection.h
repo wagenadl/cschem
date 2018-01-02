@@ -29,6 +29,8 @@ public:
   bool isEquivalentTo(Connection const &) const;
   bool isNull() const;
   bool isDangling() const;
+  bool danglingStart() const;
+  bool danglingEnd() const;
   bool isCircular() const;
   Connection reversed() const; // does *not* assign a new ID
   Connection translated(QPoint delta) const;

@@ -8,12 +8,15 @@
 #include <QDebug>
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsSceneHoverEvent>
+#include "Style.h"
 
 class SCSegment: public QGraphicsLineItem {
 public:
-  SCSegment(QGraphicsItem *parent=0): QGraphicsLineItem(parent) {
-    // setFlag(ItemIsMovable);
-    //    setCacheMode(DeviceCoordinateCache);
+  SCSegment(QGraphicsItem *parent=0):
+    QGraphicsLineItem(parent) {
+  }
+  SCSegment(QPointF p0, QGraphicsItem *parent=0):
+    QGraphicsLineItem(QLineF(p0, p0), parent) {
   }
 };  
 
@@ -28,9 +31,10 @@ public:
     movesegN = 0;
   }
   QPolygonF path() const;
-  bool danglingStart() const;
-  bool danglingEnd() const;
   QPointF moveDelta(QPointF sp) const;
+  QPen normalPen() const;
+  QPen draftPen() const;
+  bool isDangling() const;
 public:
   Scene *scene;
   QList<SCSegment *> segments;
@@ -41,6 +45,23 @@ public:
   SCSegment *moveseg0, *movesegN;
   int moveseg;
 };
+
+bool SceneConnectionData::isDangling() const {
+  return scene->circuit().connection(id).isDangling();
+}
+
+QPen SceneConnectionData::normalPen() const {
+  return QPen(isDangling() ? Style::danglingColor() : Style::connectionColor(),
+	      scene->library()->lineWidth(),
+	      Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
+}
+
+QPen SceneConnectionData::draftPen() const {
+  return QPen(isDangling() ? Style::danglingColor() : Style::connectionColor(),
+	      Style::connectionDraftWidthFactor()
+	      * scene->library()->lineWidth(),
+	      Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
+}
 
 QPointF SceneConnectionData::moveDelta(QPointF sp) const {
   if (moveseg<0)
@@ -61,28 +82,17 @@ QPointF SceneConnectionData::moveDelta(QPointF sp) const {
   return delta;
 }  
 
-bool SceneConnectionData::danglingStart() const {
-  Connection const &c = scene->circuit().connections()[id];
-  return c.fromId() <= 0;
-}
-
-bool SceneConnectionData::danglingEnd() const {
-  Connection const &c = scene->circuit().connections()[id];
-  return c.toId() <= 0;
-}
-
 QPolygonF SceneConnectionData::path() const {
-  Connection const &c = scene->circuit().connections()[id];
+  Connection const &c = scene->circuit().connection(id);
   PartLibrary const *lib = scene->library();
-  
-  QPointF x0 = scene->pinPosition(c.fromId(), c.fromPin());
-  QPointF x1 = scene->pinPosition(c.toId(), c.toPin());
 
   QPolygonF pp;
-  pp << x0;
+  if (!c.danglingStart())
+    pp << scene->pinPosition(c.fromId(), c.fromPin());
   for (QPoint p: c.via())
     pp << lib->scale()*p;
-  pp << x1;
+  if (!c.danglingEnd())
+    pp << scene->pinPosition(c.toId(), c.toPin());
   
   return pp;
  }
@@ -98,8 +108,6 @@ SceneConnection::SceneConnection(class Scene *parent, Connection const &c):
 }
 
 void SceneConnection::setPath(QPolygonF const &path) {
-  PartLibrary const *lib = d->scene->library();
-
   while (d->segments.size() > path.size() - 1)
     delete d->segments.takeLast();
 
@@ -110,22 +118,13 @@ void SceneConnection::setPath(QPolygonF const &path) {
     }
     auto *seg = d->segments[k-1];
     seg->setLine(QLineF(path[k-1], path[k]));
-    seg->setPen(QPen(QColor(0,0,0), lib->lineWidth(),
-		     Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
+    seg->setPen(d->normalPen());
   }
 }
 
 void SceneConnection::rebuild() {
   setPath(d->path());
   setLineWidth();
-  if (d->danglingStart())
-    d->segments.first()->hide();
-  else
-    d->segments.first()->show();
-  if (d->danglingEnd())
-    d->segments.last()->hide();
-  else
-    d->segments.last()->show();
 }
 
 void SceneConnection::temporaryTranslate(QPointF delta) {
@@ -182,8 +181,7 @@ QRectF SceneConnection::boundingRect() const {
 
 int SceneConnection::segmentAt(QPointF p) const {
   for (int k=0; k<d->segments.size(); k++)
-    if (d->segments[k]->isVisible()
-	&& d->segments[k]->boundingRect().contains(p))
+    if (d->segments[k]->boundingRect().contains(p))
       return k;
   return -1;
 }
@@ -198,7 +196,8 @@ void SceneConnection::hover(int seg) {
   d->hoverseg = d->segments[seg];
 
   PartLibrary const *lib = d->scene->library();
-  d->hoverseg->setPen(QPen(QColor(64, 192, 255), 3*lib->lineWidth(),
+  d->hoverseg->setPen(QPen(Style::connectionHoverColor(),
+			   Style::connectionHoverWidthFactor()*lib->lineWidth(),
                            Qt::SolidLine, Qt::RoundCap));
 
   
@@ -207,10 +206,8 @@ void SceneConnection::hover(int seg) {
 void SceneConnection::unhover() {
   if (!d->hoverseg)
     return;
-  
-  PartLibrary const *lib = d->scene->library();
-  d->hoverseg->setPen(QPen(QColor(0, 0, 0), lib->lineWidth(),
-                           Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
+  if (d->segments.contains(d->hoverseg))
+    d->hoverseg->setPen(d->normalPen());
   d->hoverseg = 0;
 }
 
@@ -218,26 +215,28 @@ void SceneConnection::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   scene()->clearSelection();
   int seg = segmentAt(e->scenePos());
   d->moveseg = seg;
+  QPen draftPen(d->draftPen());
   if (seg>=0) {
     d->movestart = e->scenePos();
     d->origpath = d->path();
+    qDebug() << "origpath" << d->origpath;
     if (seg==0) {
-      d->moveseg0 = new SCSegment(this);
-      addToGroup(d->moveseg0);
-      d->moveseg0->setPen(QPen(QColor(0,0,0), 1.0,
-                               Qt::SolidLine, Qt::SquareCap));
+      if (!d->scene->circuit().connection(d->id).danglingStart()) {
+	d->moveseg0 = new SCSegment(d->origpath.first(), this);
+	addToGroup(d->moveseg0);
+	d->moveseg0->setPen(draftPen);
+      }
     } else {
-      d->segments[seg-1]->setPen(QPen(QColor(0,0,0), 1.0,
-                                      Qt::SolidLine, Qt::SquareCap));
+      d->segments[seg-1]->setPen(draftPen);
     }
     if (seg==d->segments.size()-1) {
-      d->movesegN = new SCSegment(this);
-      addToGroup(d->movesegN);
-      d->movesegN->setPen(QPen(QColor(0,0,0), 1.0,
-                               Qt::SolidLine, Qt::SquareCap));
+      if (!d->scene->circuit().connection(d->id).danglingEnd()) {
+	d->movesegN = new SCSegment(d->origpath.last(), this);
+	addToGroup(d->movesegN);
+	d->movesegN->setPen(draftPen);
+      }
     } else {
-      d->segments[seg+1]->setPen(QPen(QColor(0,0,0), 1.0,
-                                      Qt::SolidLine, Qt::SquareCap));
+      d->segments[seg+1]->setPen(draftPen);
     }      
     e->accept();
   }
@@ -255,10 +254,14 @@ void SceneConnection::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   QPointF p3 = d->moveseg + 2  >= d->origpath.size()
     ? d->origpath.last() : d->origpath[d->moveseg + 2];
   d->segments[d->moveseg]->setLine(QLineF(p1, p2));
-  SCSegment *seg0 = d->moveseg0 ? d->moveseg0 : d->segments[d->moveseg - 1];
-  seg0->setLine(QLineF(p0, p1));
-  SCSegment *segN = d->movesegN ? d->movesegN : d->segments[d->moveseg + 1];
-  segN->setLine(QLineF(p2, p3));
+  SCSegment *seg0 = d->moveseg - 1 < 0 ? d->moveseg0
+    : d->segments[d->moveseg - 1];
+  if (seg0)
+    seg0->setLine(QLineF(p0, p1));
+  SCSegment *segN = d->moveseg + 2 >= d->origpath.size() ? d->movesegN
+    : d->segments[d->moveseg + 1];
+  if (segN)
+    segN->setLine(QLineF(p2, p3));
 }
 
 void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
@@ -266,18 +269,12 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     return;
 
   PartLibrary const *lib = d->scene->library();
+
   if (d->moveseg0)
     delete d->moveseg0;
-  else
-    d->segments[d->moveseg-1]->setPen(QPen(QColor(0,0,0), lib->lineWidth(),
-                                           Qt::SolidLine, Qt::SquareCap));
   d->moveseg0 = 0;
   if (d->movesegN)
     delete d->movesegN;
-  else
-    d->segments[d->moveseg+1]->setPen(QPen(QColor(0,0,0), lib->lineWidth(),
-                                           Qt::SolidLine, Qt::SquareCap));
-    
   d->movesegN = 0;
 
   setPath(d->origpath);
@@ -287,9 +284,11 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   QPointF delta = d->moveDelta(e->scenePos());
   path[d->moveseg] += delta;
   path[d->moveseg+1] += delta;
-  if (d->moveseg==0)
+  if (d->moveseg==0
+      && !d->scene->circuit().connection(d->id).danglingStart())
     path.prepend(d->origpath.first());
-  if (d->moveseg==d->segments.size()-1)
+  if (d->moveseg==d->segments.size()-1
+      && !d->scene->circuit().connection(d->id).danglingEnd())
     path.append(d->origpath.last());
   d->scene->modifyConnection(d->id, lib->simplifyPath(path));
 }

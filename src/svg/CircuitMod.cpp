@@ -154,9 +154,13 @@ bool CircuitMod::deleteConnectionSegment(int id, int seg) {
   Connection con(d->circ.connection(id));
   QPolygon via = con.via();
   qDebug() << "deleteConnectionSegment" << id << seg << con.report();
+  if (con.danglingStart())
+    seg ++;
+  // so seg=0 _always_ means before the vias, and seg=#via _always_ means
+  // after the vias
   if (via.isEmpty()) {
     return deleteConnection(id);
-  } else if (seg==0) { // first segment
+  } else if (seg==0) { // first segment, before vias
     int from = con.fromId();
     con.setFrom(0); // make dangling
     if (con.isNull())
@@ -166,7 +170,7 @@ bool CircuitMod::deleteConnectionSegment(int id, int seg) {
     d->acons << id;
     removePointlessJunction(from);
     return true;
-  } else if (seg>=via.size()) { // last segment
+  } else if (seg>=via.size()) { // last segment, after vias
     int to = con.toId();
     con.setTo(0); // make dangling
     if (con.isNull())
@@ -186,10 +190,18 @@ bool CircuitMod::deleteConnectionSegment(int id, int seg) {
       via1.prepend(via.takeLast());
     con.setVia(via);
     con1.setVia(via1);
-    d->circ.insert(con);
-    d->circ.insert(con1);
+
+    if (con.isNull())
+      d->circ.remove(id);
+    else
+      d->circ.insert(con);
     d->acons << id;
-    d->acons << con1.id();
+
+    if (!con1.isNull()) {
+      d->circ.insert(con1);
+      d->acons << con1.id();
+    }
+
     return true;
   }
 }
@@ -355,14 +367,23 @@ void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   a.setVia(patha);
   b.setVia(pathb);
   circ.insert(a);
-  circ.insert(b);
+  if (b.isCircular())
+    circ.remove(b.id());
+  else
+    circ.insert(b);
   acons << a.id();
   acons << b.id();
+
+  qDebug() << "overlapremoved";
+  qDebug() << "  " << a.report();
+  qDebug() << "  " << b.report();
 
   // The original starting point may have become a useless junction, so:
   removePointlessJunction(c.fromId());
 
   removeOverlappingJunctions(j.id());
+  if (removePointlessJunction(j.id()))
+    aelts.remove(j.id());
 }
 
 OverlapResult CircuitModData::overlappingStart(Connection const &a,
@@ -371,12 +392,12 @@ OverlapResult CircuitModData::overlappingStart(Connection const &a,
   if (a.id()==b.id() || a.fromId()<=0 || a.from()!=b.from())
     return res;
   Geometry geom(circ, lib);
+  qDebug() << "overlappingstart?" << a.report() << b.report();
   QPolygon patha(geom.connectionPath(a));
   QPolygon pathb(geom.connectionPath(b));
   // By construction, the first points in the path are the same
   QPoint deltaa = patha[1] - patha[0];
   QPoint deltab = pathb[1] - pathb[0];
-  qDebug() << "overlappingstart?" << a.report() << b.report();
   qDebug() << " patha" << patha << "length" << deltaa;
   qDebug() << " pathb" << pathb << "length" << deltab;
   res.overlap

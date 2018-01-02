@@ -444,6 +444,8 @@ void Scene::finalizeConnection() {
       cm.removeConnectionsEquivalentTo(c);
     for (int c: cc)
       cm.adjustOverlappingConnections(c);
+    for (auto c: d->connbuilder->junctions())
+      cm.removePointlessJunction(c.id());
     d->rebuildAsNeeded(cm);
   }
 
@@ -467,8 +469,10 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
   d->preact();
   
   Connection con(d->circ.connection(id));
-  newpath.removeFirst();
-  newpath.removeLast();
+  if (con.fromId() > 0)
+    newpath.removeFirst();
+  if (con.toId() > 0)
+    newpath.removeLast();
   QPolygon pp;
   for (auto p: newpath)
     pp << d->lib->downscale(p);
