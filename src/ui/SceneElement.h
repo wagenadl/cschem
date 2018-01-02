@@ -5,6 +5,8 @@
 #define SCENEELEMENT_H
 
 #include <QGraphicsItemGroup>
+#include <QWeakPointer>
+#include <QSharedPointer>
 
 class SceneElement: public QGraphicsItemGroup {
 public:
@@ -12,6 +14,20 @@ public:
   SceneElement(SceneElement const &) = delete;
   SceneElement &operator=(SceneElement const &) = delete;  
   ~SceneElement();
+  class WeakPtr {
+  public:
+    WeakPtr();
+    SceneElement *data() const;
+    operator bool() const;
+    void clear();
+  private:
+    SceneElement *s;
+    QWeakPointer<class SceneElementData> d;
+  private:
+    WeakPtr(SceneElement *, QSharedPointer<SceneElementData> const &);
+    friend class SceneElement;
+  };
+  WeakPtr weakref();
 public:
   class Scene *scene();
   int id() const;
@@ -29,7 +45,7 @@ protected:
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
 private:
-  class SceneElementData *d;
+  QSharedPointer<class SceneElementData >d;
 };
 
 #endif

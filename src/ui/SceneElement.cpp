@@ -44,8 +44,8 @@ public:
   bool hover;
 };
 
-SceneElement::SceneElement(class Scene *parent, Element const &elt) {
-  d = new SceneElementData;
+SceneElement::SceneElement(class Scene *parent, Element const &elt):
+  d(new SceneElementData) {
   //
   d->scene = parent;
   d->id = elt.id();
@@ -82,7 +82,7 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt) {
 }
 
 SceneElement::~SceneElement() {
-  delete d;
+  // delete d;
 }
 
 // static double L2(QPointF p) {
@@ -149,4 +149,29 @@ void SceneElement::unhover() {
     d->hover = false;
     d->markHover();
   }
+}
+
+SceneElement::WeakPtr::WeakPtr(SceneElement *s,
+				  QSharedPointer<SceneElementData> const &d):
+  s(s), d(d) {
+}
+
+SceneElement::WeakPtr::WeakPtr(): s(0) {
+}
+
+SceneElement *SceneElement::WeakPtr::data() const {
+  return d.isNull() ? 0 : s;
+}
+
+void SceneElement::WeakPtr::clear() {
+  d.clear();
+}
+
+SceneElement::WeakPtr::operator bool() const {
+  return !d.isNull();
+}
+
+
+SceneElement::WeakPtr SceneElement::weakref() {
+  return SceneElement::WeakPtr(this, d);
 }

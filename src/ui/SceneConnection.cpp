@@ -87,8 +87,8 @@ QPolygonF SceneConnectionData::path() const {
   return pp;
  }
 
-SceneConnection::SceneConnection(class Scene *parent, Connection const &c) {
-  d = new SceneConnectionData;
+SceneConnection::SceneConnection(class Scene *parent, Connection const &c):
+  d(new SceneConnectionData) {
 
   d->scene = parent;
   d->id = c.id();
@@ -160,7 +160,7 @@ void SceneConnection::temporaryTranslateTo(QPointF delta) {
 }
 
 SceneConnection::~SceneConnection() {
-  delete d;
+  //  delete d;
 }
 
 
@@ -291,4 +291,29 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   if (d->moveseg==d->segments.size()-1)
     path.append(d->origpath.last());
   d->scene->modifyConnection(d->id, lib->simplifyPath(path));
+}
+
+SceneConnection::WeakPtr::WeakPtr(SceneConnection *s,
+				  QSharedPointer<SceneConnectionData> const &d):
+  s(s), d(d) {
+}
+
+SceneConnection::WeakPtr::WeakPtr(): s(0) {
+}
+
+SceneConnection *SceneConnection::WeakPtr::data() const {
+  return d.isNull() ? 0 : s;
+}
+
+void SceneConnection::WeakPtr::clear() {
+  d.clear();
+}
+
+SceneConnection::WeakPtr::operator bool() const {
+  return !d.isNull();
+}
+
+
+SceneConnection::WeakPtr SceneConnection::weakref() {
+  return SceneConnection::WeakPtr(this, d);
 }

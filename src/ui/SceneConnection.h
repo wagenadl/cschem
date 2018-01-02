@@ -5,6 +5,8 @@
 #define SCENECONNECTION_H
 
 #include <QGraphicsItemGroup>
+#include <QWeakPointer>
+#include <QSharedPointer>
 
 class SceneConnection: public QGraphicsItemGroup {
 public:
@@ -12,6 +14,20 @@ public:
   SceneConnection(SceneConnection const &) = delete;
   SceneConnection &operator=(SceneConnection const &) = delete;  
   ~SceneConnection();
+  class WeakPtr {
+  public:
+    WeakPtr();
+    SceneConnection *data() const;
+    operator bool() const;
+    void clear();
+  private:
+    SceneConnection *s;
+    QWeakPointer<class SceneConnectionData> d;
+  private:
+    WeakPtr(SceneConnection *, QSharedPointer<SceneConnectionData> const &);
+    friend class SceneConnection;
+  };
+  WeakPtr weakref();
 public:
   class Scene *scene();
   int id() const;
@@ -33,7 +49,7 @@ public:
 private:
   void setPath(class QPolygonF const &);
 private:
-  class SceneConnectionData *d;
+  QSharedPointer<class SceneConnectionData> d;
 };
 
 #endif

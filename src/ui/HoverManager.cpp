@@ -18,8 +18,6 @@ public:
     pinMarker = 0;
     primaryPurpose = HoverManager::Purpose::Moving;
     r = scene->library()->scale();
-    hoverElt = 0;
-    hoverCon = 0;
   }
   void ensurePinMarker();
   void update();
@@ -37,8 +35,8 @@ public:
   int seg;
   bool isjunc;
   QGraphicsEllipseItem *pinMarker;
-  SceneElement *hoverElt;
-  SceneConnection *hoverCon;
+  SceneElement::WeakPtr hoverElt;
+  SceneConnection::WeakPtr hoverCon;
   HoverManager::Purpose primaryPurpose;
   double r;
 };
@@ -55,11 +53,11 @@ void HoverManagerData::ensurePinMarker() {
 
 void HoverManagerData::unhover() {
   if (hoverCon)
-    hoverCon->unhover();
-  hoverCon = 0;
+    hoverCon.data()->unhover();
+  hoverCon.clear();
   if (hoverElt)
-    hoverElt->unhover();
-  hoverElt = 0;
+    hoverElt.data()->unhover();
+  hoverElt.clear();
   if (pinMarker) 
     pinMarker->setBrush(QColor(128, 128, 128, 0));
 }
@@ -154,35 +152,35 @@ void HoverManagerData::update() {
     else
       pinMarker->setBrush(QColor(0, 255, 128));
     if (hoverCon)
-      hoverCon->unhover();
-    hoverCon = 0;
+      hoverCon.data()->unhover();
+    hoverCon.clear();
     if (hoverElt)
-      hoverElt->unhover();
-    hoverElt = 0;
+      hoverElt.data()->unhover();
+    hoverElt.clear();
   } else if (onElement()) {
     auto *e = elts[elt];
-    if (hoverElt != e) {
+    if (hoverElt.data() != e) {
       if (hoverElt)
-        hoverElt->unhover();
+        hoverElt.data()->unhover();
       e->hover();
-      hoverElt = e;
+      hoverElt = e->weakref();
     }
     if (hoverCon)
-      hoverCon->unhover();
-    hoverCon = 0;
+      hoverCon.data()->unhover();
+    hoverCon.clear();
     if (pinMarker) 
       pinMarker->setBrush(QColor(128, 128, 128, 0));
   } else if (onConnection()) {
     auto *c = cons[con];
-    if (hoverCon != c) {
+    if (hoverCon.data() != c) {
       if (hoverCon)
-        hoverCon->unhover();
+        hoverCon.data()->unhover();
       c->hover(seg);
-      hoverCon = c;
+      hoverCon = c->weakref();
     }
     if (hoverElt)
-      hoverElt->unhover();
-    hoverElt = 0;
+      hoverElt.data()->unhover();
+    hoverElt.clear();
     if (pinMarker) 
       pinMarker->setBrush(QColor(128, 128, 128, 0));
   } else {
