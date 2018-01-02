@@ -233,7 +233,6 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "Scene: mouseMove" << e->scenePos();
   d->mousexy = e->scenePos();
   d->hovermanager->setPrimaryPurpose((d->connbuilder ||
                                       e->modifiers() & Qt::ShiftModifier)
@@ -399,19 +398,33 @@ int Scene::connectionAt(QPointF scenepos, int *segp) const {
 void Scene::finalizeConnection() {
   if (!d->connbuilder->isAbandoned()) {
     d->preact();
+    QList<int> cc;
     for (auto c: d->connbuilder->junctions()) {
-      d->circ.elements()[c.id()] = c;  
+      d->circ.insert(c);
       if (d->elts.contains(c.id()))
         delete d->elts[c.id()];
       d->elts[c.id()] = new SceneElement(this, c);
     }
     for (auto c: d->connbuilder->connections()) {
-      d->circ.connections()[c.id()] = c;  
+      d->circ.insert(c);
       if (d->conns.contains(c.id()))
         delete d->conns[c.id()];
       d->conns[c.id()] = new SceneConnection(this, c);
+      cc << c.id();
     }
+
+    CircuitMod cm(d->circ, d->lib);
+    for (int c: cc) 
+      cm.simplifyConnection(c);
+    for (int c: cc)
+      qDebug() << "Connection" << d->circ.connection(c).report();
+    for (int c: cc)
+      cm.removeConnectionsEquivalentTo(c);
+    for (int c: cc)
+      cm.adjustOverlappingConnections(c);
+    d->rebuildAsNeeded(cm);
   }
+
   delete d->connbuilder;
   d->connbuilder = 0;
 }
@@ -428,13 +441,18 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
   qDebug() << newpath << id;
   if (!connections().contains(id))
     return;
-  Connection &con(d->circ.connection(id));
+  Connection con(d->circ.connection(id));
   newpath.removeFirst();
   newpath.removeLast();
   QPolygon pp;
   for (auto p: newpath)
     pp << d->lib->downscale(p);
   con.setVia(pp);
+  d->circ.insert(con);
   d->conns[id]->rebuild();
   qDebug() << "rebuilt";
+
+  CircuitMod cm(d->circ, d->lib);
+  if (cm.adjustOverlappingConnections(id))
+    d->rebuildAsNeeded(cm);
 }

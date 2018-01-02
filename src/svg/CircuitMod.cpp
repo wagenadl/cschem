@@ -5,6 +5,7 @@
 #include "file/Circuit.h"
 #include "file/PinID.h"
 #include "svg/Router.h"
+#include <QDebug>
 
 struct OverlapResult {
   OverlapResult():
@@ -56,21 +57,23 @@ bool CircuitMod::deleteElement(int id) {
     return false;
   
   Geometry geom(d->circ, d->lib);
-  for (auto &c: d->circ.connections()) {
+  for (auto c: d->circ.connections()) {
     if (c.fromId()==id) {
       c.setFromId(0); // make dangling
       c.via().prepend(geom.pinPosition(id, c.fromPin()));
+      d->circ.insert(c);
       d->acons << c.id();
     }
     if (c.toId()==id) {
       c.setToId(0); // make dangling
       c.via().append(geom.pinPosition(id, c.toPin()));
+      d->circ.insert(c);
       d->acons << c.id();
     }
   }
 
   d->aelts << id;
-  d->circ.elements().remove(id);
+  d->circ.remove(id);
   return true;
 }
 
@@ -79,6 +82,11 @@ bool CircuitModData::removePointlessJunction(int id) {
     return false;
   
   QList<int> cc = circ.connectionsOn(id, "").toList();
+
+  qDebug() << "removepointless" << id;
+  for (int c: cc)
+    qDebug() << "  " << circ.connection(c).report();
+  
   if (cc.size() > 2)
     return false;
   
@@ -95,15 +103,15 @@ bool CircuitModData::removePointlessJunction(int id) {
     con1.setToId(con2.toId());
     con1.setToPin(con2.toPin());
     con1.via() += con2.via();
-    circ.connections().remove(cc[1]);
-    circ.connection(cc[0]) = con1;
+    circ.remove(cc[1]);
+    circ.insert(con1);
   }
 
   for (int c: cc)
     acons << c;
   aelts << id;
 
-  circ.elements().remove(id);
+  circ.remove(id);
 
   return true;
 }
@@ -113,12 +121,13 @@ bool CircuitMod::removePointlessJunction(int id) {
 }
 
 bool CircuitMod::deleteConnection(int id) {
-  Connection con(d->circ.connection(id));
-  if (con.isNull())
+  if (!d->circ.connections().contains(id))
     return false;
 
+  Connection con = d->circ.connection(id);
+  
   d->acons << id;
-  d->circ.connections().remove(id);
+  d->circ.remove(id);
   
   int from = con.fromId();
   if (d->circ.element(from).type() == Element::Type::Junction)
@@ -137,9 +146,9 @@ bool CircuitMod::removeConnectionsEquivalentTo(int id) {
   PinID to = con.to();
   QSet<int> cc;
   for (auto const &c: d->circ.connections())
-    if (c.id() != id
-        && c.from() == from
-        && c.to() == to)
+    if (c.id()!=id
+        && ((c.from()==from && c.to()==to)
+            || (c.from()==to && c.to()==from)))
       cc << c.id();
 
   bool res = false;
@@ -193,12 +202,13 @@ bool CircuitMod::simplifyConnection(int id) {
   QPolygon path1 = Geometry::simplifiedPath(path0);
   if (path1.size() == path0.size())
     return false;
-  Connection &con(d->circ.connection(id));
+  Connection con(d->circ.connection(id));
   if (con.fromId()>0)
     path1.removeFirst();
   if (con.toId()>0)
     path1.removeLast();
   con.setVia(path1);
+  d->circ.insert(con);
   return true;
 }
 
@@ -235,8 +245,8 @@ void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   Connection c;
   c.setFrom(a.from());
   c.setTo(j.id(), "");
-  circ.element(j.id()) = j;
-  circ.connection(c.id()) = c;
+  circ.insert(j);
+  circ.insert(c);
   acons << c.id();
   aelts << j.id();
 
@@ -245,26 +255,29 @@ void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   b.setFrom(j.id(), "");
   a.setVia(patha);
   b.setVia(pathb);
-  circ.connection(a.id()) = a;
-  circ.connection(b.id()) = b;
+  circ.insert(a);
+  circ.insert(b);
   acons << a.id();
   acons << b.id();
 
   // The original starting point may have become a useless junction, so:
-  removePointlessJunction(a.fromId());
+  removePointlessJunction(c.fromId());
 }
 
 OverlapResult CircuitModData::overlappingStart(Connection const &a,
                                                Connection const &b) const {
   OverlapResult res;
-  if (a.fromId()<=0 || a.from()!=b.from())
+  if (a.id()==b.id() || a.fromId()<=0 || a.from()!=b.from())
     return res;
   Geometry geom(circ, lib);
   QPolygon patha(geom.connectionPath(a));
   QPolygon pathb(geom.connectionPath(b));
   // By construction, the first points in the path are the same
   QPoint deltaa = patha[1] - patha[0];
-  QPoint deltab = pathb[1] - pathb[1];
+  QPoint deltab = pathb[1] - pathb[0];
+  qDebug() << "overlappingstart?" << a.report() << b.report();
+  qDebug() << " patha" << patha << "length" << deltaa;
+  qDebug() << " pathb" << pathb << "length" << deltab;
   res.overlap
     = (deltaa.x()==0 && deltab.x()==0 && deltaa.y()*deltab.y()>0)
     || (deltaa.y()==0 && deltab.y()==0 && deltaa.x()*deltab.x()>0);
@@ -273,6 +286,8 @@ OverlapResult CircuitModData::overlappingStart(Connection const &a,
 
   int la = deltaa.manhattanLength();
   int lb = deltab.manhattanLength();
+
+  qDebug() << " => " << la << lb;
   if (la<=lb)
     res.allOfFirstSegmentA = true;
   if (lb<=la)
@@ -289,6 +304,8 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
   Connection a(d->circ.connection(id));
 
   for (auto const &b: d->circ.connections()) {
+    if (b.id()==id)
+      continue;
     OverlapResult over;
     over = d->overlappingStart(a, b);
     if (over) {
@@ -299,7 +316,7 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
     over = d->overlappingStart(a, br);
     if (over) {
       d->acons << b.id();
-      d->circ.connection(b.id()) = br;
+      d->circ.insert(br);
       d->removeOverlap(a.id(), b.id(), over);
       return true;
     }
@@ -307,7 +324,7 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
     over = d->overlappingStart(ar, b);
     if (over) {
       d->acons << a.id();
-      d->circ.connection(a.id()) = ar;
+      d->circ.insert(ar);
       d->removeOverlap(a.id(), b.id(), over);
       return true;
     }
@@ -315,8 +332,8 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
     if (over) {
       d->acons << a.id();
       d->acons << b.id();
-      d->circ.connection(a.id()) = ar;
-      d->circ.connection(b.id()) = br;
+      d->circ.insert(ar);
+      d->circ.insert(br);
       d->removeOverlap(a.id(), b.id(), over);
       return true;
     }
@@ -327,7 +344,7 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
 bool CircuitMod::translateConnection(int id, QPoint dd) {
   if (!d->circ.connections().contains(id))
     return false;
-  d->circ.connection(id).translate(dd);
+  d->circ.insert(d->circ.connection(id).translated(dd));
   d->acons << id;
   return true;
 }
@@ -335,7 +352,7 @@ bool CircuitMod::translateConnection(int id, QPoint dd) {
 bool CircuitMod::translateElement(int id, QPoint dd) {
   if (!d->circ.elements().contains(id))
     return false;
-  d->circ.element(id).translate(dd);
+  d->circ.insert(d->circ.element(id).translated(dd));
   d->aelts << id;
   return true;
 }
@@ -344,7 +361,7 @@ bool CircuitMod::reroute(int id, Circuit const &origcirc) {
   if (!d->circ.connections().contains(id))
     return false;
   Router router(d->lib);
-  d->circ.connection(id) = router.reroute(id, origcirc, d->circ);
+  d->circ.insert(router.reroute(id, origcirc, d->circ));
   d->acons << id;
   return true;
 }

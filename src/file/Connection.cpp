@@ -168,6 +168,12 @@ void Connection::setVia(QVector<QPoint> const &v) {
   d->via = v;
 }
 
+Connection Connection::translated(QPoint delta) const {
+  Connection c = *this;
+  c.translate(delta);
+  return c;
+}
+
 void Connection::translate(QPoint delta) {
   d.detach();
   for (QPoint &p: d->via)
@@ -176,14 +182,12 @@ void Connection::translate(QPoint delta) {
 
 Connection Connection::reversed() const {
   Connection con = *this;
-  qDebug() << "reversed" << con.report();
   QPolygon v;
   for (auto p: via())
     v.prepend(p);
   con.setFrom(to());
   con.setTo(from());
   con.setVia(v);
-  qDebug() << "=>" << con.report();
   return con;
 }
 
@@ -218,7 +222,7 @@ bool Connection::isEquivalentTo(Connection const &o) const {
 }
 
 QString Connection::report() const {
-  QString x = QString("%1:%2 - ").arg(fromId()).arg(fromPin());
+  QString x = QString("%1 = %2:%3 - ").arg(id()).arg(fromId()).arg(fromPin());
   for (auto v: via())
     x += QString("%1,%2 ").arg(v.x()).arg(v.y());
   x += QString("- %1:%2").arg(toId()).arg(toPin());

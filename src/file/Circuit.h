@@ -19,7 +19,7 @@ public:
   Circuit &operator=(Circuit const &);
   ~Circuit();
 public:
-  void insert(Element const &);
+  void insert(Element const &); // or replace
   void insert(Connection const &);
   void remove(int id);
   QSet<int> connectionsTo(QSet<int> ids) const;
@@ -34,13 +34,9 @@ public:
   /* Does not take care of edge connections */
 public:
   QMap<int, class Element> const &elements() const;
-  QMap<int, class Element> &elements();
   QMap<int, class Connection> const &connections() const;
-  QMap<int, class Connection> &connections();
   Element const &element(int) const;
-  Element &element(int);
   Connection const &connection(int) const;
-  Connection &connection(int);
 private:
   QSharedDataPointer<class CircuitData> d;
 };

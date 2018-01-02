@@ -111,6 +111,12 @@ void Element::setPosition(QPoint p) {
   d->position = p;
 }
 
+Element Element::translated(QPoint delta) const {
+  Element e = *this;
+  e.translate(delta);
+  return e;
+}
+
 void Element::translate(QPoint delta) {
   d.detach();
   d->position += delta;

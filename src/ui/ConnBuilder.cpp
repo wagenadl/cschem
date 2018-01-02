@@ -19,6 +19,7 @@ public:
   ConnBuilderData(Scene *scene): scene(scene), circ(scene->circuit()) {
     fromId = -1;
     toId = -1;
+    majorcon = -1;
   }
   void buildConnection();
   void ensureStartJunction();
@@ -35,6 +36,7 @@ public:
   Circuit circ;
   QSet<int> junctions;
   QSet<int> connections;
+  int majorcon;
   QPolygonF points; // includes from and to
   int fromId, toId; // could refer to a new junction!
   QString fromPin, toPin;
@@ -111,8 +113,9 @@ void ConnBuilderData::buildConnection() {
   for (auto p: pp)
     via << scene->library()->downscale(p);
   c.setVia(via);
-  circ.connections()[c.id()] = c;
+  circ.insert(c);
   connections << c.id();
+  majorcon = c.id();
 }
 
 void ConnBuilderData::ensureStartJunction() {
@@ -146,7 +149,7 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   
   // must add a junction, or this will be confusing
   Element j(Element::junction(scene->library()->downscale(pt)));
-  circ.elements()[j.id()] = j;
+  circ.insert(j);
   junctions << j.id();
   
   // create connection b/w original pin and new junction
@@ -154,12 +157,12 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   c.setFromId(id);
   c.setFromPin(pin);
   c.setToId(j.id());
-  circ.connections()[c.id()] = c;
+  circ.insert(c);
   connections << c.id();
   
   // move other connections to junction
   for (int o: othercons) {
-    Connection &c(circ.connection(o));
+    Connection c(circ.connection(o));
     if (c.fromId() == id) {
       c.setFromId(j.id());
       c.setFromPin("");
@@ -168,6 +171,7 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
       qDebug() << "rerouting" << c.id() << " from " << c.toId() << "to" << j.id();      c.setToId(j.id());
       c.setToPin("");
     }
+    circ.insert(c);
     connections << c.id();
   }
   return j.id();
@@ -278,8 +282,11 @@ bool ConnBuilder::isAbandoned() const {
 
 QList<Connection> ConnBuilder::connections() const {
   QList<Connection> lst;
+  if (d->majorcon > 0)
+    lst << d->circ.connection(d->majorcon);
   for (int id: d->connections)
-    lst << d->circ.connection(id);
+    if (id != d->majorcon)
+      lst << d->circ.connection(id);
   return lst;
 }
 

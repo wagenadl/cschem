@@ -36,6 +36,7 @@ public:
   QString label() const;
   int id() const;
   int rotation() const;
+  Element translated(QPoint delta) const;
 public:
   void setPosition(QPoint);
   void setSubtype(QString);

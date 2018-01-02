@@ -56,18 +56,10 @@ QMap<int, class Element> const &Circuit::elements() const {
   return d->elements;
 }
 
-QMap<int, class Element> &Circuit::elements() {
-  return d->elements;
-}
-
 QMap<int, class Connection> const &Circuit::connections() const {
   return d->connections;
 }
   
-QMap<int, class Connection> &Circuit::connections() {
-  return d->connections;
-}
-
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
   c = Circuit(sr);
   return sr;
@@ -88,9 +80,12 @@ void Circuit::insert(Element const &e) {
   d->elements[e.id()] = e;
 }
 
-void Circuit::insert(Connection const &e) {
+void Circuit::insert(Connection const &c) {
   d.detach();
-  d->connections[e.id()] = e;
+  if (c.isNull()) {
+    qDebug() << "Inserting null connection";
+  }
+  d->connections[c.id()] = c;
 }
 
 void Circuit::remove(int id) {
@@ -160,18 +155,9 @@ Element const &Circuit::element(int id) const {
   return it == d->elements.end() ? ne : *it;
 }
 
-Element &Circuit::element(int id) {
-  d.detach();
-  return d->elements[id];
-}
-
 Connection const &Circuit::connection(int id) const {
   static Connection ne;
   auto it(d->connections.find(id));
   return it == d->connections.end() ? ne : *it;
 }
 
-Connection &Circuit::connection(int id) {
-  d.detach();
-  return d->connections[id];
-}

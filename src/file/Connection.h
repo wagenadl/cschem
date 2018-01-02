@@ -31,6 +31,7 @@ public:
   bool isDangling() const;
   bool isCircular() const;
   Connection reversed() const; // does *not* assign a new ID
+  Connection translated(QPoint delta) const;
 public:
   void setFrom(PinID);
   void setTo(PinID);

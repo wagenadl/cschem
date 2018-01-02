@@ -107,8 +107,6 @@ bool HoverManagerData::onConnection() const {
 }    
 
 void HoverManagerData::update() {
-  qDebug() << "HMD:update";
-  
   auto const &elts = scene->elements();
   auto const &cons = scene->connections();
   //  auto const &lib = scene->library();
