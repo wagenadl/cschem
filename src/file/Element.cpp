@@ -208,3 +208,10 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Element const &c) {
   return sr;
 };
 
+QString Element::report() const {
+  return QString("%1: %2 at %3,%4 - %5 %6 %7")
+    .arg(id()).arg(symbol())
+    .arg(position().x()).arg(position().y())
+    .arg(value()).arg(name()).arg(label());
+}
+    

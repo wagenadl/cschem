@@ -197,6 +197,19 @@ void Scene::moveSelection(QPointF delta) {
     for (int id: tocons)
       cm.reroute(id, origCirc);
 
+    for (int id: selection)
+      cm.removeOverlappingJunctions(id);
+    for (int id: fromcons)
+      cm.adjustOverlappingConnections(id);
+
+    // Just a little sanity check
+    Circuit newcirc = cm.circuit();
+    for (int id: selection)
+      if (!newcirc.elements().contains(id))
+	qDebug() << "Selected element" << origCirc.element(id).report()
+		 << "got deleted in move. This might be bad.";
+    // End of sanity check
+    
     d->rebuildAsNeeded(cm);
   } else {
     // restore stuff

@@ -25,6 +25,7 @@ public:
   Element(QXmlStreamReader &src);
   Element &operator=(Element const &);
   ~Element();
+  QString report() const;
 public:
   QPoint position() const;
   Type type() const;

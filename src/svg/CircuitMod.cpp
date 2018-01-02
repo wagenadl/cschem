@@ -24,6 +24,7 @@ public:
   OverlapResult overlappingStart(Connection const &a, Connection const &b) const;
   bool removePointlessJunction(int id);
   void removeOverlap(int ida, int idb, OverlapResult over);
+  bool removeOverlappingJunctions(int id);
 public:
   Circuit circ;
   PartLibrary const *lib;
@@ -92,20 +93,24 @@ bool CircuitModData::removePointlessJunction(int id) {
   
   if (cc.size() == 2) {
     // reconnect what would be dangling
-    Connection con1(circ.connection(cc[0]));
-    Connection con2(circ.connection(cc[1]));
+    Connection con0(circ.connection(cc[0]));
+    Connection con1(circ.connection(cc[1]));
 
-    if (con1.fromId() == id)
+    if (con0.fromId() == id)
+      con0.reverse();
+    if (con1.toId() == id)
       con1.reverse();
-    if (con2.toId() == id)
-      con2.reverse();
 
-    con1.setToId(con2.toId());
-    con1.setToPin(con2.toPin());
-    con1.via() << circ.element(id).position();
-    con1.via() += con2.via();
+    con0.setToId(con1.toId());
+    con0.setToPin(con1.toPin());
+    con0.via() << circ.element(id).position();
+    con0.via() += con1.via();
+    Geometry geom(circ, lib);
+    QPolygon path = geom.simplifiedPath(geom.connectionPath(con0));
+    path.removeFirst(); path.removeLast();
+    con0.setVia(path);
+    circ.insert(con0);
     circ.remove(cc[1]);
-    circ.insert(con1);
   }
 
   for (int c: cc)
@@ -213,6 +218,50 @@ bool CircuitMod::simplifyConnection(int id) {
   return true;
 }
 
+bool CircuitModData::removeOverlappingJunctions(int id) {
+  Element junc(circ.element(id));
+  if (junc.type() != Element::Type::Junction)
+    return false;
+  
+  QSet<int> jj;
+  for (int c: circ.connectionsOn(id, "")) {
+    Connection con(circ.connection(c));
+    int id1 = con.fromId()==id ? con.toId() : con.fromId();
+    Element junc1(circ.element(id1));
+    if (junc1.type() == Element::Type::Junction
+	&& id1 != id
+	&& junc1.position() == junc.position())
+      jj << id1;
+  }
+  if (jj.isEmpty())
+    return false;
+  
+  for (int j: jj) {
+    for (int c: circ.connectionsOn(j, "")) {
+      Connection con(circ.connection(c));
+      if (con.fromId()==j) {
+	con.setFromId(id);
+	if (con.isCircular())
+	  circ.remove(c);
+	else
+	  circ.insert(con);
+	acons << c;
+      } 
+      if (con.toId()==j) {
+	con.setToId(id);
+	if (con.isCircular())
+	  circ.remove(c);
+	else
+	  circ.insert(con);
+	acons << c;
+      }
+    }
+    circ.remove(j);
+    aelts << j;
+  }
+  return true;
+}
+
 void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   if (!over)
     return;
@@ -231,10 +280,11 @@ void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   /* Note that at least one of the above two conditions _must_ be true
      by construction.  Further, note that it is possible that we
      gobbled up the "to" pin's position if the shorter segment is the
-     only segment of its connection.  This can only occur in an ugly
-     situation (overlapping connection running through the "to" pin),
-     but it must be tolerated, hence the check for "isempty" in the
-     following ifs. */
+     only segment of its connection. This is a special case. Normally,
+     we create a new junction at the end of the shorter segment, and deal
+     with the fallout. But now we risk placing to junctions on top of
+     each other.
+  */
 
   if (a.toId()>0 && !patha.isEmpty())
     patha.takeLast();
@@ -263,6 +313,8 @@ void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
 
   // The original starting point may have become a useless junction, so:
   removePointlessJunction(c.fromId());
+
+  removeOverlappingJunctions(j.id());
 }
 
 OverlapResult CircuitModData::overlappingStart(Connection const &a,
@@ -301,42 +353,54 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
   bool res = removeConnectionsEquivalentTo(id);
   if (simplifyConnection(id))
     res = true;
-  
-  Connection a(d->circ.connection(id));
 
-  for (auto const &b: d->circ.connections()) {
-    if (b.id()==id)
-      continue;
-    OverlapResult over;
-    over = d->overlappingStart(a, b);
-    if (over) {
-      d->removeOverlap(a.id(), b.id(), over);
-      return true;
-    }
-    Connection br = b.reversed();
-    over = d->overlappingStart(a, br);
-    if (over) {
-      d->acons << b.id();
-      d->circ.insert(br);
-      d->removeOverlap(a.id(), b.id(), over);
-      return true;
-    }
-    Connection ar = a.reversed();
-    over = d->overlappingStart(ar, b);
-    if (over) {
-      d->acons << a.id();
-      d->circ.insert(ar);
-      d->removeOverlap(a.id(), b.id(), over);
-      return true;
-    }
-    over = d->overlappingStart(ar, br);
-    if (over) {
-      d->acons << a.id();
-      d->acons << b.id();
-      d->circ.insert(ar);
-      d->circ.insert(br);
-      d->removeOverlap(a.id(), b.id(), over);
-      return true;
+  bool keepgoing = true;
+  while (keepgoing) {
+    keepgoing = false;
+    Connection a(d->circ.connection(id));
+    
+    for (auto const &b: d->circ.connections()) {
+      if (b.id()==id)
+	continue;
+      OverlapResult over;
+      over = d->overlappingStart(a, b);
+      if (over) {
+	d->removeOverlap(a.id(), b.id(), over);
+	keepgoing = true;
+	res = true;
+	break;
+      }
+      Connection br = b.reversed();
+      over = d->overlappingStart(a, br);
+      if (over) {
+	d->acons << b.id();
+	d->circ.insert(br);
+	d->removeOverlap(a.id(), b.id(), over);
+	keepgoing = true;
+	res = true;
+	break;
+      }
+      Connection ar = a.reversed();
+      over = d->overlappingStart(ar, b);
+      if (over) {
+	d->acons << a.id();
+	d->circ.insert(ar);
+	d->removeOverlap(a.id(), b.id(), over);
+	keepgoing = true;
+	res = true;
+	break;
+      }
+      over = d->overlappingStart(ar, br);
+      if (over) {
+	d->acons << a.id();
+	d->acons << b.id();
+	d->circ.insert(ar);
+	d->circ.insert(br);
+	d->removeOverlap(a.id(), b.id(), over);
+	keepgoing = true;
+	res = true;
+	break;
+      }
     }
   }
   return res;
@@ -365,4 +429,8 @@ bool CircuitMod::reroute(int id, Circuit const &origcirc) {
   d->circ.insert(router.reroute(id, origcirc, d->circ));
   d->acons << id;
   return true;
+}
+
+bool CircuitMod::removeOverlappingJunctions(int eltid) {
+  return d->removeOverlappingJunctions(eltid);
 }

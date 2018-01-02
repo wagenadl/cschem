@@ -15,7 +15,8 @@ public:
   ~CircuitMod();
   bool deleteElement(int eltid);
   bool deleteConnection(int conid);
-  bool removePointlessJunction(int eltid); // true if removed
+  bool removePointlessJunction(int eltid);
+  bool removeOverlappingJunctions(int eltid);
   bool removeConnectionsEquivalentTo(int conid);
   bool adjustOverlappingConnections(int conid);
   bool simplifyConnection(int conid);
