@@ -102,6 +102,7 @@ bool CircuitModData::removePointlessJunction(int id) {
 
     con1.setToId(con2.toId());
     con1.setToPin(con2.toPin());
+    con1.via() << circ.element(id).position();
     con1.via() += con2.via();
     circ.remove(cc[1]);
     circ.insert(con1);

@@ -58,6 +58,7 @@ public:
 };
 
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
+  hovermanager->unhover();
   circ = cm.circuit();
   for (int id: cm.affectedConnections()) {
     if (circ.connections().contains(id)) {
@@ -84,14 +85,12 @@ void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
 }
 
 void SceneData::deleteElement(int id) {
-  hovermanager->unhover();
   CircuitMod cm(circ, lib);
   cm.deleteElement(id);
   rebuildAsNeeded(cm);
 }  
 
 void SceneData::deleteConnection(int id) {
-  hovermanager->unhover();
   CircuitMod cm(circ, lib);
   cm.deleteConnection(id);
   rebuildAsNeeded(cm);
@@ -120,6 +119,7 @@ void Scene::setCircuit(Circuit const &c) {
 
 
 void Scene::rebuild() {
+  d->hovermanager->unhover();
   /* We should be able to do better than start afresh in general, but for now: */
   for (auto i: d->elts)
     delete i;
@@ -396,6 +396,7 @@ int Scene::connectionAt(QPointF scenepos, int *segp) const {
 }
 
 void Scene::finalizeConnection() {
+  d->hovermanager->unhover();
   if (!d->connbuilder->isAbandoned()) {
     d->preact();
     QList<int> cc;
@@ -441,6 +442,9 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
   qDebug() << newpath << id;
   if (!connections().contains(id))
     return;
+
+  d->preact();
+  
   Connection con(d->circ.connection(id));
   newpath.removeFirst();
   newpath.removeLast();
