@@ -130,7 +130,7 @@ bool CircuitMod::deleteConnection(int id) {
   if (!d->circ.connections().contains(id))
     return false;
 
-  Connection con = d->circ.connection(id);
+  Connection con(d->circ.connection(id));
   
   d->acons << id;
   d->circ.remove(id);
@@ -144,6 +144,54 @@ bool CircuitMod::deleteConnection(int id) {
     removePointlessJunction(to);
 
   return true;
+}
+
+bool CircuitMod::deleteConnectionSegment(int id, int seg) {
+  if (!d->circ.connections().contains(id))
+    return false;
+  if (seg<0)
+    return false;
+  Connection con(d->circ.connection(id));
+  QPolygon via = con.via();
+  qDebug() << "deleteConnectionSegment" << id << seg << con.report();
+  if (via.isEmpty()) {
+    return deleteConnection(id);
+  } else if (seg==0) { // first segment
+    int from = con.fromId();
+    con.setFrom(0); // make dangling
+    if (con.isNull())
+      d->circ.remove(id);
+    else
+      d->circ.insert(con);
+    d->acons << id;
+    removePointlessJunction(from);
+    return true;
+  } else if (seg>=via.size()) { // last segment
+    int to = con.toId();
+    con.setTo(0); // make dangling
+    if (con.isNull())
+      d->circ.remove(id);
+    else
+      d->circ.insert(con);
+    d->acons << id;
+    removePointlessJunction(to);
+    return true;
+  } else {
+    // removing middle segment => split into two dangling parts
+    Connection con1;
+    con1.setTo(con.to());
+    con.setTo(0);
+    QPolygon via1;
+    while (via.size() > seg)
+      via1.prepend(via.takeLast());
+    con.setVia(via);
+    con1.setVia(via1);
+    d->circ.insert(con);
+    d->circ.insert(con1);
+    d->acons << id;
+    d->acons << con1.id();
+    return true;
+  }
 }
 
 bool CircuitMod::removeConnectionsEquivalentTo(int id) {

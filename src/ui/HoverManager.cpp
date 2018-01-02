@@ -109,7 +109,7 @@ void HoverManagerData::update() {
   auto const &cons = scene->connections();
   //  auto const &lib = scene->library();
   auto const &circ = scene->circuit();
-
+  
   if (elt>0)
     if (!elts.contains(elt))
       elt = -1;

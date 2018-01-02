@@ -13,7 +13,7 @@ class SCSegment: public QGraphicsLineItem {
 public:
   SCSegment(QGraphicsItem *parent=0): QGraphicsLineItem(parent) {
     // setFlag(ItemIsMovable);
-    setCacheMode(DeviceCoordinateCache);
+    //    setCacheMode(DeviceCoordinateCache);
   }
 };  
 
@@ -182,7 +182,8 @@ QRectF SceneConnection::boundingRect() const {
 
 int SceneConnection::segmentAt(QPointF p) const {
   for (int k=0; k<d->segments.size(); k++)
-    if (d->segments[k]->boundingRect().contains(p))
+    if (d->segments[k]->isVisible()
+	&& d->segments[k]->boundingRect().contains(p))
       return k;
   return -1;
 }

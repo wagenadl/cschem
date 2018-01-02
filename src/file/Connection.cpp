@@ -20,9 +20,8 @@ public:
 };
 
 bool Connection::isNull() const {
-  return d->fromId==0 && d->toId==0
-    && d->fromPin.isEmpty() && d->toPin.isEmpty()
-    && d->via.isEmpty();
+  return d->fromId<=0 && d->toId<=0
+    && d->via.size() <= 1;
 }
 
 bool Connection::isDangling() const {

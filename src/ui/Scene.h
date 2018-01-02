@@ -37,7 +37,7 @@ protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
 private:
   void keyPressOnElement(class SceneElement *, QKeyEvent *);
-  void keyPressOnConnection(class SceneConnection *, QKeyEvent *);
+  void keyPressOnConnection(class SceneConnection *, int seg, QKeyEvent *);
   void keyPressAnywhere(QKeyEvent *);
   void finalizeConnection();
 private:

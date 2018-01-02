@@ -9,7 +9,7 @@
 
 class PinID: public QPair<int, QString> {
 public:
-  PinID(int elt=-1, QString pin="-"): QPair<int, QString>(elt, pin) { }
+  PinID(int elt=-1, QString pin=""): QPair<int, QString>(elt, pin) { }
   int element() const { return first; }
   QString pin() const { return second; }
   void setElement(int elt) { first = elt; }

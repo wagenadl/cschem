@@ -43,6 +43,7 @@ public:
   }
   void deleteElement(int id);
   void deleteConnection(int id);
+  void deleteConnectionSegment(int id, int seg);
   void rebuildAsNeeded(CircuitMod const &cm);
 public:
   Scene *scene;
@@ -93,6 +94,12 @@ void SceneData::deleteElement(int id) {
 void SceneData::deleteConnection(int id) {
   CircuitMod cm(circ, lib);
   cm.deleteConnection(id);
+  rebuildAsNeeded(cm);
+}  
+
+void SceneData::deleteConnectionSegment(int id, int seg) {
+  CircuitMod cm(circ, lib);
+  cm.deleteConnectionSegment(id, seg);
   rebuildAsNeeded(cm);
 }  
 
@@ -318,7 +325,7 @@ void Scene::keyPressEvent(QKeyEvent *e) {
     if (elt)
       keyPressOnElement(elt, e);
     else if (con)
-      keyPressOnConnection(con, e);
+      keyPressOnConnection(con, con->segmentAt(d->mousexy), e);
 
     keyPressAnywhere(e);
   } else {
@@ -336,12 +343,13 @@ void Scene::keyPressOnElement(class SceneElement *elt, QKeyEvent *e) {
   }
 }
 
-void Scene::keyPressOnConnection(class SceneConnection *con, QKeyEvent *e) {
+void Scene::keyPressOnConnection(class SceneConnection *con, int seg,
+				 QKeyEvent *e) {
   int id = con->id();
   switch (e->key()) {
   case Qt::Key_Delete: {
     d->preact();
-    d->deleteConnection(id);
+    d->deleteConnectionSegment(id, seg);
   } break;
   }
 }
