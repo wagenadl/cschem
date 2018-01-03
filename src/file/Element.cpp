@@ -149,7 +149,7 @@ void Element::setId(int id) {
 
 void Element::setRotation(int o) {
   d.detach();
-  d->rotation = o;
+  d->rotation = o & 3;
 }
 
 Element::Type Element::type() const {
@@ -209,9 +209,9 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Element const &c) {
 };
 
 QString Element::report() const {
-  return QString("%1: %2 at %3,%4 - %5 %6 %7")
+  return QString("%1: %2 at %3,%4 (%5) - %6 %7 %8")
     .arg(id()).arg(symbol())
-    .arg(position().x()).arg(position().y())
+    .arg(position().x()).arg(position().y()).arg(rotation())
     .arg(value()).arg(name()).arg(label());
 }
     

@@ -256,6 +256,10 @@ HoverManager::Purpose HoverManager::primaryPurpose() const {
 }
 
 
+void HoverManager::update() {
+  d->update();
+}
+
 void HoverManager::update(QPointF pt) {
   d->pt = pt;
   d->update();

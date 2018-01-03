@@ -601,3 +601,21 @@ int CircuitMod::injectJunction(int conid, QPoint at) {
   d->acons << con1.id();
   return junc.id();
 }
+
+bool CircuitMod::rotateElement(int eltid, int steps) {
+  if (!d->circ.elements().contains(eltid))
+    return false;
+  Circuit c0 = d->circ;
+  Geometry geom(d->circ, d->lib);
+  Element elt = d->circ.element(eltid);
+  QPoint dx0 = geom.centerOfPinMass(elt);
+  elt.setRotation(elt.rotation() + steps);
+  QPoint dx1 = geom.centerOfPinMass(elt);
+    elt.setPosition(elt.position() + dx0 - dx1);
+  d->circ.insert(elt);
+  d->aelts << eltid;
+  QSet<int> ee; ee << eltid;
+  for (int c: d->circ.connectionsFrom(ee) + d->circ.connectionsTo(ee))
+    reroute(c, c0);
+  return true;
+}

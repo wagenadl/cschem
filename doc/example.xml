@@ -3,12 +3,12 @@
   <circuit>
     <component x="10" y="15" type="resistor" rotation="0"
                name="R1" value="10k" id="001"/>
-    <component x="25" y="24" type="capacitor:polarized" rotation="1"
+    <component x="25" y="24" type="capacitor:polarized" rotation="0"
                name="C1" value="100n" id="002"/>
-    <component x="2" y="20" type="connector:bnc:in" rotation="1"
+    <component x="2" y="20" type="connector:bnc:in" rotation="0"
                name="J1" id="003" label="Input"/>
     <port x="25" y="27" name="Vee" type="ground" id="004"/>
-    <component x="35" y="20" type="connector:bnc:out" rotation="1"
+    <component x="35" y="20" type="connector:bnc:out" rotation="0"
                name="J2" id="005" label="Output"/>
     <junction x="25" y="15" id="006"/>
     <junction x="25" y="25" id="007"/>

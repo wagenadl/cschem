@@ -21,6 +21,7 @@ public:
   void setPrimaryPurpose(Purpose);
   Purpose primaryPurpose() const;
   void unhover();
+  void update();
   void update(QPointF);
   bool onElement() const; // that includes junctions
   bool onConnection() const;

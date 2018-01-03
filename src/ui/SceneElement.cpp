@@ -50,14 +50,12 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
   //
   d->scene = parent;
   d->id = elt.id();
-  QPoint pos = elt.position();
   QString sym = elt.symbol();
 
   PartLibrary const *lib = d->scene->library();
   Part const &part = lib->part(sym);
   if (!part.isValid())
     qDebug() << "Cannot find svg for symbol" << sym;
-  double s = lib->scale();
 
   QSvgRenderer *r = lib->renderer(sym);
 
@@ -66,11 +64,10 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
     d->element->setSharedRenderer(r);
   else
     qDebug() << "Cannot construct renderer for symbol" << sym;    
-  d->element->setPos(part.shiftedBBox().topLeft());
   addToGroup(d->element);
 
   parent->addItem(this);
-  setPos(s * pos);
+  rebuild();
 
   if (sym == "junction")
     setZValue(20);
@@ -79,7 +76,6 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
   
   setFlag(ItemIsMovable);
   setFlag(ItemIsSelectable);
-  setCacheMode(DeviceCoordinateCache);
 }
 
 SceneElement::~SceneElement() {
@@ -124,9 +120,21 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void SceneElement::rebuild() {
-  auto const &lib = d->scene->library();
-  auto const &circ = d->scene->circuit();
-  setPos(lib->scale() * circ.elements()[d->id].position());
+  removeFromGroup(d->element);
+  setPos(QPointF(0,0));
+  PartLibrary const *lib = d->scene->library();
+  Circuit const &circ = d->scene->circuit();
+  Part const &part = lib->part(circ.element(d->id).symbol());
+  QPointF orig = part.bbOrigin();
+  QTransform xf;
+  qDebug() << orig;
+  xf.translate(orig.x(), orig.y());
+  xf.rotate(circ.element(d->id).rotation()*-90);
+  xf.translate(-orig.x(), -orig.y());
+  d->element->setTransform(xf);
+  d->element->setPos(part.shiftedBBox().topLeft());
+  addToGroup(d->element);
+  setPos(lib->scale() * circ.element(d->id).position());
 }
 
 Scene *SceneElement::scene() {

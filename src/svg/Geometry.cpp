@@ -22,11 +22,33 @@ Geometry::~Geometry() {
   delete d;
 }
 
+QPoint Geometry::pinPosition(class PinID const &pid) const {
+  return pinPosition(pid.element(), pid.pin());
+}
+
 QPoint Geometry::pinPosition(int eltid, QString pin) const {
-  Element const &elt(d->circ.element(eltid));
+  return pinPosition(d->circ.element(eltid), pin);
+}
+
+QPoint Geometry::pinPosition(Element const &elt, QString pin) const {
   Part const &prt(d->lib->part(elt.symbol()));
   QPointF pp = prt.shiftedPinPosition(pin);
+  for (int k=0; k<elt.rotation(); k++)
+    pp = QPointF(pp.y(), -pp.x());
   return elt.position() + d->lib->downscale(pp);
+}
+
+QPoint Geometry::centerOfPinMass(int eltid) const {
+  return centerOfPinMass(d->circ.element(eltid));
+}
+
+QPoint Geometry::centerOfPinMass(Element const &elt) const {
+  Part const &part(d->lib->part(elt.symbol()));
+  QStringList pins = part.pinNames();
+  QPointF ttl;
+  for (QString p: pins)
+    ttl += pinPosition(elt, p);
+  return (ttl/pins.size()).toPoint();
 }
 
 QPolygon Geometry::connectionPath(int conid) const {
@@ -112,4 +134,16 @@ Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly) {
     best.delta = QPoint();
   }
   return best;
+}
+
+QPolygon Geometry::viaFromPath(class Connection const &con, QPolygon path) {
+  if (!con.danglingStart())
+    path.removeFirst();
+  if (!con.danglingEnd())
+    path.removeLast();
+  return path;
+}
+
+QPolygon Geometry::viaFromPath(int con, QPolygon path) const {
+  return viaFromPath(d->circ.connection(con), path);
 }

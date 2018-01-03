@@ -41,6 +41,7 @@ public:
     undobuffer << circ;
     redobuffer.clear();
   }
+  void rotateElement(int id, int steps=1);
   void deleteElement(int id);
   void deleteConnection(int id);
   void deleteConnectionSegment(int id, int seg);
@@ -59,7 +60,6 @@ public:
 };
 
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
-  hovermanager->unhover();
   circ = cm.circuit();
   for (int id: cm.affectedConnections()) {
     if (circ.connections().contains(id)) {
@@ -83,7 +83,14 @@ void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
       elts.remove(id);
     }
   }
+  hovermanager->update();
 }
+
+void SceneData::rotateElement(int id, int steps) {
+  CircuitMod cm(circ, lib);
+  cm.rotateElement(id, steps);
+  rebuildAsNeeded(cm);
+}  
 
 void SceneData::deleteElement(int id) {
   CircuitMod cm(circ, lib);
@@ -126,7 +133,6 @@ void Scene::setCircuit(Circuit const &c) {
 
 
 void Scene::rebuild() {
-  d->hovermanager->unhover();
   /* We should be able to do better than start afresh in general, but for now: */
   for (auto i: d->elts)
     delete i;
@@ -342,6 +348,10 @@ void Scene::keyPressEvent(QKeyEvent *e) {
 void Scene::keyPressOnElement(class SceneElement *elt, QKeyEvent *e) {
   int id = elt->id();
   switch (e->key()) {
+  case Qt::Key_R:
+    d->preact();
+    d->rotateElement(id, (e->modifiers() & Qt::ShiftModifier) ? -1 : 1);
+    break;
   case Qt::Key_Delete:
     d->preact();
     d->deleteElement(id);
@@ -423,7 +433,6 @@ int Scene::connectionAt(QPointF scenepos, int *segp) const {
 }
 
 void Scene::finalizeConnection() {
-  d->hovermanager->unhover();
   if (!d->connbuilder->isAbandoned()) {
     d->preact();
     QList<int> cc;

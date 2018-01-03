@@ -14,7 +14,11 @@ public:
   ~Geometry();
   Geometry(Geometry const &) = delete;
   Geometry operator=(Geometry const &) = delete;
+  QPoint pinPosition(class PinID const &) const;
   QPoint pinPosition(int elt, QString pin) const;
+  QPoint pinPosition(class Element const &elt, QString pin) const;
+  QPoint centerOfPinMass(int elt) const;
+  QPoint centerOfPinMass(class Element const &elt) const;
   QPolygon connectionPath(int con) const;
   QPolygon connectionPath(class Connection const &con) const;
   bool isZeroLength(int con) const;
@@ -41,6 +45,8 @@ public:
   */
 public:
   static QPolygon simplifiedPath(QPolygon path);
+  static QPolygon viaFromPath(class Connection const &con, QPolygon path);
+  QPolygon viaFromPath(int con, QPolygon path) const;
 private:
   class GeometryData *d;
 };

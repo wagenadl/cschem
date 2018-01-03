@@ -13,6 +13,8 @@ public:
   CircuitMod(CircuitMod const &) = delete;
   CircuitMod &operator=(CircuitMod const &) = delete;
   ~CircuitMod();
+  bool rotateElement(int eltid, int steps=1);
+  /* Rotates the element by STEPS x 90 degrees ccw. True if successful. */
   bool deleteElement(int eltid);
   /* Leaves connected lines dangling. Exception: if the deleted
      element is a junction with four connections, through connections
