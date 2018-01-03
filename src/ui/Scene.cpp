@@ -243,9 +243,15 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     if (d->hovermanager->onPin()) {
       d->connbuilder = new ConnBuilder(this);
       addItem(d->connbuilder);
-      d->connbuilder->start(e->scenePos(),
-                            d->hovermanager->element(),
-                            d->hovermanager->pin());
+      d->connbuilder->startFromPin(e->scenePos(),
+				   d->hovermanager->element(),
+				   d->hovermanager->pin());
+    } else if (d->hovermanager->onFakePin()) {
+      d->connbuilder = new ConnBuilder(this);
+      addItem(d->connbuilder);
+      d->connbuilder->startFromConnection(e->scenePos(),
+					  d->hovermanager->connection(),
+					  d->hovermanager->segment());
     } else {
       QGraphicsScene::mousePressEvent(e);
     }

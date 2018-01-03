@@ -23,7 +23,7 @@ QColor Style::connectionHoverColor() {
 
 
 QColor Style::pinHighlightColor() {
-  return QColor();
+  return QColor(0, 255, 128);
 }
 
 

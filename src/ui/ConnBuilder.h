@@ -12,7 +12,8 @@ class ConnBuilder: public QGraphicsItemGroup {
 public:
   ConnBuilder(class Scene *scene);
   ~ConnBuilder();
-  void start(QPointF fromPos, int fromId, QString fromPin);
+  void startFromPin(QPointF fromPos, int fromId, QString fromPin);
+  void startFromConnection(QPointF fromPos, int conId, int seg);
   bool isComplete() const;
   bool isAbandoned() const;
   QList<Connection> connections() const;

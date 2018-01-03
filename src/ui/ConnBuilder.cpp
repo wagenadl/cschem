@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
+#include "svg/Geometry.h"
 
 static QPen defaultPen() {
   QPen p(QColor(0, 0, 0));
@@ -17,10 +18,9 @@ static QPen defaultPen() {
 class ConnBuilderData {
 public:
   ConnBuilderData(Scene *scene): scene(scene), circ(scene->circuit()) {
-    fromId = -1;
-    toId = -1;
-    majorcon = -1;
+    reset();
   }
+  void reset();
   void buildConnection();
   void ensureStartJunction();
   void ensureEndJunction();
@@ -42,6 +42,22 @@ public:
   QString fromPin, toPin;
   QList<QGraphicsLineItem *> segments;
 };
+
+void ConnBuilderData::reset() {
+  fromId = -1;
+  fromPin = -1;
+  toId = -1;
+  toPin = "";
+  majorcon = -1;
+
+  for (auto seg: segments)
+    delete seg;
+
+  segments.clear();
+  junctions.clear();
+  connections.clear();
+  points.clear();
+}
 
 bool ConnBuilderData::fixPenultimate() {
   if (segments.size()==2
@@ -231,18 +247,36 @@ ConnBuilder::~ConnBuilder() {
   delete d;
 }
 
-void ConnBuilder::start(QPointF fromPos, int fromId, QString fromPin) {
-  for (auto seg: d->segments)
-    delete seg;
-  d->segments.clear();
-  d->junctions.clear();
-  d->connections.clear();
+void ConnBuilder::startFromConnection(QPointF fromPos, int conId, int seg) {
+  Geometry geom(d->circ, d->scene->library());
+  QPolygon path(geom.connectionPath(conId));
+  QPoint from = d->scene->library()->downscale(fromPos);
+  qDebug() << "startFromConnection" << from << seg << path;
+  QPoint p0 = path[seg];
+  QPoint p1 = path[seg+1];
+  QPoint dir = p1 - p0;
+  dir /= dir.manhattanLength();
+  int along = QPoint::dotProduct(from - p0, dir);
+  from = p0 + along * dir;
+  qDebug() << "dir" << dir << " newfrom" << from;
+  // now "from" is on the line
+  qDebug() << QPoint::dotProduct(from - p0, dir);
+  qDebug() << QPoint::dotProduct(from - p1, dir);
+  Element junc(Element::junction(from));
+  Connection con(d->circ.connection(conId));
+
+  // for now:
+  d->circ.insert(junc);
+  startFromPin(fromPos, junc.id(), "");
+  d->junctions << junc.id();
+}
+
+void ConnBuilder::startFromPin(QPointF fromPos, int fromId, QString fromPin) {
+  d->reset();
+
   d->fromId = fromId;
   d->fromPin = fromPin;
-  d->toId = -1;
-  d->toPin = "";
 
-  d->points.clear();
   QPointF p1 = d->scene->library()->nearestGrid(fromPos);
   QPointF p0 = p1;
   if (fromId>0)

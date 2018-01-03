@@ -25,6 +25,7 @@ public:
   bool onElement() const; // that includes junctions
   bool onConnection() const;
   bool onPin() const;
+  bool onFakePin() const;
   int element() const; // -1 if none
   QString pin() const; // "-" if none
   int connection() const; // -1 if none
