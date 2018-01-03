@@ -17,6 +17,28 @@ public:
   QPoint pinPosition(int elt, QString pin) const;
   QPolygon connectionPath(int con) const;
   QPolygon connectionPath(class Connection const &con) const;
+  bool isZeroLength(int con) const;
+  bool isZeroLength(class Connection const &con) const;
+  /* Invalid connections are zero length by definition. */
+  struct Intersection {
+    Intersection(int n=-1, QPoint d=QPoint()):
+      pointnumber(n), delta(d) {
+    }
+    int pointnumber;
+    QPoint delta;
+  };
+  static Intersection intersection(QPoint p, QPolygon poly);
+  /* Returns information about the point on the polygon that is closest to
+     the target point. The result is a structure that encodes the point
+     number (index into the polygon) as well as a vector away from that point.
+     The point Q := poly[pointnumber] + delta will actually lie on 
+     the polygon if all segments in poly are horizontal or vertical. If there
+     are diagonal segments, Q will be as near as possible.
+     The distance between P and Q can be used to check if P is
+     actually on or near the polygon. The polygon is considered an
+     open path unless its first and last point are equal.
+     If POLY is empty, the result will have pointnumber=-1.
+  */
 public:
   static QPolygon simplifiedPath(QPolygon path);
 private:

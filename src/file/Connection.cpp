@@ -19,9 +19,13 @@ public:
   QPolygon via;
 };
 
-bool Connection::isNull() const {
-  return d->fromId<=0 && d->toId<=0
-    && d->via.size() <= 1;
+bool Connection::isValid() const {
+  if (d->fromId>0 && d->toId>0)
+    return d->fromId!=d->toId || d->fromPin!=d->toPin;
+  else if (d->fromId>0 || d->toId>0)
+    return d->via.size() >= 1;
+  else
+    return d->via.size() >= 2 && d->via.first() != d->via.last();
 }
 
 bool Connection::isDangling() const {
@@ -34,18 +38,6 @@ bool Connection::danglingStart() const {
 
 bool Connection::danglingEnd() const {
   return d->toId<=0;
-}
-
-bool Connection::isCircular() const {
-  /* Circular means either:
-     (1) beginning and ending at same pin
-     (2) fully dangling and beginning and ending at same point
-     (3) dangling and zero-length
-   */
-  return (d->fromId>0 && d->fromId==d->toId)
-    || ((d->fromId<=0 || d->toId<=0) && d->via.isEmpty())
-    || (d->fromId<=0 && d->toId<=0
-        && (d->via.size()<=1 || d->via.first()==d->via.last()));
 }
 
 Connection::Connection() {

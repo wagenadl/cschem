@@ -82,8 +82,8 @@ void Circuit::insert(Element const &e) {
 
 void Circuit::insert(Connection const &c) {
   d.detach();
-  if (c.isNull()) {
-    qDebug() << "Inserting null connection";
+  if (!c.isValid()) {
+    qDebug() << "Inserting invalid connection";
   }
   d->connections[c.id()] = c;
 }

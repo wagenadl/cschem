@@ -27,11 +27,17 @@ public:
   PinID from() const;
   PinID to() const;
   bool isEquivalentTo(Connection const &) const;
-  bool isNull() const;
-  bool isDangling() const;
-  bool danglingStart() const;
-  bool danglingEnd() const;
-  bool isCircular() const;
+  bool isValid() const;
+  /* Valid means either:
+     (1) Two endpoints on pins that are not the same
+     (2) One endpoint on a pin and at least one point in via
+     (3) No endpoints on a pin but at least two points in via, _and_ via
+         not starting and ending at same spot.
+     Valid cannot test for zero-length in case (2). For that, use
+     Geometry::isZeroLength(). */
+  bool isDangling() const; // either start or end is dangling
+  bool danglingStart() const; // start not connected to pin
+  bool danglingEnd() const; // end not connected to pin
   Connection reversed() const; // does *not* assign a new ID
   Connection translated(QPoint delta) const;
 public:

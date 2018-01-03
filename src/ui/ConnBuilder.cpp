@@ -114,15 +114,15 @@ bool ConnBuilderData::considerCompletion() {
     tgt1.setVia(via1);
 
     qDebug() << "onto line" << junc.report();
-    qDebug() << "  " << tgt.report() << tgt.isNull() << tgt.isCircular(); 
-    qDebug() << "  " << tgt1.report() << tgt1.isNull() << tgt1.isCircular(); 
+    qDebug() << "  " << tgt.report() << tgt.isValid();
+    qDebug() << "  " << tgt1.report() << tgt1.isValid();
 
-    if (tgt.isCircular())
-      circ.remove(tgt.id());
-    else
+    if (tgt.isValid())
       circ.insert(tgt);
+    else
+      circ.remove(tgt.id());
     connections << tgt.id();
-    if (!tgt1.isCircular()) {
+    if (tgt1.isValid()) {
       circ.insert(tgt1);
       connections << tgt1.id();
     }
