@@ -48,6 +48,7 @@ public:
   QMap<int, class Connection> const &connections() const;
   Element const &element(int) const;
   Connection const &connection(int) const;
+  bool isEmpty() const;
 private:
   QSharedDataPointer<class CircuitData> d;
 };

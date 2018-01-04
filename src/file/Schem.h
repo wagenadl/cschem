@@ -21,6 +21,7 @@ public:
   Circuit &circuit();
   Parts const &parts() const;
   Parts &parts();
+  bool isEmpty() const;
 private:
   QSharedDataPointer<class SchemData> d;
 };

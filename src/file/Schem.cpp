@@ -80,3 +80,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Schem const &c) {
   sr.writeEndElement();
   return sr;
 };
+
+bool Schem::isEmpty() const {
+  return circuit().isEmpty() && parts().isEmpty();
+}

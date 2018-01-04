@@ -84,3 +84,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Parts const &c) {
   sr.writeEndElement();
   return sr;
 }
+
+bool Parts::isEmpty() const {
+  return containers().isEmpty() && packages().isEmpty();
+}
