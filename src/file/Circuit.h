@@ -27,11 +27,22 @@ public:
   QSet<int> connectionsFrom(QSet<int> ids) const;
   /* Connections with "fromId" in the set ("toId" is irrelevant) */
   QSet<int> connectionsIn(QSet<int> ids) const;
-  /* Connections with both "toId" and "fromId" in the set */
+  /* Connections with both "toId" and "fromId" in the set, or with one
+     in the set and the other dangling. */
   QSet<int> connectionsOn(int id, QString pin) const;
   /* Connections that either start or end at given pin of given element */
-  void translate(QSet<int> ids, QPoint delta);
+  void translate(QSet<int> eltids, QPoint delta);
   /* Does not take care of edge connections */
+  int renumber(int start=1);
+  /* Renumbers elements and connections to start at the given ID value.
+     Returns the largest value assigned. Connections that refer to non-
+     existent elements are made dangling or removed entirely if they
+     become invalid. */
+  Circuit subset(QSet<int> elts) const;
+  /* Creates a copy of a subset of this circuit containing the indicated
+     elements, all connections between those elements, and all connections
+     onto those elements that have a dangling other end.
+   */
 public:
   QMap<int, class Element> const &elements() const;
   QMap<int, class Connection> const &connections() const;

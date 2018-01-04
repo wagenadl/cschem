@@ -40,6 +40,7 @@ public:
   void rebuild();
   void hover();
   void unhover();
+  void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;  
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;

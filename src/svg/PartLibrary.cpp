@@ -184,3 +184,8 @@ QPolygonF PartLibrary::simplifyPath(QPolygonF pp) const {
   }
   return pp;
 }
+
+PartLibrary const *PartLibrary::defaultLibrary() {
+  static PartLibrary *lib = new PartLibrary(":parts.svg");
+  return lib;
+}

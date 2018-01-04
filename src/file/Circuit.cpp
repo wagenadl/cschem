@@ -132,16 +132,24 @@ QSet<int> Circuit::connectionsFrom(QSet<int> ids) const {
 
 QSet<int> Circuit::connectionsIn(QSet<int> ids) const {
   QSet<int> cids;
-  for (auto const &c: d->connections) 
-    if (ids.contains(c.toId()) && ids.contains(c.fromId()))
+  for (auto const &c: d->connections) {
+    int from = c.fromId();
+    int to = c.toId();
+    bool gotfrom = ids.contains(from);
+    bool gotto = ids.contains(to);
+    if ((gotfrom && gotto)
+	|| (gotfrom && to<=0)
+	|| (gotto && from<=0))
       cids << c.id();
+  }
   return cids;
 }
 
 void Circuit::translate(QSet<int> ids, QPoint delta) {
   d.detach();
   for (int id: ids)
-    d->elements[id].setPosition(d->elements[id].position() + delta);
+    if (d->elements.contains(id))
+      d->elements[id].setPosition(d->elements[id].position() + delta);
   for (int id: connectionsIn(ids)) {
     QPolygon &via(d->connections[id].via());
     for (QPoint &p: via)
@@ -161,3 +169,59 @@ Connection const &Circuit::connection(int id) const {
   return it == d->connections.end() ? ne : *it;
 }
 
+int Circuit::renumber(int start) {
+  QMap<int, int> eltmap;
+
+  QList<Element> elts = d->elements.values();
+  d->elements.clear();
+
+  for (Element elt: elts) {
+    int oldid = elt.id();
+    elt.setId(start);
+    d->elements.remove(oldid);
+    d->elements[start] = elt;
+    eltmap[oldid] = start;
+    start ++;
+  }
+
+  QList<Connection> cons = d->connections.values();
+  d->connections.clear();
+  
+  for (Connection con: cons) {
+    con.setId(start);
+    int from = con.fromId();
+    if (eltmap.contains(from))
+      con.setFromId(eltmap[from]);
+    else if (from>0) {
+      con.setFromId(0); // make dangling
+      qDebug() << "Circuit::renumber: Disconnecting from nonexistent element";
+    }
+    int to = con.toId();
+    if (eltmap.contains(to))
+      con.setToId(eltmap[to]);
+    else if (to>0) {
+      con.setToId(0); // make dangling
+      qDebug() << "Circuit::renumber: Disconnecting from nonexistent element";
+    }
+    if (con.isValid()) {
+      d->connections[start] = con;
+      start++;
+    }
+  }
+  return start - 1;
+}
+
+Circuit Circuit::subset(QSet<int> elts) const {
+  Circuit circ;
+  for (int e: elts)
+    if (d->elements.contains(e))
+      circ.insert(d->elements[e]);
+  QSet<int> intcon = connectionsIn(elts);
+  QSet<int> extcon = (connectionsFrom(elts) + connectionsTo(elts)) - intcon;
+  for (int c: intcon)
+    circ.insert(d->connections[c]);
+  for (int c: extcon)
+    if (d->connections[c].isDangling())
+      circ.insert(d->connections[c]);
+  return circ;
+}

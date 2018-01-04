@@ -8,24 +8,26 @@
 Editor::Editor(class PartLibrary const *lib, Schem *schem, QWidget *parent):
   QGraphicsView(parent), lib(lib), schem(schem) {
   setInteractive(true);
-  scene = new Scene(lib);
-  scene->setCircuit(schem->circuit());
-  setScene(scene);
+  scene_ = new Scene(lib);
+  scene_->setCircuit(schem->circuit());
+  setScene(scene_);
   scale(2, 2);
   setMouseTracking(true);
+  setDragMode(RubberBandDrag);
 }
 
 Editor::~Editor() {
-  delete scene;
+  delete scene_;
 }
 
 void Editor::keyPressEvent(QKeyEvent *e) {
+  qDebug() << "Editor::keyPress" << e->key();
   bool take = false;
   if (e->modifiers() & Qt::ControlModifier) {
     take = true;
     switch (e->key()) {
     case Qt::Key_S:
-      schem->circuit() = scene->circuit();
+      schem->circuit() = scene_->circuit();
       FileIO::saveSchematic("/tmp/eg.xml", *schem);
       break;
     case Qt::Key_Plus: case Qt::Key_Equal:

@@ -10,6 +10,7 @@
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsSceneMouseEvent>
 #include "Style.h"
+#include <QPainter>
 
 class SceneElementData {
 public:
@@ -27,7 +28,9 @@ public:
   void markHover() {
     if (hover) {
       auto *ef = new QGraphicsColorizeEffect;
-      ef->setColor(Style::elementHoverColor());
+      ef->setColor(element->parentItem()->isSelected()
+		   ? Style::selectedElementHoverColor()
+		   : Style::elementHoverColor());
       element->setGraphicsEffect(ef);
     } else {
       element->setGraphicsEffect(0);    
@@ -183,4 +186,21 @@ SceneElement::WeakPtr::operator bool() const {
 
 SceneElement::WeakPtr SceneElement::weakref() {
   return SceneElement::WeakPtr(this, d);
+}
+
+void SceneElement::paint(QPainter *painter,
+			 const QStyleOptionGraphicsItem *,
+			 QWidget *) {
+  if (isSelected()) {
+    painter->setBrush(QBrush(Style::selectionColor()));
+    painter->setPen(QPen(Qt::NoPen));
+    painter->drawRoundedRect(boundingRect().adjusted(2, 2, -2, -2),
+			     Style::selectionRectRadius(),
+			     Style::selectionRectRadius());
+  }
+  QGraphicsColorizeEffect *ef
+    = dynamic_cast<QGraphicsColorizeEffect *>(d->element->graphicsEffect());
+  if (ef) 
+    ef->setColor(isSelected() ? Style::selectedElementHoverColor()
+		 : Style::elementHoverColor());
 }

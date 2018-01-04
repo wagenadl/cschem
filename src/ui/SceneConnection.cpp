@@ -12,12 +12,33 @@
 
 class SCSegment: public QGraphicsLineItem {
 public:
+  static const int UNDERLINGWIDTH = 10;
   SCSegment(QGraphicsItem *parent=0):
     QGraphicsLineItem(parent) {
+    underling = new QGraphicsLineItem(this);
+    underling->setZValue(-100);
+    underling->setPen(QPen(QColor(255,255,255, 0), UNDERLINGWIDTH,
+			   Qt::SolidLine, Qt::FlatCap));
+    underling->setFlag(ItemStacksBehindParent);
   }
   SCSegment(QPointF p0, QGraphicsItem *parent=0):
-    QGraphicsLineItem(QLineF(p0, p0), parent) {
+    SCSegment(parent) {
+    setLine(QLineF(p0, p0));
   }
+  ~SCSegment() {
+    //    delete underling;
+  }
+  SCSegment(SCSegment const &) = delete;
+  SCSegment operator=(SCSegment const &) = delete;
+  void setLine(QLineF const &l) {
+    QGraphicsLineItem::setLine(l);
+    underling->setLine(l);
+  }
+  QRectF effectiveBoundingRect() const {
+    return boundingRect() | underling->boundingRect();
+  }
+private:
+  QGraphicsLineItem *underling;
 };  
 
 class SceneConnectionData {
@@ -181,7 +202,7 @@ QRectF SceneConnection::boundingRect() const {
 
 int SceneConnection::segmentAt(QPointF p) const {
   for (int k=0; k<d->segments.size(); k++)
-    if (d->segments[k]->boundingRect().contains(p))
+    if (d->segments[k]->effectiveBoundingRect().contains(p))
       return k;
   return -1;
 }
@@ -199,6 +220,7 @@ void SceneConnection::hover(int seg) {
   d->hoverseg->setPen(QPen(Style::connectionHoverColor(),
 			   Style::connectionHoverWidthFactor()*lib->lineWidth(),
                            Qt::SolidLine, Qt::RoundCap));
+  d->hoverseg->setZValue(-1);
 
   
 }
@@ -206,8 +228,10 @@ void SceneConnection::hover(int seg) {
 void SceneConnection::unhover() {
   if (!d->hoverseg)
     return;
-  if (d->segments.contains(d->hoverseg))
+  if (d->segments.contains(d->hoverseg)) {
     d->hoverseg->setPen(d->normalPen());
+    d->hoverseg->setZValue(0);
+  }
   d->hoverseg = 0;
 }
 

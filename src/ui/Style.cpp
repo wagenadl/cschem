@@ -16,6 +16,10 @@ QColor Style::elementHoverColor() {
   return QColor(64, 192, 255);
 }
 
+QColor Style::selectedElementHoverColor() {
+  return QColor(0, 64, 255);
+}
+
 
 QColor Style::connectionHoverColor() {
   return QColor(64, 192, 255);
@@ -24,6 +28,14 @@ QColor Style::connectionHoverColor() {
 
 QColor Style::pinHighlightColor() {
   return QColor(0, 255, 128);
+}
+
+QColor Style::selectionColor() {
+  return QColor(255, 240, 0, 176);
+}
+
+double Style::selectionRectRadius() {
+  return 7;
 }
 
 

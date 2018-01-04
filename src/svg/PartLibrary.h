@@ -24,6 +24,7 @@ public:
   QPointF nearestGrid(QPointF) const;
   double lineWidth() const;
   QPolygonF simplifyPath(QPolygonF) const;
+  static PartLibrary const *defaultLibrary();
 private:
   void scanParts(XmlElement const &src);
   void getBBoxes(QString fn);
