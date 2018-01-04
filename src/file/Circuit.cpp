@@ -225,3 +225,7 @@ Circuit Circuit::subset(QSet<int> elts) const {
       circ.insert(d->connections[c]);
   return circ;
 }
+
+bool Circuit::isEmpty() const {
+  return elements().isEmpty();
+}

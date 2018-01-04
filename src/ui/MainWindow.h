@@ -11,17 +11,30 @@ class MainWindow: public QMainWindow {
   Q_OBJECT;
 public:
   explicit MainWindow(class PartLibrary const *lib=0);
-  ~MainWindow();
+  virtual ~MainWindow();
   MainWindow(MainWindow const &) = delete;
   MainWindow operator=(MainWindow const &) = delete;
   QSharedPointer<class Scene> scene() const;
   void setScene(QSharedPointer<Scene> const &);
 public slots:
+  void openAction();
+  void saveAction();
+  void saveAsAction();
+  void newAction();
+  void quitAction();
+  void zoomIn();
+  void zoomOut();
+  void markChanged();
+  void setStatusMessage(QString);
+  void aboutAction();
+public:
   void load(QString filename);
   void create();
   void saveAs(QString filename);
-  void zoomIn();
-  void zoomOut();
+private:
+  void createActions();
+  void createView();
+  void createStatusBar();
 private:
   class MWData *d;
 };

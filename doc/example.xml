@@ -1,31 +1,26 @@
-<qschem>
-  <!-- This is a simple RC filter -->
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qschem xmlns="http://www.danielwagenaar.net/qschem-ns.html">
   <circuit>
-    <component x="10" y="15" type="resistor" rotation="0"
-               name="R1" value="10k" id="001"/>
-    <component x="25" y="24" type="capacitor:polarized" rotation="0"
-               name="C1" value="100n" id="002"/>
-    <component x="2" y="20" type="connector:bnc:in" rotation="0"
-               name="J1" id="003" label="Input"/>
-    <port x="25" y="27" name="Vee" type="ground" id="004"/>
-    <component x="35" y="20" type="connector:bnc:out" rotation="0"
-               name="J2" id="005" label="Output"/>
-    <junction x="25" y="15" id="006"/>
-    <junction x="25" y="25" id="007"/>
-    <connection id="11" from="001:2" to="006"/>
-    <connection id="12" from="006" to="002:pos"/>
-    <connection id="13" from="006" to="005:signal"/>
-    <connection id="14" from="002:neg" to="007"/>
-    <connection id="15" from="003:signal" to="001:1"/>
-    <connection id="16" from="003:ground" to="007" via="2,25"/>
-    <connection id="17" from="005:ground" to="007" via="35,25"/>
-    <connection id="20" from="007" to="004"/>
+    <component id="1" x="10" y="15" type="resistor" value="10k" name="R1"/>
+    <component id="2" x="25" y="24" type="capacitor:polarized" value="100n" name="C1"/>
+    <component id="3" x="2" y="20" type="connector:bnc:in" name="J1" label="Input"/>
+    <port id="4" x="25" y="27" type="ground" name="Vee"/>
+    <component id="5" x="35" y="20" type="connector:bnc:out" name="J2" label="Output"/>
+    <junction id="6" x="25" y="15"/>
+    <junction id="7" x="25" y="25"/>
+    <connection id="8" from="1:2" to="6:"/>
+    <connection id="9" from="6:" to="2:pos"/>
+    <connection id="10" from="6:" to="5:signal"/>
+    <connection id="11" from="2:neg" to="7:"/>
+    <connection id="12" from="3:signal" to="1:1"/>
+    <connection id="13" from="3:ground" to="7:" via="2,25"/>
+    <connection id="14" from="5:ground" to="7:" via="35,25"/>
+    <connection id="15" from="7:" to="4:"/>
   </circuit>
-
   <parts>
-    <package id="001" package="resistor:axial:0.4" vendor="DigiKey" partno="xxx-ND"/>
-    <package id="002" package="capacitor:radial:0.1" vendor="Mouser" partno="..."/>
-    <package id="003" package="connector:bnc:panel-ra-insulated"/>
-    <package id="005" package="connector:bnc:panel-ra-insulated"/>
+    <package id="1" package="resistor:axial:0.4" vendor="DigiKey" partno="xxx-ND"/>
+    <package id="2" package="capacitor:radial:0.1" vendor="Mouser" partno="..."/>
+    <package id="3" package="connector:bnc:panel-ra-insulated"/>
+    <package id="5" package="connector:bnc:panel-ra-insulated"/>
   </parts>
 </qschem>

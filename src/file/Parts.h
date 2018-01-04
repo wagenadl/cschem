@@ -22,6 +22,7 @@ public:
   QMap<int, class Container> &containers();
   QMap<int, class Package> const &packages() const;
   QMap<int, class Package> &packages();
+  bool isEmpty() const;
 private:
   QSharedDataPointer<class PartsData> d;
 };

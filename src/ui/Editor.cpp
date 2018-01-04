@@ -21,7 +21,6 @@ Editor::~Editor() {
 }
 
 void Editor::keyPressEvent(QKeyEvent *e) {
-  qDebug() << "Editor::keyPress" << e->key();
   bool take = false;
   if (e->modifiers() & Qt::ControlModifier) {
     take = true;
