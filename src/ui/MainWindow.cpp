@@ -203,4 +203,5 @@ void MainWindow::setStatusMessage(QString msg) {
 }
 
 void MainWindow::aboutAction() {
+  qDebug() << "NYI";
 }
