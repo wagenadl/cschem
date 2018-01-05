@@ -17,8 +17,9 @@ public:
   /* Rotates the element by STEPS x 90 degrees ccw. True if successful. */
   bool deleteElement(int eltid);
   /* Leaves connected lines dangling. Exception: if the deleted
-     element is a junction with four connections, through connections
-     are preserved.  Deletes zero-length dangling lines. True if
+     element is a junction with four connections, through-connections
+     are preserved, and if it is a junction with two connections, those
+     are reconnected.  Deletes zero-length dangling lines. True if
      successful. */
   bool deleteElements(QSet<int> eltids);
   /* Also cuts all internal connections and external connections that started

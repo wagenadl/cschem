@@ -43,9 +43,11 @@ public:
      existent elements are made dangling or removed entirely if they
      become invalid. */
   Circuit subset(QSet<int> elts) const;
-  /* Creates a copy of a subset of this circuit containing the indicated
-     elements, all connections between those elements, and all connections
-     onto those elements that have a dangling other end.
+  /* Creates a copy of a subset of this circuit containing the
+     indicated elements, all connections between those elements, and
+     all connections onto those elements that have a dangling other
+     end.  Note that the created subset may have "pointless" junctions
+     (See CircuitMod).
    */
   Circuit &operator+=(Circuit const &);
   /* Bluntly merges two circuits, not worrying about overlapping

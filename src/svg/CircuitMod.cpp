@@ -64,12 +64,15 @@ bool CircuitMod::deleteElement(int id) {
     if (c.fromId()==id || c.toId()==id)
       cc << c.id();
 
-  if (cc.size()==4 && d->circ.element(id).type() == Element::Type::Junction) {
+  bool isjunc = d->circ.element(id).type() == Element::Type::Junction;
+  if (isjunc && cc.size()==2)
+    return removePointlessJunction(id);
+
+  if  (isjunc && cc.size()==4)
     // preserve passthroughs
     d->rewirePassthroughs(id, cc);
-  } else if (cc.size()>0) {
+  else if (cc.size()>0) 
     d->makeDanglingAt(id, cc);
-  }
 
   d->aelts << id;
   d->circ.remove(id);
@@ -130,8 +133,81 @@ bool CircuitMod::deleteElements(QSet<int> elts) {
 }
     
 void CircuitModData::rewirePassthroughs(int id, QSet<int> cc) {
-  qDebug() << "Rewiring passthroughs NYI";
-  makeDanglingAt(id, cc);
+  if (cc.size() != 4) {
+    qDebug() << "rewirepassthroughs requires precisely 4 connections";
+    return;
+  }
+  QList<Connection> cons;
+  for (int c: cc) {
+    Connection con = circ.connection(c);
+    if (con.fromId() != id)
+      con.reverse();
+    if (!con.isValid()) {
+      qDebug() << "rewirepassthroughs requires valid connections";
+      return;
+    }
+    qDebug() << "orig con" << con.report();
+    cons << con;
+  }
+  // So now we have four connections that all start at the junction
+
+  Geometry geom(circ, lib);
+  
+  QList<QPolygon> paths;
+  for (int k=0; k<4; k++)
+    paths << geom.connectionPath(cons[k]);
+
+  QPolygon path0 = paths.takeFirst();
+  Connection con0 = cons.takeFirst();
+  QPoint dir0 = path0[1] - path0[0];
+  int id1 = -1;
+  for (int k=0; k<3; k++) {
+    QPoint dirk = paths[k][1] - paths[k][0];
+    if (QPoint::dotProduct(dir0, dirk) < 0) {
+      // parallel connections
+      qDebug() << "pre" << con0.report();
+      con0.reverse(); // now *ends* at junction
+      qDebug() << "post" << con0.report();
+      QPolygon path = geom.connectionPath(con0);
+      qDebug() << "path" << path;
+      qDebug() << "pl" << paths[k];
+      path += paths[k];
+      path = geom.simplifiedPath(path);
+      con0.setTo(cons[k].to());
+      con0.setVia(geom.viaFromPath(con0, path));
+      id1 = cons[k].id();
+      cons.removeAt(k);
+      paths.removeAt(k);
+      break;
+    }
+  }
+  if (id1<=0) {
+    qDebug() << "Could not find continuing connections";
+    return;
+  }
+  qDebug() << "new con" << con0.report();
+  qDebug() << "remove" << id1;
+  circ.insert(con0);
+  circ.remove(id1);
+
+  // now join the other two
+  con0 = cons.first();
+  qDebug() << "prerev" << con0.report();
+  con0.reverse();
+  qDebug() << "postrev" << con0.report();
+  QPolygon path = geom.connectionPath(con0);
+  qDebug() << "path" << path;
+  qDebug() << "pl" << paths.last();
+  path += paths.last();
+  path = geom.simplifiedPath(path);
+  con0.setTo(cons.last().to());
+  con0.setVia(geom.viaFromPath(con0, path));
+  circ.insert(con0);
+  qDebug() << "new con" << con0.report();
+  qDebug() << "remove" << cons.last().id();
+  circ.remove(cons.last().id());
+
+  acons += cc;
 }
 
 void CircuitModData::makeDanglingAt(int id, QSet<int> cc) {
