@@ -21,6 +21,8 @@ public:
   void rebuild();
   void keyPressAnywhere(QKeyEvent *);
   void finalizeConnection();
+  void startConnectionFromPin(QPointF);
+  void startConnectionFromConnection(QPointF);
   QPointF pinPosition(int id, QString pin) const {
     if (circ.elements().contains(id))
       return lib->upscale(Geometry(circ, lib).pinPosition(id, pin));
@@ -60,6 +62,24 @@ public:
   QList<Circuit> redobuffer;
   ConnBuilder *connbuilder;
 };
+
+void SceneData::startConnectionFromPin(QPointF pos) {
+  scene->clearSelection();
+  connbuilder = new ConnBuilder(scene);
+  scene->addItem(connbuilder);
+  connbuilder->startFromPin(pos,
+                            hovermanager->element(),
+                            hovermanager->pin());
+}
+
+void SceneData::startConnectionFromConnection(QPointF pos) {
+  scene->clearSelection();
+  connbuilder = new ConnBuilder(scene);
+  scene->addItem(connbuilder);
+  connbuilder->startFromConnection(pos,
+                                   hovermanager->connection(),
+                                   hovermanager->segment());
+}
 
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
   circ = cm.circuit();
@@ -234,21 +254,16 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     d->connbuilder->mousePress(e);
     update();
   } else {
-    if (d->hovermanager->onPin()) {
-      d->connbuilder = new ConnBuilder(this);
-      addItem(d->connbuilder);
-      d->connbuilder->startFromPin(e->scenePos(),
-				   d->hovermanager->element(),
-				   d->hovermanager->pin());
-    } else if (d->hovermanager->onFakePin()) {
-      d->connbuilder = new ConnBuilder(this);
-      addItem(d->connbuilder);
-      d->connbuilder->startFromConnection(e->scenePos(),
-					  d->hovermanager->connection(),
-					  d->hovermanager->segment());
-    } else {
+    if (d->hovermanager->onPin()) 
+      d->startConnectionFromPin(e->scenePos());
+    else if (d->hovermanager->onFakePin()) 
+      d->startConnectionFromConnection(e->scenePos());
+    else if (d->hovermanager->onConnection()
+             && (e->modifiers() & Qt::ShiftModifier)) 
+      d->startConnectionFromConnection(e->scenePos());
+    else 
       QGraphicsScene::mousePressEvent(e);
-    }
+    
   }
 }
 
