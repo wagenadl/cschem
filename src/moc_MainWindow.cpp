@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
-    QByteArrayData data[11];
-    char stringdata0[112];
+    QByteArrayData data[15];
+    char stringdata0[157];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -41,12 +41,18 @@ QT_MOC_LITERAL(6, 57, 10), // "quitAction"
 QT_MOC_LITERAL(7, 68, 6), // "zoomIn"
 QT_MOC_LITERAL(8, 75, 7), // "zoomOut"
 QT_MOC_LITERAL(9, 83, 11), // "markChanged"
-QT_MOC_LITERAL(10, 95, 16) // "setStatusMessage"
+QT_MOC_LITERAL(10, 95, 16), // "setStatusMessage"
+QT_MOC_LITERAL(11, 112, 11), // "aboutAction"
+QT_MOC_LITERAL(12, 124, 10), // "copyAction"
+QT_MOC_LITERAL(13, 135, 9), // "cutAction"
+QT_MOC_LITERAL(14, 145, 11) // "pasteAction"
 
     },
     "MainWindow\0openAction\0\0saveAction\0"
     "saveAsAction\0newAction\0quitAction\0"
-    "zoomIn\0zoomOut\0markChanged\0setStatusMessage"
+    "zoomIn\0zoomOut\0markChanged\0setStatusMessage\0"
+    "aboutAction\0copyAction\0cutAction\0"
+    "pasteAction"
 };
 #undef QT_MOC_LITERAL
 
@@ -56,7 +62,7 @@ static const uint qt_meta_data_MainWindow[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
+      13,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -64,15 +70,19 @@ static const uint qt_meta_data_MainWindow[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   59,    2, 0x0a /* Public */,
-       3,    0,   60,    2, 0x0a /* Public */,
-       4,    0,   61,    2, 0x0a /* Public */,
-       5,    0,   62,    2, 0x0a /* Public */,
-       6,    0,   63,    2, 0x0a /* Public */,
-       7,    0,   64,    2, 0x0a /* Public */,
-       8,    0,   65,    2, 0x0a /* Public */,
-       9,    0,   66,    2, 0x0a /* Public */,
-      10,    1,   67,    2, 0x0a /* Public */,
+       1,    0,   79,    2, 0x0a /* Public */,
+       3,    0,   80,    2, 0x0a /* Public */,
+       4,    0,   81,    2, 0x0a /* Public */,
+       5,    0,   82,    2, 0x0a /* Public */,
+       6,    0,   83,    2, 0x0a /* Public */,
+       7,    0,   84,    2, 0x0a /* Public */,
+       8,    0,   85,    2, 0x0a /* Public */,
+       9,    0,   86,    2, 0x0a /* Public */,
+      10,    1,   87,    2, 0x0a /* Public */,
+      11,    0,   90,    2, 0x0a /* Public */,
+      12,    0,   91,    2, 0x0a /* Public */,
+      13,    0,   92,    2, 0x0a /* Public */,
+      14,    0,   93,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -84,6 +94,10 @@ static const uint qt_meta_data_MainWindow[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QString,    2,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -103,6 +117,10 @@ void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 6: _t->zoomOut(); break;
         case 7: _t->markChanged(); break;
         case 8: _t->setStatusMessage((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 9: _t->aboutAction(); break;
+        case 10: _t->copyAction(); break;
+        case 11: _t->cutAction(); break;
+        case 12: _t->pasteAction(); break;
         default: ;
         }
     }
@@ -133,13 +151,13 @@ int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 13;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 9)
+        if (_id < 13)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 9;
+        _id -= 13;
     }
     return _id;
 }

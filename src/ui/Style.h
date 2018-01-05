@@ -18,6 +18,8 @@ public:
   static double connectionHoverWidthFactor();
   static double connectionDraftWidthFactor();
   static double selectionRectRadius();
+  static QString programName();
+  static QString versionName();
 };
 
 #endif

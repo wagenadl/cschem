@@ -19,6 +19,7 @@ public:
   QPoint pinPosition(class Element const &elt, QString pin) const;
   QPoint centerOfPinMass(int elt) const;
   QPoint centerOfPinMass(class Element const &elt) const;
+  QPoint centerOfPinMass() const; // for whole circuit
   QPolygon connectionPath(int con) const;
   QPolygon connectionPath(class Connection const &con) const;
   bool isZeroLength(int con) const;

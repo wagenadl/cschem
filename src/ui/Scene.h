@@ -29,6 +29,8 @@ public:
   // returns "-" if none
   int connectionAt(QPointF scenepos, int *segmentp=0) const;
   void modifyConnection(int id, QPolygonF path);
+  void copyToClipboard(bool cut=false);
+  void pasteFromClipboard();
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;

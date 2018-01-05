@@ -27,6 +27,9 @@ public slots:
   void markChanged();
   void setStatusMessage(QString);
   void aboutAction();
+  void copyAction();
+  void cutAction();
+  void pasteAction();
 public:
   void load(QString filename);
   void create();

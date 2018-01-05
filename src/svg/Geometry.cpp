@@ -4,6 +4,7 @@
 
 #include "file/Circuit.h"
 #include "svg/PartLibrary.h"
+#include <QDebug>
 
 class GeometryData {
 public:
@@ -38,6 +39,19 @@ QPoint Geometry::pinPosition(Element const &elt, QString pin) const {
   return elt.position() + d->lib->downscale(pp);
 }
 
+QPoint Geometry::centerOfPinMass() const {
+  int N = 0;
+  QPointF sum;
+  for (Element const &elt: d->circ.elements()) {
+    Part const &part(d->lib->part(elt.symbol()));
+    QStringList pins = part.pinNames();
+    N += pins.size();
+    for (QString p: pins)
+      sum += pinPosition(elt, p);
+  }
+  return (sum/N).toPoint();
+}
+
 QPoint Geometry::centerOfPinMass(int eltid) const {
   return centerOfPinMass(d->circ.element(eltid));
 }
@@ -45,10 +59,10 @@ QPoint Geometry::centerOfPinMass(int eltid) const {
 QPoint Geometry::centerOfPinMass(Element const &elt) const {
   Part const &part(d->lib->part(elt.symbol()));
   QStringList pins = part.pinNames();
-  QPointF ttl;
+  QPointF sum;
   for (QString p: pins)
-    ttl += pinPosition(elt, p);
-  return (ttl/pins.size()).toPoint();
+    sum += pinPosition(elt, p);
+  return (sum/pins.size()).toPoint();
 }
 
 QPolygon Geometry::connectionPath(int conid) const {
@@ -94,10 +108,11 @@ bool Geometry::isZeroLength(Connection const &con) const {
   if (!con.isValid())
     return true;
   QPolygon p = connectionPath(con);
+  qDebug() << "iZL" << con.report() << p;
   if (p.size() <= 1)
     return true;
   else
-    return p.last() != p.first();
+    return p.last() == p.first();
 }  
 
 Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly) {

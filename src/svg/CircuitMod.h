@@ -20,6 +20,10 @@ public:
      element is a junction with four connections, through connections
      are preserved.  Deletes zero-length dangling lines. True if
      successful. */
+  bool deleteElements(QSet<int> eltids);
+  /* Also cuts all internal connections and external connections that started
+     out dangling. Other external connections are made dangling. True if
+     successful. */
   bool deleteConnection(int conid);
   /* Calls removePointlessJunction to remove and rewire adjacent
      junctions that are left with few than three connections. True if

@@ -48,4 +48,10 @@ double Style::connectionDraftWidthFactor() {
   return 0.5;
 }
 
+QString Style::programName() {
+  return "CSchem";
+}
 
+QString Style::versionName() {
+  return "1.0.0";
+}

@@ -9,6 +9,7 @@
 #include "ConnBuilder.h"
 #include "svg/CircuitMod.h"
 #include "svg/Geometry.h"
+#include "Clipboard.h"
 
 class SceneData {
 public:
@@ -46,6 +47,7 @@ public:
   void deleteConnection(int id);
   void deleteConnectionSegment(int id, int seg);
   void rebuildAsNeeded(CircuitMod const &cm);
+  void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
 public:
   Scene *scene;
   PartLibrary const *lib;
@@ -61,7 +63,11 @@ public:
 
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
   circ = cm.circuit();
-  for (int id: cm.affectedConnections()) {
+  rebuildAsNeeded(cm.affectedElements(), cm.affectedConnections());
+}
+
+void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
+  for (int id: conids) {
     if (circ.connections().contains(id)) {
       if (conns.contains(id))
         conns[id]->rebuild();
@@ -72,7 +78,7 @@ void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
       conns.remove(id);
     }
   }
-  for (int id: cm.affectedElements()) {
+  for (int id: eltids) {
     if (circ.elements().contains(id)) {
       if (elts.contains(id))
         elts[id]->rebuild();
@@ -500,3 +506,43 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
   if (cm.adjustOverlappingConnections(id))
     d->rebuildAsNeeded(cm);
 }
+
+void Scene::copyToClipboard(bool cut) {
+  QSet<int> elts = selectedElements();
+  if (elts.isEmpty()) {
+    if (d->hovermanager->onElement())
+      elts << d->hovermanager->element();
+    else
+      return;
+  }
+
+  Circuit pp = d->circ.subset(elts);
+  Clipboard::clipboard().store(pp);
+  if (cut) {
+    d->preact();
+    CircuitMod cm(d->circ, d->lib);
+    cm.deleteElements(elts);
+    d->rebuildAsNeeded(cm);
+  }
+}
+
+void Scene::pasteFromClipboard() {
+  int mx = d->circ.maxId();
+  Circuit pp = Clipboard::clipboard().retrieve();
+  QPoint cm = Geometry(pp, d->lib).centerOfPinMass();
+  pp.translate(d->lib->downscale(d->mousexy) - cm);
+  int m2 = pp.renumber(mx + 1);
+  if (m2<mx) {
+    qDebug() << "nothing to paste";
+    return;
+  }
+  d->preact();
+  d->circ += pp;
+  d->rebuildAsNeeded(QSet<int>::fromList(pp.elements().keys()),
+                     QSet<int>::fromList(pp.connections().keys()));
+  clearSelection();
+  for (int id: pp.elements().keys()) 
+    if (d->elts.contains(id))
+      d->elts[id]->setSelected(true);
+}
+

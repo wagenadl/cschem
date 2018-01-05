@@ -157,6 +157,14 @@ void Circuit::translate(QSet<int> ids, QPoint delta) {
   }
 }
 
+void Circuit::translate(QPoint delta) {
+  d.detach();
+  for (Element &elt: d->elements)
+    elt.setPosition(elt.position() + delta);
+  for (Connection &con: d->connections)
+    con.setVia(con.via().translated(delta));
+}
+
 Element const &Circuit::element(int id) const {
   static Element ne;
   auto it(d->elements.find(id));
@@ -229,3 +237,23 @@ Circuit Circuit::subset(QSet<int> elts) const {
 bool Circuit::isEmpty() const {
   return elements().isEmpty();
 }
+
+int Circuit::maxId() const {
+  int mx = 0;
+  for (int id: d->elements.keys())
+    if (id>mx)
+      mx = id;
+  for (int id: d->connections.keys())
+    if (id>mx)
+      mx = id;
+  return mx;
+}
+
+Circuit &Circuit::operator+=(Circuit const &o) {
+  for (auto elt: o.elements())
+    d->elements[elt.id()] = elt;
+  for (auto con: o.connections())
+    d->connections[con.id()] = con;
+  return *this;
+}
+  

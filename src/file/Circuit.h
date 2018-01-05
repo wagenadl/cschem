@@ -33,6 +33,10 @@ public:
   /* Connections that either start or end at given pin of given element */
   void translate(QSet<int> eltids, QPoint delta);
   /* Does not take care of edge connections */
+  void translate(QPoint dleta);
+  /* Translates entire circuit */
+  int maxId() const;
+  /* Returns the largest ID number in use in this circuit. */
   int renumber(int start=1);
   /* Renumbers elements and connections to start at the given ID value.
      Returns the largest value assigned. Connections that refer to non-
@@ -43,6 +47,9 @@ public:
      elements, all connections between those elements, and all connections
      onto those elements that have a dangling other end.
    */
+  Circuit &operator+=(Circuit const &);
+  /* Bluntly merges two circuits, not worrying about overlapping
+     connections, conflicting IDs, or anything like that. */
 public:
   QMap<int, class Element> const &elements() const;
   QMap<int, class Connection> const &connections() const;

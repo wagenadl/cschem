@@ -11,6 +11,9 @@
 #include <QStatusBar>
 #include <QDir>
 #include <QFileDialog>
+#include <QDebug>
+#include "Style.h"
+#include <QMessageBox>
 
 class MWData {
 public:
@@ -82,6 +85,23 @@ void MainWindow::createActions() {
 
   menu = menuBar()->addMenu(tr("&Edit"));
 
+  act = new QAction(tr("&Copy"), this);
+  act->setShortcuts(QKeySequence::Copy);
+  act->setStatusTip(tr("Copy selection to clipboard"));
+  connect(act, &QAction::triggered, this, &MainWindow::copyAction);
+  menu->addAction(act);
+  
+  act = new QAction(tr("&Cut"), this);
+  act->setShortcuts(QKeySequence::Cut);
+  act->setStatusTip(tr("Cut selection to clipboard"));
+  connect(act, &QAction::triggered, this, &MainWindow::cutAction);
+  menu->addAction(act);
+  
+  act = new QAction(tr("&Paste"), this);
+  act->setShortcuts(QKeySequence::Paste);
+  act->setStatusTip(tr("Paste clipboard into circuit"));
+  connect(act, &QAction::triggered, this, &MainWindow::pasteAction);
+  menu->addAction(act);
   
   menu = menuBar()->addMenu(tr("&View"));
 
@@ -166,7 +186,7 @@ void MainWindow::create() {
   d->view->setScene(0);
   d->scene = QSharedPointer<Scene>(new Scene(d->lib));
   d->view->setScene(d->scene.data());
-  setWindowTitle("QSchem");
+  setWindowTitle(Style::programName());
   d->filename = "";
 }
 
@@ -203,5 +223,25 @@ void MainWindow::setStatusMessage(QString msg) {
 }
 
 void MainWindow::aboutAction() {
-  qDebug() << "NYI";
+  QString me = "<b>" + Style::programName() + "</b>";
+  QString vsn = Style::versionName();
+  QMessageBox::about(0, "About " + me,
+                     me + " " + vsn
+                     + "<p>" + "(C) 2018 Daniel A. Wagenaar\n"
+                     + "<p>" + me + " is a program for electronic circuit layout with high-quality SVG export. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
+                     + "<p>" + me + " is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
+                     + "<p>" + me + " is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"
+                     + "<p>" + "You should have received a copy of the GNU General Public License along with this program. If not, see <a href=\"http://www.gnu.org/licenses/gpl-3.0.en.html\">www.gnu.org/licenses/gpl-3.0.en.html</a>.");
+}
+
+void MainWindow::copyAction() {
+  d->scene->copyToClipboard();
+}
+
+void MainWindow::cutAction() {
+  d->scene->copyToClipboard(true);
+}
+
+void MainWindow::pasteAction() {
+  d->scene->pasteFromClipboard();
 }
