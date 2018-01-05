@@ -30,6 +30,8 @@ public slots:
   void copyAction();
   void cutAction();
   void pasteAction();
+  void undoAction();
+  void redoAction();
 public:
   void load(QString filename);
   void create();

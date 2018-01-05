@@ -30,6 +30,8 @@ public:
   void modifyConnection(int id, QPolygonF path);
   void copyToClipboard(bool cut=false);
   void pasteFromClipboard();
+  void undo();
+  void redo();
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;

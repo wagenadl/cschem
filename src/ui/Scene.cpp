@@ -367,18 +367,17 @@ void SceneData::keyPressAnywhere(QKeyEvent *e) {
       rebuildAsNeeded(cm);
     }  
     break;
-  case Qt::Key_Z:
-    if (e->modifiers() & Qt::ControlModifier) {
-      if (e->modifiers() & Qt::ShiftModifier) {
-	if (redo())
-	  rebuild();
-      } else {
-	if (undo())
-	  rebuild();
-      }
-    }
-    break;
   }
+}
+
+void Scene::undo() {
+  if (d->undo())
+    d->rebuild();
+}
+
+void Scene::redo() {
+  if (d->redo())
+    d->rebuild();
 }
 
 int Scene::elementAt(QPointF scenepos) const {

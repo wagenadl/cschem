@@ -102,7 +102,19 @@ void MainWindow::createActions() {
   act->setStatusTip(tr("Paste clipboard into circuit"));
   connect(act, &QAction::triggered, this, &MainWindow::pasteAction);
   menu->addAction(act);
-  
+
+  act = new QAction(tr("&Undo"), this);
+  act->setShortcuts(QKeySequence::Undo);
+  act->setStatusTip(tr("Undo"));
+  connect(act, &QAction::triggered, this, &MainWindow::undoAction);
+  menu->addAction(act);
+
+  act = new QAction(tr("&Redo"), this);
+  act->setShortcuts(QKeySequence::Redo);
+  act->setStatusTip(tr("Redo"));
+  connect(act, &QAction::triggered, this, &MainWindow::redoAction);
+  menu->addAction(act);
+
   menu = menuBar()->addMenu(tr("&View"));
 
   act = new QAction(tr("&Zoom in"), this);
@@ -244,4 +256,12 @@ void MainWindow::cutAction() {
 
 void MainWindow::pasteAction() {
   d->scene->pasteFromClipboard();
+}
+
+void MainWindow::undoAction() {
+  d->scene->undo();
+}
+
+void MainWindow::redoAction() {
+  d->scene->redo();
 }
