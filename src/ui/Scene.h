@@ -14,7 +14,6 @@ public:
   Scene(PartLibrary const *lib, QObject *parent=0);
   ~Scene();
   void setCircuit(Circuit const &);
-  void rebuild();
   PartLibrary const *library() const;
   Circuit const &circuit() const;
   Circuit &circuit();
@@ -37,11 +36,6 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
-private:
-  void keyPressOnElement(class SceneElement *, QKeyEvent *);
-  void keyPressOnConnection(class SceneConnection *, int seg, QKeyEvent *);
-  void keyPressAnywhere(QKeyEvent *);
-  void finalizeConnection();
 private:
   class SceneData *d;
 };

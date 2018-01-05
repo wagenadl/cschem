@@ -18,6 +18,9 @@ public:
     hovermanager = 0;
     connbuilder = 0;
   }
+  void rebuild();
+  void keyPressAnywhere(QKeyEvent *);
+  void finalizeConnection();
   QPointF pinPosition(int id, QString pin) const {
     if (circ.elements().contains(id))
       return lib->upscale(Geometry(circ, lib).pinPosition(id, pin));
@@ -43,9 +46,6 @@ public:
     redobuffer.clear();
   }
   void rotateElement(int id, int steps=1);
-  void deleteElement(int id);
-  void deleteConnection(int id);
-  void deleteConnectionSegment(int id, int seg);
   void rebuildAsNeeded(CircuitMod const &cm);
   void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
 public:
@@ -98,24 +98,6 @@ void SceneData::rotateElement(int id, int steps) {
   rebuildAsNeeded(cm);
 }  
 
-void SceneData::deleteElement(int id) {
-  CircuitMod cm(circ, lib);
-  cm.deleteElement(id);
-  rebuildAsNeeded(cm);
-}  
-
-void SceneData::deleteConnection(int id) {
-  CircuitMod cm(circ, lib);
-  cm.deleteConnection(id);
-  rebuildAsNeeded(cm);
-}  
-
-void SceneData::deleteConnectionSegment(int id, int seg) {
-  CircuitMod cm(circ, lib);
-  cm.deleteConnectionSegment(id, seg);
-  rebuildAsNeeded(cm);
-}  
-
 Scene::~Scene() {
   delete d;
 }
@@ -134,24 +116,24 @@ void Scene::setCircuit(Circuit const &c) {
     delete i;
   d->conns.clear();
   d->circ = c;
-  rebuild();
+  d->rebuild();
 }
 
 
-void Scene::rebuild() {
+void SceneData::rebuild() {
   /* We should be able to do better than start afresh in general, but for now: */
-  for (auto i: d->elts)
+  for (auto i: elts)
     delete i;
-  d->elts.clear();
-  for (auto i: d->conns)
+  elts.clear();
+  for (auto i: conns)
     delete i;
-  d->conns.clear();
+  conns.clear();
 
-  for (auto const &c: d->circ.elements()) 
-    d->elts[c.id()] = new SceneElement(this, c);
+  for (auto const &c: circ.elements()) 
+    elts[c.id()] = new SceneElement(scene, c);
   
-  for (auto const &c: d->circ.connections())
-    d->conns[c.id()] = new SceneConnection(this, c);
+  for (auto const &c: circ.connections())
+    conns[c.id()] = new SceneConnection(scene, c);
 }
 
 QPointF Scene::pinPosition(int partid, QString pin) const {
@@ -299,7 +281,7 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     d->connbuilder->mouseRelease(e);
     update();
     if (d->connbuilder->isComplete())
-      finalizeConnection();
+      d->finalizeConnection();
     d->hovermanager->setPrimaryPurpose((d->connbuilder ||
                                         e->modifiers() & Qt::ShiftModifier)
                                        ? HoverManager::Purpose::Connecting
@@ -328,63 +310,55 @@ void Scene::keyPressEvent(QKeyEvent *e) {
   if (d->connbuilder) {
     d->connbuilder->keyPress(e);
     if (d->connbuilder->isComplete())
-      finalizeConnection();
+      d->finalizeConnection();
     return;
   }
   
   if (focusItem()==0) {
-    QGraphicsItem *item = itemAt(d->mousexy, QTransform());
-    while (item && item->parentItem())
-      item = item->parentItem();
-
-    SceneElement *elt = dynamic_cast<SceneElement *>(item);
-    SceneConnection *con = dynamic_cast<SceneConnection *>(item);
-
-    if (elt)
-      keyPressOnElement(elt, e);
-    else if (con)
-      keyPressOnConnection(con, con->segmentAt(d->mousexy), e);
-
-    keyPressAnywhere(e);
+    d->keyPressAnywhere(e);
   } else {
     QGraphicsScene::keyPressEvent(e);
   }
 }
 
-void Scene::keyPressOnElement(class SceneElement *elt, QKeyEvent *e) {
-  int id = elt->id();
+void SceneData::keyPressAnywhere(QKeyEvent *e) {
+  QSet<int> ee = scene->selectedElements();
   switch (e->key()) {
   case Qt::Key_R:
-    d->preact();
-    d->rotateElement(id, (e->modifiers() & Qt::ShiftModifier) ? -1 : 1);
+    if (!ee.isEmpty()) {
+      qDebug() << "Rotating selection NYI";
+    } else if (hovermanager->onElement()) {
+      preact();
+      rotateElement(hovermanager->element(),
+                    (e->modifiers() & Qt::ShiftModifier) ? -1 : 1);
+    }
     break;
   case Qt::Key_Delete:
-    d->preact();
-    d->deleteElement(id);
+    if (!ee.isEmpty()) {
+      preact();
+      CircuitMod cm(circ, lib);
+      cm.deleteElements(ee);
+      rebuildAsNeeded(cm);
+    } else if (hovermanager->onElement()) {
+      preact();
+      CircuitMod cm(circ, lib);
+      cm.deleteElement(hovermanager->element());
+      rebuildAsNeeded(cm);
+    } else if (hovermanager->onConnection()) {
+      preact();
+      CircuitMod cm(circ, lib);
+      cm.deleteConnectionSegment(hovermanager->connection(),
+                                 hovermanager->segment());
+      rebuildAsNeeded(cm);
+    }  
     break;
-  }
-}
-
-void Scene::keyPressOnConnection(class SceneConnection *con, int seg,
-				 QKeyEvent *e) {
-  int id = con->id();
-  switch (e->key()) {
-  case Qt::Key_Delete: {
-    d->preact();
-    d->deleteConnectionSegment(id, seg);
-  } break;
-  }
-}
-
-void Scene::keyPressAnywhere(QKeyEvent *e) {
-  switch (e->key()) {
   case Qt::Key_Z:
     if (e->modifiers() & Qt::ControlModifier) {
       if (e->modifiers() & Qt::ShiftModifier) {
-	if (d->redo())
+	if (redo())
 	  rebuild();
       } else {
-	if (d->undo())
+	if (undo())
 	  rebuild();
       }
     }
@@ -438,40 +412,40 @@ int Scene::connectionAt(QPointF scenepos, int *segp) const {
  return -1;
 }
 
-void Scene::finalizeConnection() {
-  if (!d->connbuilder->isAbandoned()) {
-    d->preact();
+void SceneData::finalizeConnection() {
+  if (!connbuilder->isAbandoned()) {
+    preact();
     QList<int> cc;
-    for (auto c: d->connbuilder->junctions()) {
-      d->circ.insert(c);
-      if (d->elts.contains(c.id()))
-        delete d->elts[c.id()];
-      d->elts[c.id()] = new SceneElement(this, c);
+    for (auto c: connbuilder->junctions()) {
+      circ.insert(c);
+      if (elts.contains(c.id()))
+        delete elts[c.id()];
+      elts[c.id()] = new SceneElement(scene, c);
     }
-    for (auto c: d->connbuilder->connections()) {
-      d->circ.insert(c);
-      if (d->conns.contains(c.id()))
-        delete d->conns[c.id()];
-      d->conns[c.id()] = new SceneConnection(this, c);
+    for (auto c: connbuilder->connections()) {
+      circ.insert(c);
+      if (conns.contains(c.id()))
+        delete conns[c.id()];
+      conns[c.id()] = new SceneConnection(scene, c);
       cc << c.id();
     }
 
-    CircuitMod cm(d->circ, d->lib);
+    CircuitMod cm(circ, lib);
     for (int c: cc) 
       cm.simplifyConnection(c);
     for (int c: cc)
-      qDebug() << "Connection" << d->circ.connection(c).report();
+      qDebug() << "Connection" << circ.connection(c).report();
     for (int c: cc)
       cm.removeConnectionsEquivalentTo(c);
     for (int c: cc)
       cm.adjustOverlappingConnections(c);
-    for (auto c: d->connbuilder->junctions())
+    for (auto c: connbuilder->junctions())
       cm.removePointlessJunction(c.id());
-    d->rebuildAsNeeded(cm);
+    rebuildAsNeeded(cm);
   }
 
-  delete d->connbuilder;
-  d->connbuilder = 0;
+  delete connbuilder;
+  connbuilder = 0;
 }
 
 QMap<int, class SceneElement *> const &Scene::elements() const {

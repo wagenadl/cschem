@@ -140,7 +140,12 @@ bool HoverManagerData::onElement() const {
     else
       return false;
   case HoverManager::Purpose::Connecting:
-    return false;
+    if (con>0)
+      return false;
+    else if (elt>0)
+      return pin=="-" || isjunc;
+    else
+      return false;
   }
   return false; // not executed
 }
