@@ -5,15 +5,37 @@
 #include "file/Circuit.h"
 #include "svg/PartLibrary.h"
 #include <QDebug>
+#include <QMap>
+
+class OrderedPoint: public QPoint {
+public:
+  OrderedPoint(QPoint o) { x = o.x(); y = o.y(); }
+  bool operator<(OrderedPoint const &o) const {
+    if (x != o.x)
+      return x < o.x;
+    else
+      return y < o.y;
+  }
+public:
+  int x;
+  int y;
+};
 
 class GeometryData {
 public:
   GeometryData(Circuit const &circ, PartLibrary const *lib):
     circ(circ), lib(lib) {
   }
+  void ensurePinDB();
+  void ensureConnectionDB();
+  QPoint pinPosition(int elt, QString pin) const;
+  QPoint pinPosition(Element const &elt, QString pin) const;
+  QPolygon connectionPath(Connection const &con) const;
 public:
   Circuit circ;
   PartLibrary const *lib;
+  mutable QMap<OrderedPoint, PinID> pindb;
+  mutable QMap<OrderedPoint, int> condb;
 };
 
 Geometry::Geometry(Circuit const &circ, PartLibrary const *lib):
@@ -23,20 +45,51 @@ Geometry::~Geometry() {
   delete d;
 }
 
+PinID Geometry::pinAt(QPoint p) const {
+  d->ensurePinDB();
+  if (d->pindb.contains(p))
+    return d->pindb[p];
+  else
+    return PinID();
+}
+
+void GeometryData::ensurePinDB() {
+  if (!pindb.isEmpty())
+    return; // already done
+  for (auto const &elt: circ.elements()) {
+    Part const &prt(lib->part(elt.symbol()));
+    if (!prt.isValid())
+      continue;
+    QStringList pins = prt.pinNames();
+    for (QString p: pins) {
+      QPoint pos = pinPosition(elt, p);
+      pindb[pos] = PinID(elt.id(), p);
+    }
+  }
+}
+
 QPoint Geometry::pinPosition(class PinID const &pid) const {
-  return pinPosition(pid.element(), pid.pin());
+  return d->pinPosition(pid.element(), pid.pin());
 }
 
 QPoint Geometry::pinPosition(int eltid, QString pin) const {
-  return pinPosition(d->circ.element(eltid), pin);
+  return d->pinPosition(d->circ.element(eltid), pin);
 }
 
 QPoint Geometry::pinPosition(Element const &elt, QString pin) const {
-  Part const &prt(d->lib->part(elt.symbol()));
+  return d->pinPosition(elt, pin);
+}
+
+QPoint GeometryData::pinPosition(int eltid, QString pin) const {
+  return pinPosition(circ.element(eltid), pin);
+}
+
+QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
+  Part const &prt(lib->part(elt.symbol()));
   QPointF pp = prt.shiftedPinPosition(pin);
   for (int k=0; k<elt.rotation(); k++)
     pp = QPointF(pp.y(), -pp.x());
-  return elt.position() + d->lib->downscale(pp);
+  return elt.position() + lib->downscale(pp);
 }
 
 QPoint Geometry::centerOfPinMass() const {
@@ -66,10 +119,14 @@ QPoint Geometry::centerOfPinMass(Element const &elt) const {
 }
 
 QPolygon Geometry::connectionPath(int conid) const {
-  return connectionPath(d->circ.connection(conid));
+  return d->connectionPath(d->circ.connection(conid));
 }
 
 QPolygon Geometry::connectionPath(Connection const &con) const {
+  return d->connectionPath(con);
+}
+
+QPolygon GeometryData::connectionPath(Connection const &con) const {
   QPolygon res;
   if (!con.isValid())
     return res;
@@ -115,7 +172,46 @@ bool Geometry::isZeroLength(Connection const &con) const {
     return p.last() == p.first();
 }  
 
-Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly) {
+int Geometry::connectionAt(QPoint p) const {
+  d->ensureConnectionDB();
+  if (d->condb.contains(p))
+    return d->condb[p];
+  else
+    return -1;
+}
+
+void GeometryData::ensureConnectionDB() {
+  if (!condb.isEmpty())
+    return;
+
+  for (auto &con: circ.connections()) {
+    int id = con.id();
+    QPolygon poly(connectionPath(con));
+    int N = poly.size();
+    for (int n=0; n<N-1; n++) {
+      QPoint p0 = poly[n];
+      QPoint p1 = poly[n+1];
+      if (p0.x()!=p1.x() && p0.y()!=p1.y())
+	continue; // skip diagonal segment
+      if (p0.x()<p1.x()) {
+	for (int x=p0.x(); x<=p1.x(); x++)
+	  condb[QPoint(x, p0.y())] = id;
+      } else if (p0.x()>p1.x()) {
+	for (int x=p1.x(); x<=p0.x(); x++)
+	  condb[QPoint(x, p0.y())] = id;
+      } else if (p0.y()<p1.y()) {
+	for (int y=p0.y(); y<=p1.y(); y++)
+	  condb[QPoint(p0.x(), y)] = id;
+      } else {
+	for (int y=p1.y(); y<=p0.y(); y++)
+	  condb[QPoint(p0.x(), y)] = id;
+      }
+    }
+  }
+}
+
+Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly,
+					      bool nodiag) {
   int N = poly.size();
   if (N<=0)
     return Intersection();
@@ -126,6 +222,8 @@ Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly) {
   for (int n=0; n<N-1; n++) {
     QPoint p0 = poly[n];
     QPoint p1 = poly[n+1];
+    if (nodiag && p0.x()!=p1.x() && p0.y()!=p1.y())
+      continue; // skip diagonal element
     while (p0 != p1) {
       int d0 = (p - p0).manhattanLength();
       if (d0 < dist) {
