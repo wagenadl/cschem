@@ -32,21 +32,44 @@ public:
   bool undo() {
     if (undobuffer.isEmpty())
       return false;
+
     redobuffer << circ;
+    redoselections << selectedElements();
+
     circ = undobuffer.takeLast();
+    rebuild();
+
+    scene->clearSelection();
+    for (int id: undoselections.takeLast())
+      if (elts.contains(id))
+        elts[id]->setSelected(true);
+
     return true;
   }
   bool redo() {
     if (redobuffer.isEmpty())
       return false;
+
     undobuffer << circ;
+    undoselections << selectedElements();
+
     circ = redobuffer.takeLast();
+    rebuild();
+
+    scene->clearSelection();
+    for (int id: redoselections.takeLast())
+      if (elts.contains(id))
+        elts[id]->setSelected(true);
+
     return true;
   }
   void preact() {
     undobuffer << circ;
+    undoselections << selectedElements();
     redobuffer.clear();
+    redoselections.clear();
   }
+  QSet<int> selectedElements() const;
   void rotateElement(int id, int steps=1);
   void rebuildAsNeeded(CircuitMod const &cm);
   void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
@@ -59,7 +82,9 @@ public:
   QPointF mousexy;
   HoverManager *hovermanager;
   QList<Circuit> undobuffer;
+  QList< QSet<int> > undoselections;
   QList<Circuit> redobuffer;
+  QList< QSet<int> > redoselections;
   ConnBuilder *connbuilder;
 };
 
@@ -173,12 +198,16 @@ Circuit &Scene::circuit() {
   return d->circ;
 }
 
-QSet<int> Scene::selectedElements() const {
+QSet<int> SceneData::selectedElements() const {
   QSet<int> selection;
-  for (int id: d->elts.keys())
-    if (d->elts[id]->isSelected())
+  for (int id: elts.keys())
+    if (elts[id]->isSelected())
       selection << id;
   return selection;
+}
+
+QSet<int> Scene::selectedElements() const {
+  return d->selectedElements();
 }
 
 void Scene::tentativelyMoveSelection(QPointF delta) {
@@ -337,7 +366,7 @@ void Scene::keyPressEvent(QKeyEvent *e) {
 }
 
 void SceneData::keyPressAnywhere(QKeyEvent *e) {
-  QSet<int> ee = scene->selectedElements();
+  QSet<int> ee = selectedElements();
   switch (e->key()) {
   case Qt::Key_R:
     if (!ee.isEmpty()) {
@@ -371,13 +400,11 @@ void SceneData::keyPressAnywhere(QKeyEvent *e) {
 }
 
 void Scene::undo() {
-  if (d->undo())
-    d->rebuild();
+  d->undo();
 }
 
 void Scene::redo() {
-  if (d->redo())
-    d->rebuild();
+  d->redo();
 }
 
 int Scene::elementAt(QPointF scenepos) const {
