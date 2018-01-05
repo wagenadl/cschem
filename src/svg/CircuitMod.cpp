@@ -88,46 +88,20 @@ bool CircuitMod::deleteElements(QSet<int> elts) {
                       + d->circ.connectionsTo(elts))
     - intcon;
 
-  qDebug() << "delete elements" << elts << intcon << extcon;
-
-  Geometry geom(d->circ, d->lib);
-  
   for (int id: extcon) {
     if (d->circ.connection(id).isDangling()) {
       d->circ.remove(id);
-    } else {
-      Connection c = d->circ.connection(id);
-      qDebug() << "  extcon" << c.report();
-      if (elts.contains(c.fromId())) {
-        c.via().prepend(geom.pinPosition(c.from()));
-        c.setFrom(0);
-        qDebug() << "  " << c.report() << c.isValid() << geom.isZeroLength(c);
-        if (c.isValid() && !geom.isZeroLength(c))
-          d->circ.insert(c);
-        else
-          d->circ.remove(id);
-      }
-      if (elts.contains(c.toId())) {
-        c.via().append(geom.pinPosition(c.to()));
-        c.setTo(0);
-        if (c.isValid() && !geom.isZeroLength(c))
-          d->circ.insert(c);
-        else
-          d->circ.remove(id);
-      }
-      qDebug() << "  -> " << d->circ.connections().contains(id);
+      d->acons << id;
     }
   }
   
-  for (int id: elts)
-    d->circ.remove(id);
 
   for (int id: intcon)
     d->circ.remove(id);
-
-  d->aelts += elts;
   d->acons += intcon;
-  d->acons += extcon;
+
+  for (int id: elts)
+    deleteElement(id);
 
   return true;
 }
