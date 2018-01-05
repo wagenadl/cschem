@@ -8,6 +8,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
 #include "svg/Geometry.h"
+#include "svg/CircuitMod.h"
 
 static QPen defaultPen() {
   QPen p(QColor(0, 0, 0));
@@ -17,7 +18,10 @@ static QPen defaultPen() {
 
 class ConnBuilderData {
 public:
-  ConnBuilderData(Scene *scene): scene(scene), circ(scene->circuit()) {
+  ConnBuilderData(Scene *scene):
+    scene(scene),
+    circ(scene->circuit()),
+    lib(scene->library()) {
     reset();
   }
   void reset();
@@ -34,6 +38,7 @@ public:
 public:
   Scene *scene;
   Circuit circ;
+  PartLibrary const *lib;
   QSet<int> junctions;
   QSet<int> connections;
   int majorcon;
@@ -94,42 +99,16 @@ bool ConnBuilderData::considerCompletion() {
   int seg;
   int c = scene->connectionAt(l.p2(), &seg);
   if (c>0) {
-    Connection tgt(circ.connection(c));
-    if (tgt.danglingStart())
-      seg++; // so seg=0 is always pre-vias
-    Element junc = Element::junction(scene->library()->downscale(l.p2()));
-    Connection tgt1;
-    tgt1.setTo(tgt.to());
-    tgt.setTo(junc.id());
-    tgt1.setFrom(junc.id());
-    QPolygon via = tgt.via();
-    QPolygon via1;
-    while (via.size() > seg)
-      via1.prepend(via.takeLast());
-    if (via.size()>=1 && via.last()==junc.position())
-      via.removeLast();
-    if (via1.size()>=1 && via1.first()==junc.position())
-      via1.removeFirst();
-    tgt.setVia(via);
-    tgt1.setVia(via1);
-
-    qDebug() << "onto line" << junc.report();
-    qDebug() << "  " << tgt.report() << tgt.isValid();
-    qDebug() << "  " << tgt1.report() << tgt1.isValid();
-
-    if (tgt.isValid())
-      circ.insert(tgt);
-    else
-      circ.remove(tgt.id());
-    connections << tgt.id();
-    if (tgt1.isValid()) {
-      circ.insert(tgt1);
-      connections << tgt1.id();
+    CircuitMod cm(circ, lib);
+    int junc = cm.injectJunction(c, lib->downscale(l.p2()));
+    qDebug() << "Drop onto connection" << c << junc;
+    if (junc>0) {
+      circ = cm.circuit();
+      junctions += cm.affectedElements();
+      connections += cm.affectedConnections();
+      forceCompletion(junc, "");
+      return true;
     }
-    circ.insert(junc);
-    junctions << junc.id();
-    forceCompletion(junc.id(), "");
-    return true;
   }
   return false;
 }
@@ -248,40 +227,34 @@ ConnBuilder::~ConnBuilder() {
 }
 
 void ConnBuilder::startFromConnection(QPointF fromPos, int conId, int seg) {
-  Geometry geom(d->circ, d->scene->library());
-  QPolygon path(geom.connectionPath(conId));
-  QPoint from = d->scene->library()->downscale(fromPos);
-  qDebug() << "startFromConnection" << from << seg << path;
-  QPoint p0 = path[seg];
-  QPoint p1 = path[seg+1];
-  QPoint dir = p1 - p0;
-  dir /= dir.manhattanLength();
-  int along = QPoint::dotProduct(from - p0, dir);
-  from = p0 + along * dir;
-  qDebug() << "dir" << dir << " newfrom" << from;
-  // now "from" is on the line
-  qDebug() << QPoint::dotProduct(from - p0, dir);
-  qDebug() << QPoint::dotProduct(from - p1, dir);
-  Element junc(Element::junction(from));
-  Connection con(d->circ.connection(conId));
-
-  // for now:
-  d->circ.insert(junc);
-  startFromPin(fromPos, junc.id(), "");
-  d->junctions << junc.id();
+  qDebug() << "startfromcon" << fromPos << conId << seg;
+  CircuitMod cm(d->circ, d->lib);
+  int junc = cm.injectJunction(conId, d->lib->downscale(fromPos));
+  if (junc>0) {
+    d->circ = cm.circuit();
+    startFromPin(fromPos, junc, "");
+    d->junctions += cm.affectedElements();
+    d->connections += cm.affectedConnections();
+  } else {
+    qDebug() << "Failed to inject junction";
+  }
 }
 
 void ConnBuilder::startFromPin(QPointF fromPos, int fromId, QString fromPin) {
+  qDebug() << "startfrompin" << fromPos << fromId << fromPin;
   d->reset();
 
   d->fromId = fromId;
   d->fromPin = fromPin;
 
-  QPointF p1 = d->scene->library()->nearestGrid(fromPos);
+  QPointF p1 = d->lib->nearestGrid(fromPos);
   QPointF p0 = p1;
-  if (fromId>0)
-    p0 = d->scene->pinPosition(fromId, fromPin);
+  if (fromId>0) {
+    Geometry geom(d->circ, d->lib);
+    p0 = d->lib->upscale(geom.pinPosition(fromId, fromPin));
+  }
   d->points << p0;
+  qDebug() << "p0 p1" << p0 << p1;
   
   d->ensureStartJunction();
 
@@ -320,9 +293,11 @@ void ConnBuilder::keyPress(QKeyEvent *e) {
 }
 
 void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
+  if (d->points.isEmpty())
+    return;
   qDebug() << "ConnBuilder: move " << e->scenePos();
   QPointF p0 = d->points.last();
-  QPointF p = d->scene->library()->nearestGrid(e->scenePos());
+  QPointF p = d->lib->nearestGrid(e->scenePos());
   QPointF dp = p - p0;
   int N = d->segments.size();
   auto *gli1 = d->segments[N-2];
@@ -351,6 +326,8 @@ void ConnBuilder::mousePress(QGraphicsSceneMouseEvent *e) {
 }
 
 void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *e) {
+  if (d->points.isEmpty())
+    return;
   qDebug() << "ConnBuilder: release " << e->scenePos();
   if (!d->fixPenultimate())
     return;

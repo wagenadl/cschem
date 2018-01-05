@@ -601,6 +601,7 @@ bool CircuitMod::removeOverlappingJunctions(int eltid) {
 }
 
 int CircuitMod::injectJunction(int conid, QPoint at) {
+  qDebug() << "injectjunction" << conid << at;
   if (!d->circ.connections().contains(conid))
     return -1;
 
@@ -611,13 +612,41 @@ int CircuitMod::injectJunction(int conid, QPoint at) {
   Geometry geom(d->circ, d->lib);
   QPolygon path = geom.connectionPath(con);
   Geometry::Intersection inter(geom.intersection(at, path));
+
+  qDebug() << "inter" << inter.pointnumber << inter.delta <<con.danglingStart() << con.danglingEnd() << path.size();
+  
   if (inter.pointnumber<0)
     return -1;
-  if (con.danglingStart() && inter.pointnumber==0 && inter.delta.isNull())
-    return -1;
+  
+  if (con.danglingStart() && inter.pointnumber==0 && inter.delta.isNull()) {
+    // Insert at start of dangling. This is easy.
+    Element junc(Element::junction(path[inter.pointnumber]));
+    QPolygon via = con.via();
+    via.removeFirst();
+    con.setVia(via);
+    con.setFrom(junc.id());
+    d->circ.insert(con);
+    d->circ.insert(junc);
+    d->aelts << junc.id();
+    d->acons << con.id();
+    return junc.id();
+  }
   if (con.danglingEnd() && inter.pointnumber==path.size()-1
-      && inter.delta.isNull())
-    return -1;
+      && inter.delta.isNull()) {
+    // Insert at end of dangling. This is easy.
+    Element junc(Element::junction(path[inter.pointnumber]));
+    QPolygon via = con.via();
+    via.removeLast();
+    con.setVia(via);
+    con.setTo(junc.id());
+    d->circ.insert(con);
+    d->circ.insert(junc);
+    d->aelts << junc.id();
+    d->acons << con.id();
+    qDebug() << "con" << con.report();
+    qDebug() << "junc" << junc.report();
+    return junc.id();
+  }
 
   Element junc(Element::junction(path[inter.pointnumber] + inter.delta));
   Connection con1;

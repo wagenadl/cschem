@@ -80,10 +80,11 @@ public:
   int injectJunction(int conid, QPoint at);
   /* Splits the given connection into two parts and places a junction
      between them. Returns element ID of created junction. If called
-     on invalid connection or with a point at the end of a dangling
-     connection, returns -1 and does not create a junction. If the
-     given point does not lie on (or very near) the connection, also
-     returns -1 and does not create a junction. */
+     on an invalid connection, returns -1 and does not create a
+     junction. If the given point does not lie on (or very near) the
+     connection, also returns -1 and does not create a junction.  This
+     call creates a "pointless" junction, so be sure to remove it
+     later. */
   bool reroute(int conid, class Circuit const &origcirc);
 public:
   QSet<int> affectedConnections() const; // new, modified, or deleted
