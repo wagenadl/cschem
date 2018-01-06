@@ -29,7 +29,10 @@ public:
   QSet<int> connectionsIn(QSet<int> ids) const;
   /* Connections with both "toId" and "fromId" in the set, or with one
      in the set and the other dangling. */
+  QSet<int> connectionsOn(int id) const;
+  /* Connections that either start or end at any pin of given element */
   QSet<int> connectionsOn(int id, QString pin) const;
+  QSet<int> connectionsOn(class PinID const &) const;
   /* Connections that either start or end at given pin of given element */
   void translate(QSet<int> eltids, QPoint delta);
   /* Does not take care of edge connections */

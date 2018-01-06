@@ -87,6 +87,15 @@ public:
      call creates a "pointless" junction, so be sure to remove it
      later. */
   bool reroute(int conid, class Circuit const &origcirc);
+  bool mergeSelection(QSet<int> sel);
+  /* Merges nets that touch between elements in SEL (plus their
+     connections) and elements (plus connections) in the rest of the
+     circuit. Specifically, any pin and connection corner in the base
+     circuit is tested against a full map of pins and connections in
+     the selection. Junctions are created as needed and overlapping
+     connections removed. True if successful.  This function is
+     a work in progress.
+   */
 public:
   QSet<int> affectedConnections() const; // new, modified, or deleted
   QSet<int> affectedElements() const; // new, modified, or deleted

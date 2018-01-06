@@ -17,6 +17,7 @@ public:
   Connection &operator=(Connection const &);
   ~Connection();
   QString report() const;
+  Connection(PinID, PinID);
 public:
   int id() const;
   int fromId() const; // zero if dangling

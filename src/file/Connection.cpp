@@ -56,6 +56,10 @@ Connection &Connection::operator=(Connection const &o) {
 Connection::~Connection() {
 }
 
+Connection::Connection(PinId from1, PinID to1): Connection() {
+  setFrom(from1);
+  setTo(to1);
+}
 
 Connection::Connection(QXmlStreamReader &src): Connection() {
   auto a = src.attributes();

@@ -2,6 +2,7 @@
 
 #include "Circuit.h"
 #include <QDebug>
+#include "PinID.h"
 
 class CircuitData: public QSharedData {
 public:
@@ -105,11 +106,24 @@ void Circuit::remove(int id) {
   }
 }
 
+QSet<int> Circuit::connectionsOn(PinID const &pid) const {
+  return connectionsOn(pid.element(), pid.pin());
+}
+
 QSet<int> Circuit::connectionsOn(int id, QString pin) const {
   QSet<int> cids;
   for (auto const &c: d->connections) 
     if ((c.fromId()==id && c.fromPin()==pin)
         || (c.toId()==id && c.toPin()==pin))
+      cids << c.id();
+  return cids;
+}
+
+
+QSet<int> Circuit::connectionsOn(int id) const {
+  QSet<int> cids;
+  for (auto const &c: d->connections) 
+    if (c.fromId()==id || c.toId()==id)
       cids << c.id();
   return cids;
 }
