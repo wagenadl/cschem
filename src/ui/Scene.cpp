@@ -259,8 +259,12 @@ void Scene::moveSelection(QPointF delta) {
 	qDebug() << "Selected element" << origCirc.element(id).report()
 		 << "got deleted in move. This might be bad.";
     // End of sanity check
+
+    // And now: Let's try to merge
+    cm.mergeSelection(selection);
     
     d->rebuildAsNeeded(cm);
+
   } else {
     // restore stuff
     for (int id: selection)

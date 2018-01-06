@@ -5,6 +5,9 @@
 #include "file/Circuit.h"
 #include "file/PinID.h"
 #include "svg/Router.h"
+#include "svg/Part.h"
+#include "svg/PartLibrary.h"
+#include "file/Net.h"
 #include <QDebug>
 
 struct OverlapResult {
@@ -28,6 +31,16 @@ public:
   void rewirePassthroughs(int id, QSet<int> cc);
   void makeDanglingAt(int id, QSet<int> cc);
   bool rewire(QSet<int> cc, PinID old, PinID new_);
+  int injectJunction(int conid, QPoint at);
+  int addInPlaceConnection(PinID pidbot, PinID pidtop, QPoint pos);
+  /* Create a connection between two pins in the same location. May
+     return the ID of an existing or newly created junction that should
+     be tested for overlap and pointlessness. */
+  int addInPlaceConnection(PinID pidbot, int conid, QPoint pos);
+  /* Create a connection between a pin and a connection in the same
+     location. Same. */
+  /* The following insert into or drop from the circuit and also mark
+     the "affected" lists. They have no intelligence, unlike the functions above. */
   void insert(Connection const &);
   void insert(Element const &);
   void drop(Connection const &);
@@ -38,7 +51,7 @@ public:
   void dropOrInsert(bool cond, Element const &);
   void dropCon(int);
   void dropElt(int);
-public:
+ public:
   Circuit circ;
   PartLibrary const *lib;
   QSet<int> acons;
@@ -49,7 +62,7 @@ void CircuitModData::dropOrInsert(bool cond, Connection const &con) {
   insertOrDrop(!cond, con);
 }
 
-void dropOrInsert(bool cond, Element const &elt) {
+void CircuitModData::dropOrInsert(bool cond, Element const &elt) {
   insertOrDrop(!cond, elt);
 }
 
@@ -62,9 +75,9 @@ void CircuitModData::insertOrDrop(bool cond, Connection const &con) {
 
 void CircuitModData::insertOrDrop(bool cond, Element const &elt) {
   if (cond)
-    insert(con);
+    insert(elt);
   else
-    drop(con);
+    drop(elt);
 }
 
 void CircuitModData::insert(Connection const &con) {
@@ -82,7 +95,7 @@ void CircuitModData::drop(Connection const &con) {
   acons << con.id();
 }
 
-void CircuitModData::drop(Element const &) {
+void CircuitModData::drop(Element const &elt) {
   circ.remove(elt.id());
   aelts << elt.id();
 }
@@ -111,7 +124,7 @@ bool CircuitModData::rewire(QSet<int> cc, PinID old, PinID new_) {
       chg = true;
     }
     if (chg) {
-      *this << con;
+      insert(con);
       any = true;
     }
   }
@@ -311,9 +324,8 @@ bool CircuitMod::deleteConnection(int id) {
     return false;
 
   Connection con(d->circ.connection(id));
-  
-  d->acons << id;
-  d->circ.remove(id);
+
+  d->drop(con);
   
   int from = con.fromId();
   if (d->circ.element(from).type() == Element::Type::Junction)
@@ -345,13 +357,13 @@ bool CircuitMod::deleteConnectionSegment(int id, int seg) {
   if (seg==0) { // First segment, before vias. This case is only possible
     // if our start is not dangling.
     int from = con.fromId();
-    con.setFrom(0); // make dangling
+    con.unsetFrom(); // make dangling
     d->dropOrInsert(geom.isZeroLength(con), con);
     removePointlessJunction(from);
     return true;
   } else if (seg>=via.size()) { // last segment, after vias
     int to = con.toId();
-    con.setTo(0); // make dangling
+    con.unsetTo(); // make dangling
     d->dropOrInsert(geom.isZeroLength(con), con);
     removePointlessJunction(to);
     return true;
@@ -359,7 +371,7 @@ bool CircuitMod::deleteConnectionSegment(int id, int seg) {
     // removing middle segment => split into two dangling parts
     Connection con1;
     con1.setTo(con.to());
-    con.setTo(0);
+    con.unsetTo();
     QPolygon via1;
     while (via.size() > seg)
       via1.prepend(via.takeLast());
@@ -541,34 +553,24 @@ void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   Connection c;
   c.setFrom(a.from());
   c.setTo(j.id(), "");
-  circ.insert(j);
-  circ.insert(c);
-  acons << c.id();
-  aelts << j.id();
+  insert(j);
+  insert(c);
 
   // Reroute both original connections to start at joint.
   a.setFrom(j.id(), "");
   b.setFrom(j.id(), "");
   a.setVia(patha);
   b.setVia(pathb);
-  circ.insert(a);
-  if (b.isValid())
-    circ.insert(b);
-  else
-    circ.remove(b.id());
-  acons << a.id();
-  acons << b.id();
-
-  qDebug() << "overlapremoved";
-  qDebug() << "  " << a.report();
-  qDebug() << "  " << b.report();
+  insert(a);
+  insertOrDrop(b.isValid(), b);
 
   // The original starting point may have become a useless junction, so:
   removePointlessJunction(c.fromId());
 
   removeOverlappingJunctions(j.id());
   if (removePointlessJunction(j.id()))
-    aelts.remove(j.id());
+    aelts.remove(j.id()); // unusual case: we previously inserted j, so
+  // now we can simply remove it.
 }
 
 OverlapResult CircuitModData::overlappingStart(Connection const &a,
@@ -629,8 +631,7 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
       Connection br = b.reversed();
       over = d->overlappingStart(a, br);
       if (over) {
-	d->acons << b.id();
-	d->circ.insert(br);
+        d->insert(br);
 	d->removeOverlap(a.id(), b.id(), over);
 	keepgoing = true;
 	res = true;
@@ -639,8 +640,7 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
       Connection ar = a.reversed();
       over = d->overlappingStart(ar, b);
       if (over) {
-	d->acons << a.id();
-	d->circ.insert(ar);
+        d->insert(ar);
 	d->removeOverlap(a.id(), b.id(), over);
 	keepgoing = true;
 	res = true;
@@ -648,10 +648,8 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
       }
       over = d->overlappingStart(ar, br);
       if (over) {
-	d->acons << a.id();
-	d->acons << b.id();
-	d->circ.insert(ar);
-	d->circ.insert(br);
+        d->insert(ar);
+        d->insert(br);
 	d->removeOverlap(a.id(), b.id(), over);
 	keepgoing = true;
 	res = true;
@@ -665,16 +663,14 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
 bool CircuitMod::translateConnection(int id, QPoint dd) {
   if (!d->circ.connections().contains(id))
     return false;
-  d->circ.insert(d->circ.connection(id).translated(dd));
-  d->acons << id;
+  d->insert(d->circ.connection(id).translated(dd));
   return true;
 }
 
 bool CircuitMod::translateElement(int id, QPoint dd) {
   if (!d->circ.elements().contains(id))
     return false;
-  d->circ.insert(d->circ.element(id).translated(dd));
-  d->aelts << id;
+  d->insert(d->circ.element(id).translated(dd));
   return true;
 }
 
@@ -682,8 +678,7 @@ bool CircuitMod::reroute(int id, Circuit const &origcirc) {
   if (!d->circ.connections().contains(id))
     return false;
   Router router(d->lib);
-  d->circ.insert(router.reroute(id, origcirc, d->circ));
-  d->acons << id;
+  d->insert(router.reroute(id, origcirc, d->circ));
   return true;
 }
 
@@ -692,20 +687,18 @@ bool CircuitMod::removeOverlappingJunctions(int eltid) {
 }
 
 int CircuitMod::injectJunction(int conid, QPoint at) {
-  qDebug() << "injectjunction" << conid << at;
-  if (!d->circ.connections().contains(conid))
-    return -1;
+  return d->injectJunction(conid, at);
+}
 
-  Connection con = d->circ.connection(conid);
+int CircuitModData::injectJunction(int conid, QPoint at) {
+  Connection con = circ.connection(conid);
   if (!con.isValid())
     return -1;
 
-  Geometry geom(d->circ, d->lib);
+  Geometry geom(circ, lib);
   QPolygon path = geom.connectionPath(con);
   Geometry::Intersection inter(geom.intersection(at, path));
 
-  qDebug() << "inter" << inter.pointnumber << inter.delta <<con.danglingStart() << con.danglingEnd() << path.size();
-  
   if (inter.pointnumber<0)
     return -1;
   
@@ -716,10 +709,9 @@ int CircuitMod::injectJunction(int conid, QPoint at) {
     via.removeFirst();
     con.setVia(via);
     con.setFrom(junc.id());
-    d->circ.insert(con);
-    d->circ.insert(junc);
-    d->aelts << junc.id();
-    d->acons << con.id();
+    insert(con);
+    insert(junc);
+    qDebug() << "inject at start of dangling";
     return junc.id();
   }
   if (con.danglingEnd() && inter.pointnumber==path.size()-1
@@ -730,12 +722,9 @@ int CircuitMod::injectJunction(int conid, QPoint at) {
     via.removeLast();
     con.setVia(via);
     con.setTo(junc.id());
-    d->circ.insert(con);
-    d->circ.insert(junc);
-    d->aelts << junc.id();
-    d->acons << con.id();
-    qDebug() << "con" << con.report();
-    qDebug() << "junc" << junc.report();
+    insert(con);
+    insert(junc);
+    qDebug() << "inject at end of dangling" << con.report() << junc.report();
     return junc.id();
   }
 
@@ -766,12 +755,10 @@ int CircuitMod::injectJunction(int conid, QPoint at) {
     via.resize(seg);
   }
   con.setVia(via);
-  d->circ.insert(con);
-  d->circ.insert(con1);
-  d->circ.insert(junc);
-  d->aelts << junc.id();
-  d->acons << con.id();
-  d->acons << con1.id();
+  insert(con);
+  insert(con1);
+  insert(junc);
+  qDebug() << "inject somewhere else" << con.report() << con1.report();  
   return junc.id();
 }
 
@@ -794,68 +781,130 @@ bool CircuitMod::rotateElement(int eltid, int steps) {
 }
 
 bool CircuitMod::mergeSelection(QSet<int> sel) {
+  bool any = false;
   Circuit top = d->circ.subset(sel);
-  Geometry geom(d->circ, d->lib);
+  Geometry geom(top, d->lib);
   QSet<int> junctst; // these will later be test for superfluousness
   
   // First, examine colocation of pins in BOTTOM (BASE) with pins in TOP
-  for (Element const &eltbot: d->circ->elements()) {
-    if (sel.contains(elt.id()))
+  for (Element const &eltbot: d->circ.elements()) {
+    if (sel.contains(eltbot.id()))
       continue; // only look at elements _not_ in TOP
     Part const &prt(d->lib->part(eltbot.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
-      PinID pidbot(elt.id(), p);
-      QPoint pos = pinPosition(eltbot, p);
+      PinID pidbot(eltbot.id(), p);
+      QPoint pos = geom.pinPosition(eltbot, p);
       PinID pidtop = geom.pinAt(pos);
+      qDebug() << "Considering" << eltbot.report() << p << " at " << pos;
+      qDebug() << "got" << pidtop.element() << pidtop.pin();
       if (pidtop.isValid()) {
-	Element const &elttop(d->circ.element(pidtop.element()));
-	if (eltbot.type()==Element::Type::Junction
-	    || elttop.type()==Element::Type::Junction) {
-	  // At least one junction, so we'll connect the two and rewire
-	  // old connections from any non-junction.
-	  if (elt.type()==Element::Type::Junction) 
-	    junctst << eltbot.id();
-	  else 
-	    // Bottom is not a junction -> rewire its previous connections
-	    d->rewire(circ.connectionsOn(pidbot), pidbot, pidtop);
-	  
-	  if (elttop.type()==Element::Type::Junction) 
-	    junctst << elttop.id();
-	  else 
-	    // Top is not a junction -> rewire its previous connections
-	    d->rewire(circ.connectionsOn(pidtop), pidtop, pidbot);
+        junctst << d->addInPlaceConnection(pidbot, pidtop, pos);
+        any = true;
+      }
+    }
+  }
 
-	  // Now, connect top and bottom
-	  Connection con(pidtop, pidbot);
-	  d->circ.insert(con);
-	  d->acons << con.id();
-	} else {
-	  // Neither is a junction. If either has any connections, we'll need
-	  // to inject a junction
-	  QSet<int> cctop = circ.connectionsOn(pid.element(), pid.pin());
-	  QSet<int> ccbot = circ.connectionsOn(elt.id(), p);
-	  if (cctop.isEmpty() && ccbot.isEmpty()) {
-	    // Easy, just connect the two
-	    Connection con(pidtop, pidbot);
-	    d->circ.insert(con);
-	    d->acons << con.id();
-	  } else {
-	    Element junc(Element::junction(pos));
-	    PinId pidj(junc.id());
-	    // Rewire old connections to either top or bottom pin
-	    d->rewire(cctop, pidtop, pidj);
-	    d->rewire(ccbot, pidbot, pidj);
-	    Connection con(pidtop, pidj);
-	    d->circ.insert(con);
-	    d->acons << con.id();
-	    Connection con1(pidbot, pidj);
-	    d->circ.insert(con1);
-	    d->acons << con1.id();
-	    d->circ.insert(junc);
-	    junctst << junc.id();
-	  }
-	}
-      } 
+  // Next, examine colocation of pins in BOTTOM with connections in TOP
+  for (Element const &eltbot: d->circ.elements()) {
+    if (sel.contains(eltbot.id()))
+      continue; // only look at elements _not_ in TOP
+    Part const &prt(d->lib->part(eltbot.symbol()));
+    if (!prt.isValid())
+      continue;
+    QStringList pins = prt.pinNames();
+    for (QString p: pins) {
+      PinID pidbot(eltbot.id(), p);
+      QPoint pos = geom.pinPosition(eltbot, p);
+      int contop = geom.connectionAt(pos);
+      if (contop>0) {
+        Net net(d->circ, contop);
+        /* We don't want to create connection to wires if we already
+           _have_ a connection, e.g., created in the previous step.
+        */
+        if (!net.pins().contains(pidbot)) {
+          junctst << d->addInPlaceConnection(pidbot, contop, pos);
+          any = true;
+        }
+      }
+    }
+  }
+
+  for (int j: junctst) {
+    removeOverlappingJunctions(j);
+    removePointlessJunction(j);
+  }      
+  
+  return any;
+}
+
+int CircuitModData::addInPlaceConnection(PinID pidbot, int conid, QPoint pos) {
+  /* Create a connection between a pins and a connection in the same location. */
+  
+  int jid = injectJunction(conid, pos);
+  if (jid<0)
+    return -1;
+  qDebug() << "injected junction" << jid << "into" << circ.connection(conid).report();
+  for (int c: circ.connectionsOn(PinID(jid))) 
+    qDebug() << "connections onto our junction" << circ.connection(c).report();
+  Element const &eltbot(circ.element(pidbot.element()));
+  if (eltbot.type()!=Element::Type::Junction) {
+    // rewire any connections to old pin to our new connection
+    for (int c: circ.connectionsOn(pidbot)) 
+      qDebug() << "will rewire" << circ.connection(c).report();
+    rewire(circ.connectionsOn(pidbot), pidbot, PinID(jid));
+  }
+  insert(Connection(PinID(jid), pidbot));
+  for (int c: circ.connectionsOn(PinID(jid))) 
+    qDebug() << "connections onto our junction" << circ.connection(c).report();
+  return jid;
+}
+
+int CircuitModData::addInPlaceConnection(PinID pidbot, PinID pidtop,
+                                         QPoint pos) {
+  /* Create a connection between two pins in the same location. */
+  int jid = -1;
+  Element const &elttop(circ.element(pidtop.element()));
+  Element const &eltbot(circ.element(pidbot.element()));
+  if (eltbot.type()==Element::Type::Junction
+      || elttop.type()==Element::Type::Junction) {
+    // At least one junction, so we'll connect the two and rewire
+    // old connections from any non-junction.
+    if (eltbot.type()==Element::Type::Junction) 
+      jid = eltbot.id();
+    else 
+      // Bottom is not a junction -> rewire its previous connections
+      rewire(circ.connectionsOn(pidbot), pidbot, pidtop);
+	  
+    if (elttop.type()==Element::Type::Junction) 
+      jid = elttop.id();
+    else 
+      // Top is not a junction -> rewire its previous connections
+      rewire(circ.connectionsOn(pidtop), pidtop, pidbot);
+
+    // Now, connect top and bottom
+    insert(Connection(pidtop, pidbot));
+  } else {
+    // Neither is a junction. If either has any connections, we'll need
+    // to inject a junction
+    QSet<int> cctop = circ.connectionsOn(pidtop);
+    QSet<int> ccbot = circ.connectionsOn(pidbot);
+    if (cctop.isEmpty() && ccbot.isEmpty()) {
+      // Easy, just connect the two
+      insert(Connection(pidtop, pidbot));
+    } else {
+      Element junc(Element::junction(pos));
+      PinID pidj(junc.id());
+      // Rewire old connections to either top or bottom pin
+      rewire(cctop, pidtop, pidj);
+      rewire(ccbot, pidbot, pidj);
+      insert(Connection(pidtop, pidj));
+      insert(Connection(pidbot, pidj));
+      insert(junc);
+      jid = junc.id();
+    }
+  }
+  return jid;
+}

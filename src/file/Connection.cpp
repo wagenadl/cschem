@@ -56,7 +56,7 @@ Connection &Connection::operator=(Connection const &o) {
 Connection::~Connection() {
 }
 
-Connection::Connection(PinId from1, PinID to1): Connection() {
+Connection::Connection(PinID from1, PinID to1): Connection() {
   setFrom(from1);
   setTo(to1);
 }
@@ -142,6 +142,14 @@ void Connection::setFromId(int id) {
 void Connection::setToId(int id) {
   d.detach();
   d->toId = id;
+}
+
+void Connection::unsetFrom() {
+  setFrom(0, "-");
+}
+
+void Connection::unsetTo() {
+  setTo(0, "-");
 }
 
 void Connection::setFromPin(QString pin) {

@@ -49,8 +49,10 @@ public:
   void setToId(int);
   void setFromPin(QString);
   void setToPin(QString);
-  void setFrom(int id, QString pin);
-  void setTo(int id, QString pin);
+  void setFrom(int id, QString pin="");
+  void setTo(int id, QString pin="");
+  void unsetFrom();
+  void unsetTo();
   QPolygon &via();
   void setVia(QVector<QPoint> const &);
   void translate(QPoint delta);
