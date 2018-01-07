@@ -8,7 +8,9 @@
 
 class PartLibrary {
 public:
-  PartLibrary(QString fn);
+  PartLibrary();
+  void merge(QString fn);
+  void insert(Part const &);
   PartLibrary(PartLibrary const &) = delete;
   PartLibrary const &operator=(PartLibrary const &) = delete;
   ~PartLibrary();
@@ -27,11 +29,9 @@ public:
   static PartLibrary const *defaultLibrary();
 private:
   void scanParts(XmlElement const &src);
-  void getBBoxes(QString fn);
 private:
   QList<Part> partslist_;
   QMap<QString, Part const *> parts_;
-  XmlElement svg_;
   mutable QMap<QString, QSvgRenderer *> renderers_;
 };
 

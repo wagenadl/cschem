@@ -1,11 +1,16 @@
 // Part.cpp
 
 #include "Part.h"
+#include <QSvgRenderer>
+#include <QDebug>
 
 class PartData: public QSharedData {
 public:
   PartData(): valid(false) { }
   void newshift();
+  void ensureBBox();
+  QByteArray toSvg(bool withbbox, bool withpins) const;
+  void scanPins(XmlElement const &elt);
 public:
   XmlElement elt;
   QString name;
@@ -14,7 +19,7 @@ public:
   bool valid;
   QRectF bbox; // svg coords
   QRectF shbbox; // shifted coords (origin=first pin)
-  QString groupId;
+  QString groupId; // id of contents element
   QMap<QString, QString> pinIds;
   QString originId;
 };
@@ -30,6 +35,64 @@ void PartData::newshift() {
     shpins[p] = pins[p] - origin;
 }
 
+QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
+  QByteArray res;
+  {
+    QXmlStreamWriter sr(&res);
+    sr.writeStartDocument("1.0", false);
+    sr.writeStartElement("svg");
+    sr.writeDefaultNamespace("http://www.w3.org/2000/svg");
+    sr.writeNamespace("http://purl.org/dc/elements/1.1/", "dc");
+    sr.writeNamespace("http://creativecommons.org/ns#", "cc");
+    sr.writeNamespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf");
+    sr.writeNamespace("http://www.w3.org/2000/svg", "svg");
+    sr.writeNamespace("http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
+                      "sodipodi");
+    sr.writeNamespace("http://www.inkscape.org/namespaces/inkscape", "inkscape");
+    
+    if (withbbox) {
+      sr.writeAttribute("width", QString("%1").arg(bbox.width()));
+      sr.writeAttribute("height", QString("%1").arg(bbox.height()));
+      sr.writeAttribute("viewBox", QString("0 0 %1 %2")
+                        .arg(bbox.width()).arg(bbox.height()));
+    }
+    
+    sr.writeStartElement("g");
+    if (withbbox) 
+      sr.writeAttribute("transform",
+                        QString("translate(%1,%2)").
+                        arg(-bbox.left()).arg(-bbox.top()));
+    
+    elt.writeStartElement(sr);
+    for (auto &c: elt.children()) {
+      if (!withpins && c.type()==XmlNode::Type::Element
+          && c.element().attributes().value("inkscape:label")
+          .startsWith("pin")) {
+        // skip
+      } else {
+        c.write(sr);
+      }
+    }
+    elt.writeEndElement(sr);
+    
+    sr.writeEndElement(); // g [transform]
+    sr.writeEndElement(); // svg
+    sr.writeEndDocument();
+  }
+  return res;
+}
+
+
+void PartData::ensureBBox() {
+  QByteArray svg = toSvg(false, true);
+  QSvgRenderer renderer(svg);
+  QString id = groupId;
+  bbox = renderer.boundsOnElement(id).toAlignedRect();
+  for (QString pin: pins.keys())
+    pins[pin] = renderer.boundsOnElement(pinIds[pin]).center();
+  newshift();
+}
+
 Part::Part() {
   d = new PartData;
 }
@@ -39,8 +102,8 @@ Part::Part(XmlElement const &elt): Part() {
   d->name = elt.attributes().value("inkscape:label").toString();
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
-      scanPins(e.element());
-  d->newshift();
+      d->scanPins(e.element());
+  d->ensureBBox();
   d->valid = true;
 }
 
@@ -56,35 +119,24 @@ Part &Part::operator=(Part const &o) {
   return *this;
 }
 
-void Part::scanPins(XmlElement const &elt) {
+void PartData::scanPins(XmlElement const &elt) {
   if (elt.qualifiedName()=="circle") {
     QString label = elt.attributes().value("inkscape:label").toString();
     if (label.startsWith("pin")) {
       QString name = label.mid(4);
       QString x = elt.attributes().value("cx").toString();
       QString y = elt.attributes().value("cy").toString();
-      d->pins[name] = QPointF(x.toInt(), y.toInt());
-      d->pinIds[name] = elt.attributes().value("id").toString();
+      pins[name] = QPointF(x.toInt(), y.toInt());
+      pinIds[name] = elt.attributes().value("id").toString();
     }
   } else if (elt.qualifiedName()=="g") {
-    d->groupId = elt.attributes().value("id").toString();
+    groupId = elt.attributes().value("id").toString();
   }
 }
 
 QStringList Part::pinNames() const {
   QStringList lst(d->pins.keys()); // QMap sorts its keys
   return lst;
-}
-
-QString Part::pinSvgId(QString pinname) const {
-  if (d->pinIds.contains(pinname))
-    return d->pinIds[pinname];
-  else
-    return "";
-}
-
-QString Part::contentsSvgId() const {
-  return d->groupId;
 }
 
 QPointF Part::bbOrigin() const {
@@ -110,18 +162,6 @@ QPointF Part::bbPinPosition(QString pinname) const {
     return QPointF();
 }
 
-void Part::setSvgPinPosition(QString pinname, QPointF pos) {
-  if (!d->pins.contains(pinname))
-    return;
-  d->pins[pinname] = pos;
-  if (pinname == d->originId)
-    d->newshift();
-}
-
-void Part::setSvgBBox(QRectF b) {
-  d->bbox = b;
-}
-
 XmlElement const &Part::element() const {
   return d->elt;
 }
@@ -138,3 +178,6 @@ QRectF Part::svgBBox() const {
   return d->bbox;
 }
 
+QByteArray Part::toSvg() const {
+  return d->toSvg(true, false);
+}

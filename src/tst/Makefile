@@ -12,10 +12,10 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_SVG_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -isystem /usr/include/libdrm -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64
+INCPATH       = -I. -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtSvg -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -isystem /usr/include/libdrm -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64
 QMAKE         = /usr/lib/x86_64-linux-gnu/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -35,10 +35,10 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = tst1.0.0
-DISTDIR = /home/wagenaar/progs/qschem/qschem/src/tst/.tmp/tst1.0.0
+DISTDIR = /home/wagenaar/progs/cschem/cschem/src/tst/.tmp/tst1.0.0
 LINK          = g++
 LFLAGS        = -m64 -Wl,-O1
-LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/usr/X11R6/lib64 -lQt5Svg -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -50,10 +50,8 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = foo.cpp \
-		main.cpp 
-OBJECTS       = foo.o \
-		main.o
+SOURCES       = svgrecttest.cpp 
+OBJECTS       = svgrecttest.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -129,6 +127,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resources.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/moc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/opengl.prf \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/uic.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/thread.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qmake_use.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/file_copies.prf \
@@ -136,8 +135,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		tst.pro foo.h foo.cpp \
-		main.cpp
+		tst.pro  svgrecttest.cpp
 QMAKE_TARGET  = tst
 DESTDIR       = 
 TARGET        = tst
@@ -224,6 +222,7 @@ Makefile: tst.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.conf 
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resources.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/moc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/opengl.prf \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/uic.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/thread.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qmake_use.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/file_copies.prf \
@@ -232,6 +231,8 @@ Makefile: tst.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.conf 
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		tst.pro \
+		/usr/lib/x86_64-linux-gnu/libQt5Svg.prl \
+		/usr/lib/x86_64-linux-gnu/libQt5Widgets.prl \
 		/usr/lib/x86_64-linux-gnu/libQt5Gui.prl \
 		/usr/lib/x86_64-linux-gnu/libQt5Core.prl
 	$(QMAKE) -o Makefile tst.pro
@@ -310,6 +311,7 @@ Makefile: tst.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.conf 
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/resources.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/moc.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/opengl.prf:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/uic.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/unix/thread.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qmake_use.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/file_copies.prf:
@@ -318,6 +320,8 @@ Makefile: tst.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64/qmake.conf 
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf:
 tst.pro:
+/usr/lib/x86_64-linux-gnu/libQt5Svg.prl:
+/usr/lib/x86_64-linux-gnu/libQt5Widgets.prl:
 /usr/lib/x86_64-linux-gnu/libQt5Gui.prl:
 /usr/lib/x86_64-linux-gnu/libQt5Core.prl:
 qmake: FORCE
@@ -335,8 +339,7 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents foo.h $(DISTDIR)/
-	$(COPY_FILE) --parents foo.cpp main.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents svgrecttest.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -371,6 +374,8 @@ compiler_moc_header_make_all:
 compiler_moc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
+compiler_uic_make_all:
+compiler_uic_clean:
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
 compiler_yacc_impl_make_all:
@@ -381,11 +386,8 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
-foo.o: foo.cpp foo.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o foo.o foo.cpp
-
-main.o: main.cpp foo.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+svgrecttest.o: svgrecttest.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o svgrecttest.o svgrecttest.cpp
 
 ####### Install
 
