@@ -2,7 +2,7 @@
 
 #include "LibraryPane.h"
 #include "svg/PartLibrary.h"
-
+#include <algorithm>
 #include <QDebug>
 
 class LibraryPaneData {
@@ -25,8 +25,11 @@ LibraryPane::~LibraryPane() {
 
 void LibraryPane::rebuild(PartLibrary const *lib) {
   clear();
-  for (QString s: lib->partNames())
-    addItem(s);
+  QStringList parts = lib->partNames();
+  std::sort(parts.begin(), parts.end());
+  for (QString s: parts) 
+    if (s.startsWith("port:") || s.startsWith("part:"))
+      addItem(s);
 }  
 
 void LibraryPane::activateHelper(QListWidgetItem *item) {
