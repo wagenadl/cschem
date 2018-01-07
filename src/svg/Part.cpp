@@ -35,20 +35,24 @@ void PartData::newshift() {
     shpins[p] = pins[p] - origin;
 }
 
+void Part::writeNamespaces(QXmlStreamWriter &sr) {
+  sr.writeDefaultNamespace("http://www.w3.org/2000/svg");
+  sr.writeNamespace("http://purl.org/dc/elements/1.1/", "dc");
+  sr.writeNamespace("http://creativecommons.org/ns#", "cc");
+  sr.writeNamespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf");
+  sr.writeNamespace("http://www.w3.org/2000/svg", "svg");
+  sr.writeNamespace("http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
+                    "sodipodi");
+  sr.writeNamespace("http://www.inkscape.org/namespaces/inkscape", "inkscape");
+}
+
 QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
   QByteArray res;
   {
     QXmlStreamWriter sr(&res);
     sr.writeStartDocument("1.0", false);
     sr.writeStartElement("svg");
-    sr.writeDefaultNamespace("http://www.w3.org/2000/svg");
-    sr.writeNamespace("http://purl.org/dc/elements/1.1/", "dc");
-    sr.writeNamespace("http://creativecommons.org/ns#", "cc");
-    sr.writeNamespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#", "rdf");
-    sr.writeNamespace("http://www.w3.org/2000/svg", "svg");
-    sr.writeNamespace("http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
-                      "sodipodi");
-    sr.writeNamespace("http://www.inkscape.org/namespaces/inkscape", "inkscape");
+    Part::writeNamespaces(sr);
     
     if (withbbox) {
       sr.writeAttribute("width", QString("%1").arg(bbox.width()));

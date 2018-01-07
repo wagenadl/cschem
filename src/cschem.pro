@@ -8,6 +8,7 @@ INCLUDEPATH += .
 QT += svg
 DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += debug_and_release
+CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 
 # Input
 HEADERS += svg/Part.h   svg/PartLibrary.h   svg/XmlElement.h   svg/XmlNode.h

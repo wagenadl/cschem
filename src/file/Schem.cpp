@@ -1,6 +1,7 @@
 // Schem.cpp
 
 #include "Schem.h"
+#include "svg/PartLibrary.h"
 #include <QDebug>
 
 class SchemData: public QSharedData {
@@ -9,6 +10,7 @@ public:
 public:
   Circuit circuit;
   Parts parts;
+  PartLibrary library;
 };  
 
 Schem::Schem() {
@@ -27,15 +29,17 @@ Schem::Schem(QXmlStreamReader &src): Schem() {
         src >> d->circuit;
       } else if (src.name()=="parts") {
         src >> d->parts;
+      } else if (src.name()=="svg") {
+        d->library.merge(src);
       } else {
-        qDebug() << "Unexpected element in qschem: " << src.name();
+        qDebug() << "Unexpected element in cschem: " << src.name();
       }
     } else if (src.isEndElement()) {
       break;
     } else if (src.isCharacters() && src.isWhitespace()) {
     } else if (src.isComment()) {
     } else {
-      qDebug() << "Unexpected entity in qschem: " << src.tokenType();
+      qDebug() << "Unexpected entity in cschem: " << src.tokenType();
     }
   }
   // now at end of schem element
@@ -53,18 +57,18 @@ Circuit const &Schem::circuit() const {
   return d->circuit;
 }
 
-Circuit &Schem::circuit() {
+void Schem::setCircuit(Circuit const &c) {
   d.detach();
-  return d->circuit;
+  d->circuit = c;
 }
 
 Parts const &Schem::parts() const {
   return d->parts;
 }
 
-Parts &Schem::parts() {
+void Schem::setParts(Parts const &p) {
   d.detach();
-  return d->parts;
+  d->parts = p;
 }
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Schem &c) {
@@ -73,14 +77,42 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Schem &c) {
 }
   
 QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Schem const &c) {
-  sr.writeStartElement("qschem");
-  sr.writeDefaultNamespace("http://www.danielwagenaar.net/qschem-ns.html");
+  sr.writeStartElement("cschem");
+  sr.writeDefaultNamespace("http://www.danielwagenaar.net/cschem-ns.html");
   sr << c.circuit();
   sr << c.parts();
+  c.saveSvg(sr);
   sr.writeEndElement();
   return sr;
 };
 
+PartLibrary const &Schem::library() const {
+  return d->library;
+}
+
+void Schem::selectivelyUpdateLibrary(PartLibrary const &lib) {
+  QSet<QString> syms;
+  for (Element const &elt: circuit().elements())
+    syms << elt.symbol();
+  for (QString sym: syms) 
+    if (lib.contains(sym))
+      d->library.insert(lib.part(sym));
+}
+
+void Schem::saveSvg(QXmlStreamWriter &sr) const {
+  sr.writeStartElement("svg");
+  Part::writeNamespaces(sr);
+  QSet<QString> syms;
+  for (Element const &elt: circuit().elements())
+    syms << elt.symbol();
+  for (QString sym: syms) 
+    if (d->library.contains(sym))
+      d->library.part(sym).element().write(sr);
+  
+  sr.writeEndElement();
+}
+
 bool Schem::isEmpty() const {
   return circuit().isEmpty() && parts().isEmpty();
 }
+

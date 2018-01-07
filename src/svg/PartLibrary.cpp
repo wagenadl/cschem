@@ -8,6 +8,11 @@
 PartLibrary::PartLibrary() {
 }
 
+PartLibrary::PartLibrary(QString fn) {
+  merge(fn);
+}
+
+
 void PartLibrary::merge(QString fn) {
   QFile file(fn);
   if (!file.open(QFile::ReadOnly)) {
@@ -15,9 +20,13 @@ void PartLibrary::merge(QString fn) {
     return;
   }
 
-  int nOld = partslist_.size();
-  
   QXmlStreamReader sr(&file);
+  merge(sr);
+}
+
+void PartLibrary::merge(QXmlStreamReader &sr) {
+  int nOld = partslist_.size();
+
   while (!sr.atEnd()) {
     sr.readNext();
     if (sr.isStartElement() && sr.qualifiedName()=="svg") {
@@ -35,15 +44,17 @@ void PartLibrary::merge(QString fn) {
 }
 
 PartLibrary::~PartLibrary() {
-  for (auto r: renderers_)
-    delete r;
 }
 
 void PartLibrary::insert(Part const &p) {
-  partslist_.append(p);
-  Part const *part = &partslist_.last();
-  parts_[part->name()] = part;
-  qDebug() << "Got part" << part->name() << "with pins" << part->pinNames();
+  if (parts_.contains(p.name())) {
+    *(parts_[p.name()]) = p; // replace
+  } else {
+    partslist_.append(p);
+    Part *part = &partslist_.last();
+    parts_[part->name()] = part;
+    qDebug() << "Got part" << part->name() << "with pins" << part->pinNames();
+  }
 }  
 
 void PartLibrary::scanParts(XmlElement const &src) {
@@ -65,6 +76,10 @@ QStringList PartLibrary::partNames() const {
   return parts_.keys();
 }
 
+bool PartLibrary::contains(QString name) const {
+  return parts_.contains(name);
+}
+
 Part PartLibrary::part(QString name) const {
   if (parts_.contains(name))
     return *parts_[name];
@@ -79,14 +94,14 @@ QByteArray PartLibrary::partSvg(QString name) const {
     return "";
 }
 
-QSvgRenderer *PartLibrary::renderer(QString name) const {
+QSharedPointer<QSvgRenderer> PartLibrary::renderer(QString name) const {
   if (renderers_.contains(name))
     return renderers_[name];
 
   if (!parts_.contains(name))
     return 0;
 
-  QSvgRenderer *r = new QSvgRenderer(partSvg(name));
+  QSharedPointer<QSvgRenderer> r(new QSvgRenderer(partSvg(name)));
   renderers_[name ] = r;
   return r;
 }
@@ -134,11 +149,7 @@ QPolygonF PartLibrary::simplifyPath(QPolygonF pp) const {
   return pp;
 }
 
-PartLibrary const *PartLibrary::defaultLibrary() {
-  static PartLibrary *lib = 0;
-  if (lib==0) {
-    lib = new PartLibrary();
-    lib->merge(":parts.svg");
-  }
+PartLibrary const &PartLibrary::defaultLibrary() {
+  static PartLibrary lib(":parts.svg");
   return lib;
 }

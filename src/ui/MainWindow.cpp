@@ -18,12 +18,12 @@
 class MWData {
 public:
   MWData():
-    lib(0), view(0) {
+    view(0), scene(0) {
   }
 public:
-  PartLibrary const *lib;
+  PartLibrary lib;
   QGraphicsView *view;
-  QSharedPointer<Scene> scene;
+  Scene *scene;
   Schem schem;
   QString filename;
   static QString lastdir;
@@ -32,7 +32,10 @@ public:
 QString MWData::lastdir;
     
 MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
-  d->lib = lib ? lib : PartLibrary::defaultLibrary();
+  if (lib)
+    d->lib = *lib;
+  else
+    d->lib = PartLibrary::defaultLibrary();
   createView();
   createActions();
   create();
@@ -154,7 +157,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::newAction() {
-  auto *mw = d->schem.isEmpty() ? this : new MainWindow(d->lib);
+  auto *mw = d->schem.isEmpty() ? this : new MainWindow(&d->lib);
   mw->create();
   mw->show();
 }
@@ -167,7 +170,7 @@ void MainWindow::openAction() {
 					    d->lastdir,
 					    tr("Schematics (*.schem)"));
   if (!fn.isEmpty()) {
-    auto *mw = d->schem.isEmpty() ? this : new MainWindow(d->lib);
+    auto *mw = d->schem.isEmpty() ? this : new MainWindow(&d->lib);
     mw->load(fn);
     mw->show();
   }
@@ -201,9 +204,12 @@ void MainWindow::quitAction() {
 
 
 void MainWindow::create() {
-  d->view->setScene(0);
-  d->scene = QSharedPointer<Scene>(new Scene(d->lib));
-  d->view->setScene(d->scene.data());
+  if (d->scene) {
+    d->view->setScene(0);
+    delete d->scene;
+  }
+  d->scene = new Scene(&d->lib);
+  d->view->setScene(d->scene);
   setWindowTitle(Style::programName());
   d->filename = "";
 }
@@ -211,14 +217,18 @@ void MainWindow::create() {
 void MainWindow::load(QString fn) {
   create();
   d->schem = FileIO::loadSchematic(fn);
+  for (QString name: d->schem.library().partNames())
+    d->lib.insert(d->schem.library().part(name));
   d->scene->setCircuit(d->schem.circuit());
   setWindowTitle(fn);
   d->filename = fn;
 }
 
 void MainWindow::saveAs(QString fn) {
-  d->schem.circuit() = d->scene->circuit();
-  d->schem.circuit().renumber();
+  Circuit circ(d->scene->circuit());
+  circ.renumber();
+  d->schem.setCircuit(circ);
+  d->schem.selectivelyUpdateLibrary(d->lib);
   FileIO::saveSchematic(fn, d->schem);
   setWindowTitle(fn);
   d->filename = fn;

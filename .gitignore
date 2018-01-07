@@ -1,6 +1,2 @@
-src/qschem
-src/Makefile
-qrc_*.cpp
-*.o
 *~
-
+build

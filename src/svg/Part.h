@@ -26,6 +26,7 @@ public:
   // as if first pin were at (0,0)
   QRectF shiftedBBox() const; // bbox as if first pin were at (0,0)
   QByteArray toSvg() const;
+  static void writeNamespaces(QXmlStreamWriter &sr);
 private:
   QSharedDataPointer<class PartData> d;
 };

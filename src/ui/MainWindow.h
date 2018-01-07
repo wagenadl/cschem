@@ -14,8 +14,6 @@ public:
   virtual ~MainWindow();
   MainWindow(MainWindow const &) = delete;
   MainWindow operator=(MainWindow const &) = delete;
-  QSharedPointer<class Scene> scene() const;
-  void setScene(QSharedPointer<Scene> const &);
 public slots:
   void openAction();
   void saveAction();

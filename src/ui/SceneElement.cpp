@@ -60,7 +60,7 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
   if (!part.isValid())
     qDebug() << "Cannot find svg for symbol" << sym;
 
-  QSvgRenderer *r = lib->renderer(sym);
+  QSvgRenderer *r = lib->renderer(sym).data();
 
   d->element = new QGraphicsSvgItem;
   if (r)

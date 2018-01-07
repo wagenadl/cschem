@@ -18,10 +18,14 @@ public:
   ~Schem();
 public:
   Circuit const &circuit() const;
-  Circuit &circuit();
+  void setCircuit(Circuit const &);
   Parts const &parts() const;
-  Parts &parts();
+  void setParts(Parts const &);
   bool isEmpty() const;
+  class PartLibrary const &library() const;
+  void selectivelyUpdateLibrary(PartLibrary const &);
+public:
+  void saveSvg(QXmlStreamWriter &dst) const;
 private:
   QSharedDataPointer<class SchemData> d;
 };
