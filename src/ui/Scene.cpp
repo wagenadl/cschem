@@ -357,6 +357,7 @@ void Scene::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void Scene::keyPressEvent(QKeyEvent *e) {
+  qDebug() << "scene::keypress" << focusItem();
   if (e->key()==Qt::Key_Shift
       && d->hovermanager->primaryPurpose() != HoverManager::Purpose::None)
     d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::Connecting);
@@ -388,6 +389,7 @@ void SceneData::keyPressAnywhere(QKeyEvent *e) {
     }
     break;
   case Qt::Key_Delete:
+    qDebug() << "delete" << ee.isEmpty() << hovermanager->onElement() << hovermanager->element();
     if (!ee.isEmpty()) {
       preact();
       CircuitMod cm(circ, lib);
@@ -622,3 +624,12 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
   }
 }
 
+void Scene::focusInEvent(QFocusEvent *e) {
+  qDebug() << "Scene::focusin";
+  QGraphicsScene::focusInEvent(e);
+}
+
+void Scene::focusOutEvent(QFocusEvent *e) {
+  qDebug() << "Scene::focusout";
+  QGraphicsScene::focusOutEvent(e);
+}

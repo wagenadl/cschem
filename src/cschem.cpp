@@ -15,6 +15,6 @@ int main(int argc, char **argv) {
   MainWindow mw;
   mw.load("../doc/example.xml");
   mw.show();
-  mw.resize(mw.size()*2);
+  //  mw.resize(mw.size()*2);
   return app.exec();
 }

@@ -44,6 +44,8 @@ protected:
   void dragLeaveEvent(QGraphicsSceneDragDropEvent *) override;
   void dragMoveEvent(QGraphicsSceneDragDropEvent *) override;
   void dropEvent(QGraphicsSceneDragDropEvent *) override;
+  void focusInEvent(QFocusEvent *) override;
+  void focusOutEvent(QFocusEvent *) override;
 private:
   class SceneData *d;
 };

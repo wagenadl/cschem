@@ -14,7 +14,6 @@
 #include <QDebug>
 #include "Style.h"
 #include <QMessageBox>
-#include "LibraryPane.h"
 #include "LibView.h"
 #include <QDockWidget>
 #include "LibView.h"
@@ -22,13 +21,12 @@
 class MWData {
 public:
   MWData():
-    view(0), scene(0), libpane(0) {
+    view(0), scene(0), libview(0) {
   }
 public:
   PartLibrary lib;
   QGraphicsView *view;
   Scene *scene;
-  LibraryPane *libpane;
   LibView *libview;
   Schem schem;
   QString filename;
@@ -45,19 +43,14 @@ MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
   createView();
   createDocks();
   createActions();
+  d->view->scale(2, 2);
+  d->libview->scale(1.5, 1.5);
   create();
 }
 
 void MainWindow::createDocks() {
   QDockWidget *dock;
   
-  //  d->libpane = new LibraryPane(&d->lib);
-  //  connect(d->libpane, SIGNAL(activated(QString)),
-  //          this, SLOT(plonk(QString)));
-  //  dock = new QDockWidget("Library", this);
-  //  dock->setWidget(d->libpane);
-  //  addDockWidget(Qt::LeftDockWidgetArea, dock);
-
   d->libview = new LibView(&d->lib);
   connect(d->libview, SIGNAL(activated(QString)),
           this, SLOT(plonk(QString)));
@@ -69,7 +62,6 @@ void MainWindow::createDocks() {
 void MainWindow::createView() {
   d->view = new QGraphicsView(this);
   d->view->setInteractive(true);
-  d->view->scale(2, 2);
   d->view->setMouseTracking(true);
   d->view->setDragMode(QGraphicsView::RubberBandDrag);
   setCentralWidget(d->view);

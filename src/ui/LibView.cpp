@@ -81,6 +81,8 @@ LibView::LibView(QWidget *parent): QGraphicsView(parent),
 
 LibView::LibView(class PartLibrary const *lib, QWidget *parent):
   LibView(parent) {
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   rebuild(lib);
 }
 void LibView::rebuild(class PartLibrary const *lib) {
@@ -94,7 +96,8 @@ void LibView::rebuild(class PartLibrary const *lib) {
     if (s.startsWith("port:") || s.startsWith("part:"))
       d->addPart(lib, s);
 
-  QRectF r = d->scene->sceneRect();
+  QRectF r = d->scene->itemsBoundingRect();
+  
   double w = r.width();
   for (auto *it: d->items) {
     QPointF p = it->pos();
@@ -102,8 +105,7 @@ void LibView::rebuild(class PartLibrary const *lib) {
     it->setPos(QPointF(w/2 - bb.width()/2, p.y()));
   }
 
-  resize(QRect(mapFromScene(sceneRect().topLeft()),
-               mapFromScene(sceneRect().bottomRight())).size());
+  d->scene->setSceneRect(r.adjusted(-7, -14, 7, 14));
 }
 
 LibView::~LibView() {
