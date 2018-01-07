@@ -6,7 +6,9 @@
 
 class ElementData: public QSharedData {
 public:
-  ElementData(): id(IDFactory::instance().newId()), rotation(0) { }
+  ElementData(): type(Element::Type::Invalid),
+                 id(IDFactory::instance().newId()),
+                 rotation(0) { }
 public:
   Element::Type type;
   QPoint position;
@@ -150,6 +152,10 @@ void Element::setId(int id) {
 void Element::setRotation(int o) {
   d.detach();
   d->rotation = o & 3;
+}
+
+bool Element::isValid() const {
+  return d->type != Type::Invalid;
 }
 
 Element::Type Element::type() const {

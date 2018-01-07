@@ -83,6 +83,10 @@ CircuitMod::~CircuitMod() {
   delete d;
 }
 
+void CircuitMod::addElement(Element const &elt) {
+  d->insert(elt);
+}
+
 QSet<int> CircuitMod::affectedConnections() const {
   return d->acons;
 }

@@ -576,3 +576,20 @@ void Scene::removeDangling() {
   cm.removeAllDanglingOrInvalid();
   d->rebuildAsNeeded(cm);
 }
+
+void Scene::plonk(QString symbol, QPointF scenepos) {
+  qDebug() << "plonk" << symbol << scenepos;
+  QPoint pt = d->lib->downscale(scenepos);
+  Element elt;
+  if (symbol.startsWith("part:"))
+    elt = Element::component(symbol.mid(5), pt);
+  else if (symbol.startsWith("port:"))
+    elt = Element::port(symbol.mid(5), pt);
+
+  if (elt.isValid()) {
+    d->preact();
+    CircuitMod cm(d->circ, d->lib);
+    cm.addElement(elt);
+    d->rebuildAsNeeded(cm);
+  } 
+}

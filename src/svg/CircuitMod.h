@@ -13,6 +13,7 @@ public:
   CircuitMod(CircuitMod const &) = delete;
   CircuitMod &operator=(CircuitMod const &) = delete;
   ~CircuitMod();
+  void addElement(class Element const &);
   bool rotateElement(int eltid, int steps=1);
   /* Rotates the element by STEPS x 90 degrees ccw. True if successful. */
   bool deleteElement(int eltid);

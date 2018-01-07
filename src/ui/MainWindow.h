@@ -39,6 +39,9 @@ private:
   void createActions();
   void createView();
   void createStatusBar();
+  void createDocks();
+private slots:
+  void plonk(QString);
 private:
   class MWData *d;
 };

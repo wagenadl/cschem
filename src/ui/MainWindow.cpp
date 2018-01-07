@@ -14,16 +14,19 @@
 #include <QDebug>
 #include "Style.h"
 #include <QMessageBox>
+#include "LibraryPane.h"
+#include <QDockWidget>
 
 class MWData {
 public:
   MWData():
-    view(0), scene(0) {
+    view(0), scene(0), pane(0) {
   }
 public:
   PartLibrary lib;
   QGraphicsView *view;
   Scene *scene;
+  LibraryPane *pane;
   Schem schem;
   QString filename;
   static QString lastdir;
@@ -37,8 +40,18 @@ MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
   else
     d->lib = PartLibrary::defaultLibrary();
   createView();
+  createDocks();
   createActions();
   create();
+}
+
+void MainWindow::createDocks() {
+  d->pane = new LibraryPane(&d->lib);
+  connect(d->pane, SIGNAL(activated(QString)),
+          this, SLOT(plonk(QString)));
+  QDockWidget *dock = new QDockWidget("Library", this);
+  dock->setWidget(d->pane);
+  addDockWidget(Qt::LeftDockWidgetArea, dock);
 }
 
 void MainWindow::createView() {
@@ -284,4 +297,9 @@ void MainWindow::redoAction() {
 
 void MainWindow::removeDanglingAction() {
   d->scene->removeDangling();
+}
+
+void MainWindow::plonk(QString sym) {
+  d->scene->plonk(sym, d->view->mapToScene(QPoint(d->view->width()/2,
+                                                  d->view->height()/2)));
 }
