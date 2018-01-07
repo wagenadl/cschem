@@ -118,22 +118,24 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
         conns[id]->rebuild();
       else
         conns[id] = new SceneConnection(scene, circ.connection(id));
-    } else {
+    } else if (conns.contains(id)) {
       delete conns[id];
       conns.remove(id);
     }
   }
+
   for (int id: eltids) {
     if (circ.elements().contains(id)) {
       if (elts.contains(id))
         elts[id]->rebuild();
       else
         elts[id] = new SceneElement(scene, circ.element(id));
-    } else {
+    } else if (elts.contains(id)) {
       delete elts[id];
       elts.remove(id);
     }
   }
+  
   hovermanager->update();
 }
 

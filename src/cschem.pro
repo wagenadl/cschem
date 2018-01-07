@@ -3,11 +3,11 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = qschem
+TARGET = cschem
 INCLUDEPATH += .
 QT += svg
 DEFINES += QT_DEPRECATED_WARNINGS
-CONFIG += debug
+CONFIG += debug_and_release
 
 # Input
 HEADERS += svg/Part.h   svg/PartLibrary.h   svg/XmlElement.h   svg/XmlNode.h
@@ -24,7 +24,9 @@ HEADERS += ui/HoverManager.h   ui/ConnBuilder.h
 SOURCES += ui/HoverManager.cpp ui/ConnBuilder.cpp
 HEADERS += svg/Router.h   svg/Geometry.h   svg/CircuitMod.h   ui/Style.h
 SOURCES += svg/Router.cpp svg/Geometry.cpp svg/CircuitMod.cpp ui/Style.cpp
+HEADERS += svg/CircuitModData.h
+SOURCES += svg/CM_MergeSelection.cpp
 HEADERS += ui/MainWindow.h   ui/Clipboard.h
 SOURCES += ui/MainWindow.cpp ui/Clipboard.cpp
-SOURCES += qschem.cpp	
-RESOURCES += qschem.qrc
+SOURCES += cschem.cpp	
+RESOURCES += cschem.qrc
