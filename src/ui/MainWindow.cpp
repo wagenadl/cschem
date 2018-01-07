@@ -115,6 +115,12 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::redoAction);
   menu->addAction(act);
 
+  act = new QAction(tr("Remove &dangling connections"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
+  act->setStatusTip(tr("Cleanup circuit by removing dangling connections"));
+  connect(act, &QAction::triggered, this, &MainWindow::removeDanglingAction);
+  menu->addAction(act);
+
   menu = menuBar()->addMenu(tr("&View"));
 
   act = new QAction(tr("&Zoom in"), this);
@@ -133,7 +139,7 @@ void MainWindow::createActions() {
   menuBar()->addSeparator();
   menu = menuBar()->addMenu(tr("&Help"));
 
-  act = new QAction(tr("&About"), this);
+  act = new QAction(tr("&About…"), this);
   act->setStatusTip(tr("Information about this program"));
   connect(act, &QAction::triggered, this, &MainWindow::aboutAction);
   menu->addAction(act);
@@ -264,4 +270,8 @@ void MainWindow::undoAction() {
 
 void MainWindow::redoAction() {
   d->scene->redo();
+}
+
+void MainWindow::removeDanglingAction() {
+  d->scene->removeDangling();
 }

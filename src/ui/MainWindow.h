@@ -32,6 +32,7 @@ public slots:
   void pasteAction();
   void undoAction();
   void redoAction();
+  void removeDanglingAction();
 public:
   void load(QString filename);
   void create();

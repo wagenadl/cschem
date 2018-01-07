@@ -289,16 +289,19 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     d->connbuilder->mousePress(e);
     update();
   } else {
-    if (d->hovermanager->onPin()) 
+    if (d->hovermanager->onPin()) {
       d->startConnectionFromPin(e->scenePos());
-    else if (d->hovermanager->onFakePin()) 
+      e->accept();
+    } else if (d->hovermanager->onFakePin()) {
       d->startConnectionFromConnection(e->scenePos());
-    else if (d->hovermanager->onConnection()
-             && (e->modifiers() & Qt::ShiftModifier)) 
+      e->accept();
+    } else if (d->hovermanager->onConnection()
+               && (e->modifiers() & Qt::ShiftModifier)) {
       d->startConnectionFromConnection(e->scenePos());
-    else 
+      e->accept();
+    } else {
       QGraphicsScene::mousePressEvent(e);
-    
+    }    
   }
 }
 
@@ -567,3 +570,9 @@ void Scene::pasteFromClipboard() {
       d->elts[id]->setSelected(true);
 }
 
+void Scene::removeDangling() {
+  d->preact();
+  CircuitMod cm(d->circ, d->lib);
+  cm.removeAllDanglingOrInvalid();
+  d->rebuildAsNeeded(cm);
+}

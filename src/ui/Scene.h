@@ -32,6 +32,7 @@ public:
   void pasteFromClipboard();
   void undo();
   void redo();
+  void removeDangling();
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;
