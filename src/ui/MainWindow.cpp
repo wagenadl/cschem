@@ -15,18 +15,21 @@
 #include "Style.h"
 #include <QMessageBox>
 #include "LibraryPane.h"
+#include "LibView.h"
 #include <QDockWidget>
+#include "LibView.h"
 
 class MWData {
 public:
   MWData():
-    view(0), scene(0), pane(0) {
+    view(0), scene(0), libpane(0) {
   }
 public:
   PartLibrary lib;
   QGraphicsView *view;
   Scene *scene;
-  LibraryPane *pane;
+  LibraryPane *libpane;
+  LibView *libview;
   Schem schem;
   QString filename;
   static QString lastdir;
@@ -46,11 +49,20 @@ MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
 }
 
 void MainWindow::createDocks() {
-  d->pane = new LibraryPane(&d->lib);
-  connect(d->pane, SIGNAL(activated(QString)),
+  QDockWidget *dock;
+  
+  //  d->libpane = new LibraryPane(&d->lib);
+  //  connect(d->libpane, SIGNAL(activated(QString)),
+  //          this, SLOT(plonk(QString)));
+  //  dock = new QDockWidget("Library", this);
+  //  dock->setWidget(d->libpane);
+  //  addDockWidget(Qt::LeftDockWidgetArea, dock);
+
+  d->libview = new LibView(&d->lib);
+  connect(d->libview, SIGNAL(activated(QString)),
           this, SLOT(plonk(QString)));
-  QDockWidget *dock = new QDockWidget("Library", this);
-  dock->setWidget(d->pane);
+  dock = new QDockWidget("Library", this);
+  dock->setWidget(d->libview);
   addDockWidget(Qt::LeftDockWidgetArea, dock);
 }
 

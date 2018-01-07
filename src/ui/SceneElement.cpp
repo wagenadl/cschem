@@ -130,7 +130,6 @@ void SceneElement::rebuild() {
   Part const &part = lib->part(circ.element(d->id).symbol());
   QPointF orig = part.bbOrigin();
   QTransform xf;
-  qDebug() << orig;
   xf.translate(orig.x(), orig.y());
   xf.rotate(circ.element(d->id).rotation()*-90);
   xf.translate(-orig.x(), -orig.y());

@@ -10,6 +10,7 @@
 #include "svg/CircuitMod.h"
 #include "svg/Geometry.h"
 #include "Clipboard.h"
+#include <QMimeData>
 
 class SceneData {
 public:
@@ -593,3 +594,31 @@ void Scene::plonk(QString symbol, QPointF scenepos) {
     d->rebuildAsNeeded(cm);
   } 
 }
+
+void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
+  QMimeData const *md = e->mimeData();
+  qDebug() << "drag enter" << md->formats();
+  if (md->hasFormat("application/x-dnd-cschem"))
+    e->accept();
+  else
+    e->ignore();
+}
+
+void Scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *) {
+}
+
+void Scene::dragMoveEvent(QGraphicsSceneDragDropEvent *e) {
+  e->accept();
+}
+
+void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
+  QMimeData const *md = e->mimeData();
+  qDebug() << "drop" << md->formats();
+  if (md->hasFormat("application/x-dnd-cschem")) {
+    plonk(QString(md->data("application/x-dnd-cschem")), e->scenePos());
+    e->accept();
+  } else {
+    e->ignore();
+  }
+}
+

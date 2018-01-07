@@ -40,6 +40,10 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+  void dragEnterEvent(QGraphicsSceneDragDropEvent *) override;
+  void dragLeaveEvent(QGraphicsSceneDragDropEvent *) override;
+  void dragMoveEvent(QGraphicsSceneDragDropEvent *) override;
+  void dropEvent(QGraphicsSceneDragDropEvent *) override;
 private:
   class SceneData *d;
 };

@@ -304,7 +304,6 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
   auto *gli2 = d->segments[N-1];
   QPointF p1;
   int L = d->points.size();
-  qDebug() << N << L;
   if (N==2 || L<2) {
     // arbitrary direction for now
     p1 = (abs(dp.x()) > abs(dp.y()))
