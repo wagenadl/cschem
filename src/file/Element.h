@@ -30,12 +30,15 @@ public:
   QPoint position() const;
   Type type() const;
   bool isValid() const;
-  QString tag() const; // component/port/junction
-  QString subtype() const;
-  QString symbol() const;
-  QString value() const;
-  QString name() const;
-  QString label() const;
+  QString tag() const; // "component"/"port"/"junction"
+  QString subtype() const; // e.g., "passive:resistor"
+  QString symbol() const; // e.g., "part:passive:resistor"
+  QString value() const; // e.g., "10 pF" or "INA111"
+  QString name() const; // e.g., "R1"
+  QPoint valuePos() const;
+  QPoint namePos() const;
+  bool isValueVisible() const;
+  bool isNameVisible() const;
   int id() const;
   int rotation() const;
   Element translated(QPoint delta) const;
@@ -44,7 +47,10 @@ public:
   void setSubtype(QString);
   void setValue(QString);
   void setName(QString);
-  void setLabel(QString);
+  void setValuePos(QPoint);
+  void setNamePos(QPoint);
+  void setValueVisible(bool);
+  void setNameVisible(bool);
   void setId(int); // should only be used for well-controlled renumber op
   void setRotation(int);
   void translate(QPoint delta);

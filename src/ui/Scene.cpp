@@ -154,6 +154,12 @@ Scene::Scene(PartLibrary const *lib, QObject *parent):
   QGraphicsScene(parent) {
   d = new SceneData(this, lib);
   d->hovermanager = new HoverManager(this);
+  // auto *test = new QGraphicsTextItem;
+  // test->setHtml("Hello world");
+  // test->setPos(QPointF(100, 50));
+  // test->setTextInteractionFlags(Qt::TextEditorInteraction);
+  // test->setFlags(QGraphicsItem::ItemIsFocusable);
+  // addItem(test);
 }
 
 void Scene::setCircuit(Circuit const &c) {

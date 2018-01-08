@@ -55,3 +55,12 @@ QString Style::programName() {
 QString Style::versionName() {
   return "1.0.0";
 }
+
+QFont Style::nameFont() {
+  return QFont("Lato", 8);
+}
+
+QFont Style::valueFont() {
+  return QFont("Lato", 8);
+}
+

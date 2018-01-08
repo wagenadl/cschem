@@ -20,7 +20,6 @@ public:
     element = 0;
     name = 0;
     value = 0;
-    label = 0;
     dragmoved = false;
     hover = false;
   }
@@ -42,7 +41,6 @@ public:
   QGraphicsSvgItem *element;
   QGraphicsTextItem *name;
   QGraphicsTextItem *value;
-  QGraphicsTextItem *label;
 public:
   bool dragmoved;
   bool hover;
@@ -91,7 +89,7 @@ SceneElement::~SceneElement() {
 
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
-  qDebug() << "Mouse press" << e->pos() << pos();
+  qDebug() << "Element Mouse press" << e->pos() << pos();
   QGraphicsItemGroup::mousePressEvent(e);
 }
 
@@ -123,6 +121,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void SceneElement::rebuild() {
+  // Reconstruct element
   removeFromGroup(d->element);
   setPos(QPointF(0,0));
   PartLibrary const *lib = d->scene->library();
@@ -137,6 +136,56 @@ void SceneElement::rebuild() {
   d->element->setPos(part.shiftedBBox().topLeft());
   addToGroup(d->element);
   setPos(lib->scale() * circ.element(d->id).position());
+
+  // Reconstruct name
+  Element const &elt(circ.element(d->id));
+  if (elt.isNameVisible()) {
+    qDebug() << "name visible on" << elt.report();
+    if (d->name) {
+      d->name->show();
+    } else {
+      d->name = new QGraphicsTextItem;
+      d->name->setFont(Style::nameFont());
+      d->name->setTextInteractionFlags(Qt::TextEditorInteraction);
+      d->name->setFlags(ItemIsFocusable);
+      addToGroup(d->name);
+    }
+    QPoint p = elt.namePos();
+    if (p.isNull())
+      p = QPoint(10, 10); // hmmm.
+    d->name->setPos(p);
+    QString name = elt.name();
+    if (name.mid(1).toInt()>0) 
+      // letter+number
+      d->name->setHtml("<i>" + name.left(1) + "</i>"
+                       + "<sub>" + name.mid(1) + "</sub>");
+    else
+      d->name->setHtml("<i>" + name + "</i>");
+  } else if (d->name) {
+    d->name->hide();
+  }
+
+  
+  // Reconstruct value
+  if (elt.isValueVisible()) {
+    if (d->value) {
+      d->value->show();
+    } else {
+      d->value = new QGraphicsTextItem;
+      d->value->setFont(Style::valueFont());
+      d->value->setTextInteractionFlags(Qt::TextEditorInteraction);
+      d->value->setFlags(ItemIsFocusable);
+      addToGroup(d->value);
+    }
+    QPoint p = elt.valuePos();
+    if (p.isNull())
+      p = QPoint(30, 10); // hmmm.
+    d->value->setPos(p);
+    QString value = elt.value();
+    d->value->setPlainText(value);
+  } else if (d->value) {
+    d->value->hide();
+  }
 }
 
 Scene *SceneElement::scene() {
@@ -193,7 +242,7 @@ void SceneElement::paint(QPainter *painter,
   if (isSelected()) {
     painter->setBrush(QBrush(Style::selectionColor()));
     painter->setPen(QPen(Qt::NoPen));
-    painter->drawRoundedRect(boundingRect().adjusted(2, 2, -2, -2),
+    painter->drawRoundedRect(d->element->mapRectToParent(d->element->boundingRect().adjusted(2, 2, -2, -2)),
 			     Style::selectionRectRadius(),
 			     Style::selectionRectRadius());
   }

@@ -15,7 +15,10 @@ public:
   QString subtype;
   QString value;
   QString name;
-  QString label;
+  QPoint valuePos;
+  QPoint namePos;
+  bool valueVis;
+  bool nameVis;
   int id;
   int rotation;
 };
@@ -51,8 +54,11 @@ Element::Element(QXmlStreamReader &src): Element() {
   d->position = QPoint(a.value("x").toInt(), a.value("y").toInt());
   d->subtype = a.value("type").toString();
   d->value = a.value("value").toString();
+  d->valuePos = QPoint(a.value("valx").toInt(), a.value("valy").toInt());
+  d->valueVis = a.value("valvis").toInt() > 0;
   d->name = a.value("name").toString();
-  d->label = a.value("label").toString();
+  d->namePos = QPoint(a.value("namex").toInt(), a.value("namey").toInt());
+  d->nameVis = a.value("namevis").toInt() > 0;
   d->rotation = a.value("rotation").toInt();
   src.skipCurrentElement();
 }
@@ -92,12 +98,24 @@ QString Element::value() const {
   return d->value;
 }
 
+QPoint Element::valuePos() const {
+  return d->valuePos;
+}
+
+bool Element::isValueVisible() const {
+  return d->valueVis;
+}
+
 QString Element::name() const {
   return d->name;
 }
 
-QString Element::label() const {
-  return d->label;
+QPoint Element::namePos() const {
+  return d->namePos;
+}
+
+bool Element::isNameVisible() const {
+  return d->nameVis;
 }
 
 int Element::id() const {
@@ -134,14 +152,29 @@ void Element::setValue(QString v) {
   d->value = v;
 }
 
+void Element::setValuePos(QPoint p) {
+  d.detach();
+  d->valuePos = p;
+}
+
+void Element::setValueVisible(bool b) {
+  d.detach();
+  d->valueVis = b;
+}
+
 void Element::setName(QString n) {
   d.detach();
   d->name = n;
 }
 
-void Element::setLabel(QString l) {
+void Element::setNamePos(QPoint p) {
   d.detach();
-  d->label = l;
+  d->namePos = p;
+}
+
+void Element::setNameVisible(bool b) {
+  d.detach();
+  d->nameVis = b;
 }
 
 void Element::setId(int id) {
@@ -202,12 +235,19 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Element const &c) {
   sr.writeAttribute("y", QString::number(c.position().y()));
   if (!c.subtype().isEmpty())
     sr.writeAttribute("type", c.subtype());
-  if (!c.value().isEmpty())
-    sr.writeAttribute("value", c.value());
-  if (!c.name().isEmpty())
+  if (!c.value().isEmpty()) {
+    sr.writeAttribute("value" , c.value());
+    sr.writeAttribute("valx", QString::number(c.valuePos().x()));
+    sr.writeAttribute("valy", QString::number(c.valuePos().y()));
+    sr.writeAttribute("valvis", QString::number(c.isValueVisible() ? 1 : 0));
+  }
+  if (!c.name().isEmpty()) {
     sr.writeAttribute("name", c.name());
-  if (!c.label().isEmpty())
-    sr.writeAttribute("label", c.label());
+    sr.writeAttribute("namex", QString::number(c.namePos().x()));
+    sr.writeAttribute("namey", QString::number(c.namePos().y()));
+    sr.writeAttribute("namevis", QString::number(c.isNameVisible() ? 1 : 0));
+  }
+  
   if (c.rotation())
     sr.writeAttribute("rotation", QString::number(c.rotation()));
   sr.writeEndElement();
@@ -215,9 +255,9 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Element const &c) {
 };
 
 QString Element::report() const {
-  return QString("%1: %2 at %3,%4 (%5) - %6 %7 %8")
+  return QString("%1: %2 at %3,%4 (%5) - %6 %7")
     .arg(id()).arg(symbol())
     .arg(position().x()).arg(position().y()).arg(rotation())
-    .arg(value()).arg(name()).arg(label());
+    .arg(value()).arg(name());
 }
     

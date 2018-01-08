@@ -5,6 +5,7 @@
 #define STYLE_H
 
 #include <QColor>
+#include <QFont>
 
 class Style {
 public:
@@ -20,6 +21,8 @@ public:
   static double selectionRectRadius();
   static QString programName();
   static QString versionName();
+  static QFont nameFont();
+  static QFont valueFont();
 };
 
 #endif

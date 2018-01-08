@@ -271,3 +271,15 @@ Circuit &Circuit::operator+=(Circuit const &o) {
   return *this;
 }
   
+QString Circuit::autoName(QString pfx) const {
+  QSet<int> used;
+  for (Element const &elt: elements()) 
+    if (elt.name().startsWith(pfx)) 
+      used << elt.name().mid(pfx.size()).toInt();
+
+  int n = 1;
+  while (used.contains(n))
+    n++;
+
+  return pfx + QString::number(n);
+}
