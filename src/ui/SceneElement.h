@@ -4,11 +4,11 @@
 
 #define SCENEELEMENT_H
 
-#include <QGraphicsItemGroup>
+#include <QGraphicsItem>
 #include <QWeakPointer>
 #include <QSharedPointer>
 
-class SceneElement: public QGraphicsItemGroup {
+class SceneElement: public QGraphicsItem {
 public:
   SceneElement(class Scene *parent, class Element const &elt);
   SceneElement(SceneElement const &) = delete;
@@ -40,6 +40,7 @@ public:
   void rebuild();
   void hover();
   void unhover();
+  QRectF boundingRect() const override;
   void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;  
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;

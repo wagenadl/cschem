@@ -3,7 +3,6 @@
 #include "SceneElement.h"
 #include <QGraphicsSvgItem>
 #include <QGraphicsEllipseItem>
-#include <QGraphicsItemGroup>
 #include "file/Element.h"
 #include "Scene.h"
 #include <QDebug>
@@ -60,13 +59,12 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
 
   QSvgRenderer *r = lib->renderer(sym).data();
 
-  d->element = new QGraphicsSvgItem;
+  d->element = new QGraphicsSvgItem(this);
   if (r)
     d->element->setSharedRenderer(r);
   else
     qDebug() << "Cannot construct renderer for symbol" << sym;    
-  addToGroup(d->element);
-
+  
   parent->addItem(this);
   rebuild();
 
@@ -90,7 +88,7 @@ SceneElement::~SceneElement() {
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
   qDebug() << "Element Mouse press" << e->pos() << pos();
-  QGraphicsItemGroup::mousePressEvent(e);
+  QGraphicsItem::mousePressEvent(e);
 }
 
 void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
@@ -98,7 +96,7 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   QPointF oldpos = d->scene->library()->scale()
     * d->scene->circuit().elements()[d->id].position();
   qDebug() << "Mouse move" << newpos << oldpos;
-  QGraphicsItemGroup::mouseMoveEvent(e);
+  QGraphicsItem::mouseMoveEvent(e);
   
   if (d->dragmoved || newpos != oldpos) {
     qDebug() << "Position changed";
@@ -113,7 +111,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   QPointF newpos = pos();
   QPointF oldpos = lib->scale() * circ.elements()[d->id].position();
   qDebug() << "Mouse release" << newpos << oldpos;
-  QGraphicsItemGroup::mouseReleaseEvent(e);
+  QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
     qDebug() << "Position changed";
     d->scene->moveSelection(newpos - oldpos);
@@ -122,8 +120,8 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 
 void SceneElement::rebuild() {
   // Reconstruct element
-  removeFromGroup(d->element);
-  setPos(QPointF(0,0));
+  prepareGeometryChange();
+  
   PartLibrary const *lib = d->scene->library();
   Circuit const &circ = d->scene->circuit();
   Part const &part = lib->part(circ.element(d->id).symbol());
@@ -134,7 +132,7 @@ void SceneElement::rebuild() {
   xf.translate(-orig.x(), -orig.y());
   d->element->setTransform(xf);
   d->element->setPos(part.shiftedBBox().topLeft());
-  addToGroup(d->element);
+
   setPos(lib->scale() * circ.element(d->id).position());
 
   // Reconstruct name
@@ -144,11 +142,10 @@ void SceneElement::rebuild() {
     if (d->name) {
       d->name->show();
     } else {
-      d->name = new QGraphicsTextItem;
+      d->name = new QGraphicsTextItem(this);
       d->name->setFont(Style::nameFont());
       d->name->setTextInteractionFlags(Qt::TextEditorInteraction);
       d->name->setFlags(ItemIsFocusable);
-      addToGroup(d->name);
     }
     QPoint p = elt.namePos();
     if (p.isNull())
@@ -171,11 +168,10 @@ void SceneElement::rebuild() {
     if (d->value) {
       d->value->show();
     } else {
-      d->value = new QGraphicsTextItem;
+      d->value = new QGraphicsTextItem(this);
       d->value->setFont(Style::valueFont());
       d->value->setTextInteractionFlags(Qt::TextEditorInteraction);
       d->value->setFlags(ItemIsFocusable);
-      addToGroup(d->value);
     }
     QPoint p = elt.valuePos();
     if (p.isNull())
@@ -251,4 +247,8 @@ void SceneElement::paint(QPainter *painter,
   if (ef) 
     ef->setColor(isSelected() ? Style::selectedElementHoverColor()
 		 : Style::elementHoverColor());
+}
+
+QRectF SceneElement::boundingRect() const {
+  return d->element->mapRectToParent(d->element->boundingRect());
 }
