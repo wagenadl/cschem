@@ -34,6 +34,7 @@ public:
   void redo();
   void removeDangling();
   void plonk(QString symbol, QPointF scenepos);
+  void makeUndoStep();
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;

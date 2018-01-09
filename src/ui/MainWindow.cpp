@@ -43,7 +43,7 @@ MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
   createView();
   createDocks();
   createActions();
-  d->view->scale(2, 2);
+  d->view->scale(1.5, 1.5);
   d->libview->scale(1.5, 1.5);
   create();
 }
@@ -256,11 +256,11 @@ void MainWindow::markChanged() {
 }
 
 void MainWindow::zoomIn() {
-  d->view->scale(2, 2);
+  d->view->scale(1.5, 1.5);
 }
 
 void MainWindow::zoomOut() {
-  d->view->scale(.5, .5);
+  d->view->scale(1/1.5, 1/1.5);
 }
 
 void MainWindow::setStatusMessage(QString msg) {

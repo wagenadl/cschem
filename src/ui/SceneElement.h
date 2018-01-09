@@ -44,6 +44,7 @@ public:
   void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;  
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
 private:

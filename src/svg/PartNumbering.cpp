@@ -1,6 +1,8 @@
 // PartNumbering.cpp
 
 #include "PartNumbering.h"
+#include <QStringList>
+#include <QSet>
 
 QString PartNumbering::abbreviation(QString symbol) {
   QStringList bits = symbol.split(":");

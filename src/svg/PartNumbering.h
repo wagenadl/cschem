@@ -4,6 +4,8 @@
 
 #define PARTNUMBERING_H
 
+#include <QString>
+
 class PartNumbering {
 public:
   static QString abbreviation(QString symbol);

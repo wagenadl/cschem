@@ -16,6 +16,8 @@ public:
   static QColor connectionHoverColor();
   static QColor pinHighlightColor();
   static QColor selectionColor();
+  static QColor faintColor();
+  static QColor textColor();
   static double connectionHoverWidthFactor();
   static double connectionDraftWidthFactor();
   static double selectionRectRadius();

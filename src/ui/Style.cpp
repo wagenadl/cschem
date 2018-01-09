@@ -2,6 +2,14 @@
 
 #include "Style.h"
 
+QColor Style::textColor() {
+  return QColor(0, 0, 0);
+}
+
+QColor Style::faintColor() {
+  return QColor(180, 180, 180);
+}
+
 QColor Style::connectionColor() {
   return QColor(0, 0, 0);
 }

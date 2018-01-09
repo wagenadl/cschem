@@ -131,7 +131,7 @@ QRectF PartLibrary::upscale(QRect r) const {
 }
 
 double PartLibrary::lineWidth() const {
-  return 2.5;
+  return 1.5;
 }
 
 QPolygonF PartLibrary::simplifyPath(QPolygonF pp) const {

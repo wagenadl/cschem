@@ -11,6 +11,7 @@
 #include "svg/Geometry.h"
 #include "Clipboard.h"
 #include <QMimeData>
+#include "SceneAnnotation.h"
 
 class SceneData {
 public:
@@ -74,6 +75,7 @@ public:
   void rotateElement(int id, int steps=1);
   void rebuildAsNeeded(CircuitMod const &cm);
   void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
+  void backspace();
 public:
   Scene *scene;
   PartLibrary const *lib;
@@ -414,7 +416,22 @@ void SceneData::keyPressAnywhere(QKeyEvent *e) {
       rebuildAsNeeded(cm);
     }  
     break;
+  case Qt::Key_Backspace:
+    backspace();
+    break;
   }
+}
+
+void SceneData::backspace() {
+  SceneAnnotation *sa
+    = dynamic_cast<SceneAnnotation *>(scene->itemAt(mousexy,
+						    QTransform()));
+  if (sa)
+    sa->backspace();
+}
+
+void Scene::makeUndoStep() {
+  d->preact();
 }
 
 void Scene::undo() {

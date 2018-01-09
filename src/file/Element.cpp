@@ -8,19 +8,21 @@ class ElementData: public QSharedData {
 public:
   ElementData(): type(Element::Type::Invalid),
                  id(IDFactory::instance().newId()),
-                 rotation(0) { }
+                 rotation(0),
+		 nameVis(false),
+		 valueVis(false) { }
 public:
   Element::Type type;
   QPoint position;
   QString subtype;
   QString value;
   QString name;
+  int id;
+  int rotation;
   QPoint valuePos;
   QPoint namePos;
   bool valueVis;
   bool nameVis;
-  int id;
-  int rotation;
 };
 
 Element::Element() {
