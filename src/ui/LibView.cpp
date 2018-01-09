@@ -106,6 +106,14 @@ void LibView::rebuild(class PartLibrary const *lib) {
   }
 
   d->scene->setSceneRect(r.adjusted(-7, -14, 7, 14));
+  scale(1);
+}
+
+void LibView::scale(double x) {
+  QGraphicsView::scale(x, x);
+  QRectF r = d->scene->sceneRect();
+  setMinimumWidth(mapFromScene(r.bottomRight()).x()
+		  - mapFromScene(r.topLeft()).x());
 }
 
 LibView::~LibView() {

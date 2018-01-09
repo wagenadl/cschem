@@ -31,6 +31,7 @@ public slots:
   void undoAction();
   void redoAction();
   void removeDanglingAction();
+  void showLibrary();
 public:
   void load(QString filename);
   void create();

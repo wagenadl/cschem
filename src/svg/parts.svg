@@ -26,18 +26,18 @@
      inkscape:window-width="3200"
      inkscape:window-height="1756"
      id="namedview1501"
-     showgrid="false"
+     showgrid="true"
      inkscape:snap-smooth-nodes="false"
      inkscape:snap-midpoints="false"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:zoom="2.4746667"
-     inkscape:cx="598.06291"
-     inkscape:cy="660.86133"
+     inkscape:zoom="4.9493334"
+     inkscape:cx="540.68149"
+     inkscape:cy="570.34409"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g1642"
+     inkscape:current-layer="svg8"
      inkscape:snap-intersection-paths="true">
     <inkscape:grid
        type="xygrid"
@@ -7172,15 +7172,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          id="g2041">
         <path
            style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           d="M 70,514.41665 H 54.25"
+           d="m 70,514.41665 -17.25,0"
            id="path2037"
-           inkscape:connector-curvature="0" />
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
         <circle
-           style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.49999988;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
            id="circle2039"
            cx="49"
            cy="514.41663"
-           r="5.25" />
+           r="3.75" />
       </g>
       <path
          style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -7220,15 +7221,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          id="g2041-3">
         <path
            style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           d="M 70,514.41665 H 54.25"
+           d="m 70,514.41665 -17.23752,0"
            id="path2037-5"
-           inkscape:connector-curvature="0" />
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cc" />
         <circle
-           style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.49999988;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
            id="circle2039-6"
-           cx="49"
-           cy="514.41663"
-           r="5.25" />
+           cx="49.012501"
+           cy="514.42914"
+           r="3.75" />
       </g>
       <path
          style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -8217,9 +8219,8 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
     </g>
   </g>
   <g
-     id="g2635">
-    <title
-       id="title2637">part:transistor:MOSFET:p</title>
+     id="g2635"
+     inkscape:label="part:transistor:MOSFET:p">
     <g
        transform="matrix(1,0,0,-1,0,1944.4167)"
        id="g3807-7">

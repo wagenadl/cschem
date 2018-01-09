@@ -12,6 +12,7 @@ public:
   explicit LibView(QWidget *parent=0);
   explicit LibView(class PartLibrary const *lib, QWidget *parent=0);
   void rebuild(class PartLibrary const *lib);
+  void scale(double);
   ~LibView();
 signals:
   void activated(QString);

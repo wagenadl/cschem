@@ -21,7 +21,9 @@
 class MWData {
 public:
   MWData():
-    view(0), scene(0), libview(0) {
+    view(0),
+    scene(0),
+    libview(0), libviewdock(0) {
   }
 public:
   PartLibrary lib;
@@ -31,6 +33,7 @@ public:
   Schem schem;
   QString filename;
   static QString lastdir;
+  QDockWidget *libviewdock;
 };
 
 QString MWData::lastdir;
@@ -44,19 +47,22 @@ MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
   createDocks();
   createActions();
   d->view->scale(1.5, 1.5);
-  d->libview->scale(1.5, 1.5);
+  d->libview->scale(1.5);
   create();
 }
 
 void MainWindow::createDocks() {
-  QDockWidget *dock;
-  
   d->libview = new LibView(&d->lib);
   connect(d->libview, SIGNAL(activated(QString)),
           this, SLOT(plonk(QString)));
-  dock = new QDockWidget("Library", this);
-  dock->setWidget(d->libview);
-  addDockWidget(Qt::LeftDockWidgetArea, dock);
+  d->libviewdock = new QDockWidget("Library", this);
+  d->libviewdock->setWidget(d->libview);
+  showLibrary();
+}
+
+void MainWindow::showLibrary() {
+  addDockWidget(Qt::LeftDockWidgetArea, d->libviewdock);
+  d->libviewdock->show();
 }
 
 void MainWindow::createView() {
@@ -156,6 +162,11 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::zoomOut);
   menu->addAction(act);
 
+  act = new QAction(tr("&Library"), this);
+  act->setStatusTip(tr("Show library pane"));
+  connect(act, &QAction::triggered, this, &MainWindow::showLibrary);
+  menu->addAction(act);
+  
   menuBar()->addSeparator();
   menu = menuBar()->addMenu(tr("&Help"));
 
