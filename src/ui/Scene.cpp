@@ -73,6 +73,11 @@ public:
   }
   QSet<int> selectedElements() const;
   void rotateElement(int id, int steps=1);
+  void rotateSelection(int steps=1);
+  void rotateElementOrSelection(int steps=1); // creates undo step
+  void flipElement(int id);
+  void flipSelection();
+  void flipElementOrSelection(); // creates undo step
   void rebuildAsNeeded(CircuitMod const &cm);
   void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
   void backspace();
@@ -149,7 +154,26 @@ void SceneData::rotateElement(int id, int steps) {
   CircuitMod cm(circ, lib);
   cm.rotateElement(id, steps);
   rebuildAsNeeded(cm);
+}
+
+void SceneData::rotateSelection(int steps) {
+  CircuitMod cm(circ, lib);
+  cm.rotateElements(selectedElements(), steps);
+  rebuildAsNeeded(cm);
 }  
+
+void SceneData::flipElement(int id) {
+  CircuitMod cm(circ, lib);
+  cm.flipElement(id);
+  rebuildAsNeeded(cm);
+}
+
+void SceneData::flipSelection() {
+  CircuitMod cm(circ, lib);
+  cm.flipElements(selectedElements());
+  rebuildAsNeeded(cm);
+}  
+
 
 Scene::~Scene() {
   delete d;
@@ -390,17 +414,19 @@ void Scene::keyPressEvent(QKeyEvent *e) {
 void SceneData::keyPressAnywhere(QKeyEvent *e) {
   QSet<int> ee = selectedElements();
   switch (e->key()) {
-  case Qt::Key_R:
-    if (!ee.isEmpty()) {
-      qDebug() << "Rotating selection NYI";
-    } else if (hovermanager->onElement()) {
-      preact();
-      rotateElement(hovermanager->element(),
-                    (e->modifiers() & Qt::ShiftModifier) ? -1 : 1);
-    }
-    break;
+  // case Qt::Key_R:
+  //   if (!ee.isEmpty()) {
+  //     preact();
+  //     rotateSelection();
+  //   } else if (hovermanager->onElement()) {
+  //     preact();
+  //     rotateElement(hovermanager->element(),
+  //                   (e->modifiers() & Qt::ShiftModifier) ? -1 : 1);
+  //   }
+  //   break;
   case Qt::Key_Delete:
-    qDebug() << "delete" << ee.isEmpty() << hovermanager->onElement() << hovermanager->element();
+    qDebug() << "delete" << ee.isEmpty() << hovermanager->onElement()
+	     << hovermanager->element();
     if (!ee.isEmpty()) {
       preact();
       CircuitMod cm(circ, lib);
@@ -676,3 +702,32 @@ void Scene::setComponentValue(int id, QString val) {
     d->elts[id]->rebuild();
 }
 
+void SceneData::rotateElementOrSelection(int dir) {
+  QSet<int> ee = selectedElements();
+  if (!ee.isEmpty()) {
+    preact();
+    rotateSelection(dir);
+  } else if (hovermanager->onElement()) {
+    preact();
+    rotateElement(hovermanager->element(), dir);
+  }
+}
+
+void Scene::rotate(int dir) {
+  d->rotateElementOrSelection(dir);
+}
+
+void SceneData::flipElementOrSelection() {
+  QSet<int> ee = selectedElements();
+  if (!ee.isEmpty()) {
+    preact();
+    flipSelection();
+  } else if (hovermanager->onElement()) {
+    preact();
+    flipElement(hovermanager->element());
+  }
+}
+
+void Scene::flipx() {
+  d->flipElementOrSelection();
+}

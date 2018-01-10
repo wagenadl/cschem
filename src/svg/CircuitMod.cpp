@@ -710,6 +710,64 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
   return junc.id();
 }
 
+bool CircuitMod::flipElements(QSet<int> eltids) {
+  qDebug() << "Flip NYI";
+  return false;
+}
+
+bool CircuitMod::flipElement(int eltid) {
+  qDebug() << "Flip NYI";
+  return false;
+}
+
+bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
+  steps &= 3;
+  Circuit c0 = d->circ;
+  Geometry geom(d->circ, d->lib);
+
+  int N = 0;
+  QPoint p0;
+  for (int id: eltids) {
+    Element elt = d->circ.element(id);
+    if (elt.isValid()) {
+      p0 += geom.centerOfPinMass(elt);
+      N++;
+    }
+  }
+  p0 /= N; // original CM
+  
+  for (int id: eltids) {
+    Element elt = d->circ.element(id);
+    if (elt.isValid()) {
+      elt.setRotation(elt.rotation() + steps);
+      for (int k=0; k<steps; k++) {
+	QPoint dp = elt.position() - p0;
+	elt.setPosition(p0 + QPoint(dp.y(), -dp.x()));
+      }
+      d->insert(elt);
+    }
+  }
+  QSet<int> cons = d->circ.connectionsIn(eltids);
+  for (int id: cons) {
+    Connection con = d->circ.connection(id);
+    QPolygon via = con.via();
+    for (QPoint &p: via) {
+      for (int k=0; k<steps; k++) {
+	QPoint dp = p - p0;
+	p = p0 + QPoint(dp.y(), -dp.x());
+      }
+    }
+    con.setVia(via);
+    d->insert(con);
+  }
+
+  for (int c: (d->circ.connectionsFrom(eltids) + d->circ.connectionsTo(eltids))
+	 - cons)
+    reroute(c, c0);
+
+  return false;
+}
+
 bool CircuitMod::rotateElement(int eltid, int steps) {
   if (!d->circ.elements().contains(eltid))
     return false;
@@ -720,8 +778,7 @@ bool CircuitMod::rotateElement(int eltid, int steps) {
   elt.setRotation(elt.rotation() + steps);
   QPoint dx1 = geom.centerOfPinMass(elt);
     elt.setPosition(elt.position() + dx0 - dx1);
-  d->circ.insert(elt);
-  d->aelts << eltid;
+  d->insert(elt);
   QSet<int> ee; ee << eltid;
   for (int c: d->circ.connectionsFrom(ee) + d->circ.connectionsTo(ee))
     reroute(c, c0);

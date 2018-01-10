@@ -16,6 +16,14 @@ public:
   void addElement(class Element const &);
   bool rotateElement(int eltid, int steps=1);
   /* Rotates the element by STEPS x 90 degrees ccw. True if successful. */
+  bool rotateElements(QSet<int> eltids, int steps=1);
+  /* Rotates the elements and their internal connections by STEPS x 90 degrees
+     ccw. True if successful. */
+  bool flipElement(int eltid);
+  /* Flips the element horizontally. True if successful. */
+  bool flipElements(QSet<int> eltids);
+  /* Flips the elements and their internal connections
+     horizontally. True if successful. */
   bool deleteElement(int eltid);
   /* Leaves connected lines dangling. Exception: if the deleted
      element is a junction with four connections, through-connections

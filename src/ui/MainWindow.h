@@ -34,6 +34,11 @@ public slots:
   void showLibrary();
   void showPartsList();
   void showVirtuals();
+  void rotateCCWAction();
+  void rotateCWAction();
+  void flipAction();
+  void exportCircuitAction();
+  void exportPartListAction();
 public:
   void load(QString filename);
   void create();

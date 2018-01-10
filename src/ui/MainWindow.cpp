@@ -128,6 +128,18 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::saveAsAction);
   menu->addAction(act);
 
+  act = new QAction(tr("&Export circuit…"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_X));
+  act->setStatusTip(tr("Export circuit as svg"));
+  connect(act, &QAction::triggered, this, &MainWindow::exportCircuitAction);
+  menu->addAction(act);
+
+  act = new QAction(tr("Export &parts list…"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
+  act->setStatusTip(tr("Export list of parts"));
+  connect(act, &QAction::triggered, this, &MainWindow::exportPartListAction);
+  menu->addAction(act);
+
   act = new QAction(tr("&Quit"), this);
   act->setShortcuts(QKeySequence::Quit);
   act->setStatusTip(tr("Quit the program"));
@@ -160,10 +172,28 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::undoAction);
   menu->addAction(act);
 
-  act = new QAction(tr("&Redo"), this);
+  act = new QAction(tr("Re&do"), this);
   act->setShortcuts(QKeySequence::Redo);
   act->setStatusTip(tr("Redo"));
   connect(act, &QAction::triggered, this, &MainWindow::redoAction);
+  menu->addAction(act);
+
+  act = new QAction(tr("Rotate &right"), this);
+  act->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_R));
+  act->setStatusTip(tr("Rotate clockwise"));
+  connect(act, &QAction::triggered, this, &MainWindow::rotateCWAction);
+  menu->addAction(act);
+
+  act = new QAction(tr("Rotate &left"), this);
+  act->setShortcut(QKeySequence(Qt::Key_R));
+  act->setStatusTip(tr("Rotate clockwise"));
+  connect(act, &QAction::triggered, this, &MainWindow::rotateCCWAction);
+  menu->addAction(act);
+
+  act = new QAction(tr("Flip"), this);
+  act->setShortcut(QKeySequence(Qt::Key_F));
+  act->setStatusTip(tr("Flip horizontally"));
+  connect(act, &QAction::triggered, this, &MainWindow::flipAction);
   menu->addAction(act);
 
   act = new QAction(tr("Remove &dangling connections"), this);
@@ -369,3 +399,22 @@ void MainWindow::resizeEvent(QResizeEvent *e) {
   d->partlistview->resetWidth();
 }
 
+void MainWindow::flipAction() {
+  d->scene->flipx();
+}
+
+void MainWindow::rotateCCWAction() {
+  d->scene->rotate(1);
+}
+
+void MainWindow::rotateCWAction() {
+  d->scene->rotate(-1);
+}
+
+void MainWindow::exportCircuitAction() {
+  qDebug() << "Export circuit NYI";
+}
+
+void MainWindow::exportPartListAction() {
+  qDebug() << "Export part list NYI";
+}

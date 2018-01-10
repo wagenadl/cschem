@@ -37,7 +37,8 @@ public:
   void removeDangling();
   void plonk(QString symbol, QPointF scenepos);
   void makeUndoStep();
-  ////  void rotate(int dir=1);
+  void rotate(int dir=1);
+  void flipx();
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;
