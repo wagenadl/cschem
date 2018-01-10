@@ -15,6 +15,11 @@ public:
     Port,
     Junction
   };
+  struct Info {
+    QString vendor;
+    QString partno;
+    QString notes;
+  };
 public:
   static Element junction(QPoint);
   static Element component(QString type, QPoint);
@@ -29,6 +34,7 @@ public:
 public:
   QPoint position() const;
   Type type() const;
+  Info info() const;
   bool isValid() const;
   QString tag() const; // "component"/"port"/"junction"
   QString subtype() const; // e.g., "passive:resistor"
@@ -47,6 +53,7 @@ public:
 public:
   void setPosition(QPoint);
   void setSubtype(QString);
+  void setInfo(Info const &);
   void setValue(QString);
   void setName(QString);
   void setValuePos(QPoint);
