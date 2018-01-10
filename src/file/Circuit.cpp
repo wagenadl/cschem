@@ -191,7 +191,7 @@ Connection const &Circuit::connection(int id) const {
   return it == d->connections.end() ? ne : *it;
 }
 
-int Circuit::renumber(int start) {
+int Circuit::renumber(int start, QMap<int, int> *mapout) {
   QMap<int, int> eltmap;
 
   QList<Element> elts = d->elements.values();
@@ -230,6 +230,10 @@ int Circuit::renumber(int start) {
       start++;
     }
   }
+
+  if (mapout)
+    *mapout = eltmap;
+  
   return start - 1;
 }
 

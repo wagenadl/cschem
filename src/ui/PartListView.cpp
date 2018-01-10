@@ -51,8 +51,10 @@ void PartListView::rebuild() {
   setSortingEnabled(false);
 
   for (Element const &elt: d->schem->circuit().elements()) {
-    if (!elt.name().isEmpty() && !elt.isVirtual()
-        && elt.type()==Element::Type::Component) {
+    QString name = elt.name();
+    bool secondary = name.contains(".") && !name.endsWith(".1");
+    if (elt.type()==Element::Type::Component
+        && !elt.name().isEmpty() && !secondary) {
       setRowCount(N + 1);
       setRowHeader(N, "");
       setText(N, 7, QString::number(elt.id()));
@@ -78,7 +80,9 @@ void PLVData::rebuildRow(int n, Element const &elt) {
     view->setText(n, 5, pkg.partno());
     view->setText(n, 6, pkg.package());
   }
-  view->setText(n, 0, elt.name());
+  QString name = elt.name();
+  name.replace(".1", "");   
+  view->setText(n, 0, name);
   view->item(n, 0)->setFlags(view->item(n, 0)->flags()
                        & ~(Qt::ItemIsEditable));
 }
@@ -94,7 +98,7 @@ void PartListView::internalChange(int n) {
   if (circ.elements().contains(id)) {
     QString val = text(n, 1);
     Element elt = circ.element(id);
-    if (elt.name().mid(1).toInt()>0) {
+    if (elt.name().mid(1).toDouble()>0) {
       if (elt.name().startsWith("R") && val.endsWith("."))
         val = val.left(val.size() - 1) + tr("Ω");
       else if (elt.name().startsWith("C") || elt.name().startsWith("L"))
@@ -119,7 +123,7 @@ void PartListView::internalChange(int n) {
         && pkg.isEmpty()) {
       // don't need a <package>
       Parts parts = d->schem->parts();
-      parts.packages().remove(id);
+      parts.removePackage(id);
       d->schem->setParts(parts);
     } else {
       Package package;
@@ -130,7 +134,8 @@ void PartListView::internalChange(int n) {
       package.setPartno(vendcat);
       package.setPackage(pkg);
       Parts parts = d->schem->parts();
-      parts.packages()[id] = package;
+      parts.insert(package);
+      qDebug() << "parts changed" << parts.packages().size() << id;
       d->schem->setParts(parts);
     }
   }

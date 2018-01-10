@@ -19,10 +19,13 @@ public:
   ~Parts();
 public:
   QMap<int, class Container> const &containers() const;
-  QMap<int, class Container> &containers();
   QMap<int, class Package> const &packages() const;
-  QMap<int, class Package> &packages();
   bool isEmpty() const;
+  void insert(Package const &);
+  void insert(Container const &);
+  void removePackage(int id);
+  void removeContainer(int id);
+  void renumber(QMap<int, int>);
 private:
   QSharedDataPointer<class PartsData> d;
 };

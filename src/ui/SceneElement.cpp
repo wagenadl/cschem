@@ -78,7 +78,7 @@ void SceneElementData::setNameText() {
     name->setHtml("<i>nn</i>");
     name->setDefaultTextColor(Style::faintColor());
   } else {
-    if (txt.mid(1).toInt()>0) 
+    if (txt.mid(1).toDouble()>0) 
       // letter+number
       name->setHtml("<i>" + txt.left(1) + "</i>"
 		    + "<sub>" + txt.mid(1) + "</sub>");
@@ -137,7 +137,7 @@ void SceneElementData::getValueText() {
   QString txt = value->toPlainText();
   if (txt == "value")
     txt = "";
-  if (elt.name().mid(1).toInt()>0) {
+  if (elt.name().mid(1).toDouble()>0) {
     if (elt.name().startsWith("R") && txt.endsWith("."))
       txt = txt.left(txt.size() - 1) + tr("Ω");
     else if (elt.name().startsWith("C") || elt.name().startsWith("L"))

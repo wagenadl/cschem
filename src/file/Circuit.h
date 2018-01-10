@@ -40,7 +40,7 @@ public:
   /* Translates entire circuit */
   int maxId() const;
   /* Returns the largest ID number in use in this circuit. */
-  int renumber(int start=1);
+  int renumber(int start=1, QMap<int, int> *mapout=0);
   /* Renumbers elements and connections to start at the given ID value.
      Returns the largest value assigned. Connections that refer to non-
      existent elements are made dangling or removed entirely if they

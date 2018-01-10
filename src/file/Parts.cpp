@@ -56,19 +56,30 @@ QMap<int, class Container> const &Parts::containers() const {
   return d->containers;
 }
 
-QMap<int, class Container> &Parts::containers() {
-  d.detach();
-  return d->containers;
-}
-
 QMap<int, class Package> const &Parts::packages() const {
   return d->packages;
 }
 
-QMap<int, class Package> &Parts::packages() {
+void Parts::insert(Package const &pkg) {
   d.detach();
-  return d->packages;
+  d->packages[pkg.id()] = pkg;
 }
+
+void Parts::insert(Container const &cnt) {
+  d.detach();
+  d->containers[cnt.id()] = cnt;
+}
+
+void Parts::removePackage(int id) {
+  d.detach();
+  d->packages.remove(id);
+}
+
+void Parts::removeContainer(int id) {
+  d.detach();
+  d->containers.remove(id);
+}
+
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Parts &c) {
   c = Parts(sr);
@@ -87,4 +98,32 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Parts const &c) {
 
 bool Parts::isEmpty() const {
   return containers().isEmpty() && packages().isEmpty();
+}
+
+void Parts::renumber(QMap<int, int> map) {
+  d.detach();
+  
+  QList<Container> cons;
+  for (auto const &c: containers())
+    cons << c;
+  
+  QList<Package> pkgs;
+  for (auto const &p: packages())
+    pkgs << p;
+
+  for (auto &c: cons) 
+    if (map.contains(c.id()))
+      c.setId(map[c.id()]);
+
+  for (auto &p: pkgs) 
+    if (map.contains(p.id()))
+      p.setId(map[p.id()]);
+
+  d->containers.clear();
+  d->packages.clear();
+
+  for (auto &c: cons)
+    d->containers[c.id()] = c;
+  for (auto &p: pkgs)
+    d->packages[p.id()] = p;
 }
