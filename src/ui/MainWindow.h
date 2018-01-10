@@ -47,6 +47,8 @@ private slots:
   void plonk(QString);
   void reactToSceneEdit();
   void reactToPartListEdit(int id);
+protected:
+  void resizeEvent(QResizeEvent *);
 private:
   class MWData *d;
 };

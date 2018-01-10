@@ -17,6 +17,7 @@ signals:
   void valueEdited(int id);
 public slots:
   void rebuild(); // call when parts are changed externally
+  void resetWidth();
 private slots:
   void internalChange(int r);
 private:

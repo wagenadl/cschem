@@ -279,9 +279,9 @@ bool Element::isVirtual() const {
 }
 
 Element::Info Element::info() const {
-  return d.info;
+  return d->info;
 }
 
-void Element::setinfo(Element::Info const &info) const {
-  d.info = info;
+void Element::setInfo(Element::Info const &info) {
+  d->info = info;
 }

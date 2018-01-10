@@ -69,8 +69,26 @@ void PartListView::rebuild() {
     }
   }
   setSortingEnabled(true);
-  resizeColumnsToContents();
+  resetWidth();
   d->rebuilding = false;
+}
+
+void PartListView::resetWidth() {
+  resizeColumnsToContents();
+  int w = 0;
+  for (int c=0; c<COL_ID; c++) 
+    w += columnWidth(c);
+
+  QWidget *p = parentWidget(); // that's the containing dock
+  if (p)
+    p = p->parentWidget(); // get to main window
+  if (p) {
+    int pw = p->width();
+    if (w>pw/3)
+      w = pw/3;
+  }
+
+  setMinimumWidth(w);
 }
 
 void PLVData::rebuildRow(int n, Element const &elt) {

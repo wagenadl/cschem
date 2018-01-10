@@ -363,3 +363,9 @@ void MainWindow::reactToSceneEdit() {
 void MainWindow::reactToPartListEdit(int id) {
   d->scene->setComponentValue(id, d->schem.circuit().element(id).value());
 }
+
+void MainWindow::resizeEvent(QResizeEvent *e) {
+  QMainWindow::resizeEvent(e);
+  d->partlistview->resetWidth();
+}
+
