@@ -39,7 +39,7 @@ public:
   void makeUndoStep();
   void rotate(int dir=1);
   void flipx();
-  void exportPdf(QString file);
+  void exportSvg(QString file);
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;
