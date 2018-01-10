@@ -414,15 +414,15 @@ void MainWindow::rotateCWAction() {
 void MainWindow::exportCircuitAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
-  QString fn = QFileDialog::getSaveFileName(0, tr("Export schematic as svg…"),
+  QString fn = QFileDialog::getSaveFileName(0, tr("Export schematic as pdf…"),
 					    d->lastdir,
-					    tr("Scalable vector graphics (*.svg)"));
+					    tr("Scalable vector graphics (*.pdf)"));
   if (fn.isEmpty())
     return;
   
-  if (!fn.endsWith(".svg"))
-    fn += ".svg";
-  d->scene->exportSvg(fn);
+  if (!fn.endsWith(".pdf"))
+    fn += ".pdf";
+  d->scene->exportPdf(fn);
 }
 
 void MainWindow::exportPartListAction() {

@@ -3,7 +3,7 @@
 TEMPLATE = app
 TARGET = cschem
 INCLUDEPATH += .
-QT += svg
+QT += svg printsupport
 DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }

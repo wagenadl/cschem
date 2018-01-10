@@ -12,7 +12,7 @@
 #include "Clipboard.h"
 #include <QMimeData>
 #include "SceneAnnotation.h"
-#include <QSvgGenerator>
+#include <QPrinter>
 #include <QPainter>
 
 class SceneData {
@@ -734,17 +734,19 @@ void Scene::flipx() {
   d->flipElementOrSelection();
 }
 
-void Scene::exportSvg(QString fn) {
-  QSvgGenerator generator;
-  generator.setFileName(fn);
+void Scene::exportPdf(QString fn) {
+  QPrinter printer(QPrinter::HighResolution);
+  printer.setOutputFormat(QPrinter::PdfFormat);
+  printer.setOutputFileName(fn);
   QRectF rr = itemsBoundingRect().adjusted(-10, -10, 10, 10);
-  QRectF rr0(QPointF(), rr.size());
-  generator.setSize(rr.size().toSize());
-  generator.setViewBox(rr0.toRect());
-  generator.setTitle(fn);
-  generator.setDescription(tr("Created by CSchem"));
+  double scale = printer.resolution() / 96;
+  //generator.setSize(rr.size().toSize());
+  //generator.setViewBox(rr0.toRect());
+  //generator.setTitle(fn);
+  //generator.setDescription(tr("Created by CSchem"));
+  printer.setPageSize(QPageSize(rr.size() * 72./96, QPageSize::Point));
   QPainter painter;
-  painter.begin(&generator);
-  render(&painter, rr0, rr);
+  painter.begin(&printer);
+  render(&painter, QRectF(QPointF(), rr.size()*scale), rr);
   painter.end();
 }
