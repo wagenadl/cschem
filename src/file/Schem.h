@@ -7,7 +7,7 @@
 #include <QSharedData>
 #include <QXmlStreamReader>
 #include "Circuit.h"
-//#include "Parts.h"
+#include "Parts.h"
 
 class Schem {
 public:
@@ -19,8 +19,8 @@ public:
 public:
   Circuit const &circuit() const;
   void setCircuit(Circuit const &);
-  //Parts const &parts() const;
-  //void setParts(Parts const &);
+  Parts const &parts() const;
+  void setParts(Parts const &);
   bool isEmpty() const;
   class PartLibrary const &library() const;
   void selectivelyUpdateLibrary(PartLibrary const &);

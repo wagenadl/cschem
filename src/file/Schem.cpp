@@ -9,7 +9,7 @@ public:
   SchemData() { }
 public:
   Circuit circuit;
-  //Parts parts;
+  Parts parts;
   PartLibrary library;
 };  
 
@@ -27,8 +27,8 @@ Schem::Schem(QXmlStreamReader &src): Schem() {
     if (src.isStartElement()) {
       if (src.name()=="circuit") {
         src >> d->circuit;
-      //} else if (src.name()=="parts") {
-      //  src >> d->parts;
+      } else if (src.name()=="parts") {
+        src >> d->parts;
       } else if (src.name()=="svg") {
         d->library.merge(src);
       } else {
@@ -62,14 +62,14 @@ void Schem::setCircuit(Circuit const &c) {
   d->circuit = c;
 }
 
-//Parts const &Schem::parts() const {
-//  return d->parts;
-//}
-//
-//void Schem::setParts(Parts const &p) {
-//  d.detach();
-//  d->parts = p;
-//}
+Parts const &Schem::parts() const {
+  return d->parts;
+}
+
+void Schem::setParts(Parts const &p) {
+  d.detach();
+  d->parts = p;
+}
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Schem &c) {
   c = Schem(sr);
@@ -80,7 +80,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Schem const &c) {
   sr.writeStartElement("cschem");
   sr.writeDefaultNamespace("http://www.danielwagenaar.net/cschem-ns.html");
   sr << c.circuit();
-  //sr << c.parts();
+  sr << c.parts();
   c.saveSvg(sr);
   sr.writeEndElement();
   return sr;
@@ -113,6 +113,6 @@ void Schem::saveSvg(QXmlStreamWriter &sr) const {
 }
 
 bool Schem::isEmpty() const {
-  return circuit().isEmpty(); // && parts().isEmpty();
+  return circuit().isEmpty() && parts().isEmpty();
 }
 

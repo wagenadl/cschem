@@ -19,7 +19,6 @@ public:
   QString name;
   int id;
   int rotation;
-  Element::Info info;
   QPoint valuePos;
   QPoint namePos;
   bool valueVis;
@@ -63,9 +62,6 @@ Element::Element(QXmlStreamReader &src): Element() {
   d->namePos = QPoint(a.value("namex").toInt(), a.value("namey").toInt());
   d->nameVis = a.value("namevis").toInt() > 0;
   d->rotation = a.value("rotation").toInt();
-  d->info.vendor = a.value("vendor").toString();
-  d->info.partno = a.value("partno").toString();
-  d->info.notes = a.value("notes").toString();
   src.skipCurrentElement();
 }
 
@@ -253,13 +249,6 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Element const &c) {
     sr.writeAttribute("namey", QString::number(c.namePos().y()));
     sr.writeAttribute("namevis", QString::number(c.isNameVisible() ? 1 : 0));
   }
-
-  if (!c.info().vendor.isEmpty())
-    sr.writeAttribute("vendor", c.info().vendor);
-  if (!c.info().partno.isEmpty())
-    sr.writeAttribute("partno", c.info().partno);
-  if (!c.info().notes.isEmpty())
-    sr.writeAttribute("notes", c.info().notes);
   
   if (c.rotation())
     sr.writeAttribute("rotation", QString::number(c.rotation()));
@@ -276,12 +265,4 @@ QString Element::report() const {
     
 bool Element::isVirtual() const {
   return symbol().split(":").contains("virtual");
-}
-
-Element::Info Element::info() const {
-  return d.info;
-}
-
-void Element::setinfo(Element::Info const &info) const {
-  d.info = info;
 }
