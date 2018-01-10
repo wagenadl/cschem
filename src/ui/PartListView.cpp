@@ -143,3 +143,19 @@ void PartListView::internalChange(int n) {
     }
   }
 }
+
+QList<QStringList> PartListView::partList() const {
+  QList<QStringList> res;
+  QStringList hdr;
+  hdr << "Part" << "Value" << "Vendor" << "Cat.#" << "Notes";
+  res << hdr;
+  int N = rowCount();
+  for (int n=0; n<N; n++) {
+    QStringList line;
+    line << text(n, COL_Part) << text(n, COL_Value)
+	 << text(n, COL_Vendor) << text(n, COL_Partno)
+	 << text(n, COL_Notes);
+    res << line;
+  }
+  return res;
+}

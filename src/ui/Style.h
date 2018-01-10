@@ -23,8 +23,7 @@ public:
   static double selectionRectRadius();
   static QString programName();
   static QString versionName();
-  static QFont nameFont();
-  static QFont valueFont();
+  static QFont annotationFont();
 };
 
 #endif

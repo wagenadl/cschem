@@ -22,11 +22,13 @@ public:
   QPointF bbOrigin() const; // position of first pin relative to TL of bbox
   bool isValid() const;
   QRectF svgBBox() const; // in original svg
+  QPointF svgOrigin() const; // position of first pin in svg
   QPointF shiftedPinPosition(QString pinname) const;
   // as if first pin were at (0,0)
   QRectF shiftedBBox() const; // bbox as if first pin were at (0,0)
   QByteArray toSvg() const;
-  static void writeNamespaces(QXmlStreamWriter &sr);
+  void writeSvg(QXmlStreamWriter &sw) const;
+  static void writeNamespaces(QXmlStreamWriter &sw);
 private:
   QSharedDataPointer<class PartData> d;
 };

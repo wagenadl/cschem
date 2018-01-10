@@ -12,8 +12,6 @@
 #include "Clipboard.h"
 #include <QMimeData>
 #include "SceneAnnotation.h"
-#include <QSvgGenerator>
-#include <QPainter>
 
 class SceneData {
 public:
@@ -734,17 +732,3 @@ void Scene::flipx() {
   d->flipElementOrSelection();
 }
 
-void Scene::exportSvg(QString fn) {
-  QSvgGenerator generator;
-  generator.setFileName(fn);
-  QRectF rr = itemsBoundingRect().adjusted(-10, -10, 10, 10);
-  QRectF rr0(QPointF(), rr.size());
-  generator.setSize(rr.size().toSize());
-  generator.setViewBox(rr0.toRect());
-  generator.setTitle(fn);
-  generator.setDescription(tr("Created by CSchem"));
-  QPainter painter;
-  painter.begin(&generator);
-  render(&painter, rr0, rr);
-  painter.end();
-}

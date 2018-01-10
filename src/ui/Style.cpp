@@ -64,11 +64,7 @@ QString Style::versionName() {
   return "1.0.0";
 }
 
-QFont Style::nameFont() {
-  return QFont("Lato", 8);
-}
-
-QFont Style::valueFont() {
+QFont Style::annotationFont() {
   return QFont("Lato", 8);
 }
 

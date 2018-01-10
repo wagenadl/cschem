@@ -4,7 +4,7 @@
 
 #define SCENEANNOTATION_H
 
-#include  <QGraphicsTextItem>
+#include <QGraphicsTextItem>
 
 class SceneAnnotation: public QGraphicsTextItem {
   Q_OBJECT;
@@ -15,6 +15,7 @@ public:
   SceneAnnotation &operator=(SceneAnnotation const &) = delete;
 public:
   void backspace();
+  void setBaseline(QPointF);
 signals:
   void returnPressed();
   void escapePressed();

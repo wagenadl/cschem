@@ -13,6 +13,7 @@ public:
   ~PartListView();
   PartListView(PartListView const &) = delete;
   PartListView &operator=(PartListView const &) = delete;
+  QList<QStringList> partList() const;
 signals:
   void valueEdited(int id);
 public slots:

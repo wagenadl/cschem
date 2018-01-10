@@ -31,5 +31,7 @@ HEADERS += ui/SceneAnnotation.h   ui/SceneElementData.h
 SOURCES += ui/SceneAnnotation.cpp
 HEADERS += ui/PartListView.h   ui/SignalAccumulator.h   ui/TextTable.h
 SOURCES += ui/PartListView.cpp ui/SignalAccumulator.cpp ui/TextTable.cpp
+HEADERS += svg/Exporter.h
+SOURCES += svg/Exporter.cpp
 SOURCES += cschem.cpp	
 RESOURCES += cschem.qrc

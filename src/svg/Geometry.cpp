@@ -5,6 +5,7 @@
 #include "file/Circuit.h"
 #include "svg/PartLibrary.h"
 #include <QDebug>
+#include  <QTransform>
 #include <QMap>
 
 class OrderedPoint: public QPoint {
@@ -82,6 +83,34 @@ QPoint Geometry::pinPosition(Element const &elt, QString pin) const {
 
 QPoint GeometryData::pinPosition(int eltid, QString pin) const {
   return pinPosition(circ.element(eltid), pin);
+}
+
+QRect Geometry::boundingRect(int elt) const {
+  return boundingRect(d->circ.element(elt));
+}
+
+QRect Geometry::boundingRect(Element const &elt) const {
+  Part const &prt(d->lib->part(elt.symbol()));
+  QRectF bb = prt.shiftedBBox();
+  qDebug() << "br" << elt.symbol() << bb;
+  QTransform xf;
+  xf.translate(elt.position().x(), elt.position().y());
+  double s = d->lib->scale();
+  xf.scale(1/s, 1/s);
+  xf.rotate(-elt.rotation()*90);
+  if (elt.isFlipped())
+    xf.scale(-1, 1);
+  bb = xf.mapRect(bb);
+  bb.adjust(-0.5, -0.5, 0.5, 0.5);
+  qDebug() << "=>" << bb;
+  return bb.toRect();
+}
+
+QRect Geometry::boundingRect() const {
+  QRect r;
+  for (Element const &elt: d->circ.elements())
+    r |= boundingRect(elt);
+  return r;
 }
 
 QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {

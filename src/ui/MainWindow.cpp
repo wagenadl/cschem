@@ -19,6 +19,7 @@
 #include <QDockWidget>
 #include "LibView.h"
 #include "SignalAccumulator.h"
+#include "svg/Exporter.h"
 
 class MWData {
 public:
@@ -412,19 +413,54 @@ void MainWindow::rotateCWAction() {
 }
 
 void MainWindow::exportCircuitAction() {
+  d->schem.setCircuit(d->scene->circuit());
+  
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
-  QString fn = QFileDialog::getSaveFileName(0, tr("Export schematic as svg…"),
-					    d->lastdir,
-					    tr("Scalable vector graphics (*.svg)"));
+  
+  QString fn
+    = QFileDialog::getSaveFileName(0, tr("Export schematic as svg…"),
+				   d->lastdir,
+				   tr("Scalable vector graphics (*.svg)"));
   if (fn.isEmpty())
     return;
   
   if (!fn.endsWith(".svg"))
     fn += ".svg";
-  d->scene->exportSvg(fn);
+  Exporter xp(d->schem.circuit(),&d->lib);
+  if (!xp.exportSvg(fn)) {
+    qDebug() << "Failed to export svg";
+    // should show error box
+  }
 }
 
 void MainWindow::exportPartListAction() {
-  qDebug() << "Export part list NYI";
+  if (d->lastdir.isEmpty())
+    d->lastdir = QDir::home().absoluteFilePath("Desktop");
+  
+  QString fn
+    = QFileDialog::getSaveFileName(0, tr("Export parts list as csv…"),
+				   d->lastdir,
+				   tr("Comma-separated value file (*.csv)"));
+  if (fn.isEmpty())
+    return;
+  
+  if (!fn.endsWith(".csv"))
+    fn += ".csv";
+
+  QFile file(fn);
+  if (file.open(QFile::WriteOnly)) {
+    QTextStream ts(&file);
+    for (QStringList  line: d->partlistview->partList()) {
+      for (QString &str: line) {
+	str.replace("\"", tr("”"));
+	str = "\"" + str + "\"";
+      }
+      ts << line.join(",");
+      ts << "\n";
+    }
+  } else {
+    qDebug() << "Failed to export part list";
+    // should show error box
+  }
 }

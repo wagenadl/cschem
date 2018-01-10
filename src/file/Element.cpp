@@ -65,7 +65,7 @@ Element::Element(QXmlStreamReader &src): Element() {
   d->namePos = QPoint(a.value("namex").toInt(), a.value("namey").toInt());
   d->nameVis = a.value("namevis").toInt() > 0;
   d->rotation = a.value("rotation").toInt();
-  d->flip = a.value("rotation").toInt() ? true : false;
+  d->flip = a.value("flip").toInt() ? true : false;
   d->info.vendor = a.value("vendor").toString();
   d->info.partno = a.value("partno").toString();
   d->info.notes = a.value("notes").toString();

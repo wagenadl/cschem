@@ -26,6 +26,10 @@ public:
   bool isZeroLength(int con) const;
   bool isZeroLength(class Connection const &con) const;
   /* Invalid connections are zero length by definition. */
+  QRect boundingRect(int elt) const;
+  QRect boundingRect(class Element const &elt) const;
+  QRect boundingRect() const; // for whole circuit
+  /* boundingRect is naive about annotations */
   struct Intersection {
     Intersection(int n=-1, QPoint d=QPoint()):
       pointnumber(n), delta(d) {

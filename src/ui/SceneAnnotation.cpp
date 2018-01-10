@@ -4,6 +4,10 @@
 #include <QKeyEvent>
 #include <QGraphicsSceneMouseEvent>
 #include "Style.h"
+#include <QTextDocument>
+#include <QTextBlock>
+#include <QTextLayout>
+#include <QDebug>
 
 class SAData {
 public:
@@ -22,7 +26,7 @@ public:
 
 SceneAnnotation::SceneAnnotation(double movestep, QGraphicsItem *parent):
   QGraphicsTextItem(parent), d(new SAData(movestep)) {
-  setFont(Style::nameFont());
+  setFont(Style::annotationFont());
   setTextInteractionFlags(Qt::TextEditorInteraction);
   setFlags(ItemIsFocusable);
 }
@@ -92,4 +96,13 @@ void SceneAnnotation::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 
 void SceneAnnotation::backspace() {
   emit removalRequested();
+}
+
+void SceneAnnotation::setBaseline(QPointF p) {
+  QTextLayout *lay = document()->firstBlock().layout();
+  QPointF p0 = lay->position();
+  QTextLine line = lay->lineAt(0);
+  QPointF p1 = line.position();
+  setPos(p - p0 - p1 - QPointF(0, line.ascent()));
+  qDebug() << "SA: " << pos() << p << p0 << p1;
 }

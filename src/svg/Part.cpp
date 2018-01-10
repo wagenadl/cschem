@@ -9,6 +9,7 @@ public:
   PartData(): valid(false) { }
   void newshift();
   void ensureBBox();
+  void writeSvg(QXmlStreamWriter &sw, bool withpins) const;
   QByteArray toSvg(bool withbbox, bool withpins) const;
   void scanPins(XmlElement const &elt);
 public:
@@ -23,6 +24,10 @@ public:
   QMap<QString, QString> pinIds;
   QString originId;
 };
+
+QPointF Part::svgOrigin() const {
+  return d->pins[d->originId];
+}
 
 void PartData::newshift() {
   QStringList pp = pinIds.keys();
@@ -46,42 +51,46 @@ void Part::writeNamespaces(QXmlStreamWriter &sr) {
   sr.writeNamespace("http://www.inkscape.org/namespaces/inkscape", "inkscape");
 }
 
+void PartData::writeSvg(QXmlStreamWriter &sw, bool withpins) const {
+  elt.writeStartElement(sw);
+  for (auto &c: elt.children()) {
+    if (!withpins && c.type()==XmlNode::Type::Element
+	&& c.element().attributes().value("inkscape:label")
+	.startsWith("pin")) {
+      // skip
+    } else {
+      c.write(sw);
+    }
+  }
+  elt.writeEndElement(sw);
+}
+
 QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
   QByteArray res;
   {
-    QXmlStreamWriter sr(&res);
-    sr.writeStartDocument("1.0", false);
-    sr.writeStartElement("svg");
-    Part::writeNamespaces(sr);
+    QXmlStreamWriter sw(&res);
+    sw.writeStartDocument("1.0", false);
+    sw.writeStartElement("svg");
+    Part::writeNamespaces(sw);
     
     if (withbbox) {
-      sr.writeAttribute("width", QString("%1").arg(bbox.width()));
-      sr.writeAttribute("height", QString("%1").arg(bbox.height()));
-      sr.writeAttribute("viewBox", QString("0 0 %1 %2")
-                        .arg(bbox.width()).arg(bbox.height()));
+      sw.writeAttribute("width", QString("%1").arg(bbox.width()));
+      sw.writeAttribute("height", QString("%1").arg(bbox.height()));
+      sw.writeAttribute("viewBox", QString("0 0 %1 %2")
+			.arg(bbox.width()).arg(bbox.height()));
+      sw.writeStartElement("g");
+      sw.writeAttribute("transform",
+			QString("translate(%1,%2)").
+			arg(-bbox.left()).arg(-bbox.top()));
+    } else {
+      sw.writeStartElement("g");
     }
     
-    sr.writeStartElement("g");
-    if (withbbox) 
-      sr.writeAttribute("transform",
-                        QString("translate(%1,%2)").
-                        arg(-bbox.left()).arg(-bbox.top()));
+    writeSvg(sw, withpins);
     
-    elt.writeStartElement(sr);
-    for (auto &c: elt.children()) {
-      if (!withpins && c.type()==XmlNode::Type::Element
-          && c.element().attributes().value("inkscape:label")
-          .startsWith("pin")) {
-        // skip
-      } else {
-        c.write(sr);
-      }
-    }
-    elt.writeEndElement(sr);
-    
-    sr.writeEndElement(); // g [transform]
-    sr.writeEndElement(); // svg
-    sr.writeEndDocument();
+    sw.writeEndElement(); // g [transform]
+    sw.writeEndElement(); // svg
+    sw.writeEndDocument();
   }
   return res;
 }
@@ -167,6 +176,9 @@ QPointF Part::bbPinPosition(QString pinname) const {
 }
 
 XmlElement const &Part::element() const {
+  if (!isValid()) {
+    qDebug() << "Caution: element() requested on invalid part";
+  }
   return d->elt;
 }
 
@@ -184,4 +196,8 @@ QRectF Part::svgBBox() const {
 
 QByteArray Part::toSvg() const {
   return d->toSvg(true, false);
+}
+
+void Part::writeSvg(QXmlStreamWriter &sw) const {
+  d->writeSvg(sw, false);
 }

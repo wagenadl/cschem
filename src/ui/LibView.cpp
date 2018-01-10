@@ -91,7 +91,9 @@ void LibView::rebuild(class PartLibrary const *lib) {
   d->items.clear();
 
   QStringList parts = lib->partNames();
-  std::sort(parts.begin(), parts.end());
+  std::sort(parts.begin(), parts.end(),
+	    [](QString a, QString b) { return a.toLower() < b.toLower(); });
+  qDebug() << "partnames" << parts;
   for (QString s: parts) 
     if (s.startsWith("port:") || s.startsWith("part:"))
       d->addPart(lib, s);

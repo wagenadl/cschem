@@ -191,10 +191,14 @@ SceneElement::~SceneElement() {
 
 void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
   Element elt = d->scene->circuit().element(d->id);
-  elt.setNameVisible(true);
-  elt.setValueVisible(true);
-  d->scene->circuit().insert(elt);
-  rebuild();
+  if (elt.type() == Element::Type::Component
+      || elt.type() == Element::Type::Port) {
+    elt.setNameVisible(true);
+    if (elt.type() == Element::Type::Component)
+      elt.setValueVisible(true);
+    d->scene->circuit().insert(elt);
+    rebuild();
+  }
 }
 
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
@@ -249,6 +253,14 @@ void SceneElement::rebuild() {
 
   setPos(lib->scale() * circ.element(d->id).position());
 
+  // origin for labels
+  QPointF p0 = part.shiftedBBox().center();
+  xf = QTransform();
+  xf.rotate(circ.element(d->id).rotation()*-90);
+  if (circ.element(d->id).isFlipped())
+    xf.scale(-1, 1);
+  p0 = xf.map(p0);
+  
   // Reconstruct name
   Element elt(circ.element(d->id));
   if (elt.isNameVisible()) {
@@ -272,7 +284,7 @@ void SceneElement::rebuild() {
       elt.setNamePos(p);
       d->scene->circuit().insert(elt);
     }
-    d->name->setPos(p);
+    d->name->setBaseline(p + p0);
     d->setNameText();
     if (elt.name().isEmpty()) {
       d->getNameText(); // automated magic
@@ -281,7 +293,6 @@ void SceneElement::rebuild() {
   } else if (d->name) {
     d->name->hide();
   }
-
   
   // Reconstruct value
   if (elt.isValueVisible()) {
@@ -304,7 +315,7 @@ void SceneElement::rebuild() {
       elt.setValuePos(p);
       d->scene->circuit().insert(elt);
     }
-    d->value->setPos(p);
+    d->value->setBaseline(p + p0);
     d->setValueText();
   } else if (d->value) {
     d->value->hide();
