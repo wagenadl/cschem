@@ -266,7 +266,7 @@ void MainWindow::create() {
   d->filename = "";
 
   connect(d->scene, &Scene::annotationEdited,
-          d->partlistview, &PartListView::rebuildOne);
+          this, &MainWindow::reactToSceneEdit);
 }
 
 void MainWindow::load(QString fn) {
@@ -345,4 +345,10 @@ void MainWindow::removeDanglingAction() {
 void MainWindow::plonk(QString sym) {
   d->scene->plonk(sym, d->view->mapToScene(QPoint(d->view->width()/2,
                                                   d->view->height()/2)));
+}
+
+void MainWindow::reactToSceneEdit() {
+  d->schem.setCircuit(d->scene->circuit());
+  if (d->partlistview->isVisible())
+    d->partlistview->rebuild();
 }

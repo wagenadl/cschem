@@ -45,6 +45,7 @@ private:
   void createDocks();
 private slots:
   void plonk(QString);
+  void reactToSceneEdit();
 private:
   class MWData *d;
 };

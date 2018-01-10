@@ -138,6 +138,9 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
       elts.remove(id);
     }
   }
+
+  if (!eltids.isEmpty())
+    scene->annotationInternallyEdited(-1); // crude
   
   hovermanager->update();
 }
