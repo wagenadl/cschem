@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <cschem xmlns="http://www.danielwagenaar.net/qschem-ns.html">
   <circuit>
-    <component id="1" x="10" y="15" type="passive:resistor" value="10 kΩ" name="R1" namevis="1" namex="20" namey="5" valvis="1" valx="-5" valy="30"/>
+    <component id="1" x="10" y="15" type="passive:resistor" value="10 kΩ" name="R1" namevis="1" namex="-7" namey="-14" valvis="1" valx="-28" valy="28"/>
     <component id="2" x="25" y="24" type="passive:capacitor:polarized" value="100n" name="C1"/>
     <component id="3" x="2" y="20" type="connector:bnc:in" name="J1" value="Input"/>
     <port id="4" x="25" y="27" type="ground" name="Vee"/>
-    <component id="5" x="35" y="20" type="connector:bnc:out" name="J2" value="Output"/>
+    <component id="5" x="35" y="20" type="connector:bnc:in" flip="1" name="J2" value="Output"/>
     <junction id="6" x="25" y="15"/>
     <junction id="7" x="25" y="25"/>
     <connection id="8" from="1:2" to="6:"/>
