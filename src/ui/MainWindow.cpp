@@ -412,7 +412,17 @@ void MainWindow::rotateCWAction() {
 }
 
 void MainWindow::exportCircuitAction() {
-  qDebug() << "Export circuit NYI";
+  if (d->lastdir.isEmpty())
+    d->lastdir = QDir::home().absoluteFilePath("Desktop");
+  QString fn = QFileDialog::getSaveFileName(0, tr("Export schematic as svg…"),
+					    d->lastdir,
+					    tr("Scalable vector graphics (*.svg)"));
+  if (fn.isEmpty())
+    return;
+  
+  if (!fn.endsWith(".svg"))
+    fn += ".svg";
+  d->scene->exportSvg(fn);
 }
 
 void MainWindow::exportPartListAction() {
