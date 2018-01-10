@@ -289,11 +289,7 @@ void MainWindow::load(QString fn) {
 
 void MainWindow::saveAs(QString fn) {
   Circuit circ(d->scene->circuit());
-  Parts parts(d->schem.parts());
-  QMap<int, int> map;
-  circ.renumber(1, &map);
-  parts.renumber(map);
-  d->schem.setParts(parts);
+  circ.renumber(1);
   d->schem.setCircuit(circ);
   d->schem.selectivelyUpdateLibrary(d->lib);
   FileIO::saveSchematic(fn, d->schem);
