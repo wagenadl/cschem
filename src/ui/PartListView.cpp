@@ -10,16 +10,6 @@
 
 #include <QDebug>
 
-enum Columns {
-  COL_Part = 0,
-  COL_Value,
-  COL_Vendor,
-  COL_Partno,
-  COL_Notes,
-  COL_ID,
-  COL_N
-};
-
 class PLVData {
 public:
   PLVData(PartListView *view, Schem *schem):
@@ -35,13 +25,15 @@ public:
 
 PartListView::PartListView(Schem *schem, QWidget *parent):
   TextTable(parent), d(new PLVData(this, schem)) {
-  setColumnCount(COL_N);
-  setColumnHeader(COL_Part, "Part");
-  setColumnHeader(COL_Value, "Value");
-  setColumnHeader(COL_Vendor, "Vendor");
-  setColumnHeader(COL_Partno, "Cat #");
-  setColumnHeader(COL_Notes, "Notes");
-  setColumnHidden(COL_ID, true);
+  setColumnCount(8);
+  setColumnHeader(0, "Part");
+  setColumnHeader(1, "Value");
+  setColumnHeader(2, "Mfg.");
+  setColumnHeader(3, "Cat #");
+  setColumnHeader(4, "Vendor");
+  setColumnHeader(5, "Cat #");
+  setColumnHeader(6, "Package");
+  setColumnHidden(7, true);
   sortByColumn(0, Qt::AscendingOrder);
   connect(this, &PartListView::cellChanged,
           this, &PartListView::internalChange);
@@ -65,7 +57,7 @@ void PartListView::rebuild() {
         && !elt.name().isEmpty() && !secondary) {
       setRowCount(N + 1);
       setRowHeader(N, "");
-      setText(N, COL_ID, QString::number(elt.id()));
+      setText(N, 7, QString::number(elt.id()));
       d->rebuildRow(N, elt);
       N ++;
     }
@@ -79,16 +71,18 @@ void PLVData::rebuildRow(int n, Element const &elt) {
   qDebug() << "rebuildrow" << n << elt.report();
   auto const &pkgs = schem->parts().packages();
   
-  view->setText(n, COL_Value, elt.value());
+  view->setText(n, 1, elt.value());
   if (pkgs.contains(elt.id())) {
     Package const &pkg(pkgs[elt.id()]);
-    view->setText(n, COL_Vendor, pkg.vendor());
-    view->setText(n, COL_Partno, pkg.partno());
-    view->setText(n, COL_Notes, pkg.notes());
+    view->setText(n, 2, pkg.manufacturer());
+    view->setText(n, 3, pkg.mfgPart());
+    view->setText(n, 4, pkg.vendor());
+    view->setText(n, 5, pkg.partno());
+    view->setText(n, 6, pkg.package());
   }
   QString name = elt.name();
   name.replace(".1", "");   
-  view->setText(n, COL_Part, name);
+  view->setText(n, 0, name);
   view->item(n, 0)->setFlags(view->item(n, 0)->flags()
                        & ~(Qt::ItemIsEditable));
 }
@@ -100,9 +94,9 @@ void PartListView::internalChange(int n) {
   qDebug() << "PLV: internalchange" << n;
   
   Circuit circ(d->schem->circuit());
-  int id = text(n, COL_ID).toInt();
+  int id = text(n, 7).toInt();
   if (circ.elements().contains(id)) {
-    QString val = text(n, COL_Value);
+    QString val = text(n, 1);
     Element elt = circ.element(id);
     if (elt.name().mid(1).toDouble()>0) {
       if (elt.name().startsWith("R") && val.endsWith("."))
@@ -118,12 +112,15 @@ void PartListView::internalChange(int n) {
       emit valueEdited(id);
     }
 
-    QString vend = text(n, COL_Vendor);
-    QString vendcat = text(n, COL_Partno);
-    QString notes = text(n, COL_Notes);
+    QString mfg = text(n, 2);
+    QString mfgcat = text(n, 3);
+    QString vend = text(n, 4);
+    QString vendcat = text(n, 5);
+    QString pkg = text(n, 6);
     
-    if (vend.isEmpty() && vendcat.isEmpty()
-        && notes.isEmpty()) {
+    if (mfg.isEmpty() && mfgcat.isEmpty()
+        && vend.isEmpty() && vendcat.isEmpty()
+        && pkg.isEmpty()) {
       // don't need a <package>
       Parts parts = d->schem->parts();
       parts.removePackage(id);
@@ -131,9 +128,11 @@ void PartListView::internalChange(int n) {
     } else {
       Package package;
       package.setId(id);
+      package.setManufacturer(mfg);
+      package.setMfgPart(mfgcat);
       package.setVendor(vend);
       package.setPartno(vendcat);
-      package.setNotes(notes);
+      package.setPackage(pkg);
       Parts parts = d->schem->parts();
       parts.insert(package);
       qDebug() << "parts changed" << parts.packages().size() << id;

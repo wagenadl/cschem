@@ -16,7 +16,6 @@ public:
   ~Package();
 public:
   int id() const;
-  QString notes() const;
   QString package() const;
   QString vendor() const;
   QString partno() const;
@@ -24,7 +23,6 @@ public:
   QString manufacturer() const;
 public:
   void setId(int);
-  void setNotes(QString);
   void setPackage(QString);
   void setVendor(QString);
   void setPartno(QString);
