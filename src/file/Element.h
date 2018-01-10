@@ -39,6 +39,8 @@ public:
   QPoint namePos() const;
   bool isValueVisible() const;
   bool isNameVisible() const;
+  bool isVirtual() const; // an element is virtual if it
+  // has "virtual" in its symbol name
   int id() const;
   int rotation() const;
   Element translated(QPoint delta) const;

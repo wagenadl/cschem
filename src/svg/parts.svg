@@ -7008,7 +7008,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g7859"
-     inkscape:label="part:opamp">
+     inkscape:label="part:ic:virtual:opamp">
     <g
        transform="translate(-14,593.58335)"
        id="g5872">
@@ -7439,7 +7439,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g2482"
-     inkscape:label="part:logic:not">
+     inkscape:label="part:logic:virtual:not">
     <g
        transform="translate(0,453.58335)"
        id="g3204">
@@ -7619,7 +7619,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g2725"
-     inkscape:label="part:logic:and">
+     inkscape:label="part:logic:virtual:and">
     <g
        transform="translate(-14,264.58335)"
        id="g3993">
@@ -7668,7 +7668,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g2754"
-     inkscape:label="part:logic:nand">
+     inkscape:label="part:logic:virtual:nand">
     <g
        transform="translate(14,369.58335)"
        id="g1831">
@@ -7723,7 +7723,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g2782"
-     inkscape:label="part:logic:or">
+     inkscape:label="part:logic:virtual:or">
     <g
        transform="translate(0,369.58335)"
        id="g4174">
@@ -7772,7 +7772,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g2811"
-     inkscape:label="part:logic:nor">
+     inkscape:label="part:logic:virtual:nor">
     <g
        transform="translate(14,369.58335)"
        id="g1859">
@@ -7991,7 +7991,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g2642"
-     inkscape:label="part:logic:xor">
+     inkscape:label="part:logic:virtual:xor">
     <g
        transform="translate(14,369.58335)"
        id="g1046">
@@ -8046,7 +8046,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   <g
      id="g2690">
     <title
-       id="title2692">part:logic:nxor</title>
+       id="title2692">part:logic:virtual:nxor</title>
     <g
        transform="translate(0,453.58335)"
        id="g3198">

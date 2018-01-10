@@ -32,6 +32,8 @@ public slots:
   void redoAction();
   void removeDanglingAction();
   void showLibrary();
+  void showPartsList();
+  void showVirtuals();
 public:
   void load(QString filename);
   void create();

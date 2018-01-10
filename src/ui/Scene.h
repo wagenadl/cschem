@@ -10,6 +10,7 @@
 #include "svg/PartLibrary.h"
 
 class Scene: public QGraphicsScene {
+  Q_OBJECT;
 public:
   Scene(PartLibrary const *lib, QObject *parent=0);
   ~Scene();
@@ -48,6 +49,11 @@ protected:
   void dropEvent(QGraphicsSceneDragDropEvent *) override;
   void focusInEvent(QFocusEvent *) override;
   void focusOutEvent(QFocusEvent *) override;
+public:
+  void annotationInternallyEdited(int id);
+  void annotationExternallyEdited(int id);
+signals:
+  void annotationEdited(int id);
 private:
   class SceneData *d;
 };

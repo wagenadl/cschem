@@ -656,3 +656,15 @@ void Scene::focusOutEvent(QFocusEvent *e) {
   qDebug() << "Scene::focusout";
   QGraphicsScene::focusOutEvent(e);
 }
+
+void Scene::annotationInternallyEdited(int id) {
+  qDebug() <<"internally edited" << id;
+  emit annotationEdited(id);
+}
+
+void Scene::annotationExternallyEdited(int id) {
+  qDebug() <<"externally edited" << id;
+  if (d->elts.contains(id))
+    d->elts[id]->rebuild();
+}
+

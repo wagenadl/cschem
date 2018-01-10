@@ -15,6 +15,7 @@
 #include "Style.h"
 #include <QMessageBox>
 #include "LibView.h"
+#include "PartListView.h"
 #include <QDockWidget>
 #include "LibView.h"
 
@@ -23,17 +24,20 @@ public:
   MWData():
     view(0),
     scene(0),
-    libview(0), libviewdock(0) {
+    libview(0), libviewdock(0),
+    partlistview(0), partlistviewdock(0) {
   }
 public:
   PartLibrary lib;
   QGraphicsView *view;
   Scene *scene;
-  LibView *libview;
   Schem schem;
   QString filename;
   static QString lastdir;
+  LibView *libview;
   QDockWidget *libviewdock;
+  PartListView *partlistview;
+  QDockWidget *partlistviewdock;
 };
 
 QString MWData::lastdir;
@@ -58,11 +62,25 @@ void MainWindow::createDocks() {
   d->libviewdock = new QDockWidget("Library", this);
   d->libviewdock->setWidget(d->libview);
   showLibrary();
+
+  d->partlistview = new PartListView(&d->schem);
+  d->partlistviewdock = new QDockWidget("Part list", this);
+  d->partlistviewdock->setWidget(d->partlistview);
+  showPartsList();
 }
 
 void MainWindow::showLibrary() {
   addDockWidget(Qt::LeftDockWidgetArea, d->libviewdock);
   d->libviewdock->show();
+}
+
+
+void MainWindow::showPartsList() {
+  addDockWidget(Qt::RightDockWidgetArea, d->partlistviewdock);
+  d->partlistviewdock->show();
+}
+
+void MainWindow::showVirtuals() {
 }
 
 void MainWindow::createView() {
@@ -166,6 +184,12 @@ void MainWindow::createActions() {
   act->setStatusTip(tr("Show library pane"));
   connect(act, &QAction::triggered, this, &MainWindow::showLibrary);
   menu->addAction(act);
+
+
+  act = new QAction(tr("&Parts List"), this);
+  act->setStatusTip(tr("Show parts list"));
+  connect(act, &QAction::triggered, this, &MainWindow::showPartsList);
+  menu->addAction(act);
   
   menuBar()->addSeparator();
   menu = menuBar()->addMenu(tr("&Help"));
@@ -240,6 +264,9 @@ void MainWindow::create() {
   d->view->setScene(d->scene);
   setWindowTitle(Style::programName());
   d->filename = "";
+
+  connect(d->scene, &Scene::annotationEdited,
+          d->partlistview, &PartListView::rebuildOne);
 }
 
 void MainWindow::load(QString fn) {
@@ -248,6 +275,7 @@ void MainWindow::load(QString fn) {
   for (QString name: d->schem.library().partNames())
     d->lib.insert(d->schem.library().part(name));
   d->scene->setCircuit(d->schem.circuit());
+  d->partlistview->rebuild();
   setWindowTitle(fn);
   d->filename = fn;
 }

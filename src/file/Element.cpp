@@ -9,8 +9,8 @@ public:
   ElementData(): type(Element::Type::Invalid),
                  id(IDFactory::instance().newId()),
                  rotation(0),
-		 nameVis(false),
-		 valueVis(false) { }
+		 valueVis(false),
+                 nameVis(false) { }
 public:
   Element::Type type;
   QPoint position;
@@ -263,3 +263,6 @@ QString Element::report() const {
     .arg(value()).arg(name());
 }
     
+bool Element::isVirtual() const {
+  return symbol().split(":").contains("virtual");
+}

@@ -112,6 +112,7 @@ void SceneElementData::getNameText() {
   }
   qDebug() << "==>" << scene->circuit().element(id).name();
   setNameText();
+  scene->annotationInternallyEdited(elt.id());
 }
 
 void SceneElementData::setValueText() {
@@ -142,6 +143,7 @@ void SceneElementData::getValueText() {
   elt.setValue(txt);
   circ.insert(elt);
   setValueText();
+  scene->annotationInternallyEdited(elt.id());
 }
 
 SceneElement::SceneElement(class Scene *parent, Element const &elt):

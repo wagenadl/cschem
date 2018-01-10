@@ -29,5 +29,7 @@ HEADERS += ui/MainWindow.h   ui/Clipboard.h   ui/LibView.h
 SOURCES += ui/MainWindow.cpp ui/Clipboard.cpp ui/LibView.cpp
 HEADERS += ui/SceneAnnotation.h   ui/SceneElementData.h
 SOURCES += ui/SceneAnnotation.cpp
+HEADERS += ui/PartListView.h
+SOURCES += ui/PartListView.cpp
 SOURCES += cschem.cpp	
 RESOURCES += cschem.qrc
