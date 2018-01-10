@@ -1,19 +1,19 @@
-// Package.h
+// Partinfo.h
 
-#ifndef PACKAGE_H
+#ifndef PARTINFO_H
 
-#define PACKAGE_H
+#define PARTINFO_H
 
 #include <QSharedData>
 #include <QXmlStreamReader>
 
-class Package {
+class PartInfo {
 public:
-  Package();
-  Package(Package const &);
-  Package(QXmlStreamReader &src);
-  Package &operator=(Package const &);
-  ~Package();
+  PartInfo();
+  PartInfo(PartInfo const &);
+  PartInfo(QXmlStreamReader &src);
+  PartInfo &operator=(PartInfo const &);
+  ~PartInfo();
 public:
   int id() const;
   QString notes() const;
@@ -31,11 +31,11 @@ public:
   void setMfgPart(QString);
   void setManufacturer(QString);
 private:
-  QSharedDataPointer<class PackageData> d;
+  QSharedDataPointer<class PartInfoData> d;
 };
 
-QXmlStreamWriter &operator<<(QXmlStreamWriter &, Package const &);
-QXmlStreamReader &operator>>(QXmlStreamReader &, Package &);
+QXmlStreamWriter &operator<<(QXmlStreamWriter &, PartInfo const &);
+QXmlStreamReader &operator>>(QXmlStreamReader &, PartInfo &);
 
 
 #endif

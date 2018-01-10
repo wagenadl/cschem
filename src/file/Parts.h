@@ -7,7 +7,7 @@
 #include <QSharedData>
 #include <QXmlStreamReader>
 #include "Container.h"
-#include "Package.h"
+#include "PartInfo.h"
 #include <QMap>
 
 class Parts {
@@ -19,11 +19,11 @@ public:
   ~Parts();
 public:
   QMap<int, class Container> const &containers() const;
-  QMap<int, class Package> const &packages() const;
+  QMap<int, class PartInfo> const &infos() const;
   bool isEmpty() const;
-  void insert(Package const &);
+  void insert(PartInfo const &);
   void insert(Container const &);
-  void removePackage(int id);
+  void removeInfo(int id);
   void removeContainer(int id);
   void renumber(QMap<int, int>);
 private:

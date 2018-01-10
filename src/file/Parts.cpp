@@ -8,7 +8,7 @@ public:
   PartsData() { }
 public:
   QMap<int, Container> containers;
-  QMap<int, Package> packages;
+  QMap<int, PartInfo> partinfos;
 };
 
 
@@ -27,9 +27,9 @@ Parts::Parts(QXmlStreamReader &src): Parts() {
       if (src.name()=="container") {
         Container c(src);
         d->containers[c.id()] = c;
-      } else if (src.name()=="package") {
-        Package c(src);
-        d->packages[c.id()] = c;
+      } else if (src.name()=="partinfo") {
+        PartInfo c(src);
+        d->partinfos[c.id()] = c;
       } else {
         qDebug() << "Unexpected element in parts: " << src.name();
       }
@@ -56,13 +56,13 @@ QMap<int, class Container> const &Parts::containers() const {
   return d->containers;
 }
 
-QMap<int, class Package> const &Parts::packages() const {
-  return d->packages;
+QMap<int, class PartInfo> const &Parts::infos() const {
+  return d->partinfos;
 }
 
-void Parts::insert(Package const &pkg) {
+void Parts::insert(PartInfo const &pkg) {
   d.detach();
-  d->packages[pkg.id()] = pkg;
+  d->partinfos[pkg.id()] = pkg;
 }
 
 void Parts::insert(Container const &cnt) {
@@ -70,9 +70,9 @@ void Parts::insert(Container const &cnt) {
   d->containers[cnt.id()] = cnt;
 }
 
-void Parts::removePackage(int id) {
+void Parts::removeInfo(int id) {
   d.detach();
-  d->packages.remove(id);
+  d->partinfos.remove(id);
 }
 
 void Parts::removeContainer(int id) {
@@ -90,14 +90,14 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Parts const &c) {
   sr.writeStartElement("parts");
   for (auto const &c: c.containers())
     sr << c;
-  for (auto const &c: c.packages())
+  for (auto const &c: c.infos())
     sr << c;
   sr.writeEndElement();
   return sr;
 }
 
 bool Parts::isEmpty() const {
-  return containers().isEmpty() && packages().isEmpty();
+  return containers().isEmpty() && infos().isEmpty();
 }
 
 void Parts::renumber(QMap<int, int> map) {
@@ -107,8 +107,8 @@ void Parts::renumber(QMap<int, int> map) {
   for (auto const &c: containers())
     cons << c;
   
-  QList<Package> pkgs;
-  for (auto const &p: packages())
+  QList<PartInfo> pkgs;
+  for (auto const &p: infos())
     pkgs << p;
 
   for (auto &c: cons) 
@@ -120,10 +120,10 @@ void Parts::renumber(QMap<int, int> map) {
       p.setId(map[p.id()]);
 
   d->containers.clear();
-  d->packages.clear();
+  d->partinfos.clear();
 
   for (auto &c: cons)
     d->containers[c.id()] = c;
   for (auto &p: pkgs)
-    d->packages[p.id()] = p;
+    d->partinfos[p.id()] = p;
 }

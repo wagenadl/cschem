@@ -5,7 +5,7 @@
 #include "file/Schem.h"
 #include "file/Parts.h"
 #include "file/Element.h"
-#include "file/Package.h"
+#include "file/PartInfo.h"
 #include "file/Circuit.h"
 
 #include <QDebug>
@@ -77,11 +77,11 @@ void PartListView::rebuild() {
 
 void PLVData::rebuildRow(int n, Element const &elt) {
   qDebug() << "rebuildrow" << n << elt.report();
-  auto const &pkgs = schem->parts().packages();
+  auto const &pkgs = schem->parts().infos();
   
   view->setText(n, COL_Value, elt.value());
   if (pkgs.contains(elt.id())) {
-    Package const &pkg(pkgs[elt.id()]);
+    PartInfo const &pkg(pkgs[elt.id()]);
     view->setText(n, COL_Vendor, pkg.vendor());
     view->setText(n, COL_Partno, pkg.partno());
     view->setText(n, COL_Notes, pkg.notes());
@@ -124,19 +124,19 @@ void PartListView::internalChange(int n) {
     
     if (vend.isEmpty() && vendcat.isEmpty()
         && notes.isEmpty()) {
-      // don't need a <package>
+      // don't need a <partinfo>
       Parts parts = d->schem->parts();
-      parts.removePackage(id);
+      parts.removeInfo(id);
       d->schem->setParts(parts);
     } else {
-      Package package;
-      package.setId(id);
-      package.setVendor(vend);
-      package.setPartno(vendcat);
-      package.setNotes(notes);
+      PartInfo partinfo;
+      partinfo.setId(id);
+      partinfo.setVendor(vend);
+      partinfo.setPartno(vendcat);
+      partinfo.setNotes(notes);
       Parts parts = d->schem->parts();
-      parts.insert(package);
-      qDebug() << "parts changed" << parts.packages().size() << id;
+      parts.insert(partinfo);
+      qDebug() << "parts changed" << parts.infos().size() << id;
       d->schem->setParts(parts);
     }
   }

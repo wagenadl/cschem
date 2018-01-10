@@ -1,12 +1,12 @@
-// Package.cpp
+// PartInfo.cpp
 
-#include "Package.h"
+#include "PartInfo.h"
 #include "IDFactory.h"
 #include <QPoint>
 
-class PackageData: public QSharedData {
+class PartInfoData: public QSharedData {
 public:
-  PackageData(): id(IDFactory::instance().newId()) { }
+  PartInfoData(): id(IDFactory::instance().newId()) { }
 public:
   int id;
   QString notes;
@@ -17,24 +17,24 @@ public:
   QString manufacturer;  
 };
 
-Package::Package() {
-  d = new PackageData();
+PartInfo::PartInfo() {
+  d = new PartInfoData();
 }
 
-Package::Package(Package const &o) {
+PartInfo::PartInfo(PartInfo const &o) {
   d = o.d;
 }
 
-Package &Package::operator=(Package const &o) {
+PartInfo &PartInfo::operator=(PartInfo const &o) {
   d = o.d;
   return *this;
 }
 
-Package::~Package() {
+PartInfo::~PartInfo() {
 }
 
 
-Package::Package(QXmlStreamReader &src): Package() {
+PartInfo::PartInfo(QXmlStreamReader &src): PartInfo() {
   auto a = src.attributes();
   d->id = a.value("id").toInt();
   d->notes = a.value("notes").toString();
@@ -46,75 +46,75 @@ Package::Package(QXmlStreamReader &src): Package() {
   src.skipCurrentElement();
 }
 
-int Package::id() const {
+int PartInfo::id() const {
   return d->id;
 }
 
-QString Package::package() const {
+QString PartInfo::package() const {
   return d->package;
 }
 
-QString Package::notes() const {
+QString PartInfo::notes() const {
   return d->notes;
 }
 
-QString Package::vendor() const {
+QString PartInfo::vendor() const {
   return d->vendor;
 }
 
-QString Package::partno() const {
+QString PartInfo::partno() const {
   return d->partno;
 }
 
-QString Package::mfgPart() const {
+QString PartInfo::mfgPart() const {
   return d->mfgpart;
 }
 
-QString Package::manufacturer() const {
+QString PartInfo::manufacturer() const {
   return d->manufacturer;
 }
 
-void Package::setPackage(QString s) {
+void PartInfo::setPackage(QString s) {
   d.detach();
   d->package = s;
 }
 
-void Package::setNotes(QString s) {
+void PartInfo::setNotes(QString s) {
   d.detach();
   d->notes = s;
 }
 
-void Package::setVendor(QString s) {
+void PartInfo::setVendor(QString s) {
   d.detach();
   d->vendor = s;
 }
 
-void Package::setPartno(QString s) {
+void PartInfo::setPartno(QString s) {
   d.detach();
   d->partno = s;
 }
 
-void Package::setMfgPart(QString s) {
+void PartInfo::setMfgPart(QString s) {
   d.detach();
   d->mfgpart = s;
 }
 
-void Package::setManufacturer(QString s) {
+void PartInfo::setManufacturer(QString s) {
   d.detach();
   d->manufacturer = s;
 }
 
-void Package::setId(int id) {
+void PartInfo::setId(int id) {
   d.detach();
   d->id = id;
 }
 
-QXmlStreamReader &operator>>(QXmlStreamReader &sr, Package &c) {
-  c = Package(sr);
+QXmlStreamReader &operator>>(QXmlStreamReader &sr, PartInfo &c) {
+  c = PartInfo(sr);
   return sr;
 }
   
-QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Package const &c) {
+QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, PartInfo const &c) {
   sr.writeStartElement("package");
   sr.writeAttribute("id", QString::number(c.id()));
   if (!c.notes().isEmpty())
