@@ -14,25 +14,29 @@ class PLVData {
 public:
   PLVData(PartListView *view, Schem *schem):
     view(view),
-    schem(schem) { }
+    schem(schem),
+    rebuilding(false) { }
   void rebuildRow(int n, Element const &elt);
 public:
   PartListView *view;
   Schem *schem;
+  bool rebuilding;
 };
 
 PartListView::PartListView(Schem *schem, QWidget *parent):
-  QTableWidget(parent), d(new PLVData(this, schem)) {
+  TextTable(parent), d(new PLVData(this, schem)) {
   setColumnCount(8);
-  setHorizontalHeaderItem(0, new QTableWidgetItem("Part"));
-  setHorizontalHeaderItem(1, new QTableWidgetItem("Value"));
-  setHorizontalHeaderItem(2, new QTableWidgetItem("Mfg."));
-  setHorizontalHeaderItem(3, new QTableWidgetItem("Cat #"));
-  setHorizontalHeaderItem(4, new QTableWidgetItem("Vendor"));
-  setHorizontalHeaderItem(5, new QTableWidgetItem("Cat #"));
-  setHorizontalHeaderItem(6, new QTableWidgetItem("Package"));
+  setColumnHeader(0, "Part");
+  setColumnHeader(1, "Value");
+  setColumnHeader(2, "Mfg.");
+  setColumnHeader(3, "Cat #");
+  setColumnHeader(4, "Vendor");
+  setColumnHeader(5, "Cat #");
+  setColumnHeader(6, "Package");
   setColumnHidden(7, true);
   sortByColumn(0, Qt::AscendingOrder);
+  connect(this, &PartListView::cellChanged,
+          this, &PartListView::internalChange);
   rebuild();
 }
 
@@ -41,6 +45,7 @@ PartListView::~PartListView() {
 }
 
 void PartListView::rebuild() {
+  d->rebuilding = true;
   int N = 0;
   setRowCount(0);
   setSortingEnabled(false);
@@ -49,60 +54,84 @@ void PartListView::rebuild() {
     if (!elt.name().isEmpty() && !elt.isVirtual()
         && elt.type()==Element::Type::Component) {
       setRowCount(N + 1);
-      setVerticalHeaderItem(N, new QTableWidgetItem(""));
-      setItem(N, 7, new QTableWidgetItem(QString::number(elt.id())));
+      setRowHeader(N, "");
+      setText(N, 7, QString::number(elt.id()));
       d->rebuildRow(N, elt);
       N ++;
     }
   }
   setSortingEnabled(true);
   resizeColumnsToContents();
+  d->rebuilding = false;
 }
 
 void PLVData::rebuildRow(int n, Element const &elt) {
   qDebug() << "rebuildrow" << n << elt.report();
   auto const &pkgs = schem->parts().packages();
   
-  view->setItem(n, 1, new QTableWidgetItem(elt.value()));
+  view->setText(n, 1, elt.value());
   if (pkgs.contains(elt.id())) {
     Package const &pkg(pkgs[elt.id()]);
-    view->setItem(n, 2, new QTableWidgetItem(pkg.manufacturer()));
-    view->setItem(n, 3, new QTableWidgetItem(pkg.mfgPart()));
-    view->setItem(n, 4, new QTableWidgetItem(pkg.vendor()));
-    view->setItem(n, 5, new QTableWidgetItem(pkg.partno()));
-    view->setItem(n, 6, new QTableWidgetItem(pkg.package()));
+    view->setText(n, 2, pkg.manufacturer());
+    view->setText(n, 3, pkg.mfgPart());
+    view->setText(n, 4, pkg.vendor());
+    view->setText(n, 5, pkg.partno());
+    view->setText(n, 6, pkg.package());
   }
-  view->setItem(n, 0, new QTableWidgetItem(elt.name()));
+  view->setText(n, 0, elt.name());
   view->item(n, 0)->setFlags(view->item(n, 0)->flags()
                        & ~(Qt::ItemIsEditable));
 }
 
-void PartListView::rebuildOne(int id) {
-  qDebug() << "rebuildone" << id;
-  setSortingEnabled(false);
-  int N = rowCount();
-  QString txtid = QString::number(id);
-  for (int n=0; n<N; n++) {
-    if (item(n, 7)->text() == txtid) {
-      if (d->schem->circuit().elements().contains(id)) {
-        d->rebuildRow(n, d->schem->circuit().element(id));
-        setSortingEnabled(true);
-        return;
-      } else {
-        // move to end of table, then remove
-        item(n, 7)->setText("zzz");
-        sortByColumn(7, Qt::AscendingOrder);
-        setSortingEnabled(true);
-        setRowCount(N-1);
-        sortByColumn(0, Qt::AscendingOrder);
-        return;
-      }
+void PartListView::internalChange(int n) {
+  if (d->rebuilding)
+    return;
+
+  qDebug() << "PLV: internalchange" << n;
+  
+  Circuit circ(d->schem->circuit());
+  int id = text(n, 7).toInt();
+  if (circ.elements().contains(id)) {
+    QString val = text(n, 1);
+    Element elt = circ.element(id);
+    if (elt.name().mid(1).toInt()>0) {
+      if (elt.name().startsWith("R") && val.endsWith("."))
+        val = val.left(val.size() - 1) + tr("Ω");
+      else if (elt.name().startsWith("C") || elt.name().startsWith("L"))
+        val = val.replace("u", tr("μ"));
+    }
+    
+    if (elt.value() != val) {
+      elt.setValue(val);
+      circ.insert(elt);
+      d->schem->setCircuit(circ);
+      emit valueEdited(id);
+    }
+
+    QString mfg = text(n, 2);
+    QString mfgcat = text(n, 3);
+    QString vend = text(n, 4);
+    QString vendcat = text(n, 5);
+    QString pkg = text(n, 6);
+    
+    if (mfg.isEmpty() && mfgcat.isEmpty()
+        && vend.isEmpty() && vendcat.isEmpty()
+        && pkg.isEmpty()) {
+      // don't need a <package>
+      Parts parts = d->schem->parts();
+      parts.packages().remove(id);
+      d->schem->setParts(parts);
+    } else {
+      Package package;
+      package.setId(id);
+      package.setManufacturer(mfg);
+      package.setMfgPart(mfgcat);
+      package.setVendor(vend);
+      package.setPartno(vendcat);
+      package.setPackage(pkg);
+      Parts parts = d->schem->parts();
+      parts.packages()[id] = package;
+      d->schem->setParts(parts);
     }
   }
-  
-  // the item was not previously there, so we'll add
-  setRowCount(N+1);
-  setItem(N, 7, new QTableWidgetItem(txtid));
-  d->rebuildRow(N, d->schem->circuit().element(id));
-  setSortingEnabled(true);    
 }

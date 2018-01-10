@@ -123,9 +123,6 @@ void SceneElementData::setValueText() {
     value->setHtml("<i>value</i>");
     value->setDefaultTextColor(Style::faintColor());
   } else {
-    if (elt.name().startsWith("R") && elt.name().mid(1).toInt()>0)
-      if (txt.endsWith("."))
-	txt = txt.left(txt.size() - 1) + tr("Ω");
     value->setPlainText(txt);
     value->setDefaultTextColor(Style::textColor());
   }
@@ -140,6 +137,12 @@ void SceneElementData::getValueText() {
   QString txt = value->toPlainText();
   if (txt == "value")
     txt = "";
+  if (elt.name().mid(1).toInt()>0) {
+    if (elt.name().startsWith("R") && txt.endsWith("."))
+      txt = txt.left(txt.size() - 1) + tr("Ω");
+    else if (elt.name().startsWith("C") || elt.name().startsWith("L"))
+      txt = txt.replace("u", tr("μ"));
+  }
   elt.setValue(txt);
   circ.insert(elt);
   setValueText();

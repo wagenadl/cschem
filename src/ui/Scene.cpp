@@ -665,8 +665,13 @@ void Scene::annotationInternallyEdited(int id) {
   emit annotationEdited(id);
 }
 
-void Scene::annotationExternallyEdited(int id) {
+void Scene::setComponentValue(int id, QString val) {
   qDebug() <<"externally edited" << id;
+  if (d->circ.elements().contains(id)) {
+    Element elt = d->circ.element(id);
+    elt.setValue(val);
+    d->circ.insert(elt);
+  }
   if (d->elts.contains(id))
     d->elts[id]->rebuild();
 }

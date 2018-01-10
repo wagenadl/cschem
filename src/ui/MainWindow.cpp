@@ -18,6 +18,7 @@
 #include "PartListView.h"
 #include <QDockWidget>
 #include "LibView.h"
+#include "SignalAccumulator.h"
 
 class MWData {
 public:
@@ -38,6 +39,7 @@ public:
   QDockWidget *libviewdock;
   PartListView *partlistview;
   QDockWidget *partlistviewdock;
+  SignalAccumulator *chgtoplv;
 };
 
 QString MWData::lastdir;
@@ -67,6 +69,11 @@ void MainWindow::createDocks() {
   d->partlistviewdock = new QDockWidget("Part list", this);
   d->partlistviewdock->setWidget(d->partlistview);
   showPartsList();
+  d->chgtoplv = new SignalAccumulator(this);
+  connect(d->chgtoplv, &SignalAccumulator::activated,
+          d->partlistview, &PartListView::rebuild);
+  connect(d->partlistview, &PartListView::valueEdited,
+          this, &MainWindow::reactToPartListEdit);
 }
 
 void MainWindow::showLibrary() {
@@ -350,5 +357,9 @@ void MainWindow::plonk(QString sym) {
 void MainWindow::reactToSceneEdit() {
   d->schem.setCircuit(d->scene->circuit());
   if (d->partlistview->isVisible())
-    d->partlistview->rebuild();
+    d->chgtoplv->activate();
+}
+
+void MainWindow::reactToPartListEdit(int id) {
+  d->scene->setComponentValue(id, d->schem.circuit().element(id).value());
 }

@@ -4,18 +4,21 @@
 
 #define PARTLISTVIEW_H
 
-#include <QTableWidget>
+#include "TextTable.h"
 
-class PartListView: public QTableWidget {
+class PartListView: public TextTable {
   Q_OBJECT;
 public:
   explicit PartListView(class Schem *, QWidget *parent=0);
   ~PartListView();
   PartListView(PartListView const &) = delete;
   PartListView &operator=(PartListView const &) = delete;
+signals:
+  void valueEdited(int id);
 public slots:
   void rebuild(); // call when parts are changed externally
-  void rebuildOne(int id);
+private slots:
+  void internalChange(int r);
 private:
   class PLVData *d;
 };

@@ -15,6 +15,7 @@ public:
   Scene(PartLibrary const *lib, QObject *parent=0);
   ~Scene();
   void setCircuit(Circuit const &);
+  void setComponentValue(int eltid, QString value);
   PartLibrary const *library() const;
   Circuit const &circuit() const;
   Circuit &circuit();
@@ -51,7 +52,6 @@ protected:
   void focusOutEvent(QFocusEvent *) override;
 public:
   void annotationInternallyEdited(int id);
-  void annotationExternallyEdited(int id);
 signals:
   void annotationEdited(int id);
 private:
