@@ -49,6 +49,7 @@ public:
   // has "virtual" in its symbol name
   int id() const;
   int rotation() const;
+  bool isFlipped() const;
   Element translated(QPoint delta) const;
 public:
   void setPosition(QPoint);
@@ -62,6 +63,7 @@ public:
   void setNameVisible(bool);
   void setId(int); // should only be used for well-controlled renumber op
   void setRotation(int);
+  void setFlipped(bool);
   void translate(QPoint delta);
 private:
   QSharedDataPointer<class ElementData> d;

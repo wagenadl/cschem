@@ -9,6 +9,7 @@ public:
   ElementData(): type(Element::Type::Invalid),
                  id(IDFactory::instance().newId()),
                  rotation(0),
+		 flip(false),
 		 valueVis(false),
                  nameVis(false) { }
 public:
@@ -19,6 +20,7 @@ public:
   QString name;
   int id;
   int rotation;
+  bool flip;
   Element::Info info;
   QPoint valuePos;
   QPoint namePos;
@@ -63,6 +65,7 @@ Element::Element(QXmlStreamReader &src): Element() {
   d->namePos = QPoint(a.value("namex").toInt(), a.value("namey").toInt());
   d->nameVis = a.value("namevis").toInt() > 0;
   d->rotation = a.value("rotation").toInt();
+  d->flip = a.value("rotation").toInt() ? true : false;
   d->info.vendor = a.value("vendor").toString();
   d->info.partno = a.value("partno").toString();
   d->info.notes = a.value("notes").toString();
@@ -132,6 +135,10 @@ int Element::rotation() const {
   return d->rotation;
 }
 
+bool Element::isFlipped() const {
+  return d->flip;
+}
+
 void Element::setPosition(QPoint p) {
   d.detach();
   d->position = p;
@@ -191,6 +198,11 @@ void Element::setId(int id) {
 void Element::setRotation(int o) {
   d.detach();
   d->rotation = o & 3;
+}
+
+void Element::setFlipped(bool f) {
+  d.detach();
+  d->flip = f;
 }
 
 bool Element::isValid() const {
@@ -263,6 +275,9 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Element const &c) {
   
   if (c.rotation())
     sr.writeAttribute("rotation", QString::number(c.rotation()));
+  if (c.isFlipped())
+    sr.writeAttribute("flip", "1");
+  
   sr.writeEndElement();
   return sr;
 };

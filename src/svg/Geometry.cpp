@@ -87,6 +87,8 @@ QPoint GeometryData::pinPosition(int eltid, QString pin) const {
 QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
   Part const &prt(lib->part(elt.symbol()));
   QPointF pp = prt.shiftedPinPosition(pin);
+  if  (elt.isFlipped())
+    pp = QPointF(-pp.x(), pp.y());
   for (int k=0; k<elt.rotation(); k++)
     pp = QPointF(pp.y(), -pp.x());
   return elt.position() + lib->downscale(pp);

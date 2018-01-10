@@ -241,6 +241,8 @@ void SceneElement::rebuild() {
   QTransform xf;
   xf.translate(orig.x(), orig.y());
   xf.rotate(circ.element(d->id).rotation()*-90);
+  if (circ.element(d->id).isFlipped())
+    xf.scale(-1, 1);
   xf.translate(-orig.x(), -orig.y());
   d->element->setTransform(xf);
   d->element->setPos(part.shiftedBBox().topLeft());
