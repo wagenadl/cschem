@@ -9,6 +9,7 @@ public:
   PackageData(): id(IDFactory::instance().newId()) { }
 public:
   int id;
+  QString notes;
   QString package;
   QString vendor;
   QString partno;
@@ -36,6 +37,7 @@ Package::~Package() {
 Package::Package(QXmlStreamReader &src): Package() {
   auto a = src.attributes();
   d->id = a.value("id").toInt();
+  d->notes = a.value("notes").toString();
   d->package = a.value("package").toString();
   d->vendor = a.value("vendor").toString();
   d->partno = a.value("partno").toString();
@@ -50,6 +52,10 @@ int Package::id() const {
 
 QString Package::package() const {
   return d->package;
+}
+
+QString Package::notes() const {
+  return d->notes;
 }
 
 QString Package::vendor() const {
@@ -71,6 +77,11 @@ QString Package::manufacturer() const {
 void Package::setPackage(QString s) {
   d.detach();
   d->package = s;
+}
+
+void Package::setNotes(QString s) {
+  d.detach();
+  d->notes = s;
 }
 
 void Package::setVendor(QString s) {
@@ -106,7 +117,12 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Package &c) {
 QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Package const &c) {
   sr.writeStartElement("package");
   sr.writeAttribute("id", QString::number(c.id()));
-  sr.writeAttribute("package", c.package());
+  if (!c.notes().isEmpty())
+    sr.writeAttribute("notes", c.notes());
+  if (!c.package().isEmpty())
+    sr.writeAttribute("package", c.package());
+  if (!c.vendor().isEmpty())
+    sr.writeAttribute("vendor", c.vendor());
   if (!c.vendor().isEmpty())
     sr.writeAttribute("vendor", c.vendor());
   if (!c.partno().isEmpty())
