@@ -282,6 +282,12 @@ void MainWindow::saveAction() {
 void MainWindow::saveAsAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
+//  QFileDialog dlg;
+//  dlg.setAcceptMode(QFileDialog::AcceptSave);
+//  dlg.setDefaultSuffix("schem");
+//  dlg.setDirectory(d->lastdir);
+//  //dlg.setFilter(QDir::AllFiles);
+//  dlg.setNameFilter(tr("Schematics (*.schem)"));
   QString fn = QFileDialog::getSaveFileName(0, tr("Save schematic as…"),
 					    d->lastdir,
 					    tr("Schematics (*.schem)"));

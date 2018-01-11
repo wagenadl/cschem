@@ -1,0 +1,129 @@
+{ "typ": "page",
+  "cre": "2018-01-11T08:28:44",
+  "mod": "2018-01-11T08:33:51",
+  "cui": "a6f8fe386239c6b0",
+  "stampTime": 0,
+  "startPage": 4,
+  "unlocked": false,
+  "uuid": "ec46ff96",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-11T08:28:44",
+      "mod": "2018-01-11T08:28:44",
+      "uuid": "29c4d7df"
+    },
+    { "typ": "title",
+      "cre": "2018-01-11T08:28:44",
+      "mod": "2018-01-11T08:33:40",
+      "uuid": "031f7c06",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:28:44",
+          "mod": "2018-01-11T08:33:40",
+          "lines": [
+            0
+          ],
+          "text": "Dragging svg / CSchem improvements",
+          "uuid": "ff0c3dc2"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:28:48",
+      "mod": "2018-01-11T08:29:43",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "bb91ebe9",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:28:48",
+          "mod": "2018-01-11T08:29:43",
+          "lines": [
+            0,
+            59,
+            124,
+            182,
+            251
+          ],
+          "text": "In CSchem, I need to implement drag to library and drag to circuit. When dragging an svg to the library, parts are inserted there. When dragging an svg to the circuit, all parts are inserted into the library, and only the first part into the circuit. (?)",
+          "uuid": "29b830c7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:29:44",
+      "mod": "2018-01-11T08:30:33",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "175607f9",
+      "y0": 191.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:29:44",
+          "mod": "2018-01-11T08:30:33",
+          "lines": [
+            0,
+            59,
+            120,
+            180
+          ],
+          "text": "When dragging a Part from the sidepane into the circuit or when dragging a selection around, right now, they are always immediately merged. Perhaps this should generate a separate undo step? (I don’t think so, though.)",
+          "uuid": "89fc8c13"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:30:34",
+      "mod": "2018-01-11T08:33:23",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a5cfb81d",
+      "y0": 288.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:30:34",
+          "mod": "2018-01-11T08:33:23",
+          "lines": [
+            0,
+            51,
+            114,
+            165,
+            229,
+            288,
+            347
+          ],
+          "text": "Double clicking a connection segment should try to eliminate it by simplifying the connection. This can happen if both adjacent segments point in the same direction (eliminating the shorter of the adjacent segments as well). Are there other cases for simplification? Yes, if the adjacent segments point in opposite directions, our segment and the shorter of the neighbors can be eliminated.",
+          "uuid": "7ba1f9eb"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:33:33",
+      "mod": "2018-01-11T08:33:51",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "70b51c72",
+      "y0": 454.656,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:33:33",
+          "mod": "2018-01-11T08:33:51",
+          "lines": [
+            0
+          ],
+          "text": "And I still need to improve the file dialogs.",
+          "uuid": "a55cd772"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{ "typ": "toc",
+  "cre": "2018-01-11T07:59:12",
+  "mod": "2018-01-11T08:33:40",
+  "uuid": "1751eb90",
+  "cc": [
+    { "typ": "entry",
+      "cre": "2018-01-11T07:59:31",
+      "mod": "2018-01-11T08:23:54",
+      "seen": "2018-01-11T07:59:31",
+      "sheetCount": 3,
+      "startPage": 1,
+      "title": "Basic objects in CBoard",
+      "uuid": "473f9ea6"
+    },
+    { "typ": "entry",
+      "cre": "2018-01-11T08:28:44",
+      "mod": "2018-01-11T08:33:40",
+      "seen": "2018-01-11T08:28:44",
+      "sheetCount": 1,
+      "startPage": 4,
+      "title": "Dragging svg / CSchem improvements",
+      "uuid": "ec46ff96"
+    }
+  ]
+}

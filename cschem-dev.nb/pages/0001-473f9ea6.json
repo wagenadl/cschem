@@ -1,0 +1,743 @@
+{ "typ": "page",
+  "cre": "2018-01-11T07:59:31",
+  "mod": "2018-01-11T08:28:40",
+  "cui": "a6f8fe386239c6b0",
+  "stampTime": 0,
+  "startPage": 1,
+  "unlocked": false,
+  "uuid": "473f9ea6",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-11T07:59:31",
+      "mod": "2018-01-11T07:59:31",
+      "uuid": "8255a272"
+    },
+    { "typ": "title",
+      "cre": "2018-01-11T07:59:31",
+      "mod": "2018-01-11T07:59:47",
+      "uuid": "fdbd49eb",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T07:59:31",
+          "mod": "2018-01-11T07:59:47",
+          "lines": [
+            0
+          ],
+          "text": "Basic objects in CBoard",
+          "uuid": "89b38dab"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T07:59:49",
+      "mod": "2018-01-11T08:00:16",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "56ca1bfb",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T07:59:49",
+          "mod": "2018-01-11T08:00:16",
+          "lines": [
+            0,
+            63
+          ],
+          "text": "(I don’t like the name “CPCB”, so my working title for the PCB layout program is “CBoard.”)",
+          "uuid": "5ff1de4d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:00:21",
+      "mod": "2018-01-11T08:12:43",
+      "h": 351.49,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "038fa0e8",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:00:21",
+          "mod": "2018-01-11T08:12:43",
+          "lines": [
+            0,
+            55,
+            114,
+            175,
+            238,
+            302,
+            368,
+            426,
+            486,
+            547,
+            610,
+            669,
+            735,
+            797,
+            858
+          ],
+          "text": "A part on the board will be represented by a new class Package that inherits Element. It may not need much beyond element except for a side ∈ { Top, Bottom } property, which, conveniently, maps perfectly to the existing flipped property. Graphically, this can be represented very easily by a Part that represents the silkscreen, augmented by a list of Pads. I’ll call the result a PhysPart (for physical part). A Board is the equivalent of a Circuit. Note that a Package corresponds to one or more Elements, because it can represent, e.g., a 7400 with 6 gates. Graphically, this will be represented by special subgroups in PhysPart that correspond to each element, and pins that are labeled “A:X”, “A:Y”, “A:Z”, “B:X”, …, “F:Z” (where X, Y, Z are the pins of the single gate) along with “Vcc” and “Gnd”. The “Vcc” and “Gnd” pins are automatically considered part of the “Vcc” and “Gnd” nets.",
+          "uuid": "17d34698",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-11T08:01:56",
+              "mod": "2018-01-11T08:01:56",
+              "end": 227,
+              "start": 220,
+              "style": 1,
+              "uuid": "5644d028"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:02:17",
+              "mod": "2018-01-11T08:02:17",
+              "end": 139,
+              "start": 135,
+              "style": 1,
+              "uuid": "7142b0de"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:03:31",
+              "mod": "2018-01-11T08:03:31",
+              "end": 62,
+              "start": 55,
+              "style": 2,
+              "uuid": "64670e42"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:03:39",
+              "mod": "2018-01-11T08:03:39",
+              "end": 84,
+              "start": 77,
+              "style": 2,
+              "uuid": "14141daa"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:03:43",
+              "mod": "2018-01-11T08:03:43",
+              "end": 296,
+              "start": 292,
+              "style": 2,
+              "uuid": "559d3b1e"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:03:45",
+              "mod": "2018-01-11T08:03:45",
+              "end": 356,
+              "start": 352,
+              "style": 2,
+              "uuid": "e849a96a"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:04:07",
+              "mod": "2018-01-11T08:04:07",
+              "end": 389,
+              "start": 381,
+              "style": 2,
+              "uuid": "f2e35450"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:04:40",
+              "mod": "2018-01-11T08:04:47",
+              "end": 418,
+              "start": 413,
+              "style": 2,
+              "uuid": "d0024da3"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:04:54",
+              "mod": "2018-01-11T08:04:54",
+              "end": 449,
+              "start": 442,
+              "style": 2,
+              "uuid": "204f77b7"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:05:04",
+              "mod": "2018-01-11T08:05:04",
+              "end": 470,
+              "start": 463,
+              "style": 2,
+              "uuid": "b0cee63a"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:06:15",
+              "mod": "2018-01-11T08:06:15",
+              "end": 631,
+              "start": 623,
+              "style": 2,
+              "uuid": "f71d2e5e"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:12:11",
+              "mod": "2018-01-11T08:12:11",
+              "end": 506,
+              "start": 498,
+              "style": 2,
+              "uuid": "ea395330"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:08:26",
+      "mod": "2018-01-11T08:10:52",
+      "h": 108.247,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "30e78b7f",
+      "y0": 473.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:08:26",
+          "mod": "2018-01-11T08:10:52",
+          "lines": [
+            0,
+            62,
+            130,
+            196,
+            258,
+            318
+          ],
+          "text": "A mixed digital/analog system may need Vcc = 5 V, DGnd = 0 V, AGnd = 0 V, Vdd = 12 V, Vss = −12 V. Accommodating that possibility may require a dialog box that selects which power nets exists and that automatically equates DGnd = AGnd = Gnd and Vcc = Vdd as needed. This would require additional power rail symbols in CSchem, so it is not ideal from a simplicity perspective.",
+          "uuid": "d48b241f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:10:54",
+      "mod": "2018-01-11T08:12:24",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "789532ed",
+      "y0": 582.069,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:10:54",
+          "mod": "2018-01-11T08:12:24",
+          "lines": [
+            0,
+            60,
+            121,
+            186,
+            249
+          ],
+          "text": "Graphically, a PhysPart with multiple subparts appears with a drawing of each Part with wires connecting the appropriate pins. When a SubPart is populated, it will appear in a different color and be labeled. The user can drag SubParts around inside the PhysPart to permute them. ",
+          "uuid": "29222030",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-11T08:11:08",
+              "mod": "2018-01-11T08:11:08",
+              "end": 23,
+              "start": 15,
+              "style": 2,
+              "uuid": "e5e15203"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:11:29",
+              "mod": "2018-01-11T08:11:29",
+              "end": 82,
+              "start": 78,
+              "style": 2,
+              "uuid": "c947f0a4"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:11:49",
+              "mod": "2018-01-11T08:11:49",
+              "end": 141,
+              "start": 134,
+              "style": 2,
+              "uuid": "6c16c2cf"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:12:07",
+              "mod": "2018-01-11T08:12:07",
+              "end": 234,
+              "start": 226,
+              "style": 2,
+              "uuid": "d0adf3d0"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:12:17",
+              "mod": "2018-01-11T08:12:17",
+              "end": 261,
+              "start": 253,
+              "style": 2,
+              "uuid": "0c50a87a"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:12:31",
+      "mod": "2018-01-11T08:14:04",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "7772f573",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:12:31",
+          "mod": "2018-01-11T08:14:04",
+          "lines": [
+            0,
+            51,
+            113,
+            173,
+            232
+          ],
+          "text": "The normal way to populate the Board is to drag an Element from a sidepane onto it. It will be instantiated by a default Package and another sidepane will appear that holds alternate packages. An Element can also be dragged into an empty SubPart inside an existing PhysPart.",
+          "uuid": "e641af99",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-11T08:12:48",
+              "mod": "2018-01-11T08:12:48",
+              "end": 36,
+              "start": 31,
+              "style": 2,
+              "uuid": "9750d367"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:12:53",
+              "mod": "2018-01-11T08:12:53",
+              "end": 58,
+              "start": 51,
+              "style": 2,
+              "uuid": "f06416ba"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:13:13",
+              "mod": "2018-01-11T08:13:13",
+              "end": 128,
+              "start": 121,
+              "style": 2,
+              "uuid": "745cfeee"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:13:40",
+              "mod": "2018-01-11T08:13:40",
+              "end": 203,
+              "start": 196,
+              "style": 2,
+              "uuid": "106efc5e"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:13:47",
+              "mod": "2018-01-11T08:13:47",
+              "end": 273,
+              "start": 265,
+              "style": 2,
+              "uuid": "1bc0fe7c"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:14:01",
+              "mod": "2018-01-11T08:14:01",
+              "end": 245,
+              "start": 238,
+              "style": 2,
+              "uuid": "9edf2c1b"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:14:05",
+      "mod": "2018-01-11T08:15:40",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "d87dba0b",
+      "y0": 191.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:14:05",
+          "mod": "2018-01-11T08:15:40",
+          "lines": [
+            0,
+            58,
+            117,
+            179,
+            240,
+            303
+          ],
+          "text": "Traces are just like Connections, except that they have a layer associated with them along with a width and a radius which sets how corners are represented. Traces are ordinarily layed out along X or Y, but, as for Connections, this is not enforced in the infrastructure, so nonorthogonal traces can be made. Corners are automatically rounded unless radius = 0.",
+          "uuid": "c574a13e",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-11T08:14:08",
+              "mod": "2018-01-11T08:14:08",
+              "end": 6,
+              "start": 0,
+              "style": 2,
+              "uuid": "53cb6d66"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:14:13",
+              "mod": "2018-01-11T08:14:13",
+              "end": 32,
+              "start": 21,
+              "style": 2,
+              "uuid": "c3cd2d3c"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:14:19",
+              "mod": "2018-01-11T08:14:19",
+              "end": 63,
+              "start": 58,
+              "style": 1,
+              "uuid": "ec45e7b4"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:14:31",
+              "mod": "2018-01-11T08:14:31",
+              "end": 103,
+              "start": 98,
+              "style": 1,
+              "uuid": "3e52f6c2"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:14:38",
+              "mod": "2018-01-11T08:14:38",
+              "end": 116,
+              "start": 110,
+              "style": 1,
+              "uuid": "10396369"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:14:48",
+              "mod": "2018-01-11T08:14:48",
+              "end": 163,
+              "start": 157,
+              "style": 2,
+              "uuid": "b3ebee9a"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:15:03",
+              "mod": "2018-01-11T08:15:03",
+              "end": 226,
+              "start": 215,
+              "style": 2,
+              "uuid": "548602f1"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:15:39",
+              "mod": "2018-01-11T08:15:39",
+              "end": 356,
+              "start": 350,
+              "style": 1,
+              "uuid": "33855c82"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:15:52",
+      "mod": "2018-01-11T08:16:53",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "dbbae8b9",
+      "y0": 334.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:15:52",
+          "mod": "2018-01-11T08:16:53",
+          "lines": [
+            0,
+            47,
+            102
+          ],
+          "text": "Vias are represented by Junctions along with a holeDiameter and a padDiameter. Nonautomatic holes are represented by a Package with just one pin.",
+          "uuid": "e2ced98f",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-11T08:15:59",
+              "mod": "2018-01-11T08:15:59",
+              "end": 33,
+              "start": 24,
+              "style": 2,
+              "uuid": "df6dbbda"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:16:02",
+              "mod": "2018-01-11T08:16:02",
+              "end": 4,
+              "start": 0,
+              "style": 2,
+              "uuid": "58c81ba1"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:16:07",
+              "mod": "2018-01-11T08:16:17",
+              "end": 59,
+              "start": 47,
+              "style": 1,
+              "uuid": "104b5fed"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:16:12",
+              "mod": "2018-01-11T08:16:12",
+              "end": 77,
+              "start": 66,
+              "style": 1,
+              "uuid": "1b23bc88"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:16:41",
+              "mod": "2018-01-11T08:16:41",
+              "end": 126,
+              "start": 119,
+              "style": 2,
+              "uuid": "3d1fd94e"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:19:44",
+      "mod": "2018-01-11T08:22:53",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "ae1228e2",
+      "y0": 408.324,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:19:44",
+          "mod": "2018-01-11T08:22:53",
+          "lines": [
+            0,
+            61,
+            127,
+            192,
+            253,
+            313,
+            373
+          ],
+          "text": "Pins need not just a location, but also a holeDiameter and a padSize, which is either a diameter for a round hole or a (width, height) pair for a rectangular pad. In inkscape, this is encoded in the label as pin:X:65:135 for a round hole of 0.065” hole diameter with a 0.135” pad or pin:X:65:100:100 for a square pad. Millimeters are represented by pin:X:0.8:1.2, i.e., by numbers with an obligatory decimal point.",
+          "uuid": "7f552d2e",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-11T08:19:49",
+              "mod": "2018-01-11T08:19:49",
+              "end": 4,
+              "start": 0,
+              "style": 2,
+              "uuid": "85321162"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:19:59",
+              "mod": "2018-01-11T08:19:59",
+              "end": 54,
+              "start": 42,
+              "style": 1,
+              "uuid": "818b2ede"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:20:06",
+              "mod": "2018-01-11T08:20:06",
+              "end": 68,
+              "start": 61,
+              "style": 1,
+              "uuid": "2ac5ac50"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:20:21",
+              "mod": "2018-01-11T08:20:21",
+              "end": 125,
+              "start": 120,
+              "style": 1,
+              "uuid": "1ea88a4b"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-11T08:20:23",
+              "mod": "2018-01-11T08:20:23",
+              "end": 133,
+              "start": 127,
+              "style": 1,
+              "uuid": "d6354918"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:22:54",
+      "mod": "2018-01-11T08:23:04",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "83495bcb",
+      "y0": 574.486,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:22:54",
+          "mod": "2018-01-11T08:23:04",
+          "lines": [
+            0,
+            51
+          ],
+          "text": "Locally defining holes should probably be possible eventually.",
+          "uuid": "dd4bc588"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:23:17",
+      "mod": "2018-01-11T08:23:48",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "a7f6164e",
+      "y0": 624.818,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:23:17",
+          "mod": "2018-01-11T08:23:48",
+          "lines": [
+            0,
+            57,
+            120
+          ],
+          "text": "Hovering over PhysParts in the sidepane should give some information. That information can be encoded in the <title> of the svg group.",
+          "uuid": "cb54e8d5",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-11T08:23:25",
+              "mod": "2018-01-11T08:23:29",
+              "end": 23,
+              "start": 14,
+              "style": 2,
+              "uuid": "68c95ac0"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:23:54",
+      "mod": "2018-01-11T08:24:53",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "b771bae8",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:23:54",
+          "mod": "2018-01-11T08:24:53",
+          "lines": [
+            0,
+            54,
+            113,
+            171
+          ],
+          "text": "Since it becomes increasingly inconvenient to have to ungroup/regroup parts to remove transformations, the title and label can also be attached to the subgroup. This will require only a minor rewrite of PartLibrary.",
+          "uuid": "d3f7a303",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-11T08:24:44",
+              "mod": "2018-01-11T08:24:44",
+              "end": 214,
+              "start": 203,
+              "style": 2,
+              "uuid": "14d5121d"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:24:55",
+      "mod": "2018-01-11T08:26:18",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "e63e88ca",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:24:55",
+          "mod": "2018-01-11T08:26:18",
+          "lines": [
+            0
+          ],
+          "text": "I want to reorganize the folder structure a little:",
+          "uuid": "8c00059e"
+        }
+      ]
+    },
+    { "typ": "tableblock",
+      "cre": "2018-01-11T08:24:55",
+      "mod": "2018-01-11T08:28:18",
+      "h": 85.498,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "e63e88ca",
+      "y0": 195.83,
+      "cc": [
+        { "typ": "table",
+          "cre": "2018-01-11T08:24:55",
+          "mod": "2018-01-11T08:28:18",
+          "len": [
+            3,
+            2,
+            8,
+            4,
+            1,
+            14,
+            3,
+            1,
+            14
+          ],
+          "nc": 3,
+          "nr": 3,
+          "text": "\nui \n⇒ \ncschemui\nfile\n⇒\ncircdata, file\nsvg\n⇒\nsvg, circmanip\n",
+          "uuid": "8c00059e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T08:26:04",
+      "mod": "2018-01-11T08:26:04",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "3bd6e081",
+      "y0": 281.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T08:26:04",
+          "mod": "2018-01-11T08:26:04",
+          "lines": [
+            0
+          ],
+          "text": "",
+          "uuid": "211dfe32"
+        }
+      ]
+    }
+  ]
+}
