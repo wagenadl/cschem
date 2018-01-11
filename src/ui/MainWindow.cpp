@@ -180,19 +180,25 @@ void MainWindow::createActions() {
   menu->addAction(act);
 
   act = new QAction(tr("Rotate &right"), this);
-  act->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_R));
+  act->setShortcuts(QList<QKeySequence>()
+                   << QKeySequence(Qt::SHIFT + Qt::Key_R)
+                   << QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
   act->setStatusTip(tr("Rotate clockwise"));
   connect(act, &QAction::triggered, this, &MainWindow::rotateCWAction);
   menu->addAction(act);
 
   act = new QAction(tr("Rotate &left"), this);
-  act->setShortcut(QKeySequence(Qt::Key_R));
+  act->setShortcuts(QList<QKeySequence>()
+                   << QKeySequence(Qt::Key_R)
+                   << QKeySequence(Qt::CTRL + Qt::Key_R));
   act->setStatusTip(tr("Rotate clockwise"));
   connect(act, &QAction::triggered, this, &MainWindow::rotateCCWAction);
   menu->addAction(act);
 
   act = new QAction(tr("Flip"), this);
-  act->setShortcut(QKeySequence(Qt::Key_F));
+  act->setShortcuts(QList<QKeySequence>()
+                   << QKeySequence(Qt::Key_F)
+                   << QKeySequence(Qt::CTRL + Qt::Key_F));
   act->setStatusTip(tr("Flip horizontally"));
   connect(act, &QAction::triggered, this, &MainWindow::flipAction);
   menu->addAction(act);
