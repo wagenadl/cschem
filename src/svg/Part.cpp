@@ -4,6 +4,11 @@
 #include <QSvgRenderer>
 #include <QDebug>
 
+static QMap<QString, QSharedPointer<QSvgRenderer> > &partRenderers() {
+  static QMap<QString, QSharedPointer<QSvgRenderer> > rnd;
+  return rnd;
+}
+
 class PartData: public QSharedData {
 public:
   PartData(): valid(false) { }
@@ -201,3 +206,12 @@ QByteArray Part::toSvg() const {
 void Part::writeSvg(QXmlStreamWriter &sw) const {
   d->writeSvg(sw, false);
 }
+
+QSharedPointer<QSvgRenderer> Part::renderer() const {
+  auto &map = partRenderers();
+  if (!map.contains(d->name))
+    map[d->name] = QSharedPointer<QSvgRenderer>(new QSvgRenderer(toSvg()));
+  return map[d->name];
+}
+
+  

@@ -7,6 +7,7 @@
 #include "XmlElement.h"
 #include <QRectF>
 #include <QSharedDataPointer>
+#include <QSharedPointer>
 
 class Part {
 public:
@@ -29,6 +30,7 @@ public:
   QByteArray toSvg() const;
   void writeSvg(QXmlStreamWriter &sw) const;
   static void writeNamespaces(QXmlStreamWriter &sw);
+  QSharedPointer<class QSvgRenderer> renderer() const;
 private:
   QSharedDataPointer<class PartData> d;
 };

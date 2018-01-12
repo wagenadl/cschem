@@ -25,7 +25,7 @@ void PartLibrary::merge(QString fn) {
 }
 
 void PartLibrary::merge(QXmlStreamReader &sr) {
-  int nOld = partslist_.size();
+  int nOld = partNames().size();
 
   while (!sr.atEnd()) {
     sr.readNext();
@@ -39,7 +39,7 @@ void PartLibrary::merge(QXmlStreamReader &sr) {
       }
     }
   }
-  if (partslist_.size() == nOld)
+  if (partNames().size() == nOld)
     qDebug() << "No parts loaded";
 }
 
@@ -47,14 +47,8 @@ PartLibrary::~PartLibrary() {
 }
 
 void PartLibrary::insert(Part const &p) {
-  if (parts_.contains(p.name())) {
-    *(parts_[p.name()]) = p; // replace
-  } else {
-    partslist_.append(p);
-    Part *part = &partslist_.last();
-    parts_[part->name()] = part;
-    qDebug() << "Got part" << part->name() << "with pins" << part->pinNames();
-  }
+  parts_[p.name()] = p;
+  qDebug() << "Inserted part" << p.name() << "with pins" << p.pinNames();
 }  
 
 void PartLibrary::scanParts(XmlElement const &src) {
@@ -82,28 +76,9 @@ bool PartLibrary::contains(QString name) const {
 
 Part PartLibrary::part(QString name) const {
   if (parts_.contains(name))
-    return *parts_[name];
+    return parts_[name];
   else
     return Part();
-}
-
-QByteArray PartLibrary::partSvg(QString name) const {
-  if (parts_.contains(name))
-    return parts_[name]->toSvg();
-  else
-    return "";
-}
-
-QSharedPointer<QSvgRenderer> PartLibrary::renderer(QString name) const {
-  if (renderers_.contains(name))
-    return renderers_[name];
-
-  if (!parts_.contains(name))
-    return 0;
-
-  QSharedPointer<QSvgRenderer> r(new QSvgRenderer(partSvg(name)));
-  renderers_[name ] = r;
-  return r;
 }
 
 int PartLibrary::scale() const {

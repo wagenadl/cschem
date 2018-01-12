@@ -68,7 +68,7 @@ void LibViewElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
 void LibViewData::addPart(PartLibrary const *lib, QString part) {
   double y = items.isEmpty() ? 0 : scene->sceneRect().bottom() + 14;
   QGraphicsSvgItem *item = new LibViewElement(part, view);
-  item->setSharedRenderer(lib->renderer(part).data());
+  item->setSharedRenderer(lib->part(part).renderer().data());
   scene->addItem(item);
   items[part] = item;
   item->setPos(QPointF(0, y));

@@ -687,7 +687,8 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos) {
     CircuitMod cm(circ, lib);
     cm.addElement(elt);
     rebuildAsNeeded(cm);
-  } 
+  }
+  return true;
 }
 
 void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
