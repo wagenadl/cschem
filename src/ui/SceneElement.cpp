@@ -13,6 +13,7 @@
 #include "Style.h"
 #include <QPainter>
 #include "svg/PartNumbering.h"
+#include "svg/Geometry.h"
 
 SceneElementData::~SceneElementData() {
 }
@@ -245,12 +246,14 @@ void SceneElement::rebuild() {
   Part const &part = lib->part(elt.symbol());
   
   // origin for labels
-  QPointF p0 = part.shiftedBBox().center();
+  QRectF bb = part.shiftedBBox();
+  QPointF p0 = bb.center();
   QTransform xf;
   xf.rotate(elt.rotation()*-90);
   if (elt.isFlipped())
     xf.scale(-1, 1);
   p0 = xf.map(p0);
+  bb = xf.mapRect(bb);
   
   // Reconstruct name
   if (elt.isNameVisible()) {
@@ -270,7 +273,8 @@ void SceneElement::rebuild() {
     }
     QPoint p = elt.namePos();
     if (p.isNull()) {
-      p = QPoint(0, 3 * d->scene->library()->scale()); // hmmm.
+      QPointF bl = bb.bottomLeft() - p0;
+      p = (bl + lib->upscale(QPoint(4, 3))).toPoint();
       elt.setNamePos(p);
       d->scene->circuit().insert(elt);
     }
@@ -301,7 +305,8 @@ void SceneElement::rebuild() {
     }
     QPoint p = elt.valuePos();
     if (p.isNull()) {
-      p = QPoint(0, 6 * d->scene->library()->scale()); // hmmm.
+      QPointF bl = bb.bottomLeft() - p0;
+      p = (bl + lib->upscale(QPoint(4, 6))).toPoint();
       elt.setValuePos(p);
       d->scene->circuit().insert(elt);
     }

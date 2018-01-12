@@ -22,6 +22,7 @@ public:
   QPointF p_orig; // my position before moving
   bool pressing;
   bool moving;
+  QString origtext;
 };
 
 SceneAnnotation::SceneAnnotation(double movestep, QGraphicsItem *parent):
@@ -53,8 +54,11 @@ void SceneAnnotation::keyPressEvent(QKeyEvent *e) {
 
 void SceneAnnotation::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   if (defaultTextColor() == Style::faintColor()) {
+    d->origtext = toHtml();
     setPlainText("");
     setDefaultTextColor(Style::textColor());
+  } else {
+    d->origtext = "";
   }
   if (e->button() == Qt::LeftButton && d->movestep > 0) {
     d->sp_press = e->scenePos();
@@ -69,8 +73,12 @@ void SceneAnnotation::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 void SceneAnnotation::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   if (d->pressing) {
     QPointF delta = e->scenePos() - d->sp_press;
-    if (delta.manhattanLength() >= 3) {
+    if (!d->moving && delta.manhattanLength() >= 3) {
       d->moving = true;
+      if (d->origtext != "") {
+        setHtml(d->origtext);
+        setDefaultTextColor(Style::faintColor());
+      }
       clearFocus();
     }      
     if (d->moving) {

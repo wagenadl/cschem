@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2018-01-11T08:28:44",
-  "mod": "2018-01-11T20:28:23",
+  "mod": "2018-01-11T22:14:01",
   "cui": "a6f8fe386239c6b0",
   "stampTime": 0,
   "startPage": 4,
@@ -14,12 +14,12 @@
     },
     { "typ": "title",
       "cre": "2018-01-11T08:28:44",
-      "mod": "2018-01-11T20:28:23",
+      "mod": "2018-01-11T22:14:01",
       "uuid": "031f7c06",
       "cc": [
         { "typ": "text",
           "cre": "2018-01-11T08:28:44",
-          "mod": "2018-01-11T20:28:23",
+          "mod": "2018-01-11T22:14:01",
           "lines": [
             0
           ],
@@ -89,6 +89,73 @@
                   ],
                   "text": "Fixed",
                   "uuid": "441a96b2"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-01-11T21:52:53",
+              "mod": "2018-01-11T21:53:04",
+              "dx": 139.669,
+              "dy": 56.4393,
+              "sheet": 0,
+              "textWidth": 179.217,
+              "uuid": "61d1c8bd",
+              "x": 115.683,
+              "y": 175.457,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-01-11T21:52:53",
+                  "mod": "2018-01-11T21:53:01",
+                  "lines": [
+                    0,
+                    30
+                  ],
+                  "text": "This was not previously true; now it is.",
+                  "uuid": "d96a6916"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-01-11T21:53:09",
+              "mod": "2018-01-11T21:53:12",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "18090f70",
+              "x": 308.219,
+              "y": 489.088,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-01-11T21:53:09",
+                  "mod": "2018-01-11T21:53:10",
+                  "lines": [
+                    0
+                  ],
+                  "text": "Done",
+                  "uuid": "6a580bb5"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-01-11T22:13:59",
+              "mod": "2018-01-11T22:14:01",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "57951719",
+              "x": 298.217,
+              "y": 592.322,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-01-11T22:13:59",
+                  "mod": "2018-01-11T22:14:01",
+                  "lines": [
+                    0
+                  ],
+                  "text": "Both fixed",
+                  "uuid": "5f711149"
                 }
               ]
             }
@@ -251,6 +318,48 @@
           ],
           "text": "Bug: While routing a new connection, rubberband selection shows up when dragging from a new click.",
           "uuid": "faa3c9c7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T21:53:25",
+      "mod": "2018-01-11T21:53:41",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f6f23884",
+      "y0": 586.486,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T21:53:25",
+          "mod": "2018-01-11T21:53:41",
+          "lines": [
+            0
+          ],
+          "text": "Misfeature: annotations are poorly positioned initially.",
+          "uuid": "1e073a1e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T21:53:42",
+      "mod": "2018-01-11T21:53:51",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "2bb5ff1b",
+      "y0": 613.652,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T21:53:42",
+          "mod": "2018-01-11T21:53:51",
+          "lines": [
+            0
+          ],
+          "text": "Bug: “value” disappears when moving.",
+          "uuid": "8e7254a4"
         }
       ]
     }
