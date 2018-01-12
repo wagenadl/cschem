@@ -9,7 +9,9 @@ public:
     sel(sel),
     any(false),
     top(d->circ.subset(sel)),
-    geom(top, d->lib) {
+    topgeom(top, d->lib),
+    bot(d->circ.restset(sel)),
+    botgeom(bot, d->lib) {
   }
   void considerPinPin();
   void considerPinCon();
@@ -20,7 +22,9 @@ public:
   QSet<int> sel;
   bool any;
   Circuit top;
-  Geometry geom;
+  Geometry topgeom;
+  Circuit bot;
+  Geometry botgeom;
   QSet<int> junctst;
 };
 
@@ -42,17 +46,15 @@ bool CircuitMod::mergeSelection(QSet<int> sel) {
 
 void CM_Merge::considerPinPin() {
   // First, examine co-location of pins in BOTTOM (BASE) with pins in TOP
-  for (Element const &eltbot: d->circ.elements()) {
-    if (sel.contains(eltbot.id()))
-      continue; // only look at elements _not_ in TOP
+  for (Element const &eltbot: bot.elements()) {
     Part const &prt(d->lib->part(eltbot.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
       PinID pidbot(eltbot.id(), p);
-      QPoint pos = geom.pinPosition(eltbot, p);
-      PinID pidtop = geom.pinAt(pos);
+      QPoint pos = botgeom.pinPosition(eltbot, p);
+      PinID pidtop = topgeom.pinAt(pos);
       if (pidtop.isValid()) { // gotcha
         if (Net(d->circ, pidtop).pins().contains(pidbot))
           continue; // The two are already connected
@@ -65,17 +67,15 @@ void CM_Merge::considerPinPin() {
 
 void CM_Merge::considerPinCon() {
   // Next, examine co-location of pins in BOTTOM with connections in TOP
-  for (Element const &eltbot: d->circ.elements()) {
-    if (sel.contains(eltbot.id()))
-      continue; // only look at elements _not_ in TOP
+  for (Element const &eltbot: bot.elements()) {
     Part const &prt(d->lib->part(eltbot.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
       PinID pidbot(eltbot.id(), p);
-      QPoint pos = geom.pinPosition(eltbot, p);
-      int contop = geom.connectionAt(pos);
+      QPoint pos = botgeom.pinPosition(eltbot, p);
+      int contop = topgeom.connectionAt(pos);
       if (contop>0) {
         // Let's just make sure the two aren't already connected:
         if (Net(d->circ, contop).pins().contains(pidbot))
@@ -88,33 +88,52 @@ void CM_Merge::considerPinCon() {
 }
 
 void CM_Merge::considerConPin() {
-  // Examine co-location of connection corners in BOTTOM with pins in
-  // TOP. We don't have to study connection ends at pins; that's done
-  // in considerPinPin.
-  for (Connection const &conbot: d->circ.connections()) {
-    for (QPoint pos: conbot.via()) {
-      PinID pidtop = geom.pinAt(pos);
-      if (pidtop.isValid()) { // gotcha
-        if (Net(d->circ, pidtop).connections().contains(conbot.id()))
-          continue; // The two are already connected
-        junctst << d->addInPlaceConnection(pidtop, conbot.id(), pos);
+  // Examine co-location of connections in BOTTOM with pins in TOP.
+  for (Element const &elttop: top.elements()) {
+    Part const &prt(d->lib->part(elttop.symbol()));
+    if (!prt.isValid())
+      continue;
+    QStringList pins = prt.pinNames();
+    for (QString p: pins) {
+      PinID pidtop(elttop.id(), p);
+      QPoint pos = topgeom.pinPosition(elttop, p);
+      int conbot = botgeom.connectionAt(pos);
+      if (conbot>0) {
+        // Let's just make sure the two aren't already connected:
+        if (Net(d->circ, pidtop).connections().contains(conbot))
+          continue; // never mind        
+        junctst << d->addInPlaceConnection(pidtop, conbot, pos);
         any = true;
       }
     }
   }
+
 }
 
 void CM_Merge::considerConCon() {
   // Examine co-location of connection corners in BOTTOM with
   // connections in TOP. We don't have to study connection ends at
   // pins; that's done in considerPinCon.
-  for (Connection const &conbot: d->circ.connections()) {
+  for (Connection const &conbot: bot.connections()) {
     for (QPoint pos: conbot.via()) {
-      int contop = geom.connectionAt(pos);
+      int contop = topgeom.connectionAt(pos);
       if (contop>0) { // gotcha
-        if (Net(d->circ,contop).connections().contains(conbot.id()))
+        if (Net(d->circ, contop).connections().contains(conbot.id()))
           continue; // The two are already connected
         junctst << d->addInPlaceConnection(conbot.id(), contop, pos);
+        any = true;
+      }
+    }
+  }
+
+  // And the reverse...
+  for (Connection const &contop: top.connections()) {
+    for (QPoint pos: contop.via()) {
+      int conbot = botgeom.connectionAt(pos);
+      if (conbot>0) { // gotcha
+        if (Net(d->circ, contop.id()).connections().contains(conbot))
+          continue; // The two are already connected
+        junctst << d->addInPlaceConnection(conbot, contop.id(), pos);
         any = true;
       }
     }

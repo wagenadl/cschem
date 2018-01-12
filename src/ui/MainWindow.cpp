@@ -282,21 +282,25 @@ void MainWindow::saveAction() {
 void MainWindow::saveAsAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
-//  QFileDialog dlg;
-//  dlg.setAcceptMode(QFileDialog::AcceptSave);
-//  dlg.setDefaultSuffix("schem");
-//  dlg.setDirectory(d->lastdir);
-//  //dlg.setFilter(QDir::AllFiles);
-//  dlg.setNameFilter(tr("Schematics (*.schem)"));
-  QString fn = QFileDialog::getSaveFileName(0, tr("Save schematic as…"),
-					    d->lastdir,
-					    tr("Schematics (*.schem)"));
-  if (fn.isEmpty())
+  QFileDialog dlg;
+  dlg.setWindowTitle(tr("Save schematic as…"));
+  dlg.setAcceptMode(QFileDialog::AcceptSave);
+  dlg.setDefaultSuffix("schem");
+  dlg.setDirectory(d->lastdir);
+  dlg.setNameFilter(tr("Schematics (*.schem)"));
+  if (!d->filename.isEmpty()) {
+    QFileInfo fi(d->filename);
+    dlg.selectFile(fi.baseName() + ".schem");
+  }
+  if (!dlg.exec())
     return;
+  QStringList fns = dlg.selectedFiles();
+  if (fns.isEmpty())
+    return;
+
+  d->lastdir = dlg.directory().absolutePath();
   
-  if (!fn.endsWith(".schem"))
-    fn += ".schem";
-  saveAs(fn);
+  saveAs(fns.first());
 }
 
 void MainWindow::quitAction() {
@@ -430,19 +434,30 @@ void MainWindow::exportCircuitAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
   
-  QString fn
-    = QFileDialog::getSaveFileName(0, tr("Export schematic as svg…"),
-				   d->lastdir,
-				   tr("Scalable vector graphics (*.svg)"));
-  if (fn.isEmpty())
+  QFileDialog dlg;
+  dlg.setWindowTitle(tr("Export schematic as svg…"));
+  dlg.setAcceptMode(QFileDialog::AcceptSave);
+  dlg.setDefaultSuffix("schem");
+  dlg.setDirectory(d->lastdir);
+  //dlg.setFilter(QDir::AllFiles);
+  dlg.setNameFilter(tr("Scalable vector graphics (*.svg)"));
+  if (!d->filename.isEmpty()) {
+    QFileInfo fi(d->filename);
+    dlg.selectFile(fi.baseName() + ".svg");
+  }
+  if (!dlg.exec())
     return;
-  
-  if (!fn.endsWith(".svg"))
-    fn += ".svg";
+  QStringList fns = dlg.selectedFiles();
+  if (fns.isEmpty())
+    return;
+
+  d->lastdir = dlg.directory().absolutePath();
+
+  QString fn = fns.first();
+
   Exporter xp(d->schem.circuit(),&d->lib);
   if (!xp.exportSvg(fn)) {
     qDebug() << "Failed to export svg";
-    // should show error box
   }
 }
 
@@ -450,15 +465,26 @@ void MainWindow::exportPartListAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
   
-  QString fn
-    = QFileDialog::getSaveFileName(0, tr("Export parts list as csv…"),
-				   d->lastdir,
-				   tr("Comma-separated value file (*.csv)"));
-  if (fn.isEmpty())
+  QFileDialog dlg;
+  dlg.setWindowTitle(tr("Export parts list as csv…"));
+  dlg.setAcceptMode(QFileDialog::AcceptSave);
+  dlg.setDefaultSuffix("schem");
+  dlg.setDirectory(d->lastdir);
+  //dlg.setFilter(QDir::AllFiles);
+  dlg.setNameFilter(tr("Comma-separated value file (*.csv)"));
+  if (!d->filename.isEmpty()) {
+    QFileInfo fi(d->filename);
+    dlg.selectFile(fi.baseName() + ".csv");
+  }
+  if (!dlg.exec())
     return;
-  
-  if (!fn.endsWith(".csv"))
-    fn += ".csv";
+  QStringList fns = dlg.selectedFiles();
+  if (fns.isEmpty())
+    return;
+
+  d->lastdir = dlg.directory().absolutePath();
+
+  QString fn = fns.first();
 
   QFile file(fn);
   if (file.open(QFile::WriteOnly)) {

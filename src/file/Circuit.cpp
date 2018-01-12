@@ -252,6 +252,16 @@ Circuit Circuit::subset(QSet<int> elts) const {
   return circ;
 }
 
+Circuit Circuit::restset(QSet<int> elts) const {
+  Circuit sub = subset(elts);
+  Circuit rest = *this;
+  for (Element const &e: sub.elements())
+    rest.remove(e.id());
+  for (Connection const &c: sub.connections())
+    rest.remove(c.id());
+  return rest;
+}
+
 bool Circuit::isEmpty() const {
   return elements().isEmpty();
 }

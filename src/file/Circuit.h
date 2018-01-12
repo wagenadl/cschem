@@ -52,6 +52,9 @@ public:
      end.  Note that the created subset may have "pointless" junctions
      (See CircuitMod).
    */
+  Circuit restset(QSet<int> elts) const;
+  /* Creates a copy of what is left of this circuit when the subset is
+     taken out. */
   Circuit &operator+=(Circuit const &);
   /* Bluntly merges two circuits, not worrying about overlapping
      connections, conflicting IDs, or anything like that. */
