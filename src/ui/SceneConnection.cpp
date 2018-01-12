@@ -235,7 +235,18 @@ void SceneConnection::unhover() {
   d->hoverseg = 0;
 }
 
+void SceneConnection::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
+  /* Simplify if possible */
+  qDebug() << "SceneConnection::mouseDoubleClickEvent";
+  scene()->clearSelection();
+  int seg = segmentAt(e->scenePos());
+  scene()->simplifySegment(d->id, seg);
+  d->moveseg = -1;
+  e->accept();
+}  
+
 void SceneConnection::mousePressEvent(QGraphicsSceneMouseEvent *e) {
+  qDebug() << "SceneConnection::mousePressEvent";
   scene()->clearSelection();
   int seg = segmentAt(e->scenePos());
   d->moveseg = seg;
@@ -267,6 +278,7 @@ void SceneConnection::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void SceneConnection::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
+  qDebug() << "SceneConnection::mouseMoveEvent";
   if (d->moveseg<0)
     return;
 
@@ -289,6 +301,7 @@ void SceneConnection::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
+  qDebug() << "SceneConnection::mouseReleaseEvent";
   if (d->moveseg < 0)
     return;
 

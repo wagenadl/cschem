@@ -748,3 +748,11 @@ void Scene::flipx() {
   d->flipElementOrSelection();
 }
 
+void Scene::simplifySegment(int con, int seg) {
+  d->hovermanager->unhover();
+  d->preact();
+  CircuitMod cm(d->circ, d->lib);
+  cm.simplifySegment(con, seg);
+  d->rebuildAsNeeded(cm);
+  d->hovermanager->update();
+}

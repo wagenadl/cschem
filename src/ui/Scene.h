@@ -39,6 +39,7 @@ public:
   void makeUndoStep();
   void rotate(int dir=1);
   void flipx();
+  void simplifySegment(int con, int eg);
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;

@@ -23,8 +23,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="3200"
-     inkscape:window-height="1756"
+     inkscape:window-width="3840"
+     inkscape:window-height="2116"
      id="namedview1501"
      showgrid="true"
      inkscape:snap-smooth-nodes="false"
@@ -32,8 +32,8 @@
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:zoom="4.9493334"
-     inkscape:cx="143.87135"
-     inkscape:cy="619.93697"
+     inkscape:cx="1401.9196"
+     inkscape:cy="732.67943"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -7294,7 +7294,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          inkscape:connector-curvature="0" />
     </g>
     <circle
-       inkscape:label="pin:K"
+       inkscape:label="pin:A"
        r="7"
        cy="702"
        cx="924"

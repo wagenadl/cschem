@@ -42,11 +42,29 @@ public:
 Geometry::Geometry(Circuit const &circ, PartLibrary const *lib):
   d(new GeometryData(circ, lib)) {
 }
+
+Geometry::Geometry() {
+  d = 0;
+}
+
+Geometry::Geometry(Geometry &&o) {
+  d = o.d;
+  o.d = 0;
+}
+
+Geometry &Geometry::operator=(Geometry &&o) {
+  d = o.d;
+  o.d = 0;
+  return *this;
+}
+
 Geometry::~Geometry() {
   delete d;
 }
 
 PinID Geometry::pinAt(QPoint p) const {
+  if (!d)
+    return PinID();
   d->ensurePinDB();
   if (d->pindb.contains(p))
     return d->pindb[p];
@@ -70,15 +88,24 @@ void GeometryData::ensurePinDB() {
 }
 
 QPoint Geometry::pinPosition(class PinID const &pid) const {
-  return d->pinPosition(pid.element(), pid.pin());
+  if (d)
+    return d->pinPosition(pid.element(), pid.pin());
+  else
+    return QPoint();
 }
 
 QPoint Geometry::pinPosition(int eltid, QString pin) const {
-  return d->pinPosition(d->circ.element(eltid), pin);
+  if (d)
+    return d->pinPosition(d->circ.element(eltid), pin);
+  else
+    return QPoint();
 }
 
 QPoint Geometry::pinPosition(Element const &elt, QString pin) const {
-  return d->pinPosition(elt, pin);
+  if (d)
+    return d->pinPosition(elt, pin);
+  else
+    return QPoint();
 }
 
 QPoint GeometryData::pinPosition(int eltid, QString pin) const {
@@ -86,10 +113,15 @@ QPoint GeometryData::pinPosition(int eltid, QString pin) const {
 }
 
 QRect Geometry::boundingRect(int elt) const {
-  return boundingRect(d->circ.element(elt));
+  if (d)
+    return boundingRect(d->circ.element(elt));
+  else
+    return QRect();
 }
 
 QRect Geometry::boundingRect(Element const &elt) const {
+  if (!d)
+    return QRect();
   Part const &prt(d->lib->part(elt.symbol()));
   QRectF bb = prt.shiftedBBox();
   qDebug() << "br" << elt.symbol() << bb;
@@ -108,8 +140,9 @@ QRect Geometry::boundingRect(Element const &elt) const {
 
 QRect Geometry::boundingRect() const {
   QRect r;
-  for (Element const &elt: d->circ.elements())
-    r |= boundingRect(elt);
+  if (d)
+    for (Element const &elt: d->circ.elements())
+      r |= boundingRect(elt);
   return r;
 }
 
@@ -124,6 +157,8 @@ QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
 }
 
 QPoint Geometry::centerOfPinMass() const {
+  if (!d)
+    return QPoint();
   int N = 0;
   QPointF sum;
   for (Element const &elt: d->circ.elements()) {
@@ -137,10 +172,15 @@ QPoint Geometry::centerOfPinMass() const {
 }
 
 QPoint Geometry::centerOfPinMass(int eltid) const {
-  return centerOfPinMass(d->circ.element(eltid));
+  if (d)
+    return centerOfPinMass(d->circ.element(eltid));
+  else
+    return QPoint();
 }
 
 QPoint Geometry::centerOfPinMass(Element const &elt) const {
+  if (!d)
+    return QPoint();
   Part const &part(d->lib->part(elt.symbol()));
   QStringList pins = part.pinNames();
   QPointF sum;
@@ -150,11 +190,17 @@ QPoint Geometry::centerOfPinMass(Element const &elt) const {
 }
 
 QPolygon Geometry::connectionPath(int conid) const {
-  return d->connectionPath(d->circ.connection(conid));
+  if (d)
+    return d->connectionPath(d->circ.connection(conid));
+  else
+    return QPolygon();
 }
 
 QPolygon Geometry::connectionPath(Connection const &con) const {
-  return d->connectionPath(con);
+  if (d)
+    return d->connectionPath(con);
+  else
+    return QPolygon();
 }
 
 QPolygon GeometryData::connectionPath(Connection const &con) const {
@@ -189,10 +235,15 @@ QPolygon Geometry::simplifiedPath(QPolygon pp) {
 }
 
 bool Geometry::isZeroLength(int conid) const {
-  return isZeroLength(d->circ.connection(conid));
+  if (d)
+    return isZeroLength(d->circ.connection(conid));
+  else
+    return false;
 }
 
 bool Geometry::isZeroLength(Connection const &con) const {
+  if (!d)
+    return false;
   if (!con.isValid())
     return true;
   QPolygon p = connectionPath(con);
@@ -204,6 +255,8 @@ bool Geometry::isZeroLength(Connection const &con) const {
 }  
 
 int Geometry::connectionAt(QPoint p) const {
+  if (!d)
+    return -1;
   d->ensureConnectionDB();
   if (d->condb.contains(p))
     return d->condb[p];
@@ -289,5 +342,8 @@ QPolygon Geometry::viaFromPath(class Connection const &con, QPolygon path) {
 }
 
 QPolygon Geometry::viaFromPath(int con, QPolygon path) const {
-  return viaFromPath(d->circ.connection(con), path);
+  if (d)
+    return viaFromPath(d->circ.connection(con), path);
+  else
+    return QPolygon();
 }

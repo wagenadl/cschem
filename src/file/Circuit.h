@@ -22,6 +22,8 @@ public:
   void insert(Element const &); // or replace
   void insert(Connection const &);
   void remove(int id);
+  /* Removes an element or a connection.  Connections to/from a
+     deleted element are also deleted. */
   QSet<int> connectionsTo(QSet<int> ids) const;
   /* Connections with "toId" in the set ("fromId" is irrelevant) */
   QSet<int> connectionsFrom(QSet<int> ids) const;

@@ -404,20 +404,112 @@ bool CircuitMod::removeIfInvalid(int id) {
     return false;
 }
 
+bool CircuitMod::simplifySegment(int id, int seg) {
+  if (!d->circ.connections().contains(id))
+    return false;
+  Connection con(d->circ.connection(id));
+
+  Geometry geom(d->circ, d->lib);
+  QPolygon path(geom.connectionPath(con));
+  int N = path.size();
+  bool forcefirst = seg <= 0;
+  bool forcenext = seg >= N-2;
+  
+  if (seg <= 0)
+    seg = 1;
+  if (seg >= N - 2)
+    seg = N - 3;
+  
+  if (seg > 0) {
+    // We have a segment that is neither first nor last
+    // let's do something
+    QPoint p0 = path[seg - 1];
+    QPoint p1 = path[seg];
+    QPoint p2 = path[seg + 1];
+    QPoint p3 = path[seg + 2];
+    if (p1.x() == p2.x()) {
+      // Vertical segment
+      int dx1 = p1.x() - p0.x();
+      int dx3 = p3.x() - p2.x();
+      // Move us, eliminate shortest neighbor. I think this works for both
+      // zigzag and U-turn.
+      // (Actual removal happens later through simplifiedPath
+      bool rmnext = forcenext || abs(dx1) <= abs(dx3);
+      if (forcefirst)
+        rmnext = false;
+      if (rmnext) {
+        p1.setX(p3.x());
+        p2.setX(p3.x());
+      } else {
+        p1.setX(p0.x());
+        p2.setX(p0.x());
+      }
+      path[seg] = p1;
+      path[seg + 1] = p2;
+    } else if (p1.y() == p2.y()) {
+      // Horizontal segment
+      int dy1 = p1.y() - p0.y();
+      int dy3 = p3.y() - p2.y();
+      bool rmnext = forcenext || abs(dy1) <= abs(dy3);
+      if (forcefirst)
+        rmnext = false;
+      if (rmnext) {
+        p1.setY(p3.y());
+        p2.setY(p3.y());
+      } else {
+        p1.setY(p0.y());
+        p2.setY(p0.y());
+      }
+      path[seg] = p1;
+      path[seg + 1] = p2;
+    } else {
+      // Diagonal segment. Make angled
+      if (p1.y() == p0.y()) 
+        // preceding segment is horizontal
+        path.insert(seg + 1, QPoint(p2.x(), p1.y()));
+      else
+        path.insert(seg + 1, QPoint(p1.x(), p2.y()));
+    }
+  } else {
+    // we have a path with no more than two segments, let's deal with diags
+    for (int seg = N - 2; seg >= 0; --seg) {
+      QPoint p1 = path[seg];
+      QPoint p2 = path[seg + 1];
+      if (p1.x()!=p2.x() && p1.y()!=p2.y()) {
+        // diagonal segment
+        if ((seg>0 && path[0].y()==p1.y())
+            || (seg < N - 2 && path[seg + 2].x()==p2.x())) 
+          path.insert(seg + 1, QPoint(p2.x(), p1.y()));
+        else
+          path.insert(seg + 1, QPoint(p1.x(), p2.y()));
+      }
+    }
+  }
+  
+  path = Geometry::simplifiedPath(path);
+  con.setVia(geom.viaFromPath(con, path));
+
+  if (con.isDangling() && geom.isZeroLength(con)) {
+    qDebug() << "Dropping connection during simplifySegment. Hmmm.";
+    d->drop(con);
+    /* Is this be dangerous if we are called from
+       SceneConnection::mouseDoubleClickEvent()? */
+  } else {
+    d->insert(con);
+  }
+  return true;
+}
+
 bool CircuitMod::simplifyConnection(int id) {
   if (!d->circ.connections().contains(id))
     return false;
+  Connection con(d->circ.connection(id));
   Geometry geom(d->circ, d->lib);
-  QPolygon path0(geom.connectionPath(id));
+  QPolygon path0(geom.connectionPath(con));
   QPolygon path1 = Geometry::simplifiedPath(path0);
   if (path1.size() == path0.size())
     return false;
-  Connection con(d->circ.connection(id));
-  if (!con.danglingStart())
-    path1.removeFirst();
-  if (!con.danglingEnd())
-    path1.removeLast();
-  con.setVia(path1);
+  con.setVia(geom.viaFromPath(con, path1));
   if (con.isDangling() && geom.isZeroLength(con))
     d->drop(con);
   else

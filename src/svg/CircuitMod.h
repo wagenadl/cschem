@@ -73,6 +73,9 @@ public:
   /* Combines adjacent segments that go in the same direction. If the
      connection is dangling and ends up with zero length, it is
      removed from the circuit. True if successful. */
+  bool simplifySegment(int conid, int seg);
+  /* More aggressive version of simplifyConnection(), removes zigzags and
+     U-turns. */
   bool removeIfInvalid(int conid);
   /* Removes the connection if it is invalid. True if succesful. */
   bool removeIfDangling(int conid);

@@ -9,9 +9,15 @@ public:
     sel(sel),
     any(false),
     top(d->circ.subset(sel)),
-    topgeom(top, d->lib),
-    bot(d->circ.restset(sel)),
-    botgeom(bot, d->lib) {
+    topgeom(top, d->lib) {
+    bot = d->circ;
+    for (Connection const &c: top.connections())
+      bot.remove(c.id());
+    CircuitMod mod(bot, d->lib);
+    for (Element const &e: top.elements())
+      mod.deleteElement(e.id());
+    bot = mod.circuit();
+    botgeom = Geometry(bot, d->lib);
   }
   void considerPinPin();
   void considerPinCon();
@@ -89,6 +95,11 @@ void CM_Merge::considerPinCon() {
 
 void CM_Merge::considerConPin() {
   // Examine co-location of connections in BOTTOM with pins in TOP.
+  qDebug() << "CM_Merge Con Pin";
+  for (Connection const &c: bot.connections()) 
+    qDebug() << "bottom con" << c.report();
+  for (Connection const &c: top.connections()) 
+    qDebug() << "top con" << c.report();
   for (Element const &elttop: top.elements()) {
     Part const &prt(d->lib->part(elttop.symbol()));
     if (!prt.isValid())
@@ -98,6 +109,7 @@ void CM_Merge::considerConPin() {
       PinID pidtop(elttop.id(), p);
       QPoint pos = topgeom.pinPosition(elttop, p);
       int conbot = botgeom.connectionAt(pos);
+      qDebug() << "top pin" << elttop.report() << p << pos << conbot; 
       if (conbot>0) {
         // Let's just make sure the two aren't already connected:
         if (Net(d->circ, pidtop).connections().contains(conbot))

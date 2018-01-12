@@ -13,8 +13,11 @@ class Geometry {
 public:
   Geometry(class Circuit const &, class PartLibrary const *);
   ~Geometry();
+  Geometry();
   Geometry(Geometry const &) = delete;
-  Geometry operator=(Geometry const &) = delete;
+  Geometry &operator=(Geometry const &) = delete;
+  Geometry(Geometry &&);
+  Geometry &operator=(Geometry &&);
   QPoint pinPosition(class PinID const &) const;
   QPoint pinPosition(int elt, QString pin) const;
   QPoint pinPosition(class Element const &elt, QString pin) const;

@@ -43,6 +43,7 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) override;
 public:
   void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;
   QRectF boundingRect() const override;  
