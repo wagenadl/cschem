@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2018-01-11T08:28:44",
-  "mod": "2018-01-11T08:33:51",
+  "mod": "2018-01-11T20:28:23",
   "cui": "a6f8fe386239c6b0",
   "stampTime": 0,
   "startPage": 4,
@@ -14,17 +14,85 @@
     },
     { "typ": "title",
       "cre": "2018-01-11T08:28:44",
-      "mod": "2018-01-11T08:33:40",
+      "mod": "2018-01-11T20:28:23",
       "uuid": "031f7c06",
       "cc": [
         { "typ": "text",
           "cre": "2018-01-11T08:28:44",
-          "mod": "2018-01-11T08:33:40",
+          "mod": "2018-01-11T20:28:23",
           "lines": [
             0
           ],
           "text": "Dragging svg / CSchem improvements",
-          "uuid": "ff0c3dc2"
+          "uuid": "ff0c3dc2",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-01-11T20:20:28",
+              "mod": "2018-01-11T20:28:23",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "39662fba",
+              "x": 301.075,
+              "y": 404.072,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-01-11T20:20:28",
+                  "mod": "2018-01-11T20:20:28",
+                  "lines": [
+                    0
+                  ],
+                  "text": "Done",
+                  "uuid": "067cd076"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-01-11T20:20:34",
+              "mod": "2018-01-11T20:28:19",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "70959e2d",
+              "x": 311.434,
+              "y": 433.721,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-01-11T20:20:34",
+                  "mod": "2018-01-11T20:20:34",
+                  "lines": [
+                    0
+                  ],
+                  "text": "Done",
+                  "uuid": "da4db18a"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-01-11T20:28:11",
+              "mod": "2018-01-11T20:28:21",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "3dcb9ebf",
+              "x": 291.073,
+              "y": 537.669,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-01-11T20:28:11",
+                  "mod": "2018-01-11T20:28:13",
+                  "lines": [
+                    0
+                  ],
+                  "text": "Fixed",
+                  "uuid": "441a96b2"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -122,6 +190,67 @@
           ],
           "text": "And I still need to improve the file dialogs.",
           "uuid": "a55cd772"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T20:20:30",
+      "mod": "2018-01-11T20:20:30",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "47a3463b",
+      "y0": 481.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T20:20:30",
+          "mod": "2018-01-11T20:20:30",
+          "text": "",
+          "uuid": "98aab178"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T20:21:09",
+      "mod": "2018-01-11T20:21:23",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "df9cb791",
+      "y0": 508.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T20:21:09",
+          "mod": "2018-01-11T20:21:23",
+          "lines": [
+            0
+          ],
+          "text": "I should make the part visible while dragging.",
+          "uuid": "d4ba61ca"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-11T20:21:35",
+      "mod": "2018-01-11T20:21:59",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "53339bc0",
+      "y0": 536.154,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-11T20:21:35",
+          "mod": "2018-01-11T20:21:59",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "Bug: While routing a new connection, rubberband selection shows up when dragging from a new click.",
+          "uuid": "faa3c9c7"
         }
       ]
     }
