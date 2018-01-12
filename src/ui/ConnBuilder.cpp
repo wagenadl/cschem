@@ -46,6 +46,7 @@ public:
   int fromId, toId; // could refer to a new junction!
   QString fromPin, toPin;
   QList<QGraphicsLineItem *> segments;
+  bool horstart, verstart;
 };
 
 void ConnBuilderData::reset() {
@@ -54,6 +55,7 @@ void ConnBuilderData::reset() {
   toId = -1;
   toPin = "";
   majorcon = -1;
+  horstart = verstart = false;
 
   for (auto seg: segments)
     delete seg;
@@ -305,10 +307,16 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
   QPointF p1;
   int L = d->points.size();
   if (N==2 || L<2) {
-    // arbitrary direction for now
-    p1 = (abs(dp.x()) > abs(dp.y()))
-      ? QPoint(p.x(), p0.y())
-      : QPoint(p0.x(), p.y());
+    if (!d->verstart && !d->horstart) {
+      if (dp.manhattanLength() > 15) {
+        if (abs(dp.x()) > abs(dp.y()))
+          d->horstart = true;
+        else
+          d->verstart = true;
+      }
+    }
+    bool usehor = (d->horstart || abs(dp.x()) > abs(dp.y())) && !d->verstart;
+    p1 = usehor ? QPoint(p.x(), p0.y()) : QPoint(p0.x(), p.y());
   } else {
     QPointF dp0 = p0 - d->points[L-2];
     // enforce a corner

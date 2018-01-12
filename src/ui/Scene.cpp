@@ -325,6 +325,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 
   if (d->connbuilder) {
     d->connbuilder->mousePress(e);
+    e->accept();
     update();
   } else {
     if (d->hovermanager->onPin()) {
