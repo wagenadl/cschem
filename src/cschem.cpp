@@ -12,9 +12,18 @@
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
-  MainWindow mw;
-  //  mw.load("../doc/example.xml");
-  mw.show();
-  //  mw.resize(mw.size()*2);
+  QList<MainWindow *> mws;
+  if (argc == 1) {
+    mws << new MainWindow;
+  } else {
+    for (int i=1; i<argc; i++) {
+      MainWindow *mw = new MainWindow;
+      mw->load(argv[i]);
+      mws << mw;
+    }
+  }
+  for (auto *mw: mws)
+    mw->show();
+
   return app.exec();
 }
