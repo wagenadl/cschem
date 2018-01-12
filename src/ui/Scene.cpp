@@ -633,6 +633,7 @@ void Scene::removeDangling() {
 }
 
 void Scene::plonk(QString symbol, QPointF scenepos) {
+  clearSelection();
   qDebug() << "plonk" << symbol << scenepos;
   QPoint pt = d->lib->downscale(scenepos);
   Element elt;
@@ -650,22 +651,37 @@ void Scene::plonk(QString symbol, QPointF scenepos) {
 }
 
 void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
+  d->hovermanager->update(e->scenePos());
   QMimeData const *md = e->mimeData();
   qDebug() << "drag enter" << md->formats();
-  if (md->hasFormat("application/x-dnd-cschem"))
+  if (md->hasFormat("application/x-dnd-cschem")) {
+    d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::None);
     e->accept();
-  else
+  } else {
     e->ignore();
+  }
 }
 
-void Scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *) {
+void Scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *e) {
+  d->hovermanager->setPrimaryPurpose((d->connbuilder ||
+                                      e->modifiers() & Qt::ShiftModifier)
+                                     ? HoverManager::Purpose::Connecting
+                                     : HoverManager::Purpose::Moving);
+  d->hovermanager->update(e->scenePos());
 }
 
 void Scene::dragMoveEvent(QGraphicsSceneDragDropEvent *e) {
+  d->hovermanager->update(e->scenePos());
   e->accept();
 }
 
 void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
+  d->hovermanager->setPrimaryPurpose((d->connbuilder ||
+                                      e->modifiers() & Qt::ShiftModifier)
+                                     ? HoverManager::Purpose::Connecting
+                                     : HoverManager::Purpose::Moving);
+  d->hovermanager->update(e->scenePos());
+
   QMimeData const *md = e->mimeData();
   qDebug() << "drop" << md->formats();
   if (md->hasFormat("application/x-dnd-cschem")) {
