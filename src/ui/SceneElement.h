@@ -39,7 +39,6 @@ public:
   void showLabel();
   void hideLabel();
   void rebuild();
-  void rebuild(class Element const &);
   void hover();
   void unhover();
   QRectF boundingRect() const override;

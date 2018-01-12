@@ -239,21 +239,32 @@ void SceneElement::rebuild() {
   // Reconstruct element
   Circuit const &circ = d->scene->circuit();
   Element elt(circ.element(d->id));
-
-  rebuild(elt);
-
   PartLibrary const *lib = d->scene->library();
   Part const &part = lib->part(elt.symbol());
+
+  prepareGeometryChange();
   
-  // origin for labels
-  QRectF bb = part.shiftedBBox();
-  QPointF p0 = bb.center();
+  QPointF orig = part.bbOrigin();
   QTransform xf;
+  xf.translate(orig.x(), orig.y());
   xf.rotate(elt.rotation()*-90);
   if (elt.isFlipped())
     xf.scale(-1, 1);
-  p0 = xf.map(p0);
-  bb = xf.mapRect(bb);
+  xf.translate(-orig.x(), -orig.y());
+  d->element->setTransform(xf);
+  d->element->setPos(part.shiftedBBox().topLeft());
+
+  setPos(lib->scale() * elt.position());
+
+  // origin for labels
+  QRectF bb = part.shiftedBBox();
+  QPointF p0 = bb.center();
+  QTransform xfl;
+  xfl.rotate(elt.rotation()*-90);
+  if (elt.isFlipped())
+    xfl.scale(-1, 1);
+  p0 = xfl.map(p0);
+  bb = xfl.mapRect(bb);
   
   // Reconstruct name
   if (elt.isNameVisible()) {
@@ -315,25 +326,6 @@ void SceneElement::rebuild() {
   } else if (d->value) {
     d->value->hide();
   }
-}
-
-void SceneElement::rebuild(Element const &elt) {
-  /* This part of rebuild does not take care of annotations. */
-  prepareGeometryChange();
-  
-  PartLibrary const *lib = d->scene->library();
-  Part const &part = lib->part(elt.symbol());
-  QPointF orig = part.bbOrigin();
-  QTransform xf;
-  xf.translate(orig.x(), orig.y());
-  xf.rotate(elt.rotation()*-90);
-  if (elt.isFlipped())
-    xf.scale(-1, 1);
-  xf.translate(-orig.x(), -orig.y());
-  d->element->setTransform(xf);
-  d->element->setPos(part.shiftedBBox().topLeft());
-
-  setPos(lib->scale() * elt.position());
 }
 
 Scene *SceneElement::scene() {

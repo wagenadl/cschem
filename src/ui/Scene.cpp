@@ -12,6 +12,7 @@
 #include "Clipboard.h"
 #include <QMimeData>
 #include "SceneAnnotation.h"
+#include "FloatingPart.h"
 
 class SceneData {
 public:
@@ -82,8 +83,10 @@ public:
   void rebuildAsNeeded(CircuitMod const &cm);
   void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
   void backspace();
-  void showDragging(QString sym, QPointF sp);
-  void hideDragging();
+  void startPartDragIn(QString sym, QPointF sp);
+  bool startSvgDragIn(QString fn, QPointF sp);
+  void moveDragIn(QPointF sp);
+  void hideDragIn();
   bool importAndPlonk(QString filename, QPointF sp);
 public:
   Scene *scene;
@@ -98,7 +101,7 @@ public:
   QList<Circuit> redobuffer;
   QList< QSet<int> > redoselections;
   ConnBuilder *connbuilder;
-  class SceneElement *dragin;
+  FloatingPart *dragin;
 };
 
 void SceneData::startConnectionFromPin(QPointF pos) {
@@ -640,28 +643,37 @@ void Scene::removeDangling() {
   d->rebuildAsNeeded(cm);
 }
 
-void SceneData::showDragging(QString symbol, QPointF scenepos) {
-  if (dragin && dragin->symbol() != symbol) {
-    delete dragin;
-    dragin = 0;
-  }
-
-  QPoint pt = lib->downscale(scenepos);
-  Element elt;
-  if (symbol.startsWith("part:"))
-    elt = Element::component(symbol.mid(5), pt);
-  else if (symbol.startsWith("port:"))
-    elt = Element::port(symbol.mid(5), pt);
+void SceneData::startPartDragIn(QString symbol, QPointF pos) {
   if (dragin)
-    dragin->rebuild(elt);
-  else
-    dragin = new SceneElement(scene, elt);
+    delete dragin;
+  dragin = new FloatingPart(lib->part(symbol), pos);
+  scene->addItem(dragin);
+  moveDragIn(pos);
 }
 
-void SceneData::hideDragging() {
+void SceneData::moveDragIn(QPointF scenepos) {
+  QPointF pt = lib->nearestGrid(scenepos);
+  if (dragin)
+    dragin->setPartPosition(pt);
+}
+
+void SceneData::hideDragIn() {
   if (dragin)
     delete dragin;
   dragin = 0;
+}
+
+bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
+  PartLibrary pl(filename);
+  if (pl.partNames().isEmpty())
+    return false;
+  Part part = pl.part(pl.partNames().first());
+  if (dragin)
+    delete dragin;
+  dragin = new FloatingPart(part, pos);
+  scene->addItem(dragin);
+  moveDragIn(pos);
+  return true;
 }
 
 bool SceneData::importAndPlonk(QString filename, QPointF pos) {
@@ -720,18 +732,27 @@ void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
   qDebug() << "drag enter" << md->formats();
   if (md->hasFormat("application/x-dnd-cschem")) {
     d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::None);
+    d->startPartDragIn(QString(md->data("application/x-dnd-cschem")),
+		   e->scenePos());
     e->accept();
   } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
     qDebug() << "urls" << urls;
-    bool take = false;
-    for (QUrl url: urls)
-      if (url.isLocalFile() && url.path().endsWith(".svg"))
-        take = true;
-    if (take)
-      e->accept();
-    else
+    QString fn;
+    for (QUrl url: urls) {
+      if (url.isLocalFile() && url.path().endsWith(".svg")) {
+	fn = url.path();
+	break;
+      }
+    }
+    if (!fn.isEmpty()) {
+      if (d->startSvgDragIn(fn, e->scenePos()))
+	e->accept();
+      else
+	e->ignore();
+    } else {
       e->ignore();
+    }
   } else {
     e->ignore();
   }
@@ -743,16 +764,12 @@ void Scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *e) {
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
-  d->hideDragging();
+  d->hideDragIn();
 }
 
 void Scene::dragMoveEvent(QGraphicsSceneDragDropEvent *e) {
   d->hovermanager->update(e->scenePos());
-  QMimeData const *md = e->mimeData();
-  qDebug() << "move" << md->formats();
-  if (md->hasFormat("application/x-dnd-cschem"))
-    d->showDragging(QString(md->data("application/x-dnd-cschem")),
-                    e->scenePos());
+  d->moveDragIn(e->scenePos());
   e->accept();
 }
 
@@ -762,7 +779,7 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
-  d->hideDragging();
+  d->hideDragIn();
 
   QMimeData const *md = e->mimeData();
   qDebug() << "drop" << md->formats();

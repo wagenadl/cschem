@@ -48,7 +48,7 @@ double Style::selectionRectRadius() {
 
 
 double Style::connectionHoverWidthFactor() {
-  return 3;
+  return 4.5;
 }
 
 
