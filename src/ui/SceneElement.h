@@ -31,6 +31,7 @@ public:
 public:
   class Scene *scene();
   int id() const;
+  QString symbol() const;
   void showName();
   void hideName();
   void showValue();
@@ -38,6 +39,7 @@ public:
   void showLabel();
   void hideLabel();
   void rebuild();
+  void rebuild(class Element const &);
   void hover();
   void unhover();
   QRectF boundingRect() const override;

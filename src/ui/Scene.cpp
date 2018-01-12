@@ -19,6 +19,7 @@ public:
     scene(scene), lib(lib) {
     hovermanager = 0;
     connbuilder = 0;
+    dragin = 0;
   }
   void rebuild();
   void keyPressAnywhere(QKeyEvent *);
@@ -81,6 +82,8 @@ public:
   void rebuildAsNeeded(CircuitMod const &cm);
   void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
   void backspace();
+  void showDragging(QString sym, QPointF sp);
+  void hideDragging();
 public:
   Scene *scene;
   PartLibrary const *lib;
@@ -94,6 +97,7 @@ public:
   QList<Circuit> redobuffer;
   QList< QSet<int> > redoselections;
   ConnBuilder *connbuilder;
+  class SceneElement *dragin;
 };
 
 void SceneData::startConnectionFromPin(QPointF pos) {
@@ -635,7 +639,32 @@ void Scene::removeDangling() {
   d->rebuildAsNeeded(cm);
 }
 
-void Scene::plonk(QString symbol, QPointF scenepos) {
+void SceneData::showDragging(QString symbol, QPointF scenepos) {
+  if (dragin && dragin->symbol() != symbol) {
+    delete dragin;
+    dragin = 0;
+  }
+
+  QPoint pt = lib->downscale(scenepos);
+  Element elt;
+  if (symbol.startsWith("part:"))
+    elt = Element::component(symbol.mid(5), pt);
+  else if (symbol.startsWith("port:"))
+    elt = Element::port(symbol.mid(5), pt);
+  if (dragin)
+    dragin->rebuild(elt);
+  else
+    dragin = new SceneElement(scene, elt);
+}
+
+void SceneData::hideDragging() {
+  if (dragin)
+    delete dragin;
+  dragin = 0;
+}
+
+
+void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
   clearSelection();
   qDebug() << "plonk" << symbol << scenepos;
   QPoint pt = d->lib->downscale(scenepos);
@@ -649,6 +678,11 @@ void Scene::plonk(QString symbol, QPointF scenepos) {
     d->preact();
     CircuitMod cm(d->circ, d->lib);
     cm.addElement(elt);
+    if (merge) {
+      QSet<int> ee;
+      ee << elt.id();
+      cm.mergeSelection(ee);
+    }
     d->rebuildAsNeeded(cm);
   } 
 }
@@ -671,10 +705,16 @@ void Scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *e) {
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
+  d->hideDragging();
 }
 
 void Scene::dragMoveEvent(QGraphicsSceneDragDropEvent *e) {
   d->hovermanager->update(e->scenePos());
+  QMimeData const *md = e->mimeData();
+  qDebug() << "drop" << md->formats();
+  if (md->hasFormat("application/x-dnd-cschem"))
+    d->showDragging(QString(md->data("application/x-dnd-cschem")),
+                    e->scenePos());
   e->accept();
 }
 
@@ -684,11 +724,12 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
+  d->hideDragging();
 
   QMimeData const *md = e->mimeData();
   qDebug() << "drop" << md->formats();
   if (md->hasFormat("application/x-dnd-cschem")) {
-    plonk(QString(md->data("application/x-dnd-cschem")), e->scenePos());
+    plonk(QString(md->data("application/x-dnd-cschem")), e->scenePos(), true);
     e->accept();
   } else {
     e->ignore();

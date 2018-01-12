@@ -154,25 +154,25 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
   //
   d->scene = parent;
   d->id = elt.id();
-  QString sym = elt.symbol();
+  d->sym = elt.symbol();
 
   PartLibrary const *lib = d->scene->library();
-  Part const &part = lib->part(sym);
+  Part const &part = lib->part(d->sym);
   if (!part.isValid())
-    qDebug() << "Cannot find svg for symbol" << sym;
+    qDebug() << "Cannot find svg for symbol" << d->sym;
 
-  QSvgRenderer *r = lib->renderer(sym).data();
+  QSvgRenderer *r = lib->renderer(d->sym).data();
 
   d->element = new QGraphicsSvgItem(this);
   if (r)
     d->element->setSharedRenderer(r);
   else
-    qDebug() << "Cannot construct renderer for symbol" << sym;    
+    qDebug() << "Cannot construct renderer for symbol" << d->sym;    
   
   parent->addItem(this);
   rebuild();
 
-  if (sym == "junction")
+  if (d->sym == "junction")
     setZValue(20);
   else
     setZValue(10);
@@ -236,33 +236,23 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 
 void SceneElement::rebuild() {
   // Reconstruct element
-  prepareGeometryChange();
-  
-  PartLibrary const *lib = d->scene->library();
   Circuit const &circ = d->scene->circuit();
-  Part const &part = lib->part(circ.element(d->id).symbol());
-  QPointF orig = part.bbOrigin();
-  QTransform xf;
-  xf.translate(orig.x(), orig.y());
-  xf.rotate(circ.element(d->id).rotation()*-90);
-  if (circ.element(d->id).isFlipped())
-    xf.scale(-1, 1);
-  xf.translate(-orig.x(), -orig.y());
-  d->element->setTransform(xf);
-  d->element->setPos(part.shiftedBBox().topLeft());
+  Element elt(circ.element(d->id));
 
-  setPos(lib->scale() * circ.element(d->id).position());
+  rebuild(elt);
 
+  PartLibrary const *lib = d->scene->library();
+  Part const &part = lib->part(elt.symbol());
+  
   // origin for labels
   QPointF p0 = part.shiftedBBox().center();
-  xf = QTransform();
-  xf.rotate(circ.element(d->id).rotation()*-90);
-  if (circ.element(d->id).isFlipped())
+  QTransform xf;
+  xf.rotate(elt.rotation()*-90);
+  if (elt.isFlipped())
     xf.scale(-1, 1);
   p0 = xf.map(p0);
   
   // Reconstruct name
-  Element elt(circ.element(d->id));
   if (elt.isNameVisible()) {
     qDebug() << "name visible on" << elt.report();
     if (d->name) {
@@ -320,6 +310,25 @@ void SceneElement::rebuild() {
   } else if (d->value) {
     d->value->hide();
   }
+}
+
+void SceneElement::rebuild(Element const &elt) {
+  /* This part of rebuild does not take care of annotations. */
+  prepareGeometryChange();
+  
+  PartLibrary const *lib = d->scene->library();
+  Part const &part = lib->part(elt.symbol());
+  QPointF orig = part.bbOrigin();
+  QTransform xf;
+  xf.translate(orig.x(), orig.y());
+  xf.rotate(elt.rotation()*-90);
+  if (elt.isFlipped())
+    xf.scale(-1, 1);
+  xf.translate(-orig.x(), -orig.y());
+  d->element->setTransform(xf);
+  d->element->setPos(part.shiftedBBox().topLeft());
+
+  setPos(lib->scale() * elt.position());
 }
 
 Scene *SceneElement::scene() {
@@ -391,4 +400,8 @@ void SceneElement::paint(QPainter *painter,
 QRectF SceneElement::boundingRect() const {
   return d->element->mapRectToParent(d->element->boundingRect()
 				     .adjusted(-2, -2, 2, 2));
+}
+
+QString SceneElement::symbol() const {
+  return d->sym;
 }

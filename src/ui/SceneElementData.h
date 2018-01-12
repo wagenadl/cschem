@@ -33,6 +33,7 @@ public slots:
 public:
   class Scene *scene;
   int id;
+  QString sym;
   class QGraphicsSvgItem *element;
   class SceneAnnotation *name;
   class SceneAnnotation *value;

@@ -35,7 +35,7 @@ public:
   void undo();
   void redo();
   void removeDangling();
-  void plonk(QString symbol, QPointF scenepos);
+  void plonk(QString symbol, QPointF scenepos, bool merge=false);
   void makeUndoStep();
   void rotate(int dir=1);
   void flipx();
