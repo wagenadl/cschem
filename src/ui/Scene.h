@@ -12,7 +12,7 @@
 class Scene: public QGraphicsScene {
   Q_OBJECT;
 public:
-  Scene(PartLibrary const *lib, QObject *parent=0);
+  Scene(PartLibrary *lib, QObject *parent=0);
   ~Scene();
   void setCircuit(Circuit const &);
   void setComponentValue(int eltid, QString value);

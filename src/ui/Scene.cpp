@@ -15,7 +15,7 @@
 
 class SceneData {
 public:
-  SceneData(Scene *scene, PartLibrary const *lib):
+  SceneData(Scene *scene, PartLibrary *lib):
     scene(scene), lib(lib) {
     hovermanager = 0;
     connbuilder = 0;
@@ -84,9 +84,10 @@ public:
   void backspace();
   void showDragging(QString sym, QPointF sp);
   void hideDragging();
+  bool importAndPlonk(QString filename, QPointF sp);
 public:
   Scene *scene;
-  PartLibrary const *lib;
+  PartLibrary *lib;
   Circuit circ;
   QMap<int, class SceneElement *> elts;
   QMap<int, class SceneConnection *> conns;
@@ -183,7 +184,7 @@ Scene::~Scene() {
   delete d;
 }
   
-Scene::Scene(PartLibrary const *lib, QObject *parent):
+Scene::Scene(PartLibrary *lib, QObject *parent):
   QGraphicsScene(parent) {
   d = new SceneData(this, lib);
   d->hovermanager = new HoverManager(this);
@@ -663,6 +664,31 @@ void SceneData::hideDragging() {
   dragin = 0;
 }
 
+bool SceneData::importAndPlonk(QString filename, QPointF pos) {
+  qDebug() << "import" << filename << "at" << pos << "NYI";
+  PartLibrary pl(filename);
+  if (pl.partNames().isEmpty())
+    return false;
+  lib->merge(filename); // I should allow merging two libraries directly
+  // or else I should make merge return a list of parts successfully merged.
+
+  scene->clearSelection();
+  QString symbol = pl.partNames().first();
+  
+  QPoint pt = lib->downscale(pos);
+  Element elt;
+  if (symbol.startsWith("part:"))
+    elt = Element::component(symbol.mid(5), pt);
+  else if (symbol.startsWith("port:"))
+    elt = Element::port(symbol.mid(5), pt);
+
+  if (elt.isValid()) {
+    preact();
+    CircuitMod cm(circ, lib);
+    cm.addElement(elt);
+    rebuildAsNeeded(cm);
+  } 
+}
 
 void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
   clearSelection();
@@ -694,6 +720,17 @@ void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
   if (md->hasFormat("application/x-dnd-cschem")) {
     d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::None);
     e->accept();
+  } else if (md->hasUrls()) {
+    QList<QUrl> urls = md->urls();
+    qDebug() << "urls" << urls;
+    bool take = false;
+    for (QUrl url: urls)
+      if (url.isLocalFile() && url.path().endsWith(".svg"))
+        take = true;
+    if (take)
+      e->accept();
+    else
+      e->ignore();
   } else {
     e->ignore();
   }
@@ -711,7 +748,7 @@ void Scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *e) {
 void Scene::dragMoveEvent(QGraphicsSceneDragDropEvent *e) {
   d->hovermanager->update(e->scenePos());
   QMimeData const *md = e->mimeData();
-  qDebug() << "drop" << md->formats();
+  qDebug() << "move" << md->formats();
   if (md->hasFormat("application/x-dnd-cschem"))
     d->showDragging(QString(md->data("application/x-dnd-cschem")),
                     e->scenePos());
@@ -731,6 +768,17 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
   if (md->hasFormat("application/x-dnd-cschem")) {
     plonk(QString(md->data("application/x-dnd-cschem")), e->scenePos(), true);
     e->accept();
+  } else if (md->hasUrls()) {
+    QList<QUrl> urls = md->urls();
+    qDebug() << "urls" << urls;
+    bool take = false;
+    for (QUrl url: urls)
+      if (url.isLocalFile() && url.path().endsWith(".svg"))
+        take = d->importAndPlonk(url.path(), e->scenePos());
+    if (take)
+      e->accept();
+    else
+      e->ignore();
   } else {
     e->ignore();
   }
