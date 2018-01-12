@@ -11,11 +11,12 @@ class LibView: public QGraphicsView {
 public:
   explicit LibView(QWidget *parent=0);
   explicit LibView(class PartLibrary const *lib, QWidget *parent=0);
-  void rebuild(class PartLibrary const *lib);
   void scale(double);
   ~LibView();
 signals:
   void activated(QString);
+public slots:
+  void rebuild(class PartLibrary const *lib=0);
 public:
   void activate(QString); // causes the signal to be emitted
   friend class LibViewData;

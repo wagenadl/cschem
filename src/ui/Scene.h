@@ -56,6 +56,7 @@ public:
   void annotationInternallyEdited(int id);
 signals:
   void annotationEdited(int id);
+  void libraryChanged();
 private:
   class SceneData *d;
 };

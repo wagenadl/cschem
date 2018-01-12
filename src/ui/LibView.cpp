@@ -25,15 +25,16 @@ private:
 
 class LibViewData {
 public:
-  LibViewData(LibView *view): view(view), scene(new QGraphicsScene) {
+  LibViewData(LibView *view): view(view), scene(new QGraphicsScene), lib(0) {
   }
   ~LibViewData() {
     delete scene; // that deletes the items, right?
   }
-  void addPart(PartLibrary const *lib, QString part);
+  void addPart(QString part);
 public:
   LibView *view;
   QGraphicsScene *scene;
+  PartLibrary const *lib;
   QMap<QString, QGraphicsSvgItem *> items;
 };
 
@@ -65,8 +66,8 @@ void LibViewElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
 
 
 
-void LibViewData::addPart(PartLibrary const *lib, QString part) {
-  double y = items.isEmpty() ? 0 : scene->sceneRect().bottom() + 14;
+void LibViewData::addPart(QString part) {
+  double y = items.isEmpty() ? 0 : scene->itemsBoundingRect().bottom() + 14;
   QGraphicsSvgItem *item = new LibViewElement(part, view);
   item->setSharedRenderer(lib->part(part).renderer().data());
   scene->addItem(item);
@@ -86,17 +87,25 @@ LibView::LibView(class PartLibrary const *lib, QWidget *parent):
   rebuild(lib);
 }
 void LibView::rebuild(class PartLibrary const *lib) {
+  if (lib)
+    d->lib = lib;
+
   for (auto *i: d->items)
     delete i;
   d->items.clear();
 
-  QStringList parts = lib->partNames();
+  d->scene->setSceneRect(d->scene->itemsBoundingRect());
+   
+  if (!d->lib)
+    return;
+
+  QStringList parts = d->lib->partNames();
   std::sort(parts.begin(), parts.end(),
 	    [](QString a, QString b) { return a.toLower() < b.toLower(); });
   qDebug() << "partnames" << parts;
   for (QString s: parts) 
     if (s.startsWith("port:") || s.startsWith("part:"))
-      d->addPart(lib, s);
+      d->addPart(s);
 
   QRectF r = d->scene->itemsBoundingRect();
   

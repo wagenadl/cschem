@@ -73,6 +73,10 @@ public:
     redobuffer.clear();
     redoselections.clear();
   }
+  void unact() {
+    undobuffer.removeLast();
+    undoselections.removeLast();
+  }
   QSet<int> selectedElements() const;
   void rotateElement(int id, int steps=1);
   void rotateSelection(int steps=1);
@@ -87,7 +91,7 @@ public:
   bool startSvgDragIn(QString fn, QPointF sp);
   void moveDragIn(QPointF sp);
   void hideDragIn();
-  bool importAndPlonk(QString filename, QPointF sp);
+  bool importAndPlonk(QString filename, QPointF sp, bool merge=true);
 public:
   Scene *scene;
   PartLibrary *lib;
@@ -676,7 +680,7 @@ bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
   return true;
 }
 
-bool SceneData::importAndPlonk(QString filename, QPointF pos) {
+bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
   qDebug() << "import" << filename << "at" << pos << "NYI";
   PartLibrary pl(filename);
   if (pl.partNames().isEmpty())
@@ -684,7 +688,6 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos) {
   lib->merge(filename); // I should allow merging two libraries directly
   // or else I should make merge return a list of parts successfully merged.
 
-  scene->clearSelection();
   QString symbol = pl.partNames().first();
   
   QPoint pt = lib->downscale(pos);
@@ -695,11 +698,16 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos) {
     elt = Element::port(symbol.mid(5), pt);
 
   if (elt.isValid()) {
-    preact();
     CircuitMod cm(circ, lib);
     cm.addElement(elt);
+    if (merge) {
+      QSet<int> ee;
+      ee << elt.id();
+      cm.mergeSelection(ee);
+    }
     rebuildAsNeeded(cm);
   }
+
   return true;
 }
 
@@ -790,13 +798,18 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
     QList<QUrl> urls = md->urls();
     qDebug() << "urls" << urls;
     bool take = false;
+    d->preact();
+    clearSelection();
     for (QUrl url: urls)
       if (url.isLocalFile() && url.path().endsWith(".svg"))
-        take = d->importAndPlonk(url.path(), e->scenePos());
-    if (take)
-      e->accept();
-    else
+        take = d->importAndPlonk(url.path(), e->scenePos(), true);
+    if (take) {
+        emit libraryChanged();
+	e->accept();
+    } else {
+      d->unact();
       e->ignore();
+    }
   } else {
     e->ignore();
   }

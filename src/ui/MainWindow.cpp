@@ -332,6 +332,8 @@ void MainWindow::create() {
 
   connect(d->scene, &Scene::annotationEdited,
           this, &MainWindow::reactToSceneEdit);
+  connect(d->scene, SIGNAL(libraryChanged()),
+	  d->libview, SLOT(rebuild()));
 }
 
 void MainWindow::load(QString fn) {
