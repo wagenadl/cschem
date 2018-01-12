@@ -56,6 +56,17 @@ MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
   d->view->scale(1.5, 1.5);
   d->libview->scale(1.5);
   create();
+  int w0 = 10 * d->libview->width();
+  int h0 = 3 * w0 / 4;
+  qDebug() << w0 << h0;
+  int w = width();
+  int h = height();
+  if (w < w0)
+    w = w0;
+  if (h < h0)
+    h = h0;
+  resize(w, h);
+  d->partlistviewdock->hide();
 }
 
 void MainWindow::createDocks() {

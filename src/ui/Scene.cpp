@@ -289,6 +289,8 @@ void Scene::moveSelection(QPointF delta) {
       cm.removeOverlappingJunctions(id);
     for (int id: fromcons)
       cm.adjustOverlappingConnections(id);
+    for (int id: tocons)
+      cm.adjustOverlappingConnections(id);
 
     // Just a little sanity check
     Circuit newcirc = cm.circuit();

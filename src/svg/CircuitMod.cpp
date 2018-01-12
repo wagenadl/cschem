@@ -496,6 +496,7 @@ bool CircuitMod::simplifySegment(int id, int seg) {
        SceneConnection::mouseDoubleClickEvent()? */
   } else {
     d->insert(con);
+    adjustOverlappingConnections(con.id());
   }
   return true;
 }
