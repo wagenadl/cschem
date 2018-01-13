@@ -39,6 +39,7 @@ public:
   class SceneAnnotation *name;
   class SceneAnnotation *value;
   QSharedPointer<class QSvgRenderer> renderer;
+  QPointF delta0;
 public:
   bool dragmoved;
   bool hover;

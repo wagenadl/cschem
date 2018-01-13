@@ -305,3 +305,10 @@ int HoverManager::segment() const {
 void HoverManager::unhover() {
   d->unhover();
 }
+
+void HoverManager::formSelection(QSet<int>) {
+}
+
+QPointF HoverManager::tentativelyMoveSelection(QPointF delta) {
+  return d->scene->library()->nearestGrid(delta);
+}

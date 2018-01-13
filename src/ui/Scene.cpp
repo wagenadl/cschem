@@ -260,12 +260,17 @@ QSet<int> Scene::selectedElements() const {
   return d->selectedElements();
 }
 
-void Scene::tentativelyMoveSelection(QPointF delta) {
+void Scene::tentativelyMoveSelection(QPointF delta, bool first) {
   QSet<int> selection = selectedElements();
+  if (first)
+    d->hovermanager->formSelection(selection);
+  delta = d->hovermanager->tentativelyMoveSelection(delta);
   QSet<int> internalcons = d->circ.connectionsIn(selection);
   QSet<int> fromcons = d->circ.connectionsFrom(selection) - internalcons;
   QSet<int> tocons = d->circ.connectionsTo(selection) - internalcons;
 
+  for (int id: selection)
+    d->elts[id]->temporaryTranslate(delta);
   for (int id: internalcons)
     d->conns[id]->temporaryTranslate(delta);
   for (int id: fromcons)

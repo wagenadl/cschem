@@ -206,20 +206,24 @@ void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
 
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
+  Circuit const &circ = d->scene->circuit();
+  PartLibrary const *lib = d->scene->library();
+  d->delta0 = lib->upscale(circ.element(d->id).position()) - e->scenePos();
   qDebug() << "Element Mouse press" << e->pos() << pos();
   QGraphicsItem::mousePressEvent(e);
 }
 
 void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
-  QPointF newpos = pos();
-  QPointF oldpos = d->scene->library()->scale()
-    * d->scene->circuit().elements()[d->id].position();
+  auto const &lib = d->scene->library();
+  auto const &circ = d->scene->circuit();
+  QPointF newpos = e->scenePos() + d->delta0;
+  QPointF oldpos = lib->upscale(circ.element(d->id).position());
   qDebug() << "Mouse move" << newpos << oldpos;
   QGraphicsItem::mouseMoveEvent(e);
   
   if (d->dragmoved || newpos != oldpos) {
-    qDebug() << "Position changed";
-    d->scene->tentativelyMoveSelection(newpos - oldpos);
+    qDebug() << "Position changed" << newpos << oldpos;
+    d->scene->tentativelyMoveSelection(newpos - oldpos, !d->dragmoved);
     d->dragmoved = true;
   }
 }
@@ -235,6 +239,14 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     qDebug() << "Position changed";
     d->scene->moveSelection(newpos - oldpos);
   }
+}
+
+void SceneElement::temporaryTranslate(QPointF delta) {
+  Circuit const &circ = d->scene->circuit();
+  Element elt(circ.element(d->id));
+  PartLibrary const *lib = d->scene->library();
+
+  setPos(lib->upscale(elt.position()) + delta);
 }
 
 void SceneElement::rebuild() {

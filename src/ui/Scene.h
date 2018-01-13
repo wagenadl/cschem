@@ -21,7 +21,7 @@ public:
   Circuit &circuit();
   QPointF pinPosition(int partid, QString pin) const;
   void moveSelection(QPointF delta);
-  void tentativelyMoveSelection(QPointF delta);
+  void tentativelyMoveSelection(QPointF delta, bool first);
   QSet<int> selectedElements() const;
   QMap<int, class SceneElement *> const &elements() const;
   QMap<int, class SceneConnection *> const &connections() const;
