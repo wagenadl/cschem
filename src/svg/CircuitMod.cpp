@@ -434,7 +434,7 @@ bool CircuitMod::simplifySegment(int id, int seg) {
       // Move us, eliminate shortest neighbor. I think this works for both
       // zigzag and U-turn.
       // (Actual removal happens later through simplifiedPath
-      bool rmnext = forcenext || abs(dx1) <= abs(dx3);
+      bool rmnext = forcenext || abs(dx3) <= abs(dx1);
       if (forcefirst)
         rmnext = false;
       if (rmnext) {
@@ -450,7 +450,7 @@ bool CircuitMod::simplifySegment(int id, int seg) {
       // Horizontal segment
       int dy1 = p1.y() - p0.y();
       int dy3 = p3.y() - p2.y();
-      bool rmnext = forcenext || abs(dy1) <= abs(dy3);
+      bool rmnext = forcenext || abs(dy3) <= abs(dy1);
       if (forcefirst)
         rmnext = false;
       if (rmnext) {
