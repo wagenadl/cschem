@@ -13,7 +13,7 @@
 class SCSegment: public QGraphicsLineItem {
 public:
   static const int UNDERLINGWIDTH = 10;
-  SCSegment(QGraphicsItem *parent=0):
+  SCSegment(SceneConnection *parent=0):
     QGraphicsLineItem(parent) {
     underling = new QGraphicsLineItem(this);
     underling->setZValue(-100);
@@ -21,7 +21,7 @@ public:
 			   Qt::SolidLine, Qt::FlatCap));
     underling->setFlag(ItemStacksBehindParent);
   }
-  SCSegment(QPointF p0, QGraphicsItem *parent=0):
+  SCSegment(QPointF p0, SceneConnection *parent=0):
     SCSegment(parent) {
     setLine(QLineF(p0, p0));
   }
@@ -43,20 +43,24 @@ private:
 
 class SceneConnectionData {
 public:
-  SceneConnectionData() {
-    scene = 0;
+  SceneConnectionData(SceneConnection *conn, Scene *scene):
+    conn(conn), scene(scene) {
     id = 0;
     hoverseg = 0;
     moveseg = -1;
     moveseg0 = 0;
     movesegN = 0;
+    reallymoving = false;
   }
   QPolygonF path() const;
   QPointF moveDelta(QPointF sp) const;
   QPen normalPen() const;
   QPen draftPen() const;
   bool isDangling() const;
+  void startRealMove();
+  void updateMove(QPointF delta);
 public:
+  SceneConnection *conn;
   Scene *scene;
   QList<SCSegment *> segments;
   int id;
@@ -65,6 +69,7 @@ public:
   QPolygonF origpath;
   SCSegment *moveseg0, *movesegN;
   int moveseg;
+  bool reallymoving;
 };
 
 bool SceneConnectionData::isDangling() const {
@@ -87,7 +92,7 @@ QPen SceneConnectionData::draftPen() const {
 QPointF SceneConnectionData::moveDelta(QPointF sp) const {
   if (moveseg<0)
     return QPointF();
-  QPointF delta = sp - movestart;
+  QPointF delta = scene->library()->nearestGrid(sp - movestart);
   QPointF ll = origpath[moveseg + 1] - origpath[moveseg];
   if (ll.isNull()) {
     // null line, don't know what to do exactly
@@ -101,7 +106,7 @@ QPointF SceneConnectionData::moveDelta(QPointF sp) const {
     // diag line, don't know what to do exactly
   }
   return delta;
-}  
+}
 
 QPolygonF SceneConnectionData::path() const {
   Connection const &c = scene->circuit().connection(id);
@@ -119,9 +124,7 @@ QPolygonF SceneConnectionData::path() const {
  }
 
 SceneConnection::SceneConnection(class Scene *parent, Connection const &c):
-  d(new SceneConnectionData) {
-
-  d->scene = parent;
+  d(new SceneConnectionData(this, parent)) {
   d->id = c.id();
 
   rebuild();
@@ -221,8 +224,6 @@ void SceneConnection::hover(int seg) {
 			   Style::connectionHoverWidthFactor()*lib->lineWidth(),
                            Qt::SolidLine, Qt::RoundCap));
   d->hoverseg->setZValue(-1);
-
-  
 }
 
 void SceneConnection::unhover() {
@@ -250,31 +251,53 @@ void SceneConnection::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   scene()->clearSelection();
   int seg = segmentAt(e->scenePos());
   d->moveseg = seg;
-  QPen draftPen(d->draftPen());
-  if (seg>=0) {
-    d->movestart = e->scenePos();
-    d->origpath = d->path();
-    qDebug() << "origpath" << d->origpath;
-    if (seg==0) {
-      if (!d->scene->circuit().connection(d->id).danglingStart()) {
-	d->moveseg0 = new SCSegment(d->origpath.first(), this);
-	addToGroup(d->moveseg0);
-	d->moveseg0->setPen(draftPen);
-      }
-    } else {
-      d->segments[seg-1]->setPen(draftPen);
+  d->movestart = e->scenePos();
+  d->origpath = d->path();
+  d->reallymoving = false;
+  e->accept();
+}
+
+void SceneConnectionData::startRealMove() {
+  QPen pen(draftPen());
+  origpath = path();
+  qDebug() << "origpath" << origpath;
+  if (moveseg==0) {
+    if (!scene->circuit().connection(id).danglingStart()) {
+      moveseg0 = new SCSegment(origpath.first(), conn);
+      conn->addToGroup(moveseg0);
+      moveseg0->setPen(pen);
     }
-    if (seg==d->segments.size()-1) {
-      if (!d->scene->circuit().connection(d->id).danglingEnd()) {
-	d->movesegN = new SCSegment(d->origpath.last(), this);
-	addToGroup(d->movesegN);
-	d->movesegN->setPen(draftPen);
-      }
-    } else {
-      d->segments[seg+1]->setPen(draftPen);
-    }      
-    e->accept();
+  } else {
+    segments[moveseg-1]->setPen(pen);
   }
+  if (moveseg==segments.size()-1) {
+    if (!scene->circuit().connection(id).danglingEnd()) {
+      movesegN = new SCSegment(origpath.last(), conn);
+      conn->addToGroup(movesegN);
+      movesegN->setPen(pen);
+    }
+  } else {
+    segments[moveseg+1]->setPen(pen);
+  }
+  reallymoving = true;
+}  
+
+void SceneConnectionData::updateMove(QPointF delta) {
+  QPointF p0 = moveseg - 1 < 0 ? origpath[0]
+                             : origpath[moveseg - 1];
+  QPointF p1 = origpath[moveseg] + delta;
+  QPointF p2 = origpath[moveseg + 1] + delta;
+  QPointF p3 = moveseg + 2  >= origpath.size()
+    ? origpath.last() : origpath[moveseg + 2];
+  segments[moveseg]->setLine(QLineF(p1, p2));
+  SCSegment *seg0 = moveseg - 1 < 0 ? moveseg0
+                                  : segments[moveseg - 1];
+  if (seg0)
+    seg0->setLine(QLineF(p0, p1));
+  SCSegment *segN = moveseg + 2 >= origpath.size() ? movesegN
+    : segments[moveseg + 1];
+  if (segN)
+    segN->setLine(QLineF(p2, p3));
 }
 
 void SceneConnection::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
@@ -283,29 +306,20 @@ void SceneConnection::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     return;
 
   QPointF delta = d->moveDelta(e->scenePos());
-  QPointF p0 = d->moveseg - 1 < 0 ? d->origpath[0]
-    : d->origpath[d->moveseg - 1];
-  QPointF p1 = d->origpath[d->moveseg] + delta;
-  QPointF p2 = d->origpath[d->moveseg + 1] + delta;
-  QPointF p3 = d->moveseg + 2  >= d->origpath.size()
-    ? d->origpath.last() : d->origpath[d->moveseg + 2];
-  d->segments[d->moveseg]->setLine(QLineF(p1, p2));
-  SCSegment *seg0 = d->moveseg - 1 < 0 ? d->moveseg0
-    : d->segments[d->moveseg - 1];
-  if (seg0)
-    seg0->setLine(QLineF(p0, p1));
-  SCSegment *segN = d->moveseg + 2 >= d->origpath.size() ? d->movesegN
-    : d->segments[d->moveseg + 1];
-  if (segN)
-    segN->setLine(QLineF(p2, p3));
+  
+  if (!d->reallymoving && !delta.isNull())
+    d->startRealMove();
+  
+  if (d->reallymoving) {
+    d->updateMove(delta);
+    hover(d->moveseg); // ? or not, this is a choice to be made
+  }
 }
 
 void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   qDebug() << "SceneConnection::mouseReleaseEvent";
   if (d->moveseg < 0)
     return;
-
-  PartLibrary const *lib = d->scene->library();
 
   if (d->moveseg0)
     delete d->moveseg0;
@@ -314,18 +328,22 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     delete d->movesegN;
   d->movesegN = 0;
 
-  setPath(d->origpath);
-  
-  QPolygonF path = d->origpath;
+  if (!d->reallymoving)
+    return; // easy, nothing happened
 
+  QPolygonF path = d->origpath;
+  setPath(path);
+  
+  auto const *lib = d->scene->library();
+  auto const &circ = d->scene->circuit();
   QPointF delta = d->moveDelta(e->scenePos());
   path[d->moveseg] += delta;
   path[d->moveseg+1] += delta;
   if (d->moveseg==0
-      && !d->scene->circuit().connection(d->id).danglingStart())
+      && !circ.connection(d->id).danglingStart())
     path.prepend(d->origpath.first());
   if (d->moveseg==d->segments.size()-1
-      && !d->scene->circuit().connection(d->id).danglingEnd())
+      && !circ.connection(d->id).danglingEnd())
     path.append(d->origpath.last());
   d->scene->modifyConnection(d->id, lib->simplifyPath(path));
 }

@@ -91,6 +91,7 @@ public:
   bool startSvgDragIn(QString fn, QPointF sp);
   void moveDragIn(QPointF sp);
   void hideDragIn();
+  QPointF dragInEltPos(QPointF Sp);
   bool importAndPlonk(QString filename, QPointF sp, bool merge=true);
 public:
   Scene *scene;
@@ -604,6 +605,9 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
   CircuitMod cm(d->circ, d->lib);
   if (cm.adjustOverlappingConnections(id))
     d->rebuildAsNeeded(cm);
+
+  d->hovermanager->unhover();
+  d->hovermanager->update(); // somehow this doesn't rehover
 }
 
 void Scene::copyToClipboard(bool cut) {
@@ -663,7 +667,16 @@ void SceneData::startPartDragIn(QString symbol, QPointF pos) {
 void SceneData::moveDragIn(QPointF scenepos) {
   QPointF pt = lib->nearestGrid(scenepos);
   if (dragin)
-    dragin->setPartPosition(pt);
+    dragin->setCMPosition(pt);
+}
+
+QPointF SceneData::dragInEltPos(QPointF scenepos) {
+  if (dragin) {
+    moveDragIn(scenepos);
+    return dragin->partPosition();
+  } else {
+    return scenepos;
+  }
 }
 
 void SceneData::hideDragIn() {
@@ -796,12 +809,13 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
+  QPointF droppos = d->dragInEltPos(e->scenePos());
   d->hideDragIn();
 
   QMimeData const *md = e->mimeData();
   qDebug() << "drop" << md->formats();
   if (md->hasFormat("application/x-dnd-cschem")) {
-    plonk(QString(md->data("application/x-dnd-cschem")), e->scenePos(), true);
+    plonk(QString(md->data("application/x-dnd-cschem")), droppos, true);
     e->accept();
   } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
