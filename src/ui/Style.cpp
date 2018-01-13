@@ -38,6 +38,10 @@ QColor Style::pinHighlightColor() {
   return QColor(0, 255, 128);
 }
 
+QColor Style::magnetHighlightColor() {
+  return QColor(0, 255, 0);
+}
+
 QColor Style::selectionColor() {
   return QColor(255, 240, 0, 176);
 }

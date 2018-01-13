@@ -31,8 +31,8 @@ public:
   QString pin() const; // "-" if none
   int connection() const; // -1 if none
   int segment() const; // -1 if not on connection
-  void formSelection(QSet<int>);
-  QPointF tentativelyMoveSelection(QPointF);
+  void formSelection(QSet<int> elts);
+  QPointF tentativelyMoveSelection(QPointF delta);
 private:
   class HoverManagerData *d;
 };

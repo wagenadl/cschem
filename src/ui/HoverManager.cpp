@@ -7,6 +7,24 @@
 #include <QGraphicsEllipseItem>
 #include <QDebug>
 #include "Style.h"
+#include "svg/Geometry.h"
+
+class PinMarker: public QGraphicsEllipseItem {
+public:
+  PinMarker(Scene *scene) {
+    setBrush(QBrush(QColor(128, 128, 128, 0))); // initially invisible
+    setPen(QPen(Qt::NoPen));
+    setZValue(-10);
+    scene->addItem(this);
+  }
+};
+
+struct PointInfo {
+  PointInfo(QPoint pt, int elt, QString pin): pt(pt), elt(elt), pin(pin) { }
+  QPoint pt;
+  int elt;
+  QString pin;
+};
 
 class HoverManagerData {
 public:
@@ -17,11 +35,10 @@ public:
     seg = -1;
     fakepin = false;
     isjunc = false;
-    pinMarker = 0;
     primaryPurpose = HoverManager::Purpose::Moving;
     r = scene->library()->scale();
+    pinMarker = 0;
   }
-  void ensurePinMarker();
   void update();
   bool onElement() const;
   bool onConnection() const;
@@ -43,31 +60,38 @@ public:
   int seg;
   bool fakepin;
   bool isjunc;
-  QGraphicsEllipseItem *pinMarker;
   SceneElement::WeakPtr hoverElt;
   SceneConnection::WeakPtr hoverCon;
   HoverManager::Purpose primaryPurpose;
+  QList<PointInfo> selectionPoints;
   double r;
+  QGraphicsEllipseItem *pinMarker;
+  QList<QGraphicsEllipseItem *> floatMarkers;
 };
 
-void HoverManagerData::ensurePinMarker() {
-  if (pinMarker)
-    return;
-  pinMarker = new QGraphicsEllipseItem;
-  pinMarker->setBrush(QBrush(QColor(128, 128, 128, 0))); // initially invisible
-  pinMarker->setPen(QPen(Qt::NoPen));
-  pinMarker->setZValue(-10);
-  scene->addItem(pinMarker);
+void HoverManager::formSelection(QSet<int> elts) {
+  Circuit const &circ = d->scene->circuit();
+  PartLibrary const *lib = d->scene->library();
+  Geometry geom(circ, lib);
+  d->selectionPoints.clear();
+  for (int e: elts) {
+    Element const &elt(circ.element(e));
+    Part const &part(lib->part(elt.symbol()));
+    for (QString p: part.pinNames()) 
+      d->selectionPoints
+        << PointInfo(geom.pinPosition(elt, p), e, p);
+  }
 }
 
 void HoverManagerData::highlightPin() {
-    ensurePinMarker();
-    pinMarker->setRect(QRectF(pinpos - QPointF(r, r), 2 * QSizeF(r, r)));
-    int N = scene->circuit().connectionsOn(elt, pin).size();
-    if (N==0)
-      pinMarker->setBrush(Style::danglingColor());
-    else
-      pinMarker->setBrush(Style::pinHighlightColor());
+  if (!pinMarker)
+    pinMarker = new PinMarker(scene);
+  pinMarker->setRect(QRectF(pinpos - QPointF(r, r), 2 * QSizeF(r, r)));
+  int N = scene->circuit().connectionsOn(elt, pin).size();
+  if (N==0)
+    pinMarker->setBrush(Style::danglingColor());
+  else
+    pinMarker->setBrush(Style::pinHighlightColor());
 }
 
 void HoverManagerData::highlightElement() {
@@ -167,26 +191,32 @@ void HoverManagerData::update() {
   auto const &cons = scene->connections();
   //  auto const &lib = scene->library();
   auto const &circ = scene->circuit();
-  
+
+  // see if previous element is still current
   if (elt>0)
     if (!elts.contains(elt))
       elt = -1;
   if (elt>0)
     if (!elts[elt]->boundingRect().contains(elts[elt]->mapFromScene(pt)))
       elt = -1;
+  // see if we are at an element
   if (elt<0)
     elt = scene->elementAt(pt);
 
+  // see if we are at a pin
   if (elt>0)
     pin = scene->pinAt(pt, elt);
   else
     pin = "-";
+
+  qDebug() << "update" << elt << pin << pt;
 
   if (elt>0)
     isjunc = circ.element(elt).type() == Element::Type::Junction;
   else
     isjunc = false;
 
+  // see if we previous connection is still current
   if (con>0)
     if (!cons.contains(con))
       con = -1;
@@ -195,6 +225,7 @@ void HoverManagerData::update() {
     if (seg<0)
       con = -1;
   }
+  // see if we are on a connection
   if (con<0)
     con = scene->connectionAt(pt, &seg);
 
@@ -243,7 +274,6 @@ void HoverManagerData::update() {
   }
 }
 
-
 HoverManager::HoverManager(Scene *scene): d(new HoverManagerData(scene)) {
 }
 
@@ -259,7 +289,6 @@ void HoverManager::setPrimaryPurpose(HoverManager::Purpose purpose) {
 HoverManager::Purpose HoverManager::primaryPurpose() const {
   return d->primaryPurpose;
 }
-
 
 void HoverManager::update() {
   d->update();
@@ -306,9 +335,42 @@ void HoverManager::unhover() {
   d->unhover();
 }
 
-void HoverManager::formSelection(QSet<int>) {
-}
-
 QPointF HoverManager::tentativelyMoveSelection(QPointF delta) {
-  return d->scene->library()->nearestGrid(delta);
+  Circuit const &circ = d->scene->circuit();
+  PartLibrary const *lib = d->scene->library();
+  Geometry geom(circ, lib);
+
+  QPoint del = lib->downscale(delta);
+  // Let's see what might stick here
+  QList<QPointF> pts;
+  for (auto const &info: d->selectionPoints) {
+    qDebug() << "testing" << info.pt << delta;
+    QPoint p = info.pt + del;
+    QPointF pup = lib->upscale(p);
+    int elt = d->scene->elementAt(pup, info.elt);
+    QString pin;
+    if (elt>0) {
+      pin = d->scene->pinAt(p, elt);
+      if (pin != "-" && geom.pinPosition(elt, pin)==p)
+        pts << pup;
+    } else {
+      int con = d->scene->connectionAt(p);
+      if (con>0)
+        pts << pup;
+    }
+  }
+  int n=0;
+  double r = d->r;
+  for (QPointF p: pts) {
+    if (d->floatMarkers.size()<=n)
+      d->floatMarkers << new PinMarker(d->scene);
+    qDebug() << "gotcha" << p;
+    d->floatMarkers[n]->setRect(QRectF(p - QPointF(r, r), 2 * QSizeF(r, r)));
+    d->floatMarkers[n]->setBrush(Style::magnetHighlightColor());
+    n++;
+  }
+  while (n < d->floatMarkers.size())
+    d->floatMarkers[n++]->setBrush(QColor(255, 255, 255, 0));  // hide it
+  
+  return delta;
 }

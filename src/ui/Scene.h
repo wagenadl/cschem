@@ -25,7 +25,7 @@ public:
   QSet<int> selectedElements() const;
   QMap<int, class SceneElement *> const &elements() const;
   QMap<int, class SceneConnection *> const &connections() const;
-  int elementAt(QPointF scenepos) const;
+  int elementAt(QPointF scenepos, int exclude=-1) const;
   QString pinAt(QPointF scenepos, int elementId) const;
   // returns "-" if none
   int connectionAt(QPointF scenepos, int *segmentp=0) const;

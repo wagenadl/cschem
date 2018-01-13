@@ -492,12 +492,13 @@ void Scene::redo() {
   d->redo();
 }
 
-int Scene::elementAt(QPointF scenepos) const {
+int Scene::elementAt(QPointF scenepos, int exclude) const {
   if (!itemAt(scenepos, QTransform()))
     return -1; // shortcut in case nothing there at all
   
   for (auto e: d->elts)
-    if (e->boundingRect().contains(e->mapFromScene(scenepos)))
+    if (e->id() != exclude
+        && e->boundingRect().contains(e->mapFromScene(scenepos)))
       return e->id();
 
   return -1;
