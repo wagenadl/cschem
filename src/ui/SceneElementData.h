@@ -5,6 +5,7 @@
 #define SCENEELEMENTDATA_H
 #include <QObject>
 #include <QPointF>
+#include <QSharedPointer>
 
 class SceneElementData: public QObject {
   Q_OBJECT;
@@ -37,6 +38,7 @@ public:
   class QGraphicsSvgItem *element;
   class SceneAnnotation *name;
   class SceneAnnotation *value;
+  QSharedPointer<class QSvgRenderer> renderer;
 public:
   bool dragmoved;
   bool hover;

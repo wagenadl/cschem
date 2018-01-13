@@ -13,6 +13,8 @@ public:
   CircuitMod(CircuitMod const &) = delete;
   CircuitMod &operator=(CircuitMod const &) = delete;
   ~CircuitMod();
+  void forceRebuild(int eltid);
+  /* Does nothing except add ELTID to the list of affected elements */
   void addElement(class Element const &);
   bool rotateElement(int eltid, int steps=1);
   /* Rotates the element by STEPS x 90 degrees ccw. True if successful. */

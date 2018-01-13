@@ -207,6 +207,10 @@ void Part::writeSvg(QXmlStreamWriter &sw) const {
   d->writeSvg(sw, false);
 }
 
+void Part::forgetRenderer(Part const &p) {
+  partRenderers().remove(p.name());
+}
+
 QSharedPointer<QSvgRenderer> Part::renderer() const {
   auto &map = partRenderers();
   if (!map.contains(d->name))

@@ -705,6 +705,10 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
       ee << elt.id();
       cm.mergeSelection(ee);
     }
+    for (Element const &elt: circ.elements())
+      if (elt.symbol()==symbol)
+	cm.forceRebuild(elt.id());
+    
     rebuildAsNeeded(cm);
   }
 

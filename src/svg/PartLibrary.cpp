@@ -47,6 +47,7 @@ PartLibrary::~PartLibrary() {
 }
 
 void PartLibrary::insert(Part const &p) {
+  Part::forgetRenderer(p);
   parts_[p.name()] = p;
   qDebug() << "Inserted part" << p.name() << "with pins" << p.pinNames();
 }  

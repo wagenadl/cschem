@@ -30,6 +30,7 @@ public:
   QByteArray toSvg() const;
   void writeSvg(QXmlStreamWriter &sw) const;
   static void writeNamespaces(QXmlStreamWriter &sw);
+  static void forgetRenderer(Part const &);
   QSharedPointer<class QSvgRenderer> renderer() const;
 private:
   QSharedDataPointer<class PartData> d;

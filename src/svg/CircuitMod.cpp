@@ -924,3 +924,7 @@ bool CircuitMod::flipElement(int eltid) {
     reroute(c, c0);
   return true;
 }
+
+void CircuitMod::forceRebuild(int eltid) {
+  d->aelts << eltid;
+}
