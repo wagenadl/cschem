@@ -447,12 +447,7 @@ void SceneData::keyPressAnywhere(QKeyEvent *e) {
   case Qt::Key_Delete:
     qDebug() << "delete" << ee.isEmpty() << hovermanager->onElement()
 	     << hovermanager->element();
-    if (!ee.isEmpty()) {
-      preact();
-      CircuitMod cm(circ, lib);
-      cm.deleteElements(ee);
-      rebuildAsNeeded(cm);
-    } else if (hovermanager->onElement()) {
+    if (hovermanager->onElement()) {
       preact();
       CircuitMod cm(circ, lib);
       cm.deleteElement(hovermanager->element());
@@ -463,7 +458,12 @@ void SceneData::keyPressAnywhere(QKeyEvent *e) {
       cm.deleteConnectionSegment(hovermanager->connection(),
                                  hovermanager->segment());
       rebuildAsNeeded(cm);
-    }  
+    } else if (!ee.isEmpty()) {
+      preact();
+      CircuitMod cm(circ, lib);
+      cm.deleteElements(ee);
+      rebuildAsNeeded(cm);
+    }
     break;
   case Qt::Key_Backspace:
     backspace();
