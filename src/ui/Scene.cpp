@@ -852,12 +852,12 @@ void Scene::setComponentValue(int id, QString val) {
 
 void SceneData::rotateElementOrSelection(int dir) {
   QSet<int> ee = selectedElements();
-  if (!ee.isEmpty()) {
-    preact();
-    rotateSelection(dir);
-  } else if (hovermanager->onElement()) {
+  if (hovermanager->onElement()) {
     preact();
     rotateElement(hovermanager->element(), dir);
+  } else if (!ee.isEmpty()) {
+    preact();
+    rotateSelection(dir);
   }
 }
 
@@ -867,12 +867,12 @@ void Scene::rotate(int dir) {
 
 void SceneData::flipElementOrSelection() {
   QSet<int> ee = selectedElements();
-  if (!ee.isEmpty()) {
-    preact();
-    flipSelection();
-  } else if (hovermanager->onElement()) {
+  if (hovermanager->onElement()) {
     preact();
     flipElement(hovermanager->element());
+  } else if (!ee.isEmpty()) {
+    preact();
+    flipSelection();
   }
 }
 
