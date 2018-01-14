@@ -89,9 +89,8 @@ public:
   void backspace();
   void startPartDragIn(QString sym, QPointF sp);
   bool startSvgDragIn(QString fn, QPointF sp);
-  void moveDragIn(QPointF sp);
+  QPointF moveDragIn(QPointF sp);
   void hideDragIn();
-  QPointF dragInEltPos(QPointF Sp);
   bool importAndPlonk(QString filename, QPointF sp, bool merge=true);
 public:
   Scene *scene;
@@ -282,6 +281,7 @@ void Scene::tentativelyMoveSelection(QPoint delta, bool first) {
 
 void Scene::moveSelection(QPoint delta) {
   delta = d->hovermanager->tentativelyMoveSelection(delta);
+  d->hovermanager->doneDragging();
 
   QSet<int> selection = selectedElements();
   QSet<int> internalcons = d->circ.connectionsIn(selection);
@@ -660,30 +660,30 @@ void Scene::removeDangling() {
 void SceneData::startPartDragIn(QString symbol, QPointF pos) {
   if (dragin)
     delete dragin;
-  dragin = new FloatingPart(lib->part(symbol), pos);
-  scene->addItem(dragin);
+  Part const &part = lib->part(symbol);
+  dragin = new FloatingPart(part);
+  hovermanager->newDrag(part);
   moveDragIn(pos);
+  scene->addItem(dragin);
 }
 
-void SceneData::moveDragIn(QPointF scenepos) {
-  QPointF pt = lib->nearestGrid(scenepos);
-  if (dragin)
-    dragin->setCMPosition(pt);
-}
-
-QPointF SceneData::dragInEltPos(QPointF scenepos) {
-  if (dragin) {
-    moveDragIn(scenepos);
-    return dragin->partPosition();
-  } else {
+QPointF SceneData::moveDragIn(QPointF scenepos) {
+  if (!dragin)
     return scenepos;
-  }
+  QPoint p = lib->downscale(scenepos - dragin->shiftedCenter());
+  qDebug() << "movedragin" << scenepos << dragin->shiftedCenter() << p;
+  p = hovermanager->tentativelyMoveSelection(p);
+  QPointF res = lib->upscale(p);
+  qDebug() << " => " << p << res;
+  dragin->setPartPosition(res);
+  return res;
 }
 
 void SceneData::hideDragIn() {
   if (dragin)
     delete dragin;
   dragin = 0;
+  hovermanager->doneDragging();
 }
 
 bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
@@ -693,9 +693,10 @@ bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
   Part part = pl.part(pl.partNames().first());
   if (dragin)
     delete dragin;
-  dragin = new FloatingPart(part, pos);
-  scene->addItem(dragin);
+  dragin = new FloatingPart(part);
+  hovermanager->newDrag(part);
   moveDragIn(pos);
+  scene->addItem(dragin);
   return true;
 }
 
@@ -810,7 +811,7 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
-  QPointF droppos = d->dragInEltPos(e->scenePos());
+  QPointF droppos = d->moveDragIn(e->scenePos());
   d->hideDragIn();
 
   QMimeData const *md = e->mimeData();

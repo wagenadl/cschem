@@ -9,17 +9,16 @@ public:
   }
 public:
   QPointF bbOrigin;
-  QPointF bbCM;
+  QPointF sCM;
   QString name;
 };
 
-FloatingPart::FloatingPart(Part const &part, QPointF partpos):
+FloatingPart::FloatingPart(Part const &part):
   d(new FloatingPartData()) {
   d->bbOrigin = part.bbOrigin();
-  d->bbCM = part.shiftedBBox().center();
+  d->sCM = part.shiftedBBox().center();
   d->name = part.name();
   setSharedRenderer(part.renderer().data());
-  setPartPosition(partpos);
 }
   
 FloatingPart::~FloatingPart() {
@@ -34,12 +33,8 @@ QPointF FloatingPart::partPosition() const {
   return pos() + d->bbOrigin;
 }
 
-void FloatingPart::setCMPosition(QPointF p) {
-  setPartPosition(p - d->bbCM);
-}
-
-QPointF FloatingPart::cmPosition() const {
-  return partPosition() + d->bbCM;
+QPointF FloatingPart::shiftedCenter() const {
+  return d->sCM;
 }
 
 QString FloatingPart::name() const {

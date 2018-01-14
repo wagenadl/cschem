@@ -8,14 +8,13 @@
 
 class FloatingPart: public QGraphicsSvgItem {
 public:
-  FloatingPart(class Part const &part, QPointF cmpos);
+  FloatingPart(class Part const &part);
   ~FloatingPart();
   FloatingPart(FloatingPart const &) = delete;
   FloatingPart &operator=(FloatingPart const &) = delete;
   void setPartPosition(QPointF); // set position of first pin
-  void setCMPosition(QPointF); // set position of center of mass pin
   QPointF partPosition() const;
-  QPointF cmPosition() const;
+  QPointF shiftedCenter() const; // position of center relative to first pin
   QString name() const;
 private:
   class FloatingPartData *d;

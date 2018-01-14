@@ -53,6 +53,7 @@ public:
   void unhighlightSegment();
   QList<QPoint> seeWhatSticks(QPoint delta);
   void showStickPoints(QList<QPoint> const &pts);
+  QPoint tryNearby(QPoint del, QList<QPoint> &pts);
 public:
   Scene *scene;
   QPointF pt;
@@ -72,7 +73,18 @@ public:
   QList<QGraphicsEllipseItem *> floatMarkers;
   bool haveMagnet;
   QPoint magnetDelta;
+  QSet<int> avoidConnections;
 };
+
+void HoverManager::newDrag(Part const &part) {
+  PartLibrary const *lib = d->scene->library();
+  d->selectionPoints.clear();
+  for (QString p: part.pinNames())
+    d->selectionPoints
+      << PointInfo(lib->downscale(part.shiftedPinPosition(p)), 0, p);
+  d->haveMagnet = false;
+  d->avoidConnections.clear();
+}
 
 void HoverManager::formSelection(QSet<int> elts) {
   Circuit const &circ = d->scene->circuit();
@@ -85,6 +97,8 @@ void HoverManager::formSelection(QSet<int> elts) {
     for (QString p: part.pinNames()) 
       d->selectionPoints << PointInfo(geom.pinPosition(elt, p), e, p);
   }
+  d->avoidConnections
+    = circ.connectionsFrom(elts) + circ.connectionsTo(elts);
   d->haveMagnet = false;
 }
 
@@ -93,7 +107,7 @@ void HoverManagerData::highlightPin() {
     pinMarker = new PinMarker(scene);
   pinMarker->setRect(QRectF(pinpos - QPointF(r, r), 2 * QSizeF(r, r)));
   int N = scene->circuit().connectionsOn(elt, pin).size();
-  if (N==0)
+  if (N==0 && primaryPurpose != HoverManager::Purpose::Connecting)
     pinMarker->setBrush(Style::danglingColor());
   else
     pinMarker->setBrush(Style::pinHighlightColor());
@@ -354,7 +368,7 @@ QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
       }
     } else {
       int con = scene->connectionAt(pup);
-      if (con>0) {
+      if (con>0 && !avoidConnections.contains(con)) {
         QPolygon path = geom.connectionPath(con);
         Geometry::Intersection q = geom.intersection(p, path);
         if (q.pointnumber>=0 && (path[q.pointnumber]+q.delta)==p)
@@ -363,6 +377,13 @@ QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
     }
   }
   return pts;
+}
+
+
+void HoverManager::doneDragging() {
+  for (auto *p: d->floatMarkers)
+    delete p;
+  d->floatMarkers.clear();
 }
 
 void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
@@ -379,7 +400,17 @@ void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
   while (n < floatMarkers.size())
     floatMarkers[n++]->setBrush(QColor(255, 255, 255, 0));  // hide it
 }
-  
+
+QPoint HoverManagerData::tryNearby(QPoint del, QList<QPoint> &pts) {
+  QList<QPoint> dd{{-1,0},{1,0},{0,-1},{0,1},{-1,-1},{-1,1},{1,1},{1,-1}};
+  for (QPoint x: dd) {
+    pts = seeWhatSticks(del + x);
+    if (!pts.isEmpty())
+      return del + x;
+  }
+  return del;
+}
+
 QPoint HoverManager::tentativelyMoveSelection(QPoint del) {
   PartLibrary const *lib = d->scene->library();
 
@@ -390,19 +421,10 @@ QPoint HoverManager::tentativelyMoveSelection(QPoint del) {
       d->haveMagnet = false;
   }
   
-  QPointF delta = lib->upscale(del);
   QList<QPoint> pts = d->seeWhatSticks(del);
-  if (pts.isEmpty()) {
-    // try nearby
-    QList<QPoint> dd{{-1,0},{1,0},{0,-1},{0,1},{-1,-1},{-1,1},{1,1},{1,-1}};
-    for (QPoint x: dd) {
-      pts = d->seeWhatSticks(del + x);
-      if (!pts.isEmpty()) {
-        del += x;
-        break;
-      }
-    }
-  }
+  if (pts.isEmpty()) 
+    del = d->tryNearby(del, pts);
+
   if (!pts.isEmpty()) { 
     d->haveMagnet = true;
     d->magnetDelta = del;

@@ -33,6 +33,9 @@ public:
   int segment() const; // -1 if not on connection
   void formSelection(QSet<int> elts);
   QPoint tentativelyMoveSelection(QPoint delta);
+  void newDrag(class Part const &);
+  QPoint updateDrag(QPoint p);
+  void doneDragging();
 private:
   class HoverManagerData *d;
 };
