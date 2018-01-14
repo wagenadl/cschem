@@ -15,7 +15,7 @@ public:
   static QColor selectedElementHoverColor();
   static QColor connectionHoverColor();
   static QColor pinHighlightColor();
-  static QColor magnetHighlightColor();
+  // static QColor magnetHighlightColor();
   static QColor selectionColor();
   static QColor faintColor();
   static QColor textColor();

@@ -106,13 +106,13 @@ void HoverManagerData::highlightPin() {
   if (!pinMarker)
     pinMarker = new PinMarker(scene);
   pinMarker->setRect(QRectF(pinpos - QPointF(r, r), 2 * QSizeF(r, r)));
-  int N = scene->circuit().connectionsOn(elt, pin).size();
-  if (primaryPurpose == HoverManager::Purpose::Connecting)
-    pinMarker->setBrush(Style::magnetHighlightColor());
-  else if (N==0)
-    pinMarker->setBrush(Style::danglingColor());
-  else
-    pinMarker->setBrush(Style::pinHighlightColor());
+  // int N = scene->circuit().connectionsOn(elt, pin).size();
+  // if (primaryPurpose == HoverManager::Purpose::Connecting)
+  //   pinMarker->setBrush(Style::magnetHighlightColor());
+  // else if (N==0)
+  //   pinMarker->setBrush(Style::danglingColor());
+  // else
+  pinMarker->setBrush(Style::pinHighlightColor());
 }
 
 void HoverManagerData::highlightElement() {
@@ -396,7 +396,7 @@ void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
       floatMarkers << new PinMarker(scene);
     QPointF pup = lib->upscale(p);
     floatMarkers[n]->setRect(QRectF(pup - QPointF(r, r), 2 * QSizeF(r, r)));
-    floatMarkers[n]->setBrush(Style::magnetHighlightColor());
+    floatMarkers[n]->setBrush(Style::pinHighlightColor());
     n++;
   }
   while (n < floatMarkers.size())
