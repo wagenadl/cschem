@@ -5,6 +5,7 @@
 #include "file/Schem.h"
 #include "file/Element.h"
 #include "file/Circuit.h"
+#include "svg/PartNumbering.h"
 
 #include <QDebug>
 
@@ -92,7 +93,6 @@ void PartListView::resetWidth() {
 }
 
 void PLVData::rebuildRow(int n, Element const &elt) {
-  qDebug() << "rebuildrow" << n << elt.report();
   view->setText(n, COL_Value, elt.value());
   view->setText(n, COL_Vendor, elt.info().vendor);
   view->setText(n, COL_Partno, elt.info().partno);
@@ -108,24 +108,17 @@ void PartListView::internalChange(int n) {
   if (d->rebuilding)
     return;
 
-  qDebug() << "PLV: internalchange" << n;
-  
   Circuit circ(d->schem->circuit());
   int id = text(n, COL_ID).toInt();
   if (circ.elements().contains(id)) {
-    QString val = text(n, COL_Value);
+    QString val0 = text(n, COL_Value);
     QString vendor = text(n, COL_Vendor);
     QString partno = text(n, COL_Partno);
     QString notes = text(n, COL_Notes);
 
     Element elt = circ.element(id);
-    if (elt.name().mid(1).toDouble()>0) {
-      if (elt.name().startsWith("R") && val.endsWith("."))
-        val = val.left(val.size() - 1) + tr("Ω");
-      else if (elt.name().startsWith("C") || elt.name().startsWith("L"))
-        val = val.replace("u", tr("μ"));
-    }
-
+    
+    QString val = PartNumbering::prettyValue(val0, elt.name());
     
     if (elt.value() != val
         || elt.info().vendor != vendor
@@ -141,6 +134,8 @@ void PartListView::internalChange(int n) {
       d->schem->setCircuit(circ);
       emit valueEdited(id);
     }
+    if (val != val0)
+      setText(n, COL_Value, val);
   }
 }
 

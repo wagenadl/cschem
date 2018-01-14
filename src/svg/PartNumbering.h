@@ -9,6 +9,10 @@
 class PartNumbering {
 public:
   static QString abbreviation(QString symbol);
+  static QString nameToHtml(QString name);
+  static QString prettyValue(QString value, QString name="");
+  static QString shortValue(QString value, QString name="");
+  static QString htmlToSvg(QString html);
 };
 
 #endif

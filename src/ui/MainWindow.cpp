@@ -96,6 +96,7 @@ void MainWindow::showLibrary() {
 
 void MainWindow::showPartsList() {
   addDockWidget(Qt::RightDockWidgetArea, d->partlistviewdock);
+  d->partlistview->rebuild();
   d->partlistviewdock->show();
 }
 
@@ -141,13 +142,13 @@ void MainWindow::createActions() {
   menu->addAction(act);
 
   act = new QAction(tr("&Export circuit…"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_X));
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
   act->setStatusTip(tr("Export circuit as svg"));
   connect(act, &QAction::triggered, this, &MainWindow::exportCircuitAction);
   menu->addAction(act);
 
   act = new QAction(tr("Export &parts list…"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
   act->setStatusTip(tr("Export list of parts"));
   connect(act, &QAction::triggered, this, &MainWindow::exportPartListAction);
   menu->addAction(act);
@@ -223,14 +224,19 @@ void MainWindow::createActions() {
   menu = menuBar()->addMenu(tr("&View"));
 
   act = new QAction(tr("&Zoom in"), this);
-  act->setShortcuts(QList<QKeySequence>() << QKeySequence(QKeySequence::ZoomIn)
-		    << QKeySequence(Qt::CTRL + Qt::Key_Equal));
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence(QKeySequence::ZoomIn)
+		    << QKeySequence(Qt::CTRL + Qt::Key_Equal)
+		    << QKeySequence(Qt::Key_Equal)
+		    << QKeySequence(Qt::Key_Plus));
   act->setStatusTip(tr("Zoom in"));
   connect(act, &QAction::triggered, this, &MainWindow::zoomIn);
   menu->addAction(act);
 
   act = new QAction(tr("&Zoom out"), this);
-  act->setShortcuts(QKeySequence::ZoomOut);
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence::ZoomOut
+                    << QKeySequence(Qt::Key_Minus));
   act->setStatusTip(tr("Zoom out"));
   connect(act, &QAction::triggered, this, &MainWindow::zoomOut);
   menu->addAction(act);

@@ -3,28 +3,59 @@
 #include "PartNumbering.h"
 #include <QStringList>
 #include <QSet>
+#include <QObject>
 
 QString PartNumbering::abbreviation(QString symbol) {
+  static QStringList map{
+    "port", "J",
+      "diode", "D",
+      "resistor", "R",
+      "opamp", "A",
+      "transistor", "Q",
+      "logic", "U",
+      "inductor", "L",
+      "battery", "B" };
+
   QStringList bits = symbol.split(":");
   QSet<QString> set = QSet<QString>::fromList(bits);
-  if (set.contains("port"))
-    return "J";
-  if (set.contains("diode"))
-    return "D";
-  else if (set.contains("resistor"))
-    return "R";
-  else if (set.contains("capacitor"))
-    return "C";
-  else if (set.contains("opamp"))
-    return "A";
-  else if (set.contains("transistor"))
-    return "Q";
-  else if (set.contains("logic"))
-    return "U";
-  else if (set.contains("inductor"))
-    return "L";
-  else if (set.contains("battery"))
-    return "B";
-  else
-    return "U";
+  for (int k=0; k<map.size(); k+=2)
+    if (set.contains(map[k]))
+      return map[k+1];
+  return "U";
+}
+
+QString PartNumbering::nameToHtml(QString name) {
+  if (name.mid(1).toDouble()>0)
+    return "<i>" + name.left(1) + "</i>"
+      + "<sub>" + name.mid(1) + "</sub>";
+  int idx = name.indexOf("_");
+  if (idx>0)
+    return "<i>" + name.left(idx) + "</i>"
+      + "<sub>" + name.mid(idx+1) + "</sub>";
+  return name;
+}
+
+QString PartNumbering::prettyValue(QString value, QString name) {
+  QString pfx = name.left(1);
+  QString sfx = name.mid(1);
+  if (sfx.toDouble()>0) {
+    if (pfx=="R" && value.endsWith("."))
+      value = value.left(value.size()-1) + QObject::tr("Ω");
+    else if (pfx=="C" || pfx=="L")
+      value.replace("u", QObject::tr("μ"));
+  }
+  if (pfx=="R" || pfx=="C" || pfx=="L") {
+    // insert space after number?
+  }
+  return value;
+}
+
+QString PartNumbering::shortValue(QString value, QString) {
+  // remove space after number
+  // remove Ohm, F, ?
+  return value;
+}
+
+QString PartNumbering::htmlToSvg(QString html) {
+  return html;
 }
