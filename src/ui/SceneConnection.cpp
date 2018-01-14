@@ -9,6 +9,7 @@
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsSceneHoverEvent>
 #include "Style.h"
+#include <math.h>
 
 class SCSegment: public QGraphicsLineItem {
 public:
@@ -53,7 +54,7 @@ public:
     reallymoving = false;
   }
   QPolygonF path() const;
-  QPointF moveDelta(QPointF sp) const;
+  QPointF moveDelta(QPointF sp);
   QPen normalPen() const;
   QPen draftPen() const;
   bool isDangling() const;
@@ -70,6 +71,8 @@ public:
   SCSegment *moveseg0, *movesegN;
   int moveseg;
   bool reallymoving;
+  bool havemagnet;
+  double magnetdelta;
 };
 
 bool SceneConnectionData::isDangling() const {
@@ -89,9 +92,10 @@ QPen SceneConnectionData::draftPen() const {
 	      Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
 }
 
-QPointF SceneConnectionData::moveDelta(QPointF sp) const {
+QPointF SceneConnectionData::moveDelta(QPointF sp) {
   if (moveseg<0)
     return QPointF();
+  double s = scene->library()->scale();
   QPointF delta = scene->library()->nearestGrid(sp - movestart);
   QPointF ll = origpath[moveseg + 1] - origpath[moveseg];
   if (ll.isNull()) {
@@ -99,9 +103,81 @@ QPointF SceneConnectionData::moveDelta(QPointF sp) const {
   } else if (ll.x()==0) {
     // vertical line, cannot move in Y
     delta.setY(0);
+    if (havemagnet) {
+      if (fabs(delta.x()-magnetdelta) < 3*s)
+        delta.setX(magnetdelta);
+      else
+        havemagnet = false;
+    }
+    double x0 = origpath[moveseg].x();
+    double x1 = x0 + delta.x();
+    if (moveseg<=0) {
+      if (fabs(delta.x()) < 2*s) {
+        magnetdelta = 0;
+        delta.setX(0);
+        havemagnet = true;
+      }
+    } else {
+      double xpre = origpath[moveseg-1].x();
+      if (fabs(x1 - xpre) < 2*s) {
+        magnetdelta = xpre - x0;
+        delta.setX(magnetdelta);
+        havemagnet = true;
+      }
+    }
+    if (moveseg+2>=origpath.size()) {
+      if (fabs(delta.x()) < 2*s) {
+        magnetdelta = 0;
+        delta.setX(0);
+        havemagnet = true;
+      }
+    } else {
+      double xpost = origpath[moveseg+2].x();
+      if (fabs(x1 - xpost) < 2*s) {
+        magnetdelta = xpost - x0;
+        delta.setX(magnetdelta);
+        havemagnet = true;
+      }
+    }
   } else if (ll.y()==0) {
     // horizontal line, cannot move in X
     delta.setX(0);
+    if (havemagnet) {
+      if (fabs(delta.y()-magnetdelta) < 3*s)
+        delta.setY(magnetdelta);
+      else
+        havemagnet = false;
+    }
+    double y0 = origpath[moveseg].y();
+    double y1 = y0 + delta.y();
+    if (moveseg<=0) {
+      if (fabs(delta.y()) < 2*s) {
+        magnetdelta = 0;
+        delta.setY(0);
+        havemagnet = true;
+      }
+    } else {
+      double ypre = origpath[moveseg-1].y();
+      if (fabs(y1 - ypre) < 2*s) {
+        magnetdelta = ypre - y0;
+        delta.setY(magnetdelta);
+        havemagnet = true;
+      }
+    }
+    if (moveseg+2>=origpath.size()) {
+      if (fabs(delta.y()) < 2*s) {
+        magnetdelta = 0;
+        delta.setY(0);
+        havemagnet = true;
+      }
+    } else {
+      double ypost = origpath[moveseg+2].y();
+      if (fabs(y1 - ypost) < 2*s) {
+        magnetdelta = ypost - y0;
+        delta.setY(magnetdelta);
+        havemagnet = true;
+      }
+    }
   } else {
     // diag line, don't know what to do exactly
   }
@@ -254,6 +330,7 @@ void SceneConnection::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->movestart = e->scenePos();
   d->origpath = d->path();
   d->reallymoving = false;
+  d->havemagnet = false;
   e->accept();
 }
 

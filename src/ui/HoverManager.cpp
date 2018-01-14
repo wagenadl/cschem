@@ -107,7 +107,9 @@ void HoverManagerData::highlightPin() {
     pinMarker = new PinMarker(scene);
   pinMarker->setRect(QRectF(pinpos - QPointF(r, r), 2 * QSizeF(r, r)));
   int N = scene->circuit().connectionsOn(elt, pin).size();
-  if (N==0 && primaryPurpose != HoverManager::Purpose::Connecting)
+  if (primaryPurpose == HoverManager::Purpose::Connecting)
+    pinMarker->setBrush(Style::magnetHighlightColor());
+  else if (N==0)
     pinMarker->setBrush(Style::danglingColor());
   else
     pinMarker->setBrush(Style::pinHighlightColor());
@@ -412,8 +414,6 @@ QPoint HoverManagerData::tryNearby(QPoint del, QList<QPoint> &pts) {
 }
 
 QPoint HoverManager::tentativelyMoveSelection(QPoint del) {
-  PartLibrary const *lib = d->scene->library();
-
   if (d->haveMagnet) {
     if ((del - d->magnetDelta).manhattanLength() < 3)
       del = d->magnetDelta;
