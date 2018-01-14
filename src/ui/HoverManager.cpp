@@ -50,6 +50,7 @@ public:
   void unhighlightPin();
   void unhighlightElement();
   void unhighlightSegment();
+  QList<QPointF> seeWhatSticks(QPointF delta);
 public:
   Scene *scene;
   QPointF pt;
@@ -335,30 +336,39 @@ void HoverManager::unhover() {
   d->unhover();
 }
 
-QPointF HoverManager::tentativelyMoveSelection(QPointF delta) {
-  Circuit const &circ = d->scene->circuit();
-  PartLibrary const *lib = d->scene->library();
+QList<QPointF> HoverManagerData::seeWhatSticks(QPointF delta) {
+  Circuit const &circ = scene->circuit();
+  PartLibrary const *lib = scene->library();
   Geometry geom(circ, lib);
-
+  QList<QPointF> pts;
   QPoint del = lib->downscale(delta);
   // Let's see what might stick here
-  QList<QPointF> pts;
-  for (auto const &info: d->selectionPoints) {
-    qDebug() << "testing" << info.pt << delta;
+  for (auto const &info: selectionPoints) {
     QPoint p = info.pt + del;
     QPointF pup = lib->upscale(p);
-    int elt = d->scene->elementAt(pup, info.elt);
+    qDebug() << "testing" << info.pt << delta << p << pup;
+    int elt = scene->elementAt(pup, info.elt);
     QString pin;
     if (elt>0) {
-      pin = d->scene->pinAt(p, elt);
-      if (pin != "-" && geom.pinPosition(elt, pin)==p)
-        pts << pup;
+      pin = scene->pinAt(pup, elt);
+      if (pin != "-") {
+        qDebug() << "=>" << elt << pin << geom.pinPosition(elt, pin);
+        if (geom.pinPosition(elt, pin)==p)
+          pts << pup;
+      }
     } else {
-      int con = d->scene->connectionAt(p);
+      int con = scene->connectionAt(p);
       if (con>0)
         pts << pup;
     }
   }
+  return pts;
+}
+
+QPointF HoverManager::tentativelyMoveSelection(QPointF delta) {
+  PartLibrary const *lib = d->scene->library();
+  QPoint del = lib->downscale(delta);
+  QList<QPointF> pts = d->seeWhatSticks(delta);
   int n=0;
   double r = d->r;
   for (QPointF p: pts) {
@@ -372,5 +382,5 @@ QPointF HoverManager::tentativelyMoveSelection(QPointF delta) {
   while (n < d->floatMarkers.size())
     d->floatMarkers[n++]->setBrush(QColor(255, 255, 255, 0));  // hide it
   
-  return delta;
+  return lib->upscale(del);
 }
