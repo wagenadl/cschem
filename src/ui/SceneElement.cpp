@@ -208,7 +208,7 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
   Circuit const &circ = d->scene->circuit();
   PartLibrary const *lib = d->scene->library();
-  d->delta0 = lib->upscale(circ.element(d->id).position()) - e->scenePos();
+  d->delta0 = circ.element(d->id).position() - lib->downscale(e->scenePos());
   qDebug() << "Element Mouse press" << e->pos() << pos();
   QGraphicsItem::mousePressEvent(e);
 }
@@ -216,8 +216,8 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
-  QPointF newpos = e->scenePos() + d->delta0;
-  QPointF oldpos = lib->upscale(circ.element(d->id).position());
+  QPoint newpos = lib->downscale(e->scenePos()) + d->delta0;
+  QPoint oldpos = circ.element(d->id).position();
   qDebug() << "Mouse move" << newpos << oldpos;
   QGraphicsItem::mouseMoveEvent(e);
   
@@ -231,8 +231,8 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
-  QPointF newpos = pos();
-  QPointF oldpos = lib->scale() * circ.elements()[d->id].position();
+  QPoint newpos = lib->downscale(e->scenePos()) + d->delta0;
+  QPoint oldpos = circ.element(d->id).position();
   qDebug() << "Mouse release" << newpos << oldpos;
   QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
@@ -241,12 +241,12 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   }
 }
 
-void SceneElement::temporaryTranslate(QPointF delta) {
+void SceneElement::temporaryTranslate(QPoint delta) {
   Circuit const &circ = d->scene->circuit();
   Element elt(circ.element(d->id));
   PartLibrary const *lib = d->scene->library();
 
-  setPos(lib->upscale(elt.position()) + delta);
+  setPos(lib->upscale(elt.position() + delta));
 }
 
 void SceneElement::rebuild() {

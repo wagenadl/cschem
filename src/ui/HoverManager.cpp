@@ -38,6 +38,7 @@ public:
     primaryPurpose = HoverManager::Purpose::Moving;
     r = scene->library()->scale();
     pinMarker = 0;
+    haveMagnet = false;
   }
   void update();
   bool onElement() const;
@@ -50,7 +51,8 @@ public:
   void unhighlightPin();
   void unhighlightElement();
   void unhighlightSegment();
-  QList<QPointF> seeWhatSticks(QPointF delta);
+  QList<QPoint> seeWhatSticks(QPoint delta);
+  void showStickPoints(QList<QPoint> const &pts);
 public:
   Scene *scene;
   QPointF pt;
@@ -68,6 +70,8 @@ public:
   double r;
   QGraphicsEllipseItem *pinMarker;
   QList<QGraphicsEllipseItem *> floatMarkers;
+  bool haveMagnet;
+  QPoint magnetDelta;
 };
 
 void HoverManager::formSelection(QSet<int> elts) {
@@ -79,9 +83,9 @@ void HoverManager::formSelection(QSet<int> elts) {
     Element const &elt(circ.element(e));
     Part const &part(lib->part(elt.symbol()));
     for (QString p: part.pinNames()) 
-      d->selectionPoints
-        << PointInfo(geom.pinPosition(elt, p), e, p);
+      d->selectionPoints << PointInfo(geom.pinPosition(elt, p), e, p);
   }
+  d->haveMagnet = false;
 }
 
 void HoverManagerData::highlightPin() {
@@ -210,8 +214,6 @@ void HoverManagerData::update() {
   else
     pin = "-";
 
-  qDebug() << "update" << elt << pin << pt;
-
   if (elt>0)
     isjunc = circ.element(elt).type() == Element::Type::Junction;
   else
@@ -244,9 +246,6 @@ void HoverManagerData::update() {
   } else if (onConnection()) {
     Connection ccc(scene->circuit().connection(con));
     auto *lib = scene->library();
-    qDebug() << "on connection" << con << seg
-	     << ccc.danglingStart() << ccc.danglingEnd()
-	     << ccc.via();
     if (seg==0
 	&& ccc.danglingStart()
 	&& !ccc.via().isEmpty()
@@ -336,51 +335,80 @@ void HoverManager::unhover() {
   d->unhover();
 }
 
-QList<QPointF> HoverManagerData::seeWhatSticks(QPointF delta) {
+QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
   Circuit const &circ = scene->circuit();
   PartLibrary const *lib = scene->library();
   Geometry geom(circ, lib);
-  QList<QPointF> pts;
-  QPoint del = lib->downscale(delta);
+  QList<QPoint> pts;
   // Let's see what might stick here
   for (auto const &info: selectionPoints) {
     QPoint p = info.pt + del;
     QPointF pup = lib->upscale(p);
-    qDebug() << "testing" << info.pt << delta << p << pup;
     int elt = scene->elementAt(pup, info.elt);
     QString pin;
     if (elt>0) {
       pin = scene->pinAt(pup, elt);
       if (pin != "-") {
-        qDebug() << "=>" << elt << pin << geom.pinPosition(elt, pin);
         if (geom.pinPosition(elt, pin)==p)
-          pts << pup;
+          pts << p;
       }
     } else {
-      int con = scene->connectionAt(p);
-      if (con>0)
-        pts << pup;
+      int con = scene->connectionAt(pup);
+      if (con>0) {
+        QPolygon path = geom.connectionPath(con);
+        Geometry::Intersection q = geom.intersection(p, path);
+        if (q.pointnumber>=0 && (path[q.pointnumber]+q.delta)==p)
+          pts << p;
+      }
     }
   }
   return pts;
 }
 
-QPointF HoverManager::tentativelyMoveSelection(QPointF delta) {
-  PartLibrary const *lib = d->scene->library();
-  QPoint del = lib->downscale(delta);
-  QList<QPointF> pts = d->seeWhatSticks(delta);
+void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
+  PartLibrary const *lib = scene->library();
   int n=0;
-  double r = d->r;
-  for (QPointF p: pts) {
-    if (d->floatMarkers.size()<=n)
-      d->floatMarkers << new PinMarker(d->scene);
-    qDebug() << "gotcha" << p;
-    d->floatMarkers[n]->setRect(QRectF(p - QPointF(r, r), 2 * QSizeF(r, r)));
-    d->floatMarkers[n]->setBrush(Style::magnetHighlightColor());
+  for (QPoint p: pts) {
+    if (floatMarkers.size() <= n)
+      floatMarkers << new PinMarker(scene);
+    QPointF pup = lib->upscale(p);
+    floatMarkers[n]->setRect(QRectF(pup - QPointF(r, r), 2 * QSizeF(r, r)));
+    floatMarkers[n]->setBrush(Style::magnetHighlightColor());
     n++;
   }
-  while (n < d->floatMarkers.size())
-    d->floatMarkers[n++]->setBrush(QColor(255, 255, 255, 0));  // hide it
+  while (n < floatMarkers.size())
+    floatMarkers[n++]->setBrush(QColor(255, 255, 255, 0));  // hide it
+}
   
-  return lib->upscale(del);
+QPoint HoverManager::tentativelyMoveSelection(QPoint del) {
+  PartLibrary const *lib = d->scene->library();
+
+  if (d->haveMagnet) {
+    if ((del - d->magnetDelta).manhattanLength() < 3)
+      del = d->magnetDelta;
+    else
+      d->haveMagnet = false;
+  }
+  
+  QPointF delta = lib->upscale(del);
+  QList<QPoint> pts = d->seeWhatSticks(del);
+  if (pts.isEmpty()) {
+    // try nearby
+    QList<QPoint> dd{{-1,0},{1,0},{0,-1},{0,1},{-1,-1},{-1,1},{1,1},{1,-1}};
+    for (QPoint x: dd) {
+      pts = d->seeWhatSticks(del + x);
+      if (!pts.isEmpty()) {
+        del += x;
+        break;
+      }
+    }
+  }
+  if (!pts.isEmpty()) { 
+    d->haveMagnet = true;
+    d->magnetDelta = del;
+  }
+
+  d->showStickPoints(pts);
+  
+  return del;
 }

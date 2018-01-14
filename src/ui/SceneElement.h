@@ -43,7 +43,7 @@ public:
   void unhover();
   QRectF boundingRect() const override;
   void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;
-  void temporaryTranslate(QPointF delta);
+  void temporaryTranslate(QPoint delta);
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) override;

@@ -261,7 +261,7 @@ QSet<int> Scene::selectedElements() const {
   return d->selectedElements();
 }
 
-void Scene::tentativelyMoveSelection(QPointF delta, bool first) {
+void Scene::tentativelyMoveSelection(QPoint delta, bool first) {
   QSet<int> selection = selectedElements();
   if (first)
     d->hovermanager->formSelection(selection);
@@ -280,23 +280,23 @@ void Scene::tentativelyMoveSelection(QPointF delta, bool first) {
     d->conns[id]->temporaryTranslateTo(delta);
 }
 
-void Scene::moveSelection(QPointF delta) {
-  QPoint dd = (delta/d->lib->scale()).toPoint();
+void Scene::moveSelection(QPoint delta) {
+  delta = d->hovermanager->tentativelyMoveSelection(delta);
 
   QSet<int> selection = selectedElements();
   QSet<int> internalcons = d->circ.connectionsIn(selection);
   QSet<int> fromcons = d->circ.connectionsFrom(selection) - internalcons;
   QSet<int> tocons = d->circ.connectionsTo(selection) - internalcons;
   
-  if (!dd.isNull()) {
+  if (!delta.isNull()) {
     // must actually change circuit
     d->preact();
     Circuit origCirc(d->circ);
     CircuitMod cm(d->circ, d->lib);
     for (int id: selection)
-      cm.translateElement(id, dd);
+      cm.translateElement(id, delta);
     for (int id: internalcons)
-      cm.translateConnection(id, dd);
+      cm.translateConnection(id, delta);
 
     for (int id: fromcons)
       cm.reroute(id, origCirc);

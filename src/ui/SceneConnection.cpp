@@ -151,9 +151,9 @@ void SceneConnection::rebuild() {
   setLineWidth();
 }
 
-void SceneConnection::temporaryTranslate(QPointF delta) {
+void SceneConnection::temporaryTranslate(QPoint delta) {
   auto path = d->path();
-  path.translate(delta);
+  path.translate(d->scene->library()->upscale(delta));
   setPath(path);
   setLineWidth(.5);
 }
@@ -168,16 +168,16 @@ void SceneConnection::setLineWidth(double frac) {
     seg->setPen(p);
 }
 
-void SceneConnection::temporaryTranslateFrom(QPointF delta) {
+void SceneConnection::temporaryTranslateFrom(QPoint delta) {
   auto path = d->path();
-  path.first() += delta;
+  path.first() += d->scene->library()->upscale(delta);
   setPath(path);
   setLineWidth(.5);
 }
 
-void SceneConnection::temporaryTranslateTo(QPointF delta) {
+void SceneConnection::temporaryTranslateTo(QPoint delta) {
   auto path = d->path();
-  path.last() += delta;
+  path.last() += d->scene->library()->upscale(delta);
   setPath(path);
   setLineWidth(.5);
 }

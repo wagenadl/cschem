@@ -32,7 +32,7 @@ public:
   int connection() const; // -1 if none
   int segment() const; // -1 if not on connection
   void formSelection(QSet<int> elts);
-  QPointF tentativelyMoveSelection(QPointF delta);
+  QPoint tentativelyMoveSelection(QPoint delta);
 private:
   class HoverManagerData *d;
 };
