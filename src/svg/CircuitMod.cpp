@@ -740,12 +740,12 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
   QPolygon path = geom.connectionPath(con);
   Geometry::Intersection inter(geom.intersection(at, path));
 
-  if (inter.pointnumber<0)
+  if (inter.index<0)
     return -1;
   
-  if (con.danglingStart() && inter.pointnumber==0 && inter.delta.isNull()) {
+  if (con.danglingStart() && inter.q==path[0]) {
     // Insert at start of dangling. This is easy.
-    Element junc(Element::junction(path[inter.pointnumber]));
+    Element junc(Element::junction(inter.q));
     QPolygon via = con.via();
     via.removeFirst();
     con.setVia(via);
@@ -755,10 +755,9 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
     qDebug() << "inject at start of dangling";
     return junc.id();
   }
-  if (con.danglingEnd() && inter.pointnumber==path.size()-1
-      && inter.delta.isNull()) {
+  if (con.danglingEnd() && inter.q==path.last()) {
     // Insert at end of dangling. This is easy.
-    Element junc(Element::junction(path[inter.pointnumber]));
+    Element junc(Element::junction(inter.q));
     QPolygon via = con.via();
     via.removeLast();
     con.setVia(via);
@@ -769,13 +768,13 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
     return junc.id();
   }
 
-  Element junc(Element::junction(path[inter.pointnumber] + inter.delta));
+  Element junc(Element::junction(inter.q));
   Connection con1;
   con1.setTo(con.to());
   con.setTo(junc.id());
   con1.setFrom(junc.id());
   QPolygon via = con.via();
-  int seg = inter.pointnumber;
+  int seg = inter.index;
   if (con.danglingStart())
     seg ++;
   // so seg==0 is always before via
@@ -785,7 +784,7 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
     if (!via1.isEmpty())
       via1.removeFirst();
   con1.setVia(via1);
-  if (inter.delta.isNull()) {
+  if (inter.q==path[inter.index]) {
     // con does not retain the intersection point as a via
     if (seg<1)
       via.clear();

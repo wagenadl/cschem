@@ -267,7 +267,7 @@ void HoverManagerData::update() {
 	&& !ccc.via().isEmpty()
 	&& QLineF(pt, lib->upscale(ccc.via().first())).length() < r) {
       // near dangling start
-      pinpos = scene->library()->upscale(ccc.via().first());
+      pinpos = lib->upscale(ccc.via().first());
       fakepin = true;
       highlightPin();
       unhighlightSegment();
@@ -275,7 +275,15 @@ void HoverManagerData::update() {
 	       && ccc.danglingEnd()
 	       && !ccc.via().isEmpty()
 	       &&  QLineF(pt, lib->upscale(ccc.via().last())).length() < r) {
-      pinpos = scene->library()->upscale(ccc.via().last());
+      pinpos = lib->upscale(ccc.via().last());
+      fakepin = true;
+      highlightPin();
+      unhighlightSegment();
+    } else if (primaryPurpose==HoverManager::Purpose::Connecting) {
+      Geometry geom(circ, lib);
+      Geometry::Intersection ii(geom.intersection(lib->downscale(pt),
+                                                  con, false));
+      pinpos = lib->upscale(ii.q);
       fakepin = true;
       highlightPin();
       unhighlightSegment();
@@ -372,8 +380,8 @@ QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
       int con = scene->connectionAt(pup);
       if (con>0 && !avoidConnections.contains(con)) {
         QPolygon path = geom.connectionPath(con);
-        Geometry::Intersection q = geom.intersection(p, path);
-        if (q.pointnumber>=0 && (path[q.pointnumber]+q.delta)==p)
+        Geometry::Intersection ii = geom.intersection(p, path);
+        if (ii.index>=0 && ii.q==p)
           pts << p;
       }
     }

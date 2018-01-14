@@ -34,23 +34,26 @@ public:
   QRect boundingRect() const; // for whole circuit
   /* boundingRect is naive about annotations */
   struct Intersection {
-    Intersection(int n=-1, QPoint d=QPoint()):
-      pointnumber(n), delta(d) {
+    Intersection(int n=-1, QPoint q=QPoint()):
+      index(n), q(q) {
     }
-    int pointnumber;
-    QPoint delta;
+    int index;
+    QPoint q;
   };
+  Intersection intersection(QPoint p, int con, bool nodiag=false);
+  Intersection intersection(QPoint p, Connection const &con, bool nodiag=false);
   static Intersection intersection(QPoint p, QPolygon poly, bool nodiag=false);
   /* Returns information about the point on the polygon that is closest to
      the target point. The result is a structure that encodes the point
      number (index into the polygon) as well as a vector away from that point.
-     The point Q := poly[pointnumber] + delta will actually lie on 
+     The point Q will actually lie on 
      the polygon if all segments in poly are horizontal or vertical. If there
      are diagonal segments, Q will be as near as possible.
      The distance between P and Q can be used to check if P is
      actually on or near the polygon. The polygon is considered an
      open path unless its first and last point are equal.
-     If POLY is empty, the result will have pointnumber=-1.
+     If POLY is empty, the result will have INDEX=-1, otherwise, INDEX is
+     an index into poly that says to which segment Q belongs.
      If NODIAG is true, segments that are not perfectly horizonal or
      vertical are ignored.
   */

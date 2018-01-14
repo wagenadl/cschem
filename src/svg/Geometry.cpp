@@ -294,6 +294,16 @@ void GeometryData::ensureConnectionDB() {
   }
 }
 
+Geometry::Intersection Geometry::intersection(QPoint p, int con, bool nodiag) {
+  return intersection(p, connectionPath(con), nodiag);
+}
+
+Geometry::Intersection Geometry::intersection(QPoint p, Connection const &con,
+                                              bool nodiag) {
+  return intersection(p, connectionPath(con), nodiag);
+}
+
+
 Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly,
 					      bool nodiag) {
   int N = poly.size();
@@ -311,8 +321,8 @@ Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly,
     while (p0 != p1) {
       int d0 = (p - p0).manhattanLength();
       if (d0 < dist) {
-	best.pointnumber = n;
-	best.delta = p0 - poly[n];
+	best.index = n;
+	best.q = p0;
 	dist = d0;
       }
       if (p0.x() < p1.x())
@@ -327,8 +337,8 @@ Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly,
   }
   int d0 = (p - poly.last()).manhattanLength();
   if (d0 < dist) {
-    best.pointnumber = N-1;
-    best.delta = QPoint();
+    best.index = N-1;
+    best.q = poly.last();
   }
   return best;
 }
