@@ -600,15 +600,15 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
     pp << d->lib->downscale(p);
   con.setVia(pp);
   d->circ.insert(con);
-  d->conns[id]->rebuild();
-  qDebug() << "rebuilt";
 
   CircuitMod cm(d->circ, d->lib);
-  if (cm.adjustOverlappingConnections(id))
-    d->rebuildAsNeeded(cm);
+  cm.forceRebuildConnection(id);
+  cm.adjustOverlappingConnections(id);
+  cm.mergeConnection(id);
+  d->rebuildAsNeeded(cm);
 
   d->hovermanager->unhover();
-  d->hovermanager->update(); // somehow this doesn't rehover
+  d->hovermanager->update();
 }
 
 void Scene::copyToClipboard(bool cut) {
@@ -727,7 +727,7 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
     }
     for (Element const &elt: circ.elements())
       if (elt.symbol()==symbol)
-	cm.forceRebuild(elt.id());
+	cm.forceRebuildElement(elt.id());
     
     rebuildAsNeeded(cm);
   }

@@ -13,8 +13,10 @@ public:
   CircuitMod(CircuitMod const &) = delete;
   CircuitMod &operator=(CircuitMod const &) = delete;
   ~CircuitMod();
-  void forceRebuild(int eltid);
+  void forceRebuildElement(int eltid);
   /* Does nothing except add ELTID to the list of affected elements */
+  void forceRebuildConnection(int conid);
+  /* Does nothing except add CONID to the list of affected connections */
   void addElement(class Element const &);
   bool rotateElement(int eltid, int steps=1);
   /* Rotates the element by STEPS x 90 degrees ccw. True if successful. */
@@ -107,9 +109,10 @@ public:
      circuit. Specifically, any pin and connection corner in the base
      circuit is tested against a full map of pins and connections in
      the selection. Junctions are created as needed and overlapping
-     connections removed. True if successful.  This function is
-     a work in progress.
+     connections removed. True if successful.
    */
+  bool mergeConnection(int con);
+  /* Attaches the connection to any underlying pins. True if successful. */
 public:
   QSet<int> affectedConnections() const; // new, modified, or deleted
   QSet<int> affectedElements() const; // new, modified, or deleted

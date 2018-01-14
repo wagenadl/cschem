@@ -21,6 +21,8 @@ public:
 public:
   void insert(Element const &); // or replace
   void insert(Connection const &);
+  Circuit &operator<<(Element const &elt) { insert(elt); return *this; }
+  Circuit &operator<<(Connection const &con) { insert(con); return *this; }
   void remove(int id);
   /* Removes an element or a connection.  Connections to/from a
      deleted element are also deleted. */

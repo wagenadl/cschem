@@ -19,6 +19,15 @@ public:
     bot = mod.circuit();
     botgeom = Geometry(bot, d->lib);
   }
+  CM_Merge(CircuitModData *d, int conid):
+    d(d),
+    any(false),
+    top(Circuit() << d->circ.connection(conid)),
+    topgeom(top, d->lib) {
+    bot = d->circ;
+    bot.remove(conid);
+    botgeom = Geometry(bot, d->lib);
+  }
   void considerPinPin();
   void considerPinCon();
   void considerConPin();
@@ -34,6 +43,20 @@ public:
   QSet<int> junctst;
 };
 
+
+bool CircuitMod::mergeConnection(int id) {
+  CM_Merge mrg(d, id);
+  mrg.considerPinCon();
+
+  // Cleanup
+  for (int j: mrg.junctst) {
+    removeOverlappingJunctions(j);
+    removePointlessJunction(j);
+  }
+
+  return mrg.any;
+}
+
 bool CircuitMod::mergeSelection(QSet<int> sel) {
   CM_Merge mrg(d, sel);
   mrg.considerPinPin();
@@ -41,7 +64,7 @@ bool CircuitMod::mergeSelection(QSet<int> sel) {
   mrg.considerConPin();
   mrg.considerConCon();
 
-  // Finally, cleanup
+  // Cleanup
   for (int j: mrg.junctst) {
     removeOverlappingJunctions(j);
     removePointlessJunction(j);
@@ -235,5 +258,4 @@ int CircuitModData::addInPlaceConnection(PinID pidbot, PinID pidtop,
   }
   return jid;
 }
-
 

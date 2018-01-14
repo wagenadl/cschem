@@ -924,6 +924,10 @@ bool CircuitMod::flipElement(int eltid) {
   return true;
 }
 
-void CircuitMod::forceRebuild(int eltid) {
+void CircuitMod::forceRebuildElement(int eltid) {
   d->aelts << eltid;
+}
+
+void CircuitMod::forceRebuildConnection(int conid) {
+  d->acons << conid;
 }
