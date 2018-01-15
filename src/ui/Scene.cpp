@@ -904,3 +904,11 @@ void Scene::simplifySegment(int con, int seg) {
   d->rebuildAsNeeded(cm);
   d->hovermanager->update();
 }
+
+void Scene::unhover() {
+  d->hovermanager->unhover();
+}
+
+void Scene::rehover() {
+  d->hovermanager->update();
+}

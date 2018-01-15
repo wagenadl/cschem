@@ -40,6 +40,8 @@ public:
   void rotate(int dir=1);
   void flipx();
   void simplifySegment(int con, int eg);
+  void unhover();
+  void rehover();
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;

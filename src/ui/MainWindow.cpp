@@ -20,6 +20,7 @@
 #include "LibView.h"
 #include "SignalAccumulator.h"
 #include "svg/Exporter.h"
+#include  <QClipboard>
 
 class MWData {
 public:
@@ -131,28 +132,35 @@ void MainWindow::createActions() {
 
   act = new QAction(tr("&Save"), this);
   act->setShortcuts(QKeySequence::Save);
-  act->setStatusTip(tr("Save file"));
   connect(act, &QAction::triggered, this, &MainWindow::saveAction);
   menu->addAction(act);
 
   act = new QAction(tr("Save &as…"), this);
   act->setShortcuts(QKeySequence::SaveAs);
-  act->setStatusTip(tr("Save file with a new name"));
   connect(act, &QAction::triggered, this, &MainWindow::saveAsAction);
   menu->addAction(act);
 
-  act = new QAction(tr("&Export circuit…"), this);
+  act = new QAction(tr("&Export circuit as svg…"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
-  act->setStatusTip(tr("Export circuit as svg"));
   connect(act, &QAction::triggered, this, &MainWindow::exportCircuitAction);
   menu->addAction(act);
 
-  act = new QAction(tr("Export &parts list…"), this);
+  act = new QAction(tr("Export &parts list as csv…"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
-  act->setStatusTip(tr("Export list of parts"));
   connect(act, &QAction::triggered, this, &MainWindow::exportPartListAction);
   menu->addAction(act);
 
+  act = new QAction(tr("Copy circuit &image to clipboard"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
+  connect(act, &QAction::triggered, this, &MainWindow::circuitToClipboardAction);
+  menu->addAction(act);
+
+  act = new QAction(tr("Copy parts lis&t to clipboard"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
+  connect(act, &QAction::triggered,
+	  this, &MainWindow::partListToClipboardAction);
+  menu->addAction(act);
+  
   act = new QAction(tr("&Quit"), this);
   act->setShortcuts(QKeySequence::Quit);
   act->setStatusTip(tr("Quit the program"));
@@ -521,3 +529,27 @@ void MainWindow::exportPartListAction() {
     // should show error box
   }
 }
+
+void MainWindow::circuitToClipboardAction() {
+  QRectF rr = d->scene->sceneRect();
+  QSizeF ss = rr.size();
+  QSizeF sdest = 2*ss;
+  QRectF rdest = QRectF(QPointF(), sdest);
+  QPixmap img(sdest.toSize());
+  img.fill();
+  { QPainter ptr(&img);
+    d->scene->unhover();
+    d->scene->render(&ptr, rdest, rr);
+    d->scene->rehover();
+  }
+  QApplication::clipboard()->setPixmap(img);
+}
+ 
+void MainWindow::partListToClipboardAction() {
+  QList<QStringList> parts = d->partlistview->partList();
+  QString text;
+  for (QStringList const &line: parts)
+    text += line.join("\t") + "\n";
+  QApplication::clipboard()->setText(text);
+  
+} 

@@ -39,6 +39,8 @@ public slots:
   void flipAction();
   void exportCircuitAction();
   void exportPartListAction();
+  void circuitToClipboardAction();
+  void partListToClipboardAction();
 public:
   void load(QString filename);
   void create();

@@ -14,6 +14,8 @@ public:
   PartListView(PartListView const &) = delete;
   PartListView &operator=(PartListView const &) = delete;
   QList<QStringList> partList() const;
+  /* The first string list contains the headers, subsequent ones are
+     one list per row, sorted in current display order. */
 signals:
   void valueEdited(int id);
 public slots:
