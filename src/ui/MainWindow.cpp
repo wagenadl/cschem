@@ -352,11 +352,15 @@ void MainWindow::create() {
 
 void MainWindow::load(QString fn) {
   create();
+  qDebug() << "Created schematic";
   d->schem = FileIO::loadSchematic(fn);
+  qDebug() << "loaded schematic. part names:" << d->schem.library().partNames();
+  d->libview->clear();
   for (QString name: d->schem.library().partNames())
     d->lib.insert(d->schem.library().part(name));
   d->scene->setCircuit(d->schem.circuit());
   d->partlistview->rebuild();
+  d->libview->rebuild();
   setWindowTitle(fn);
   d->filename = fn;
 }

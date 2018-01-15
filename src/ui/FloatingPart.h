@@ -4,9 +4,9 @@
 
 #define FLOATINGPART_H
 
-#include <QGraphicsSvgItem>
+#include "SvgItem.h"
 
-class FloatingPart: public QGraphicsSvgItem {
+class FloatingPart: public SvgItem {
 public:
   FloatingPart(class Part const &part);
   ~FloatingPart();

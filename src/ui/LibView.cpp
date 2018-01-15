@@ -2,13 +2,13 @@
 
 #include "LibView.h"
 #include <QDebug>
-#include <QGraphicsSvgItem>
+#include "SvgItem.h"
 #include "svg/PartLibrary.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QDrag>
 #include <QMimeData>
 
-class LibViewElement: public QGraphicsSvgItem {
+class LibViewElement: public SvgItem {
 public:
   LibViewElement(QString name, LibView *view): name(name), view(view) { }
   ~LibViewElement() { }
@@ -35,7 +35,7 @@ public:
   LibView *view;
   QGraphicsScene *scene;
   PartLibrary const *lib;
-  QMap<QString, QGraphicsSvgItem *> items;
+  QMap<QString, SvgItem *> items;
 };
 
 void LibViewElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
@@ -68,8 +68,8 @@ void LibViewElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
 
 void LibViewData::addPart(QString part) {
   double y = items.isEmpty() ? 0 : scene->itemsBoundingRect().bottom() + 14;
-  QGraphicsSvgItem *item = new LibViewElement(part, view);
-  item->setSharedRenderer(lib->part(part).renderer().data());
+  SvgItem *item = new LibViewElement(part, view);
+  item->setRenderer(lib->part(part).renderer());
   scene->addItem(item);
   items[part] = item;
   item->setPos(QPointF(0, y));
@@ -86,15 +86,19 @@ LibView::LibView(class PartLibrary const *lib, QWidget *parent):
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   rebuild(lib);
 }
+
+void LibView::clear() {
+  for (auto *i: d->items)
+    delete i;
+  d->items.clear();
+  d->scene->setSceneRect(d->scene->itemsBoundingRect());
+}
+
 void LibView::rebuild(class PartLibrary const *lib) {
   if (lib)
     d->lib = lib;
 
-  for (auto *i: d->items)
-    delete i;
-  d->items.clear();
-
-  d->scene->setSceneRect(d->scene->itemsBoundingRect());
+  clear();
    
   if (!d->lib)
     return;

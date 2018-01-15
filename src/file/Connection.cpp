@@ -66,14 +66,12 @@ Connection::Connection(QXmlStreamReader &src): Connection() {
   d->id = a.value("id").toInt();
   QStringList from = a.value("from").toString().split(":");
   if (from.size()>=1) 
-    d->fromId = from[0].toInt();
-  if (from.size()>=2)
-    d->fromPin = from[1];
+    d->fromId = from.takeFirst().toInt();
+  d->fromPin = from.join(":");
   QStringList to = a.value("to").toString().split(":");
   if (to.size()>=1) 
-    d->toId = to[0].toInt();
-  if (to.size()>=2)
-    d->toPin = to[1];
+    d->toId = to.takeFirst().toInt();
+  d->toPin = to.join(":");
   QStringList via = a.value("via").toString().split(" ");
   for (QString &v: via) {
     QStringList xy = v.split(",");

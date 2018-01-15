@@ -16,6 +16,7 @@ public:
 signals:
   void activated(QString);
 public slots:
+  void clear();
   void rebuild(class PartLibrary const *lib=0);
 public:
   void activate(QString); // causes the signal to be emitted

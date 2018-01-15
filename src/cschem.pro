@@ -33,5 +33,7 @@ HEADERS += ui/PartListView.h   ui/SignalAccumulator.h   ui/TextTable.h
 SOURCES += ui/PartListView.cpp ui/SignalAccumulator.cpp ui/TextTable.cpp
 HEADERS += svg/Exporter.h
 SOURCES += svg/Exporter.cpp
+HEADERS += ui/SvgItem.h
+SOURCES += ui/SvgItem.cpp
 SOURCES += cschem.cpp	
 RESOURCES += cschem.qrc

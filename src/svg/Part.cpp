@@ -9,6 +9,11 @@ static QMap<QString, QSharedPointer<QSvgRenderer> > &partRenderers() {
   return rnd;
 }
 
+static QMap<QString, QByteArray> &partData() {
+  static QMap<QString, QByteArray> map;
+  return map;
+}
+
 class PartData: public QSharedData {
 public:
   PartData(): valid(false) { }
@@ -75,21 +80,23 @@ QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
   {
     QXmlStreamWriter sw(&res);
     sw.writeStartDocument("1.0", false);
+
     sw.writeStartElement("svg");
+    sw.writeAttribute("version", "1.1");
+    sw.writeAttribute("id", "cschempart");
     Part::writeNamespaces(sw);
-    
     if (withbbox) {
       sw.writeAttribute("width", QString("%1").arg(bbox.width()));
       sw.writeAttribute("height", QString("%1").arg(bbox.height()));
       sw.writeAttribute("viewBox", QString("0 0 %1 %2")
 			.arg(bbox.width()).arg(bbox.height()));
-      sw.writeStartElement("g");
+    }
+    
+    sw.writeStartElement("g");
+    if (withbbox)
       sw.writeAttribute("transform",
 			QString("translate(%1,%2)").
 			arg(-bbox.left()).arg(-bbox.top()));
-    } else {
-      sw.writeStartElement("g");
-    }
     
     writeSvg(sw, withpins);
     
@@ -100,15 +107,25 @@ QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
   return res;
 }
 
-
 void PartData::ensureBBox() {
   QByteArray svg = toSvg(false, true);
+  qDebug() << "ensureBBOX" << name;
+  qDebug() << svg;
+  qDebug() << "]]] ensureBBOX" << name;
   QSvgRenderer renderer(svg);
   QString id = groupId;
   bbox = renderer.boundsOnElement(id).toAlignedRect();
+  qDebug() << id << bbox;
   for (QString pin: pins.keys())
     pins[pin] = renderer.boundsOnElement(pinIds[pin]).center();
+  for (QString pin: pins.keys())
+    qDebug() << "pin" << pin << pins[pin];
   newshift();
+  for (QString pin: pins.keys())
+    qDebug() << "shifted pin" << pin << shpins[pin];
+  qDebug() << "finalsvg" << name;
+  qDebug() << toSvg(true, false);
+  qDebug() << "]]] finalsvg" << name;
 }
 
 Part::Part() {
@@ -123,6 +140,7 @@ Part::Part(XmlElement const &elt): Part() {
       d->scanPins(e.element());
   d->ensureBBox();
   d->valid = true;
+  forgetRenderer(*this);
 }
 
 Part::~Part() {
@@ -208,13 +226,17 @@ void Part::writeSvg(QXmlStreamWriter &sw) const {
 }
 
 void Part::forgetRenderer(Part const &p) {
+  qDebug() << "forgetrenderer" << p.name();
   partRenderers().remove(p.name());
 }
 
 QSharedPointer<QSvgRenderer> Part::renderer() const {
   auto &map = partRenderers();
-  if (!map.contains(d->name))
-    map[d->name] = QSharedPointer<QSvgRenderer>(new QSvgRenderer(toSvg()));
+  auto &data = partData();
+  if (!map.contains(d->name)) {
+    data[d->name] = toSvg();
+    map[d->name] = QSharedPointer<QSvgRenderer>(new QSvgRenderer(data[d->name]));
+  }
   return map[d->name];
 }
 

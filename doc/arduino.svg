@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="126.00012"
-   height="266.00006"
-   viewBox="0 0 126.00012 266.00007"
+   width="147"
+   height="385.00006"
+   viewBox="0 0 147 385.00007"
    version="1.1"
    id="svg852"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.9050362"
-     inkscape:cx="-84.757853"
-     inkscape:cy="-17.577317"
+     inkscape:cx="-128.29146"
+     inkscape:cy="198.91053"
      inkscape:document-units="px"
      inkscape:current-layer="g1454"
      showgrid="true"
@@ -50,8 +50,8 @@
        id="grid1508"
        spacingx="7.0000001"
        spacingy="7.0000001"
-       originx="8.452434e-05"
-       originy="161.00002"
+       originx="6.7899649e-06"
+       originy="378.00003"
        empspacing="4" />
   </sodipodi:namedview>
   <metadata
@@ -70,11 +70,10 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-1139.8571,-449.94818)">
+     transform="translate(-1139.8572,-547.94818)">
     <g
        inkscape:label="part:arduino:uno"
-       id="g1454"
-       style="">
+       id="g1454">
       <circle
          r="7"
          inkscape:label="pin:Vin"
@@ -87,15 +86,13 @@
          xml:space="preserve"
          id="flowRoot1193"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;line-height:125%;font-family:Lato;-inkscape-font-specification:'Lato, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
-           id="flowRegion1195"
-           style=""><rect
+           id="flowRegion1195"><rect
              id="rect1197"
              width="77"
              height="28"
              x="-13.99996"
-             y="124.99999"
-             style="" /></flowRegion><flowPara
-           id="flowPara1199"></flowPara></flowRoot>      <circle
+             y="124.99999" /></flowRegion><flowPara
+           id="flowPara1199" /></flowRoot>      <circle
          r="7"
          inkscape:label="pin:Gnd"
          cy="-1216.8572"
@@ -290,7 +287,7 @@
            sodipodi:role="line"
            id="tspan2339"
            x="1174.8572"
-           y="723.82819"></tspan></text>
+           y="723.82819" /></text>
       <circle
          style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#e497e4;fill-opacity:0.47096773;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
          id="circle1690-6-2-4"

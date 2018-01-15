@@ -2,7 +2,7 @@
 
 #include "SceneElement.h"
 #include "SceneElementData.h"
-#include <QGraphicsSvgItem>
+#include "SvgItem.h"
 #include <QGraphicsEllipseItem>
 #include "file/Element.h"
 #include "Scene.h"
@@ -150,14 +150,8 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
   if (!part.isValid())
     qDebug() << "Cannot find svg for symbol" << d->sym;
 
-  d->renderer = part.renderer();
-  QSvgRenderer *r = d->renderer.data();
-
-  d->element = new QGraphicsSvgItem(this);
-  if (r)
-    d->element->setSharedRenderer(r);
-  else
-    qDebug() << "Cannot construct renderer for symbol" << d->sym;    
+  d->element = new SvgItem(this);
+  d->element->setRenderer(part.renderer());
   
   parent->addItem(this);
   rebuild();
@@ -245,10 +239,7 @@ void SceneElement::rebuild() {
 
   prepareGeometryChange();
 
-  QSvgRenderer tmp;
-  d->element->setSharedRenderer(&tmp);
-  d->renderer = part.renderer();
-  d->element->setSharedRenderer(d->renderer.data());
+  d->element->setRenderer(part.renderer());
   
   QPointF orig = part.bbOrigin();
   QTransform xf;

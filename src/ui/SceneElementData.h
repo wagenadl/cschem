@@ -35,10 +35,9 @@ public:
   class Scene *scene;
   int id;
   QString sym;
-  class QGraphicsSvgItem *element;
+  class SvgItem *element;
   class SceneAnnotation *name;
   class SceneAnnotation *value;
-  QSharedPointer<class QSvgRenderer> renderer;
   QPoint delta0;
 public:
   bool dragmoved;

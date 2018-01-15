@@ -18,7 +18,7 @@ FloatingPart::FloatingPart(Part const &part):
   d->bbOrigin = part.bbOrigin();
   d->sCM = part.shiftedBBox().center();
   d->name = part.name();
-  setSharedRenderer(part.renderer().data());
+  setRenderer(part.renderer());
 }
   
 FloatingPart::~FloatingPart() {

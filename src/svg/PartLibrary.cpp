@@ -21,23 +21,22 @@ void PartLibrary::merge(QString fn) {
   }
 
   QXmlStreamReader sr(&file);
-  merge(sr);
+  while (!sr.atEnd()) {
+    sr.readNext();
+    if (sr.isStartElement() && sr.qualifiedName()=="svg") 
+      merge(sr);
+  }
 }
 
 void PartLibrary::merge(QXmlStreamReader &sr) {
   int nOld = partNames().size();
 
-  while (!sr.atEnd()) {
-    sr.readNext();
-    if (sr.isStartElement() && sr.qualifiedName()=="svg") {
-      XmlElement svg(sr);
-      if (svg.isValid()) {
-        scanParts(svg);
-      } else {
-        qDebug() << "Failed to parse svg";
-        return;
-      }
-    }
+  XmlElement svg(sr);
+  if (svg.isValid()) {
+    scanParts(svg);
+  } else {
+    qDebug() << "Failed to parse svg";
+    return;
   }
   if (partNames().size() == nOld)
     qDebug() << "No parts loaded";
@@ -47,7 +46,6 @@ PartLibrary::~PartLibrary() {
 }
 
 void PartLibrary::insert(Part const &p) {
-  Part::forgetRenderer(p);
   parts_[p.name()] = p;
   qDebug() << "Inserted part" << p.name() << "with pins" << p.pinNames();
 }  

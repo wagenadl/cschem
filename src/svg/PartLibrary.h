@@ -11,7 +11,7 @@ public:
   PartLibrary(QString fn);
   PartLibrary();
   void merge(QString fn);
-  void merge(QXmlStreamReader &sr);
+  void merge(QXmlStreamReader &sr); // must point to <svg> element
   void insert(Part const &);
   ~PartLibrary();
   QStringList partNames() const;
