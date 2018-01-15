@@ -100,9 +100,11 @@ void Schem::selectivelyUpdateLibrary(PartLibrary const &lib) {
 }
 
 void Schem::saveSvg(QXmlStreamWriter &sw) const {
-  sw.setAutoFormatting(false);
   sw.writeStartElement("svg");
   Part::writeNamespaces(sw);
+
+  sw.setAutoFormatting(false);
+
   QSet<QString> syms;
   for (Element const &elt: circuit().elements())
     syms << elt.symbol();
@@ -111,6 +113,9 @@ void Schem::saveSvg(QXmlStreamWriter &sw) const {
       d->library.part(sym).element().write(sw);
   
   sw.writeEndElement();
+
+  sw.setAutoFormatting(true);
+
 }
 
 bool Schem::isEmpty() const {

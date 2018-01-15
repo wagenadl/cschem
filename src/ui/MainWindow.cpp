@@ -535,7 +535,7 @@ void MainWindow::exportPartListAction() {
 }
 
 void MainWindow::circuitToClipboardAction() {
-  QRectF rr = d->scene->sceneRect();
+  QRectF rr = d->scene->itemsBoundingRect();
   QSizeF ss = rr.size();
   QSizeF sdest = 2*ss;
   QRectF rdest = QRectF(QPointF(), sdest);

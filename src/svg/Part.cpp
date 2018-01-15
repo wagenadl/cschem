@@ -112,10 +112,13 @@ void PartData::ensureBBox() {
   QByteArray svg = toSvg(false, true);
   QSvgRenderer renderer(svg);
   QString id = groupId;
-  bbox = renderer.boundsOnElement(id).toAlignedRect();
+  bbox = renderer.matrixForElement(id).mapRect(renderer.boundsOnElement(id))
+    .toAlignedRect();
   qDebug() << id << bbox;
   for (QString pin: pins.keys())
-    pins[pin] = renderer.boundsOnElement(pinIds[pin]).center();
+    pins[pin]
+      = renderer.matrixForElement(id)
+      .map(renderer.boundsOnElement(pinIds[pin]).center());
   newshift();
 }
 

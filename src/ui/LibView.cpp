@@ -7,15 +7,21 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QDrag>
 #include <QMimeData>
+#include <QGraphicsColorizeEffect>
+#include "Style.h"
 
 class LibViewElement: public SvgItem {
 public:
-  LibViewElement(QString name, LibView *view): name(name), view(view) { }
+  LibViewElement(QString name, LibView *view): name(name), view(view) {
+    setAcceptHoverEvents(true);
+  }
   ~LibViewElement() { }
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+  void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
+  void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
 private:
   QString name;
   LibView *view;
@@ -51,7 +57,8 @@ void LibViewElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     mimeData->setData("application/x-dnd-cschem", name.toUtf8());
     drag->setMimeData(mimeData);
     qDebug() << "Drag started for" << name;
-    drag->exec(Qt::CopyAction, Qt::CopyAction);
+    if (drag->exec(Qt::CopyAction, Qt::CopyAction))
+      setGraphicsEffect(0);
   }
 }
 
@@ -61,10 +68,19 @@ void LibViewElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   e->accept();
 }
 
-void LibViewElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
+void LibViewElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
+  e->accept();
 }
 
-
+void LibViewElement::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+  auto *ef = new QGraphicsColorizeEffect;
+  ef->setColor(Style::elementHoverColor());
+  setGraphicsEffect(ef);
+}
+  
+void LibViewElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+  setGraphicsEffect(0);
+}
 
 void LibViewData::addPart(QString part) {
   double y = items.isEmpty() ? 0 : scene->itemsBoundingRect().bottom() + 14;

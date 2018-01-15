@@ -158,6 +158,8 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
 
   if (!eltids.isEmpty())
     scene->annotationInternallyEdited(-1); // crude
+
+  scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10, -10, 10, 10));
   
   hovermanager->update();
 }
@@ -607,18 +609,19 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
   cm.mergeConnection(id);
   d->rebuildAsNeeded(cm);
 
-  d->hovermanager->unhover();
-  d->hovermanager->update();
+  unhover();
+  rehover();
 }
 
 void Scene::copyToClipboard(bool cut) {
-  QSet<int> elts = selectedElements();
-  if (elts.isEmpty()) {
-    if (d->hovermanager->onElement())
-      elts << d->hovermanager->element();
-    else
+  QSet<int> elts;
+  if (d->hovermanager->onElement())
+    elts << d->hovermanager->element();
+  else
+    elts = selectedElements();
+
+  if (elts.isEmpty())
       return;
-  }
 
   Circuit pp = d->circ.subset(elts);
   Clipboard::clipboard().store(pp);
@@ -838,6 +841,7 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
   } else {
     e->ignore();
   }
+  // i'd like to set focus, but it doesn't happen somehow
 }
 
 void Scene::focusInEvent(QFocusEvent *e) {
