@@ -436,6 +436,8 @@ void MainWindow::reactToSceneEdit() {
   d->schem.setCircuit(d->scene->circuit());
   if (d->partlistview->isVisible())
     d->chgtoplv->activate();
+  setWindowTitle("*" + d->filename);
+  
 }
 
 void MainWindow::reactToPartListEdit(int id) {
