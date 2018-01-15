@@ -36,6 +36,11 @@ SceneAnnotation::~SceneAnnotation() {
   delete d;
 }
 
+void SceneAnnotation::focusOutEvent(QFocusEvent *e) {
+  QGraphicsTextItem::focusOutEvent(e);
+  emit returnPressed(); // hmmm..
+}
+ 
 void SceneAnnotation::keyPressEvent(QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_Return: case Qt::Key_Enter:

@@ -26,6 +26,7 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+  void focusOutEvent(QFocusEvent *) override;
 private:
   class SAData *d;
 };
