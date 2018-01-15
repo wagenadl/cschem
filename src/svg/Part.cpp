@@ -3,16 +3,17 @@
 #include "Part.h"
 #include <QSvgRenderer>
 #include <QDebug>
+#include <iostream>
 
 static QMap<QString, QSharedPointer<QSvgRenderer> > &partRenderers() {
   static QMap<QString, QSharedPointer<QSvgRenderer> > rnd;
   return rnd;
 }
 
-static QMap<QString, QByteArray> &partData() {
-  static QMap<QString, QByteArray> map;
-  return map;
-}
+//static QMap<QString, QByteArray> &partData() {
+//  static QMap<QString, QByteArray> map;
+//  return map;
+//}
 
 class PartData: public QSharedData {
 public:
@@ -109,23 +110,13 @@ QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
 
 void PartData::ensureBBox() {
   QByteArray svg = toSvg(false, true);
-  qDebug() << "ensureBBOX" << name;
-  qDebug() << svg;
-  qDebug() << "]]] ensureBBOX" << name;
   QSvgRenderer renderer(svg);
   QString id = groupId;
   bbox = renderer.boundsOnElement(id).toAlignedRect();
   qDebug() << id << bbox;
   for (QString pin: pins.keys())
     pins[pin] = renderer.boundsOnElement(pinIds[pin]).center();
-  for (QString pin: pins.keys())
-    qDebug() << "pin" << pin << pins[pin];
   newshift();
-  for (QString pin: pins.keys())
-    qDebug() << "shifted pin" << pin << shpins[pin];
-  qDebug() << "finalsvg" << name;
-  qDebug() << toSvg(true, false);
-  qDebug() << "]]] finalsvg" << name;
 }
 
 Part::Part() {
@@ -232,11 +223,9 @@ void Part::forgetRenderer(Part const &p) {
 
 QSharedPointer<QSvgRenderer> Part::renderer() const {
   auto &map = partRenderers();
-  auto &data = partData();
-  if (!map.contains(d->name)) {
-    data[d->name] = toSvg();
-    map[d->name] = QSharedPointer<QSvgRenderer>(new QSvgRenderer(data[d->name]));
-  }
+  //  auto &data = partData();
+  if (!map.contains(d->name)) 
+    map[d->name] = QSharedPointer<QSvgRenderer>(new QSvgRenderer(toSvg()));
   return map[d->name];
 }
 

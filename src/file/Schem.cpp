@@ -99,17 +99,18 @@ void Schem::selectivelyUpdateLibrary(PartLibrary const &lib) {
       d->library.insert(lib.part(sym));
 }
 
-void Schem::saveSvg(QXmlStreamWriter &sr) const {
-  sr.writeStartElement("svg");
-  Part::writeNamespaces(sr);
+void Schem::saveSvg(QXmlStreamWriter &sw) const {
+  sw.setAutoFormatting(false);
+  sw.writeStartElement("svg");
+  Part::writeNamespaces(sw);
   QSet<QString> syms;
   for (Element const &elt: circuit().elements())
     syms << elt.symbol();
   for (QString sym: syms) 
     if (d->library.contains(sym))
-      d->library.part(sym).element().write(sr);
+      d->library.part(sym).element().write(sw);
   
-  sr.writeEndElement();
+  sw.writeEndElement();
 }
 
 bool Schem::isEmpty() const {
