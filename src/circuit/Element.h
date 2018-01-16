@@ -6,14 +6,17 @@
 
 #include <QSharedData>
 #include <QXmlStreamReader>
+#include "Layer.h"
 
 class Element {
 public:
   enum class Type {
     Invalid,
     Component,
-    Port,
-    Junction
+    Port, // only in schem
+    Junction,
+    Via, // only in board
+    Hole // only in board
   };
   struct Info {
     QString vendor;
@@ -40,12 +43,11 @@ public:
   QString symbol() const; // e.g., "part:passive:resistor"
   QString value() const; // e.g., "10 pF" or "INA111"
   QString name() const; // e.g., "R1"
+  Layer layer() const; // only for board
   QPoint valuePos() const;
   QPoint namePos() const;
   bool isValueVisible() const;
   bool isNameVisible() const;
-  bool isVirtual() const; // an element is virtual if it
-  // has "virtual" in its symbol name
   int id() const;
   int rotation() const;
   bool isFlipped() const;
@@ -64,6 +66,7 @@ public:
   void setRotation(int);
   void setFlipped(bool);
   void translate(QPoint delta);
+  void setLayer(Layer); // only for board; forces flipped
 protected:
   friend QXmlStreamWriter &operator<<(QXmlStreamWriter &, Element const &);
   friend QXmlStreamReader &operator>>(QXmlStreamReader &, Element &);

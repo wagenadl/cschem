@@ -8,6 +8,7 @@
 #include <QXmlStreamReader>
 #include "PinID.h"
 #include <QPolygon>
+#include "Layer.h"
 
 class Connection {
 public:
@@ -21,6 +22,8 @@ public:
   int id() const;
   int fromId() const; // zero if dangling
   int toId() const; // zero if dangling
+  int width() const; // only for board
+  Layer layer() const;
   QString fromPin() const;
   QString toPin() const;
   QPolygon const &via() const;
@@ -50,6 +53,8 @@ public:
   void setToPin(QString);
   void setFrom(int id, QString pin="");
   void setTo(int id, QString pin="");
+  void setWidth(int);
+  void setLayer(Layer);
   void unsetFrom();
   void unsetTo();
   QPolygon &via();

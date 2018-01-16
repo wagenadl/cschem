@@ -14,6 +14,8 @@ public:
     fromId = toId = 0;
     fromPin = toPin = "";
     via = QPolygon();
+    layer = Layer::Schematic;
+    width = 0;
   }  
 public:
   int id;
@@ -22,6 +24,8 @@ public:
   QString fromPin;
   QString toPin;
   QPolygon via;
+  Layer layer;
+  int width;
 };
 
 bool Connection::isValid() const {
@@ -91,6 +95,7 @@ void Connection::readAttributes(QXmlStreamReader &sr) {
     if (xy.size()==2) 
       d->via << QPoint(xy[0].toInt(), xy[1].toInt());
   }
+  d->layer = layerFromAbbreviation(a.value("layer").toString());
 }
   
 QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Connection const &c) {
@@ -112,6 +117,13 @@ void Connection::writeAttributes(QXmlStreamWriter &sw) const {
       v << QString("%1,%2").arg(p.x()).arg(p.y());
     sw.writeAttribute("via", v.join(" "));
   }
+  
+  QString l = layerToAbbreviation(layer());
+  if (!l.isEmpty())
+    sw.writeAttribute("layer", l);
+
+  if (width()>0)
+    sw.writeAttribute("width", QString("%1").arg(width()));
 }
 
 
@@ -255,3 +267,10 @@ QString Connection::report() const {
   return x;
 }
 
+Layer Connection::layer() const {
+  return d->layer;
+}
+
+int Connection::width() const {
+  return d->width;
+}

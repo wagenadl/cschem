@@ -11,6 +11,7 @@ public:
   }
   void reset() {
     type = Element::Type::Invalid;
+    layer = Layer::Schematic;
     position = QPoint();
     subtype = "";
     value = name = "";
@@ -22,6 +23,7 @@ public:
   }
 public:
   Element::Type type;
+  Layer layer;
   QPoint position;
   QString subtype;
   QString value;
@@ -35,6 +37,7 @@ public:
   bool valueVis;
   bool nameVis;
 };
+
 
 Element::Element() {
   d = new ElementData();
@@ -56,6 +59,7 @@ void Element::readAttributes(QXmlStreamReader &src) {
   auto a = src.attributes();
   d->id = a.value("id").toInt();
   d->position = QPoint(a.value("x").toInt(), a.value("y").toInt());
+  d->layer = layerFromAbbreviation(a.value("layer").toString());
   d->subtype = a.value("type").toString();
   d->value = a.value("value").toString();
   d->valuePos = QPoint(a.value("valx").toInt(), a.value("valy").toInt());
@@ -221,6 +225,10 @@ QString Element::tag() const {
     return "port";
   case Type::Junction:
     return "junction";
+  case Type::Via:
+    return "via";
+  case Type::Hole:
+    return "hole";
   }
   return "";
 }
@@ -235,6 +243,8 @@ QString Element::symbol() const {
     return "port:" + subtype();
   case Type::Junction:
     return "junction";
+  case Type::Via: case Type::Hole:
+    return "hole:" + subtype();
   }
   return "";
 }
@@ -248,6 +258,10 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Element &c) {
     c.d->type = Element::Type::Port;
   else if (name=="junction")
     c.d->type = Element::Type::Junction;
+  else if (name=="via")
+    c.d->type = Element::Type::Via;
+  else if (name=="hole")
+    c.d->type = Element::Type::Hole;
   else
     c.d->type = Element::Type::Invalid;
   c.readAttributes(sr);
@@ -280,7 +294,11 @@ void Element::writeAttributes(QXmlStreamWriter &sw) const {
     sw.writeAttribute("namey", QString::number(namePos().y()));
     sw.writeAttribute("namevis", QString::number(isNameVisible() ? 1 : 0));
   }
-
+  
+  QString l = layerToAbbreviation(layer());
+  if (!l.isEmpty())
+    sw.writeAttribute("layer", l);
+  
   if (!info().vendor.isEmpty())
     sw.writeAttribute("vendor", info().vendor);
   if (!info().partno.isEmpty())
@@ -301,14 +319,18 @@ QString Element::report() const {
     .arg(value()).arg(name());
 }
     
-bool Element::isVirtual() const {
-  return symbol().split(":").contains("virtual");
-}
-
 Element::Info Element::info() const {
   return d->info;
 }
 
 void Element::setInfo(Element::Info const &info) {
   d->info = info;
+}
+
+Layer Element::layer() const {
+  return d->layer;
+}
+
+void Element::setLayer(Layer l) {
+  d->layer = l;
 }
