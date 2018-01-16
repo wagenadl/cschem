@@ -24,7 +24,7 @@ void SceneElementData::markHover() {
     auto *ef = new QGraphicsColorizeEffect;
     ef->setColor(element->parentItem()->isSelected()
 		 ? Style::selectedElementHoverColor()
-		 : Style::elementHoverColor());
+		 : Style::hoverColor());
     element->setGraphicsEffect(ef);
   } else {
     element->setGraphicsEffect(0);    
@@ -377,7 +377,7 @@ void SceneElement::paint(QPainter *painter,
 			 const QStyleOptionGraphicsItem *,
 			 QWidget *) {
   if (isSelected()) {
-    painter->setBrush(QBrush(Style::selectionColor()));
+    painter->setBrush(QBrush(Style::selectionBackgroundColor()));
     painter->setPen(QPen(Qt::NoPen));
     painter->setCompositionMode(QPainter::CompositionMode_Darken);
     painter->drawRoundedRect(boundingRect(),
@@ -388,7 +388,7 @@ void SceneElement::paint(QPainter *painter,
     = dynamic_cast<QGraphicsColorizeEffect *>(d->element->graphicsEffect());
   if (ef) 
     ef->setColor(isSelected() ? Style::selectedElementHoverColor()
-		 : Style::elementHoverColor());
+		 : Style::hoverColor());
 }
 
 QRectF SceneElement::boundingRect() const {

@@ -2,37 +2,29 @@
 
 #include "Style.h"
 
-QColor Style::textColor() {
-  return QColor(0, 0, 0);
-}
-
 QColor Style::faintColor() {
   return QColor(180, 180, 180);
 }
 
-QColor Style::connectionColor() {
+QColor Style::layerColor(Layer) {
   return QColor(0, 0, 0);
 }
 
+QColor Style::textColor(Layer) {
+  return QColor(0, 0, 0);
+}
 
 QColor Style::danglingColor() {
   return QColor(255, 0, 0);
 }
 
-
-QColor Style::elementHoverColor() {
+QColor Style::hoverColor(Layer) {
   return QColor(64, 192, 255);
 }
 
-QColor Style::selectedElementHoverColor() {
+QColor Style::selectedElementHoverColor(Layer) {
   return QColor(0, 64, 255);
 }
-
-
-QColor Style::connectionHoverColor() {
-  return QColor(64, 192, 255);
-}
-
 
 QColor Style::pinHighlightColor() {
   return QColor(0, 255, 128);
@@ -42,7 +34,7 @@ QColor Style::pinHighlightColor() {
 //   return QColor(0, 255, 0);
 // }
 
-QColor Style::selectionColor() {
+QColor Style::selectionBackgroundColor() {
   return QColor(255, 240, 0, 176);
 }
 

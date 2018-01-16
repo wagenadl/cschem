@@ -74,7 +74,7 @@ void LibViewElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 
 void LibViewElement::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
   auto *ef = new QGraphicsColorizeEffect;
-  ef->setColor(Style::elementHoverColor());
+  ef->setColor(Style::hoverColor());
   setGraphicsEffect(ef);
 }
   
