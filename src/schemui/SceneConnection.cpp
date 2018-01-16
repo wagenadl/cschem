@@ -2,7 +2,7 @@
 
 #include "SceneConnection.h"
 #include <QGraphicsLineItem>
-#include "file/Connection.h"
+#include "circuit/Connection.h"
 #include "svg/PartLibrary.h"
 #include "Scene.h"
 #include <QDebug>

@@ -2,12 +2,12 @@
 
 #include "svg/PartLibrary.h"
 #include "file/FileIO.h"
-#include "file/Schem.h"
+#include "circuit/Schem.h"
 #include <QApplication>
 #include <QGraphicsView>
-#include "ui/Scene.h"
-#include "ui/MainWindow.h"
-#include "file/Net.h"
+#include "schemui/Scene.h"
+#include "schemui/MainWindow.h"
+#include "circuit/Net.h"
 #include <QDebug>
 
 int main(int argc, char **argv) {

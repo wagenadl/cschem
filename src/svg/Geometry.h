@@ -7,7 +7,7 @@
 #include <QPoint>
 #include <QPolygon>
 #include <QString>
-#include  "file/PinID.h"
+#include "circuit/PinID.h"
 
 class Geometry {
 public:

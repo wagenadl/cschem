@@ -3,7 +3,7 @@
 #include "MainWindow.h"
 #include <QGraphicsView>
 #include "Scene.h"
-#include "file/Schem.h"
+#include "circuit/Schem.h"
 #include "svg/PartLibrary.h"
 #include "file/FileIO.h"
 #include <QMenuBar>
@@ -18,7 +18,7 @@
 #include "PartListView.h"
 #include <QDockWidget>
 #include "LibView.h"
-#include "SignalAccumulator.h"
+#include "qt/SignalAccumulator.h"
 #include "svg/Exporter.h"
 #include  <QClipboard>
 

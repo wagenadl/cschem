@@ -6,7 +6,7 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsItem>
-#include "file/Circuit.h"
+#include "circuit/Circuit.h"
 #include "svg/PartLibrary.h"
 
 class Scene: public QGraphicsScene {

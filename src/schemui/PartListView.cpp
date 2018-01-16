@@ -2,10 +2,10 @@
 
 #include "PartListView.h"
 
-#include "file/Schem.h"
-#include "file/Element.h"
-#include "file/Circuit.h"
-#include "svg/PartNumbering.h"
+#include "circuit/Schem.h"
+#include "circuit/Element.h"
+#include "circuit/Circuit.h"
+#include "circuit/PartNumbering.h"
 
 #include <QDebug>
 

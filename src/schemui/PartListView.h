@@ -4,7 +4,7 @@
 
 #define PARTLISTVIEW_H
 
-#include "TextTable.h"
+#include "qt/TextTable.h"
 
 class PartListView: public TextTable {
   Q_OBJECT;

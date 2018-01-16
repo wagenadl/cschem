@@ -2,7 +2,7 @@
 
 #include "Geometry.h"
 
-#include "file/Circuit.h"
+#include "circuit/Circuit.h"
 #include "svg/PartLibrary.h"
 #include <QDebug>
 #include  <QTransform>

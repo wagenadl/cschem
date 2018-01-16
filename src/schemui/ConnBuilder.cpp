@@ -1,14 +1,14 @@
 // ConnBuilder.cpp
 
 #include "ConnBuilder.h"
-#include "file/Circuit.h"
+#include "circuit/Circuit.h"
 #include <QSet>
 #include "Scene.h"
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 #include <QKeyEvent>
 #include "svg/Geometry.h"
-#include "svg/CircuitMod.h"
+#include "circuit/CircuitMod.h"
 
 static QPen defaultPen() {
   QPen p(QColor(0, 0, 0));

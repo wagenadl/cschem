@@ -5,7 +5,7 @@
 #define ROUTER_H
 
 #include <QPoint>
-#include "file/Connection.h"
+#include "circuit/Connection.h"
 
 class Router {
 public:

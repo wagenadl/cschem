@@ -7,7 +7,7 @@
 
 QString PartNumbering::abbreviation(QString symbol) {
   static QStringList map{
-    "port", "J",
+    "connector", "J",
       "diode", "D",
       "resistor", "R",
       "opamp", "A",

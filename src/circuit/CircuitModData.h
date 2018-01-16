@@ -5,13 +5,13 @@
 #define CIRCUITMODDATA_H
 
 #include "CircuitMod.h"
-#include "Geometry.h"
-#include "file/Circuit.h"
-#include "file/PinID.h"
-#include "svg/Router.h"
+#include "svg/Geometry.h"
+#include "circuit/Circuit.h"
+#include "circuit/PinID.h"
+#include "circuit/Router.h"
 #include "svg/Part.h"
 #include "svg/PartLibrary.h"
-#include "file/Net.h"
+#include "circuit/Net.h"
 #include <QDebug>
 
 

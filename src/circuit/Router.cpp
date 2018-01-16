@@ -1,10 +1,10 @@
 // Router.cpp
 
 #include "Router.h"
-#include "file/Connection.h"
-#include "file/Element.h"
+#include "circuit/Connection.h"
+#include "circuit/Element.h"
 #include "svg/PartLibrary.h"
-#include "file/Circuit.h"
+#include "circuit/Circuit.h"
 #include <QDebug>
 #include "svg/Geometry.h"
 

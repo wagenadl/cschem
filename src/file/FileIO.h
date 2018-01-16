@@ -4,7 +4,7 @@
 
 #define FILEIO_H
 
-#include "Schem.h"
+#include "circuit/Schem.h"
 
 namespace FileIO {
   Schem loadSchematic(QString fn);

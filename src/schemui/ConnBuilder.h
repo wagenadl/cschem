@@ -5,8 +5,8 @@
 #define CONNBUILDER_H
 
 #include <QGraphicsItemGroup>
-#include "file/Connection.h"
-#include "file/Element.h"
+#include "circuit/Connection.h"
+#include "circuit/Element.h"
 
 class ConnBuilder: public QGraphicsItemGroup {
 public:

@@ -4,7 +4,7 @@
 #include "SceneElementData.h"
 #include "SvgItem.h"
 #include <QGraphicsEllipseItem>
-#include "file/Element.h"
+#include "circuit/Element.h"
 #include "Scene.h"
 #include <QDebug>
 #include <QGraphicsColorizeEffect>
@@ -13,7 +13,7 @@
 #include "Style.h"
 #include <QSvgRenderer>
 #include <QPainter>
-#include "svg/PartNumbering.h"
+#include "circuit/PartNumbering.h"
 #include "svg/Geometry.h"
 
 SceneElementData::~SceneElementData() {

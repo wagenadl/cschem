@@ -4,7 +4,7 @@
 
 #define CLIPBOARD_H
 
-#include "file/Circuit.h"
+#include "circuit/Circuit.h"
 
 class Clipboard {
 public:

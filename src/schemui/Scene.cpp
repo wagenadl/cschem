@@ -7,7 +7,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include "HoverManager.h"
 #include "ConnBuilder.h"
-#include "svg/CircuitMod.h"
+#include "circuit/CircuitMod.h"
 #include "svg/Geometry.h"
 #include "Clipboard.h"
 #include <QMimeData>

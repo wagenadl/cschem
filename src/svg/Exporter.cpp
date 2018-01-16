@@ -4,13 +4,13 @@
 #include "Geometry.h"
 #include "PartLibrary.h"
 #include "Part.h"
-#include "file/Circuit.h"
-#include "file/Element.h"
-#include "file/Connection.h"
+#include "circuit/Circuit.h"
+#include "circuit/Element.h"
+#include "circuit/Connection.h"
 #include "XmlElement.h"
 #include <QXmlStreamWriter>
 #include <QDebug>
-#include "ui/Style.h"
+#include "schemui/Style.h"
 #include <QTransform>
 
 class ExporterData {
