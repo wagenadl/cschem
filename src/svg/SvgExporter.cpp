@@ -1,6 +1,6 @@
-// Exporter.cpp
+// SvgExporter.cpp
 
-#include "Exporter.h"
+#include "SvgExporter.h"
 #include "Geometry.h"
 #include "PartLibrary.h"
 #include "Part.h"
@@ -13,9 +13,9 @@
 #include "schemui/Style.h"
 #include <QTransform>
 
-class ExporterData {
+class SvgExporterData {
 public:
-  ExporterData(Circuit const &circ, PartLibrary const *lib):
+  SvgExporterData(Circuit const &circ, PartLibrary const *lib):
     circ(circ), lib(lib),
     geom(circ, lib) {
   }
@@ -29,7 +29,7 @@ public:
 };
 
 
-void ExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
+void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   QString sym = elt.symbol();
   Part const &part = lib->part(sym);
 
@@ -95,7 +95,7 @@ void ExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   sw.writeEndElement(); // g
 }
 
-void ExporterData::writeConnection(QXmlStreamWriter &sw, Connection const &con) {
+void SvgExporterData::writeConnection(QXmlStreamWriter &sw, Connection const &con) {
   QPolygon pp(geom.connectionPath(con));
   sw.writeStartElement("path");
   sw.writeAttribute("id", QString("con%1").arg(con.id()));
@@ -110,7 +110,7 @@ void ExporterData::writeConnection(QXmlStreamWriter &sw, Connection const &con) 
   sw.writeEndElement();
 }
 
-void ExporterData::writeBBox(QXmlStreamWriter &sw) {
+void SvgExporterData::writeBBox(QXmlStreamWriter &sw) {
   QRectF bbox = lib->upscale(geom.boundingRect());
   // Add space for annotations. This could be more elegant:
   double s = lib->scale();
@@ -124,15 +124,15 @@ void ExporterData::writeBBox(QXmlStreamWriter &sw) {
 		    .arg(bbox.width()).arg(bbox.height()));
 }
 
-Exporter::Exporter(Circuit const &circ, PartLibrary const *lib):
-  d(new ExporterData(circ, lib)) {
+SvgExporter::SvgExporter(Circuit const &circ, PartLibrary const *lib):
+  d(new SvgExporterData(circ, lib)) {
 }
 
-Exporter::~Exporter() {
+SvgExporter::~SvgExporter() {
   delete d;
 }
 
-bool Exporter::exportSvg(QString const &fn) {
+bool SvgExporter::exportSvg(QString const &fn) {
   qDebug() << "part names" << d->lib->partNames();
   QFile file(fn);
   if (file.open(QFile::WriteOnly)) {
