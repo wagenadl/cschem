@@ -1,0 +1,320 @@
+{ "typ": "page",
+  "cre": "2018-01-15T19:24:48",
+  "mod": "2018-01-15T20:24:13",
+  "cui": "0cbba112e7fc2d37",
+  "stampTime": 0,
+  "startPage": 5,
+  "unlocked": false,
+  "uuid": "c13ce600",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-15T19:24:48",
+      "mod": "2018-01-15T19:24:48",
+      "uuid": "867cbd4a"
+    },
+    { "typ": "title",
+      "cre": "2018-01-15T19:24:48",
+      "mod": "2018-01-15T19:24:59",
+      "uuid": "ee3fd03e",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T19:24:48",
+          "mod": "2018-01-15T19:24:59",
+          "lines": [
+            0
+          ],
+          "text": "CBoard and CSchem − sharing code",
+          "uuid": "d1bb66fe"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T19:25:00",
+      "mod": "2018-01-15T19:59:18",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b304b1ec",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T19:25:00",
+          "mod": "2018-01-15T19:59:18",
+          "lines": [
+            0,
+            61,
+            120,
+            182,
+            245,
+            308
+          ],
+          "text": "I am stymied by how to efficiently share code between CBoard and CSchem. On the one hand, similarities are enormous, so that, for instance most operations of CircuitMod should carry over verbatim. On the other hand, there are slight difference, so that an Element is not quite a Part and a Connection is not quite a Trace.",
+          "uuid": "6b6e95d4",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-15T19:43:30",
+              "mod": "2018-01-15T19:43:30",
+              "end": 276,
+              "start": 271,
+              "style": 1,
+              "uuid": "e40135b9"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T19:43:45",
+      "mod": "2018-01-15T19:59:02",
+      "h": 54.787,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "cf230a2a",
+      "y0": 214.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T19:43:45",
+          "mod": "2018-01-15T19:58:54",
+          "lines": [
+            0,
+            52,
+            122
+          ],
+          "text": "[I renamed “Part” and “PartLibrary” to “Symbol” and “SymbolLibrary”, because I think that the things on a circuit drawing are symbols. This leaves the name “Part” for things on a board.]",
+          "uuid": "5137edf6"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T19:59:00",
+      "mod": "2018-01-15T20:02:13",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5b1fb6d6",
+      "y0": 269.783,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T19:59:00",
+          "mod": "2018-01-15T20:02:13",
+          "lines": [
+            0,
+            61,
+            125,
+            186
+          ],
+          "text": "For instance, a Trace occurs on a particular layer and has a thickness, and a Part could be a component, a via, a hole, or a junction, whereas an Element can be a component, a junction, or a port.",
+          "uuid": "2a03c4ef"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T20:00:50",
+      "mod": "2018-01-15T20:01:01",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "8dec64fe",
+      "y0": 366.447,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T20:00:50",
+          "mod": "2018-01-15T20:01:01",
+          "lines": [
+            0
+          ],
+          "text": "The equivalent of a “Symbol” would be a “Footprint”.",
+          "uuid": "8f69d1f1"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T20:01:03",
+      "mod": "2018-01-15T20:04:11",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a63f20e6",
+      "y0": 385.594,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T20:01:03",
+          "mod": "2018-01-15T20:04:11",
+          "lines": [
+            0,
+            59,
+            120,
+            177,
+            238,
+            293
+          ],
+          "text": "One solution is to simply copy the entire source tree, but that lacks elegance. Another is add some extra attributes to Element and Connection and see where it gets me, even if those attributes are not used in cschem. In that scenario, I would rename Scene to SchemScene and create a new base class to underlie it.",
+          "uuid": "469a0d11"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T20:04:48",
+      "mod": "2018-01-15T20:09:40",
+      "h": 212.494,
+      "ind": 1,
+      "sheet": 0,
+      "split": [
+        162.162
+      ],
+      "uuid": "c76ab4f9",
+      "y0": 528.59,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T20:04:48",
+          "mod": "2018-01-15T20:09:40",
+          "lines": [
+            0,
+            58,
+            122,
+            188,
+            252,
+            315,
+            380,
+            447,
+            509
+          ],
+          "text": "One immediate problem has to do with grids and scales. In CSchem, the library has a scale which converts circuit units to svg units. Circuit units are integers. In CBoard, board units are physical units: inches or millimeters. Since those must be able to coexist, I could either measure everything in units of  0.1 μm, so that the smallest inch unit that can be exactly specified is 0.0005” [12.7 μm], or I can use floats. I don’t really like the idea of having numbers in the millions for a board of tens of cms, but what can you do.",
+          "uuid": "5d4109c7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T20:10:21",
+      "mod": "2018-01-15T20:11:04",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "8dcd7d29",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T20:10:21",
+          "mod": "2018-01-15T20:11:04",
+          "lines": [
+            0,
+            52,
+            110
+          ],
+          "text": "A BoardScene is very much like a SchemScene, but it contains SceneParts rather than SceneElements. SceneParts are SceneElements with pads and holes.",
+          "uuid": "228724d4"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T20:11:25",
+      "mod": "2018-01-15T20:14:35",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "8089b305",
+      "y0": 195.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T20:11:25",
+          "mod": "2018-01-15T20:14:35",
+          "lines": [
+            0,
+            62,
+            124,
+            186,
+            246,
+            309,
+            368
+          ],
+          "text": "What I really am bumping into feels like a flaw in C++, or at least in my use of it. I have a class BaseElement and a class BaseContainer, and I want to have a class DerivedElement that is an extension of BaseElement and a class DerivedContainer that is an extension of BaseContainer. But if DerivedContainer subclasses BaseContainer, how will it make DerivedElements rather than BaseElements? ",
+          "uuid": "7e25cb8c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T20:14:36",
+      "mod": "2018-01-15T20:19:41",
+      "h": 305.158,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "71e3b7c6",
+      "y0": 361.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T20:14:36",
+          "mod": "2018-01-15T20:19:41",
+          "lines": [
+            0,
+            60,
+            129,
+            183,
+            238,
+            297,
+            349,
+            406,
+            465,
+            528,
+            585,
+            636,
+            694
+          ],
+          "text": "This happens in a big complicated way in Scene, but it also happens in Circuit. Perhaps if I can solve the pattern in Circuit, I can figure it out elsewhere. So let’s think about the relationship between Circuit and Element. (Circuit and Connection is similar, so I only need to think one of them through.) Right now, Circuit contains Elements in a QMap<QString, Element>. Such a map cannot contain Parts, even if Part subclasses Element. If Circuit instead used a QMap<QString, Element *>, it would work just fine, but that is a memory management nightmare. My whole program is built around the idea that Elements can be copied around conveniently, through Qt’s excellent SharedData paradigm. But that paradigm is not compatible with polymorphism.",
+          "uuid": "237aab7a"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T20:22:40",
+      "mod": "2018-01-15T20:23:41",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 1,
+      "split": [
+        23.166
+      ],
+      "uuid": "91eb26f7",
+      "y0": 667.15,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T20:22:40",
+          "mod": "2018-01-15T20:23:41",
+          "lines": [
+            0,
+            57,
+            119,
+            184
+          ],
+          "text": "So I think I’ll undo the Part→Symbol rename, and work on expanding all the classes to work for both CBoard and CSchem, creating options to limit the operations. Not ideal, but I think the alternative is too complicated.",
+          "uuid": "cd10c890"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T20:24:13",
+      "mod": "2018-01-15T20:24:13",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "b651694c",
+      "y0": 145.498,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T20:24:13",
+          "mod": "2018-01-15T20:24:13",
+          "text": "",
+          "uuid": "8bd1f80b"
+        }
+      ]
+    }
+  ]
+}

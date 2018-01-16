@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-01-11T07:59:12",
-  "mod": "2018-01-15T16:42:53",
+  "mod": "2018-01-15T20:22:57",
   "uuid": "1751eb90",
   "cc": [
     { "typ": "entry",
@@ -20,6 +20,15 @@
       "startPage": 4,
       "title": "Dragging svg / CSchem improvements",
       "uuid": "ec46ff96"
+    },
+    { "typ": "entry",
+      "cre": "2018-01-15T19:24:48",
+      "mod": "2018-01-15T20:22:57",
+      "seen": "2018-01-15T19:24:48",
+      "sheetCount": 3,
+      "startPage": 5,
+      "title": "CBoard and CSchem − sharing code",
+      "uuid": "c13ce600"
     }
   ]
 }
