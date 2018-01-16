@@ -38,7 +38,7 @@ public:
 public:
   Scene *scene;
   Circuit circ;
-  PartLibrary const *lib;
+  SymbolLibrary const *lib;
   QSet<int> junctions;
   QSet<int> connections;
   int majorcon;

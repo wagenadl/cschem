@@ -3,7 +3,7 @@
 #include "Geometry.h"
 
 #include "circuit/Circuit.h"
-#include "svg/PartLibrary.h"
+#include "svg/SymbolLibrary.h"
 #include <QDebug>
 #include  <QTransform>
 #include <QMap>
@@ -24,7 +24,7 @@ public:
 
 class GeometryData {
 public:
-  GeometryData(Circuit const &circ, PartLibrary const *lib):
+  GeometryData(Circuit const &circ, SymbolLibrary const *lib):
     circ(circ), lib(lib) {
   }
   void ensurePinDB();
@@ -34,12 +34,12 @@ public:
   QPolygon connectionPath(Connection const &con) const;
 public:
   Circuit circ;
-  PartLibrary const *lib;
+  SymbolLibrary const *lib;
   mutable QMap<OrderedPoint, PinID> pindb;
   mutable QMap<OrderedPoint, int> condb;
 };
 
-Geometry::Geometry(Circuit const &circ, PartLibrary const *lib):
+Geometry::Geometry(Circuit const &circ, SymbolLibrary const *lib):
   d(new GeometryData(circ, lib)) {
 }
 
@@ -76,7 +76,7 @@ void GeometryData::ensurePinDB() {
   if (!pindb.isEmpty())
     return; // already done
   for (auto const &elt: circ.elements()) {
-    Part const &prt(lib->part(elt.symbol()));
+    Symbol const &prt(lib->symbol(elt.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();
@@ -122,7 +122,7 @@ QRect Geometry::boundingRect(int elt) const {
 QRect Geometry::boundingRect(Element const &elt) const {
   if (!d)
     return QRect();
-  Part const &prt(d->lib->part(elt.symbol()));
+  Symbol const &prt(d->lib->symbol(elt.symbol()));
   QRectF bb = prt.shiftedBBox();
   qDebug() << "br" << elt.symbol() << bb;
   QTransform xf;
@@ -147,7 +147,7 @@ QRect Geometry::boundingRect() const {
 }
 
 QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
-  Part const &prt(lib->part(elt.symbol()));
+  Symbol const &prt(lib->symbol(elt.symbol()));
   QPointF pp = prt.shiftedPinPosition(pin);
   if  (elt.isFlipped())
     pp = QPointF(-pp.x(), pp.y());
@@ -162,8 +162,8 @@ QPoint Geometry::centerOfPinMass() const {
   int N = 0;
   QPointF sum;
   for (Element const &elt: d->circ.elements()) {
-    Part const &part(d->lib->part(elt.symbol()));
-    QStringList pins = part.pinNames();
+    Symbol const &symbol(d->lib->symbol(elt.symbol()));
+    QStringList pins = symbol.pinNames();
     N += pins.size();
     for (QString p: pins)
       sum += pinPosition(elt, p);
@@ -181,8 +181,8 @@ QPoint Geometry::centerOfPinMass(int eltid) const {
 QPoint Geometry::centerOfPinMass(Element const &elt) const {
   if (!d)
     return QPoint();
-  Part const &part(d->lib->part(elt.symbol()));
-  QStringList pins = part.pinNames();
+  Symbol const &symbol(d->lib->symbol(elt.symbol()));
+  QStringList pins = symbol.pinNames();
   QPointF sum;
   for (QString p: pins)
     sum += pinPosition(elt, p);

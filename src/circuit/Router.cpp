@@ -3,12 +3,12 @@
 #include "Router.h"
 #include "circuit/Connection.h"
 #include "circuit/Element.h"
-#include "svg/PartLibrary.h"
+#include "svg/SymbolLibrary.h"
 #include "circuit/Circuit.h"
 #include <QDebug>
 #include "svg/Geometry.h"
 
-Router::Router(PartLibrary const *lib): lib(lib) {
+Router::Router(SymbolLibrary const *lib): lib(lib) {
 }
 
 Connection Router::reroute(int conid,

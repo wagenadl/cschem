@@ -1,23 +1,23 @@
-// Part.cpp
+// Symbol.cpp
 
-#include "Part.h"
+#include "Symbol.h"
 #include <QSvgRenderer>
 #include <QDebug>
 #include <iostream>
 
-static QMap<QString, QSharedPointer<QSvgRenderer> > &partRenderers() {
+static QMap<QString, QSharedPointer<QSvgRenderer> > &symbolRenderers() {
   static QMap<QString, QSharedPointer<QSvgRenderer> > rnd;
   return rnd;
 }
 
-//static QMap<QString, QByteArray> &partData() {
+//static QMap<QString, QByteArray> &symbolData() {
 //  static QMap<QString, QByteArray> map;
 //  return map;
 //}
 
-class PartData: public QSharedData {
+class SymbolData: public QSharedData {
 public:
-  PartData(): valid(false) { }
+  SymbolData(): valid(false) { }
   void newshift();
   void ensureBBox();
   void writeSvg(QXmlStreamWriter &sw, bool withpins) const;
@@ -36,11 +36,11 @@ public:
   QString originId;
 };
 
-QPointF Part::svgOrigin() const {
+QPointF Symbol::svgOrigin() const {
   return d->pins[d->originId];
 }
 
-void PartData::newshift() {
+void SymbolData::newshift() {
   QStringList pp = pinIds.keys();
   if (pp.isEmpty())
     return;
@@ -51,7 +51,7 @@ void PartData::newshift() {
     shpins[p] = pins[p] - origin;
 }
 
-void Part::writeNamespaces(QXmlStreamWriter &sr) {
+void Symbol::writeNamespaces(QXmlStreamWriter &sr) {
   sr.writeDefaultNamespace("http://www.w3.org/2000/svg");
   sr.writeNamespace("http://purl.org/dc/elements/1.1/", "dc");
   sr.writeNamespace("http://creativecommons.org/ns#", "cc");
@@ -62,7 +62,7 @@ void Part::writeNamespaces(QXmlStreamWriter &sr) {
   sr.writeNamespace("http://www.inkscape.org/namespaces/inkscape", "inkscape");
 }
 
-void PartData::writeSvg(QXmlStreamWriter &sw, bool withpins) const {
+void SymbolData::writeSvg(QXmlStreamWriter &sw, bool withpins) const {
   elt.writeStartElement(sw);
   for (auto &c: elt.children()) {
     if (!withpins && c.type()==XmlNode::Type::Element
@@ -76,7 +76,7 @@ void PartData::writeSvg(QXmlStreamWriter &sw, bool withpins) const {
   elt.writeEndElement(sw);
 }
 
-QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
+QByteArray SymbolData::toSvg(bool withbbox, bool withpins) const {
   QByteArray res;
   {
     QXmlStreamWriter sw(&res);
@@ -84,8 +84,7 @@ QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
 
     sw.writeStartElement("svg");
     sw.writeAttribute("version", "1.1");
-    sw.writeAttribute("id", "cschempart");
-    Part::writeNamespaces(sw);
+    Symbol::writeNamespaces(sw);
     if (withbbox) {
       sw.writeAttribute("width", QString("%1").arg(bbox.width()));
       sw.writeAttribute("height", QString("%1").arg(bbox.height()));
@@ -108,7 +107,7 @@ QByteArray PartData::toSvg(bool withbbox, bool withpins) const {
   return res;
 }
 
-void PartData::ensureBBox() {
+void SymbolData::ensureBBox() {
   QByteArray svg = toSvg(false, true);
   QSvgRenderer renderer(svg);
   QString id = groupId;
@@ -122,11 +121,11 @@ void PartData::ensureBBox() {
   newshift();
 }
 
-Part::Part() {
-  d = new PartData;
+Symbol::Symbol() {
+  d = new SymbolData;
 }
 
-Part::Part(XmlElement const &elt): Part() {
+Symbol::Symbol(XmlElement const &elt): Symbol() {
   d->elt = elt;
   d->name = elt.attributes().value("inkscape:label").toString();
   for (auto &e: elt.children()) 
@@ -137,19 +136,19 @@ Part::Part(XmlElement const &elt): Part() {
   forgetRenderer(*this);
 }
 
-Part::~Part() {
+Symbol::~Symbol() {
 }
 
-Part::Part(Part const &o) {
+Symbol::Symbol(Symbol const &o) {
   d = o.d;
 }
 
-Part &Part::operator=(Part const &o) {
+Symbol &Symbol::operator=(Symbol const &o) {
   d = o.d;
   return *this;
 }
 
-void PartData::scanPins(XmlElement const &elt) {
+void SymbolData::scanPins(XmlElement const &elt) {
   if (elt.qualifiedName()=="circle") {
     QString label = elt.attributes().value("inkscape:label").toString();
     if (label.startsWith("pin")) {
@@ -164,69 +163,69 @@ void PartData::scanPins(XmlElement const &elt) {
   }
 }
 
-QStringList Part::pinNames() const {
+QStringList Symbol::pinNames() const {
   QStringList lst(d->pins.keys()); // QMap sorts its keys
   return lst;
 }
 
-QPointF Part::bbOrigin() const {
+QPointF Symbol::bbOrigin() const {
   QStringList l = d->pins.keys();
   return l.isEmpty() ? QPointF() : bbPinPosition(l.first());
 }
 
-QRectF Part::shiftedBBox() const {
+QRectF Symbol::shiftedBBox() const {
   return d->shbbox;
 }
 
-QPointF Part::shiftedPinPosition(QString pinname) const {
+QPointF Symbol::shiftedPinPosition(QString pinname) const {
   return d->shpins.contains(pinname)
     ? d->shpins[pinname]
     : QPointF();
 }
     
 
-QPointF Part::bbPinPosition(QString pinname) const {
+QPointF Symbol::bbPinPosition(QString pinname) const {
   if (d->pins.contains(pinname))
     return d->pins[pinname] - d->bbox.topLeft();
   else
     return QPointF();
 }
 
-XmlElement const &Part::element() const {
+XmlElement const &Symbol::element() const {
   if (!isValid()) {
-    qDebug() << "Caution: element() requested on invalid part";
+    qDebug() << "Caution: element() requested on invalid symbol";
   }
   return d->elt;
 }
 
-QString Part::name() const {
+QString Symbol::name() const {
   return d->name;
 }
 
-bool Part::isValid() const {
+bool Symbol::isValid() const {
   return d->valid;
 }
 
-QRectF Part::svgBBox() const {
+QRectF Symbol::svgBBox() const {
   return d->bbox;
 }
 
-QByteArray Part::toSvg() const {
+QByteArray Symbol::toSvg() const {
   return d->toSvg(true, false);
 }
 
-void Part::writeSvg(QXmlStreamWriter &sw) const {
+void Symbol::writeSvg(QXmlStreamWriter &sw) const {
   d->writeSvg(sw, false);
 }
 
-void Part::forgetRenderer(Part const &p) {
+void Symbol::forgetRenderer(Symbol const &p) {
   qDebug() << "forgetrenderer" << p.name();
-  partRenderers().remove(p.name());
+  symbolRenderers().remove(p.name());
 }
 
-QSharedPointer<QSvgRenderer> Part::renderer() const {
-  auto &map = partRenderers();
-  //  auto &data = partData();
+QSharedPointer<QSvgRenderer> Symbol::renderer() const {
+  auto &map = symbolRenderers();
+  //  auto &data = symbolData();
   if (!map.contains(d->name)) 
     map[d->name] = QSharedPointer<QSvgRenderer>(new QSvgRenderer(toSvg()));
   return map[d->name];

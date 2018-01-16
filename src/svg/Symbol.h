@@ -1,21 +1,21 @@
-// Part.h
+// Symbol.h
 
-#ifndef PART_H
+#ifndef SYMBOL_H
 
-#define PART_H
+#define SYMBOL_H
 
 #include "XmlElement.h"
 #include <QRectF>
 #include <QSharedDataPointer>
 #include <QSharedPointer>
 
-class Part {
+class Symbol {
 public:
-  Part(XmlElement const &elt);
-  Part();
-  ~Part();
-  Part(Part const &);
-  Part &operator=(Part const &);
+  Symbol(XmlElement const &elt);
+  Symbol();
+  ~Symbol();
+  Symbol(Symbol const &);
+  Symbol &operator=(Symbol const &);
   XmlElement const &element() const;
   QString name() const;
   QPointF bbPinPosition(QString pinname) const; // relative to TL of bbox
@@ -30,10 +30,10 @@ public:
   QByteArray toSvg() const;
   void writeSvg(QXmlStreamWriter &sw) const;
   static void writeNamespaces(QXmlStreamWriter &sw);
-  static void forgetRenderer(Part const &);
+  static void forgetRenderer(Symbol const &);
   QSharedPointer<class QSvgRenderer> renderer() const;
 private:
-  QSharedDataPointer<class PartData> d;
+  QSharedDataPointer<class SymbolData> d;
 };
 
 #endif

@@ -1,5 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource>
-        <file alias="parts.svg">svg/parts.svg</file>
+        <file alias="symbols.svg">symbols.svg</file>
     </qresource>
 </RCC>

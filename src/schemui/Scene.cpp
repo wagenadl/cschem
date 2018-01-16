@@ -12,11 +12,11 @@
 #include "Clipboard.h"
 #include <QMimeData>
 #include "SceneAnnotation.h"
-#include "FloatingPart.h"
+#include "FloatingSymbol.h"
 
 class SceneData {
 public:
-  SceneData(Scene *scene, PartLibrary *lib):
+  SceneData(Scene *scene, SymbolLibrary *lib):
     scene(scene), lib(lib) {
     hovermanager = 0;
     connbuilder = 0;
@@ -87,14 +87,14 @@ public:
   void rebuildAsNeeded(CircuitMod const &cm);
   void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
   void backspace();
-  void startPartDragIn(QString sym, QPointF sp);
+  void startSymbolDragIn(QString sym, QPointF sp);
   bool startSvgDragIn(QString fn, QPointF sp);
   QPointF moveDragIn(QPointF sp);
   void hideDragIn();
   bool importAndPlonk(QString filename, QPointF sp, bool merge=true);
 public:
   Scene *scene;
-  PartLibrary *lib;
+  SymbolLibrary *lib;
   Circuit circ;
   QMap<int, class SceneElement *> elts;
   QMap<int, class SceneConnection *> conns;
@@ -105,7 +105,7 @@ public:
   QList<Circuit> redobuffer;
   QList< QSet<int> > redoselections;
   ConnBuilder *connbuilder;
-  FloatingPart *dragin;
+  FloatingSymbol *dragin;
 };
 
 void SceneData::startConnectionFromPin(QPointF pos) {
@@ -193,7 +193,7 @@ Scene::~Scene() {
   delete d;
 }
   
-Scene::Scene(PartLibrary *lib, QObject *parent):
+Scene::Scene(SymbolLibrary *lib, QObject *parent):
   QGraphicsScene(parent) {
   d = new SceneData(this, lib);
   d->hovermanager = new HoverManager(this);
@@ -233,12 +233,12 @@ void SceneData::rebuild() {
     conns[c.id()] = new SceneConnection(scene, c);
 }
 
-QPointF Scene::pinPosition(int partid, QString pin) const {
-  return d->pinPosition(partid, pin);
+QPointF Scene::pinPosition(int eltid, QString pin) const {
+  return d->pinPosition(eltid, pin);
 }
 
 
-PartLibrary const *Scene::library() const {
+SymbolLibrary const *Scene::library() const {
   return d->lib;
 }
 
@@ -514,9 +514,9 @@ QString Scene::pinAt(QPointF scenepos, int elementId) const {
   if (!d->elts.contains(elementId))
     return "-";
   QString sym = d->circ.element(elementId).symbol();
-  Part const &part = library()->part(sym);
+  Symbol const &symbol = library()->symbol(sym);
   double r = library()->scale();
-  for (auto p: part.pinNames())
+  for (auto p: symbol.pinNames())
     if (L2(scenepos - pinPosition(elementId, p)) <= 1.1*r*r)
       return p;
   return "-";
@@ -660,12 +660,12 @@ void Scene::removeDangling() {
   d->rebuildAsNeeded(cm);
 }
 
-void SceneData::startPartDragIn(QString symbol, QPointF pos) {
+void SceneData::startSymbolDragIn(QString sym, QPointF pos) {
   if (dragin)
     delete dragin;
-  Part const &part = lib->part(symbol);
-  dragin = new FloatingPart(part);
-  hovermanager->newDrag(part);
+  Symbol const &symbol = lib->symbol(sym);
+  dragin = new FloatingSymbol(symbol);
+  hovermanager->newDrag(symbol);
   moveDragIn(pos);
   scene->addItem(dragin);
 }
@@ -678,7 +678,7 @@ QPointF SceneData::moveDragIn(QPointF scenepos) {
   p = hovermanager->tentativelyMoveSelection(p);
   QPointF res = lib->upscale(p);
   qDebug() << " => " << p << res;
-  dragin->setPartPosition(res);
+  dragin->setSymbolPosition(res);
   return res;
 }
 
@@ -690,14 +690,14 @@ void SceneData::hideDragIn() {
 }
 
 bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
-  PartLibrary pl(filename);
-  if (pl.partNames().isEmpty())
+  SymbolLibrary pl(filename);
+  if (pl.symbolNames().isEmpty())
     return false;
-  Part part = pl.part(pl.partNames().first());
+  Symbol symbol = pl.symbol(pl.symbolNames().first());
   if (dragin)
     delete dragin;
-  dragin = new FloatingPart(part);
-  hovermanager->newDrag(part);
+  dragin = new FloatingSymbol(symbol);
+  hovermanager->newDrag(symbol);
   moveDragIn(pos);
   scene->addItem(dragin);
   return true;
@@ -705,13 +705,13 @@ bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
 
 bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
   qDebug() << "import" << filename << "at" << pos << "NYI";
-  PartLibrary pl(filename);
-  if (pl.partNames().isEmpty())
+  SymbolLibrary pl(filename);
+  if (pl.symbolNames().isEmpty())
     return false;
   lib->merge(filename); // I should allow merging two libraries directly
-  // or else I should make merge return a list of parts successfully merged.
+  // or else I should make merge return a list of symbols successfully merged.
 
-  QString symbol = pl.partNames().first();
+  QString symbol = pl.symbolNames().first();
   
   QPoint pt = lib->downscale(pos);
   Element elt;
@@ -767,7 +767,7 @@ void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
   qDebug() << "drag enter" << md->formats();
   if (md->hasFormat("application/x-dnd-cschem")) {
     d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::None);
-    d->startPartDragIn(QString(md->data("application/x-dnd-cschem")),
+    d->startSymbolDragIn(QString(md->data("application/x-dnd-cschem")),
 		   e->scenePos());
     e->accept();
   } else if (md->hasUrls()) {

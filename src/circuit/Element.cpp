@@ -230,7 +230,7 @@ QString Element::symbol() const {
   case Type::Invalid:
     return "";
   case Type::Component:
-    return "part:" + subtype();
+    return "symbol:" + subtype();
   case Type::Port:
     return "port:" + subtype();
   case Type::Junction:

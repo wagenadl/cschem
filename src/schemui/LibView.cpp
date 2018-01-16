@@ -2,8 +2,8 @@
 
 #include "LibView.h"
 #include <QDebug>
-#include "SvgItem.h"
-#include "svg/PartLibrary.h"
+#include "qt/SvgItem.h"
+#include "svg/SymbolLibrary.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QDrag>
 #include <QMimeData>
@@ -36,11 +36,11 @@ public:
   ~LibViewData() {
     delete scene; // that deletes the items, right?
   }
-  void addPart(QString part);
+  void addSymbol(QString symbol);
 public:
   LibView *view;
   QGraphicsScene *scene;
-  PartLibrary const *lib;
+  SymbolLibrary const *lib;
   QMap<QString, SvgItem *> items;
 };
 
@@ -82,12 +82,12 @@ void LibViewElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
   setGraphicsEffect(0);
 }
 
-void LibViewData::addPart(QString part) {
+void LibViewData::addSymbol(QString symbol) {
   double y = items.isEmpty() ? 0 : scene->itemsBoundingRect().bottom() + 14;
-  SvgItem *item = new LibViewElement(part, view);
-  item->setRenderer(lib->part(part).renderer());
+  SvgItem *item = new LibViewElement(symbol, view);
+  item->setRenderer(lib->symbol(symbol).renderer());
   scene->addItem(item);
-  items[part] = item;
+  items[symbol] = item;
   item->setPos(QPointF(0, y));
 }
 
@@ -96,7 +96,7 @@ LibView::LibView(QWidget *parent): QGraphicsView(parent),
   setScene(d->scene);
 }
 
-LibView::LibView(class PartLibrary const *lib, QWidget *parent):
+LibView::LibView(class SymbolLibrary const *lib, QWidget *parent):
   LibView(parent) {
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -110,7 +110,7 @@ void LibView::clear() {
   d->scene->setSceneRect(d->scene->itemsBoundingRect());
 }
 
-void LibView::rebuild(class PartLibrary const *lib) {
+void LibView::rebuild(class SymbolLibrary const *lib) {
   if (lib)
     d->lib = lib;
 
@@ -119,13 +119,13 @@ void LibView::rebuild(class PartLibrary const *lib) {
   if (!d->lib)
     return;
 
-  QStringList parts = d->lib->partNames();
-  std::sort(parts.begin(), parts.end(),
+  QStringList symbols = d->lib->symbolNames();
+  std::sort(symbols.begin(), symbols.end(),
 	    [](QString a, QString b) { return a.toLower() < b.toLower(); });
-  qDebug() << "partnames" << parts;
-  for (QString s: parts) 
+  qDebug() << "symbolnames" << symbols;
+  for (QString s: symbols) 
     if (s.startsWith("port:") || s.startsWith("part:"))
-      d->addPart(s);
+      d->addSymbol(s);
 
   QRectF r = d->scene->itemsBoundingRect();
   
@@ -151,7 +151,7 @@ LibView::~LibView() {
   delete d;
 }
 
-void LibView::activate(QString part) {
-  qDebug() << "LibView::activate" << part;
-  emit activated(part);
+void LibView::activate(QString symbol) {
+  qDebug() << "LibView::activate" << symbol;
+  emit activated(symbol);
 }

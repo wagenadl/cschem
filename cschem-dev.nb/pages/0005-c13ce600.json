@@ -1,0 +1,88 @@
+{ "typ": "page",
+  "cre": "2018-01-15T19:24:48",
+  "mod": "2018-01-15T19:43:45",
+  "cui": "0cbba112e7fc2d37",
+  "stampTime": 0,
+  "startPage": 5,
+  "unlocked": false,
+  "uuid": "c13ce600",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-15T19:24:48",
+      "mod": "2018-01-15T19:24:48",
+      "uuid": "867cbd4a"
+    },
+    { "typ": "title",
+      "cre": "2018-01-15T19:24:48",
+      "mod": "2018-01-15T19:24:59",
+      "uuid": "ee3fd03e",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T19:24:48",
+          "mod": "2018-01-15T19:24:59",
+          "lines": [
+            0
+          ],
+          "text": "CBoard and CSchem − sharing code",
+          "uuid": "d1bb66fe"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T19:25:00",
+      "mod": "2018-01-15T19:43:40",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b304b1ec",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T19:25:00",
+          "mod": "2018-01-15T19:43:40",
+          "lines": [
+            0,
+            61,
+            120,
+            182,
+            245
+          ],
+          "text": "I am stymied by how to efficiently share code between CBoard and CSchem. On the one hand, similarities are enormous, so that, for instance most operations of CircuitMod should carry over verbatim. On the other hand, there are slight difference, so that an Element is not quite a Part.",
+          "uuid": "6b6e95d4",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-15T19:43:30",
+              "mod": "2018-01-15T19:43:30",
+              "end": 276,
+              "start": 271,
+              "style": 1,
+              "uuid": "e40135b9"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T19:43:45",
+      "mod": "2018-01-15T19:43:45",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "cf230a2a",
+      "y0": 191.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T19:43:45",
+          "mod": "2018-01-15T19:43:45",
+          "lines": [
+            0
+          ],
+          "text": "[",
+          "uuid": "5137edf6"
+        }
+      ]
+    }
+  ]
+}

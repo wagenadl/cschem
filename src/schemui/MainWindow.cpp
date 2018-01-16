@@ -4,7 +4,7 @@
 #include <QGraphicsView>
 #include "Scene.h"
 #include "circuit/Schem.h"
-#include "svg/PartLibrary.h"
+#include "svg/SymbolLibrary.h"
 #include "file/FileIO.h"
 #include <QMenuBar>
 #include <QApplication>
@@ -32,7 +32,7 @@ public:
     unsaved(false) {
   }
 public:
-  PartLibrary lib;
+  SymbolLibrary lib;
   QGraphicsView *view;
   Scene *scene;
   Schem schem;
@@ -48,11 +48,11 @@ public:
 
 QString MWData::lastdir;
     
-MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
+MainWindow::MainWindow(SymbolLibrary const *lib): d(new MWData()) {
   if (lib)
     d->lib = *lib;
   else
-    d->lib = PartLibrary::defaultLibrary();
+    d->lib = SymbolLibrary::defaultLibrary();
   createView();
   createDocks();
   createActions();
@@ -81,9 +81,9 @@ void MainWindow::createDocks() {
   showLibrary();
 
   d->partlistview = new PartListView(&d->schem);
-  d->partlistviewdock = new QDockWidget("Part list", this);
+  d->partlistviewdock = new QDockWidget("Symbol list", this);
   d->partlistviewdock->setWidget(d->partlistview);
-  showPartsList();
+  showSymbolsList();
   d->chgtoplv = new SignalAccumulator(this);
   connect(d->chgtoplv, &SignalAccumulator::activated,
           d->partlistview, &PartListView::rebuild);
@@ -97,7 +97,7 @@ void MainWindow::showLibrary() {
 }
 
 
-void MainWindow::showPartsList() {
+void MainWindow::showSymbolsList() {
   addDockWidget(Qt::RightDockWidgetArea, d->partlistviewdock);
   d->partlistview->rebuild();
   d->partlistviewdock->show();
@@ -157,7 +157,7 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::circuitToClipboardAction);
   menu->addAction(act);
 
-  act = new QAction(tr("Copy parts lis&t to clipboard"), this);
+  act = new QAction(tr("Copy symbols lis&t to clipboard"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
   connect(act, &QAction::triggered,
 	  this, &MainWindow::partListToClipboardAction);
@@ -261,7 +261,7 @@ void MainWindow::createActions() {
 
   act = new QAction(tr("&Parts List"), this);
   act->setStatusTip(tr("Show parts list"));
-  connect(act, &QAction::triggered, this, &MainWindow::showPartsList);
+  connect(act, &QAction::triggered, this, &MainWindow::showSymbolsList);
   menu->addAction(act);
   
   menuBar()->addSeparator();
@@ -358,10 +358,10 @@ void MainWindow::load(QString fn) {
   create();
   qDebug() << "Created schematic";
   d->schem = FileIO::loadSchematic(fn);
-  qDebug() << "loaded schematic. part names:" << d->schem.library().partNames();
+  qDebug() << "loaded schematic. symbol names:" << d->schem.library().symbolNames();
   d->libview->clear();
-  for (QString name: d->schem.library().partNames())
-    d->lib.insert(d->schem.library().part(name));
+  for (QString name: d->schem.library().symbolNames())
+    d->lib.insert(d->schem.library().symbol(name));
   d->scene->setCircuit(d->schem.circuit());
   d->partlistview->rebuild();
   d->libview->rebuild();
@@ -575,7 +575,7 @@ void MainWindow::exportPartListAction() {
       ts << "\n";
     }
   } else {
-    qDebug() << "Failed to export part list";
+    qDebug() << "Failed to export symbol list";
     // should show error box
   }
 }
@@ -596,9 +596,9 @@ void MainWindow::circuitToClipboardAction() {
 }
  
 void MainWindow::partListToClipboardAction() {
-  QList<QStringList> parts = d->partlistview->partList();
+  QList<QStringList> symbols = d->partlistview->partList();
   QString text;
-  for (QStringList const &line: parts)
+  for (QStringList const &line: symbols)
     text += line.join("\t") + "\n";
   QApplication::clipboard()->setText(text);
   

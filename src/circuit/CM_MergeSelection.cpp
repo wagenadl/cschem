@@ -76,7 +76,7 @@ bool CircuitMod::mergeSelection(QSet<int> sel) {
 void CM_Merge::considerPinPin() {
   // First, examine co-location of pins in BOTTOM (BASE) with pins in TOP
   for (Element const &eltbot: bot.elements()) {
-    Part const &prt(d->lib->part(eltbot.symbol()));
+    Symbol const &prt(d->lib->symbol(eltbot.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();
@@ -97,7 +97,7 @@ void CM_Merge::considerPinPin() {
 void CM_Merge::considerPinCon() {
   // Next, examine co-location of pins in BOTTOM with connections in TOP
   for (Element const &eltbot: bot.elements()) {
-    Part const &prt(d->lib->part(eltbot.symbol()));
+    Symbol const &prt(d->lib->symbol(eltbot.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();
@@ -124,7 +124,7 @@ void CM_Merge::considerConPin() {
   for (Connection const &c: top.connections()) 
     qDebug() << "top con" << c.report();
   for (Element const &elttop: top.elements()) {
-    Part const &prt(d->lib->part(elttop.symbol()));
+    Symbol const &prt(d->lib->symbol(elttop.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();

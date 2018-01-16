@@ -6,7 +6,7 @@
 
 class Exporter {
 public:
-  Exporter(class Circuit const &circ, class PartLibrary const *lib);
+  Exporter(class Circuit const &circ, class SymbolLibrary const *lib);
   ~Exporter();
   Exporter(Exporter const &) = delete;
   Exporter &operator=(Exporter const &) = delete;

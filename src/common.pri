@@ -1,7 +1,7 @@
 # QMake project file for cschem                  -*- mode: shell-script; -*-
 
-HEADERS += svg/Part.h   svg/PartLibrary.h   svg/XmlElement.h   svg/XmlNode.h
-SOURCES += svg/Part.cpp svg/PartLibrary.cpp svg/XmlElement.cpp svg/XmlNode.cpp
+HEADERS += svg/Symbol.h   svg/SymbolLibrary.h   svg/XmlElement.h   svg/XmlNode.h
+SOURCES += svg/Symbol.cpp svg/SymbolLibrary.cpp svg/XmlElement.cpp svg/XmlNode.cpp
 HEADERS += circuit/Element.h   circuit/Circuit.h   circuit/Net.h
 SOURCES += circuit/Element.cpp circuit/Circuit.cpp circuit/Net.cpp
 HEADERS += circuit/PinID.h
