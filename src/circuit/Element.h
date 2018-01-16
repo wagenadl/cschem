@@ -27,7 +27,6 @@ public:
 public:
   Element();
   Element(Element const &);
-  Element(QXmlStreamReader &src);
   Element &operator=(Element const &);
   ~Element();
   QString report() const;
@@ -65,6 +64,11 @@ public:
   void setRotation(int);
   void setFlipped(bool);
   void translate(QPoint delta);
+protected:
+  friend QXmlStreamWriter &operator<<(QXmlStreamWriter &, Element const &);
+  friend QXmlStreamReader &operator>>(QXmlStreamReader &, Element &);
+  virtual void writeAttributes(QXmlStreamWriter &) const;
+  virtual void readAttributes(QXmlStreamReader &);
 private:
   QSharedDataPointer<class ElementData> d;
 };

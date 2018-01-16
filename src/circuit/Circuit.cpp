@@ -21,32 +21,6 @@ Circuit::Circuit(Circuit const &o) {
   d = o.d;
 }
 
-Circuit::Circuit(QXmlStreamReader &src): Circuit() {
-  while (!src.atEnd()) {
-    src.readNext();
-    if (src.isStartElement()) {
-      auto n = src.name();
-      if (n=="component" || n=="port" || n=="junction") {
-        Element c(src);
-        d->elements[c.id()] = c;
-      } else if (n=="connection") {
-        Connection c(src);
-        d->connections[c.id()] = c;
-      } else {
-        qDebug() << "Unexpected element in circuit: " << src.name();
-	d->valid = false;
-      }
-    } else if (src.isEndElement()) {
-      break;
-    } else if (src.isCharacters() && src.isWhitespace()) {
-    } else if (src.isComment()) {
-    } else {
-      qDebug() << "Unexpected entity in circuit: " << src.tokenType();
-      d->valid = false;
-    }
-  }
-  // now at end of circuit element
-}
 
 Circuit &Circuit::operator=(Circuit const &o) {
   d = o.d;
@@ -65,7 +39,32 @@ QMap<int, class Connection> const &Circuit::connections() const {
 }
   
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
-  c = Circuit(sr);
+  while (!sr.atEnd()) {
+    sr.readNext();
+    if (sr.isStartElement()) {
+      auto n = sr.name();
+      if (n=="component" || n=="port" || n=="junction") {
+	Element elt;
+	sr >> elt;
+	c.d->elements[elt.id()] = elt;
+      } else if (n=="connection") {
+	Connection con;
+	sr >> con;
+	c.d->connections[con.id()] = con;
+      } else {
+	qDebug() << "Unexpected element in circuit: " << sr.name();
+	c.d->valid = false;
+      }
+    } else if (sr.isEndElement()) {
+      break;
+    } else if (sr.isCharacters() && sr.isWhitespace()) {
+    } else if (sr.isComment()) {
+    } else {
+      qDebug() << "Unexpected entity in circuit: " << sr.tokenType();
+      c.d->valid = false;
+    }
+  }
+  // now at end of circuit element
   return sr;
 }
   

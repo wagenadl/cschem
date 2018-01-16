@@ -6,12 +6,20 @@
 
 class ElementData: public QSharedData {
 public:
-  ElementData(): type(Element::Type::Invalid),
-                 id(IDFactory::instance().newId()),
-                 rotation(0),
-		 flip(false),
-		 valueVis(false),
-                 nameVis(false) { }
+  ElementData(): id(IDFactory::instance().newId()) {
+    reset();
+  }
+  void reset() {
+    type = Element::Type::Invalid;
+    position = QPoint();
+    subtype = "";
+    value = name = "";
+    rotation = 0;
+    flip = false;
+    info = Element::Info();
+    valuePos = namePos = QPoint();
+    valueVis = nameVis = false;
+  }
 public:
   Element::Type type;
   QPoint position;
@@ -44,17 +52,8 @@ Element &Element::operator=(Element const &o) {
 Element::~Element() {
 }
 
-Element::Element(QXmlStreamReader &src): Element() {
+void Element::readAttributes(QXmlStreamReader &src) {
   auto a = src.attributes();
-  QStringRef name = src.name();
-  if (name=="component")
-    d->type = Type::Component;
-  else if (name=="port")
-    d->type = Type::Port;
-  else if (name=="junction")
-    d->type = Type::Junction;
-  else
-    d->type = Type::Invalid;
   d->id = a.value("id").toInt();
   d->position = QPoint(a.value("x").toInt(), a.value("y").toInt());
   d->subtype = a.value("type").toString();
@@ -69,8 +68,7 @@ Element::Element(QXmlStreamReader &src): Element() {
   d->info.vendor = a.value("vendor").toString();
   d->info.partno = a.value("partno").toString();
   d->info.notes = a.value("notes").toString();
-  src.skipCurrentElement();
-}
+}  
 
 Element Element::junction(QPoint p) {
   Element elt;
@@ -242,45 +240,59 @@ QString Element::symbol() const {
 }
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Element &c) {
-  c = Element(sr);
+  c.d->reset();
+  QStringRef name = sr.name();
+  if (name=="component")
+    c.d->type = Element::Type::Component;
+  else if (name=="port")
+    c.d->type = Element::Type::Port;
+  else if (name=="junction")
+    c.d->type = Element::Type::Junction;
+  else
+    c.d->type = Element::Type::Invalid;
+  c.readAttributes(sr);
+  sr.skipCurrentElement();
   return sr;
 }
 
-QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Element const &c) {
-  sr.writeStartElement(c.tag());
-  sr.writeAttribute("id", QString::number(c.id()));
-  sr.writeAttribute("x", QString::number(c.position().x()));
-  sr.writeAttribute("y", QString::number(c.position().y()));
-  if (!c.subtype().isEmpty())
-    sr.writeAttribute("type", c.subtype());
-  if (!c.value().isEmpty()) {
-    sr.writeAttribute("value" , c.value());
-    sr.writeAttribute("valx", QString::number(c.valuePos().x()));
-    sr.writeAttribute("valy", QString::number(c.valuePos().y()));
-    sr.writeAttribute("valvis", QString::number(c.isValueVisible() ? 1 : 0));
+QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Element const &c) {
+  sw.writeStartElement(c.tag());
+  c.writeAttributes(sw);
+  sw.writeEndElement();
+  return sw;
+};
+
+void Element::writeAttributes(QXmlStreamWriter &sw) const {
+  sw.writeAttribute("id", QString::number(id()));
+  sw.writeAttribute("x", QString::number(position().x()));
+  sw.writeAttribute("y", QString::number(position().y()));
+  if (!subtype().isEmpty())
+    sw.writeAttribute("type", subtype());
+  if (!value().isEmpty()) {
+    sw.writeAttribute("value" , value());
+    sw.writeAttribute("valx", QString::number(valuePos().x()));
+    sw.writeAttribute("valy", QString::number(valuePos().y()));
+    sw.writeAttribute("valvis", QString::number(isValueVisible() ? 1 : 0));
   }
-  if (!c.name().isEmpty()) {
-    sr.writeAttribute("name", c.name());
-    sr.writeAttribute("namex", QString::number(c.namePos().x()));
-    sr.writeAttribute("namey", QString::number(c.namePos().y()));
-    sr.writeAttribute("namevis", QString::number(c.isNameVisible() ? 1 : 0));
+  if (!name().isEmpty()) {
+    sw.writeAttribute("name", name());
+    sw.writeAttribute("namex", QString::number(namePos().x()));
+    sw.writeAttribute("namey", QString::number(namePos().y()));
+    sw.writeAttribute("namevis", QString::number(isNameVisible() ? 1 : 0));
   }
 
-  if (!c.info().vendor.isEmpty())
-    sr.writeAttribute("vendor", c.info().vendor);
-  if (!c.info().partno.isEmpty())
-    sr.writeAttribute("partno", c.info().partno);
-  if (!c.info().notes.isEmpty())
-    sr.writeAttribute("notes", c.info().notes);
+  if (!info().vendor.isEmpty())
+    sw.writeAttribute("vendor", info().vendor);
+  if (!info().partno.isEmpty())
+    sw.writeAttribute("partno", info().partno);
+  if (!info().notes.isEmpty())
+    sw.writeAttribute("notes", info().notes);
   
-  if (c.rotation())
-    sr.writeAttribute("rotation", QString::number(c.rotation()));
-  if (c.isFlipped())
-    sr.writeAttribute("flip", "1");
-  
-  sr.writeEndElement();
-  return sr;
-};
+  if (rotation())
+    sw.writeAttribute("rotation", QString::number(rotation()));
+  if (isFlipped())
+    sw.writeAttribute("flip", "1");
+}  
 
 QString Element::report() const {
   return QString("%1: %2 at %3,%4 (%5) - %6 %7")

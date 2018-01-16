@@ -8,8 +8,13 @@
 class ConnectionData: public QSharedData {
 public:
   ConnectionData(): id(IDFactory::instance().newId()) {
-    fromId = toId = 0;
+    reset();
   }
+  void reset() {
+    fromId = toId = 0;
+    fromPin = toPin = "";
+    via = QPolygon();
+  }  
 public:
   int id;
   int fromId;
@@ -61,8 +66,16 @@ Connection::Connection(PinID from1, PinID to1): Connection() {
   setTo(to1);
 }
 
-Connection::Connection(QXmlStreamReader &src): Connection() {
-  auto a = src.attributes();
+
+QXmlStreamReader &operator>>(QXmlStreamReader &sr, Connection &c) {
+  c.d->reset();
+  c.readAttributes(sr);
+  sr.skipCurrentElement();
+  return sr;
+}
+
+void Connection::readAttributes(QXmlStreamReader &sr) {
+  auto a = sr.attributes();
   d->id = a.value("id").toInt();
   QStringList from = a.value("from").toString().split(":");
   if (from.size()>=1) 
@@ -78,30 +91,29 @@ Connection::Connection(QXmlStreamReader &src): Connection() {
     if (xy.size()==2) 
       d->via << QPoint(xy[0].toInt(), xy[1].toInt());
   }
-  src.skipCurrentElement();
-}
-
-QXmlStreamReader &operator>>(QXmlStreamReader &sr, Connection &c) {
-  c = Connection(sr);
-  return sr;
 }
   
-QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Connection const &c) {
-  sr.writeStartElement("connection");
-  sr.writeAttribute("id", QString::number(c.id()));
-  sr.writeAttribute("from",
-                    QString("%1:%2").arg(c.fromId()).arg(c.fromPin()));
-  sr.writeAttribute("to",
-                    QString("%1:%2").arg(c.toId()).arg(c.toPin()));
-  if (!c.via().isEmpty()) {
-    QStringList via;
-    for (QPoint const &p: c.via())
-      via << QString("%1,%2").arg(p.x()).arg(p.y());
-    sr.writeAttribute("via", via.join(" "));
-  }
-  sr.writeEndElement();
-  return sr;
+QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Connection const &c) {
+  sw.writeStartElement("connection");
+  c.writeAttributes(sw);
+  sw.writeEndElement();
+  return sw;
 };
+
+void Connection::writeAttributes(QXmlStreamWriter &sw) const {
+  sw.writeAttribute("id", QString::number(id()));
+  sw.writeAttribute("from",
+                    QString("%1:%2").arg(fromId()).arg(fromPin()));
+  sw.writeAttribute("to",
+                    QString("%1:%2").arg(toId()).arg(toPin()));
+  if (!via().isEmpty()) {
+    QStringList v;
+    for (QPoint const &p: via())
+      v << QString("%1,%2").arg(p.x()).arg(p.y());
+    sw.writeAttribute("via", v.join(" "));
+  }
+}
+
 
 int Connection::id() const {
   return d->id;

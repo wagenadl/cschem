@@ -13,7 +13,6 @@ class Connection {
 public:
   Connection();
   Connection(Connection const &);
-  Connection(QXmlStreamReader &src);
   Connection &operator=(Connection const &);
   ~Connection();
   QString report() const;
@@ -57,8 +56,13 @@ public:
   void setVia(QVector<QPoint> const &);
   void translate(QPoint delta);
   void reverse();
+protected:
+  void writeAttributes(QXmlStreamWriter &) const;
+  void readAttributes(QXmlStreamReader &);
 private:
   QSharedDataPointer<class ConnectionData> d;
+  friend QXmlStreamWriter &operator<<(QXmlStreamWriter &, Connection const &);
+  friend QXmlStreamReader &operator>>(QXmlStreamReader &, Connection &);
 };
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Connection const &);

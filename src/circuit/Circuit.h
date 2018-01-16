@@ -15,7 +15,6 @@ class Circuit {
 public:
   Circuit();
   Circuit(Circuit const &);
-  Circuit(QXmlStreamReader &src);
   Circuit &operator=(Circuit const &);
   ~Circuit();
 public:
@@ -73,6 +72,8 @@ public:
   bool isValid() const;
 private:
   QSharedDataPointer<class CircuitData> d;
+  friend QXmlStreamWriter &operator<<(QXmlStreamWriter &, Circuit const &);
+  friend QXmlStreamReader &operator>>(QXmlStreamReader &, Circuit &);
 };
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Circuit const &);
