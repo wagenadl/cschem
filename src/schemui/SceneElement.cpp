@@ -2,7 +2,7 @@
 
 #include "SceneElement.h"
 #include "SceneElementData.h"
-#include "SvgItem.h"
+#include "qt/SvgItem.h"
 #include <QGraphicsEllipseItem>
 #include "circuit/Element.h"
 #include "Scene.h"

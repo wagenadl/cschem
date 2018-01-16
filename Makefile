@@ -42,8 +42,10 @@ clean:
 	+rm -rf build
 
 src: prep
-	+make -C build release
+	+make -C build -f Makefile-cschem release
 
+debug: prep
+	+make -C build -f Makefile-cschem debug
 prep:
 	mkdir -p build
 	rm -f build/*/BuildDate.o
@@ -51,5 +53,4 @@ prep:
 
 
 .PHONY: src webgrab all clean tar macclean macapp macdmg man userguide \
-        install install-userguide prep webgrabprep
-
+        install install-userguide prep webgrabprep debug

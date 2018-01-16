@@ -4,7 +4,7 @@
 
 #define FLOATINGPART_H
 
-#include "SvgItem.h"
+#include "qt/SvgItem.h"
 
 class FloatingPart: public SvgItem {
 public:
