@@ -6,15 +6,16 @@
 
 class SchemData: public QSharedData {
 public:
-  SchemData() { }
+  SchemData(bool valid): valid(valid) { }
 public:
   Circuit circuit;
   //Parts parts;
   PartLibrary library;
+  bool valid;
 };  
 
-Schem::Schem() {
-  d = new SchemData;
+Schem::Schem(bool valid) {
+  d = new SchemData(valid);
 }
 
 Schem::Schem(Schem const &o) {
@@ -22,17 +23,20 @@ Schem::Schem(Schem const &o) {
 }
 
 Schem::Schem(QXmlStreamReader &src): Schem() {
+  d->valid = false;
   while (!src.atEnd()) {
     src.readNext();
     if (src.isStartElement()) {
       if (src.name()=="circuit") {
         src >> d->circuit;
+	d->valid = d->circuit.isValid();
       //} else if (src.name()=="parts") {
       //  src >> d->parts;
       } else if (src.name()=="svg") {
         d->library.merge(src);
       } else {
         qDebug() << "Unexpected element in cschem: " << src.name();
+	d->valid = false;
       }
     } else if (src.isEndElement()) {
       break;
@@ -40,6 +44,7 @@ Schem::Schem(QXmlStreamReader &src): Schem() {
     } else if (src.isComment()) {
     } else {
       qDebug() << "Unexpected entity in cschem: " << src.tokenType();
+      d->valid = false;
     }
   }
   // now at end of schem element
@@ -122,3 +127,6 @@ bool Schem::isEmpty() const {
   return circuit().isEmpty(); // && parts().isEmpty();
 }
 
+bool Schem::isValid() const {
+  return d->valid;
+}

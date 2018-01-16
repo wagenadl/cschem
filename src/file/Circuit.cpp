@@ -6,10 +6,11 @@
 
 class CircuitData: public QSharedData {
 public:
-  CircuitData() { }
+  CircuitData(bool valid=true): valid(valid) { }
 public:
   QMap<int, Element> elements;
   QMap<int, Connection> connections;
+  bool valid;
 };  
 
 Circuit::Circuit() {
@@ -33,6 +34,7 @@ Circuit::Circuit(QXmlStreamReader &src): Circuit() {
         d->connections[c.id()] = c;
       } else {
         qDebug() << "Unexpected element in circuit: " << src.name();
+	d->valid = false;
       }
     } else if (src.isEndElement()) {
       break;
@@ -40,6 +42,7 @@ Circuit::Circuit(QXmlStreamReader &src): Circuit() {
     } else if (src.isComment()) {
     } else {
       qDebug() << "Unexpected entity in circuit: " << src.tokenType();
+      d->valid = false;
     }
   }
   // now at end of circuit element
@@ -254,6 +257,10 @@ Circuit Circuit::subset(QSet<int> elts) const {
 
 bool Circuit::isEmpty() const {
   return elements().isEmpty();
+}
+
+bool Circuit::isValid() const {
+  return d->valid;
 }
 
 int Circuit::maxId() const {

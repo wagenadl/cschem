@@ -8,7 +8,7 @@
 
 namespace FileIO {
   Schem loadSchematic(QString fn);
-  void saveSchematic(QString fn, Schem const &);
+  bool saveSchematic(QString fn, Schem const &); // true unless failed
 };
 
 #endif

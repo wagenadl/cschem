@@ -11,7 +11,7 @@
 
 class Schem {
 public:
-  Schem();
+  explicit Schem(bool valid=true);
   Schem(Schem const &);
   Schem(QXmlStreamReader &src);
   Schem &operator=(Schem const &);
@@ -22,6 +22,7 @@ public:
   //Parts const &parts() const;
   //void setParts(Parts const &);
   bool isEmpty() const;
+  bool isValid() const;
   class PartLibrary const &library() const;
   void selectivelyUpdateLibrary(PartLibrary const &);
 public:

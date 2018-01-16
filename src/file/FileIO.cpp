@@ -19,10 +19,10 @@ namespace FileIO {
       }
     }
     qDebug() << "Failed to load" << fn;
-    return Schem();
+    return Schem(false);
   }
   
-  void saveSchematic(QString fn, Schem const &s) {
+  bool saveSchematic(QString fn, Schem const &s) {
     QFile file(fn);
     if (file.open(QFile::WriteOnly)) {
       QXmlStreamWriter sw(&file);
@@ -31,8 +31,10 @@ namespace FileIO {
       sw.writeStartDocument("1.0", false);
       sw << s;
       sw.writeEndDocument();
+      return true;
     } else {
       qDebug() << "Failed to save" << fn;
+      return false;
     }
   }    
 };

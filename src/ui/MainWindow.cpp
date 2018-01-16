@@ -28,7 +28,8 @@ public:
     view(0),
     scene(0),
     libview(0), libviewdock(0),
-    partlistview(0), partlistviewdock(0) {
+    partlistview(0), partlistviewdock(0),
+    unsaved(false) {
   }
 public:
   PartLibrary lib;
@@ -42,6 +43,7 @@ public:
   PartListView *partlistview;
   QDockWidget *partlistviewdock;
   SignalAccumulator *chgtoplv;
+  bool unsaved;
 };
 
 QString MWData::lastdir;
@@ -223,6 +225,8 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::flipAction);
   menu->addAction(act);
 
+  menu = menuBar()->addMenu(tr("&Tools"));
+  
   act = new QAction(tr("Remove &dangling connections"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
   act->setStatusTip(tr("Cleanup circuit by removing dangling connections"));
@@ -297,14 +301,14 @@ void MainWindow::openAction() {
   }
 }
 
-void MainWindow::saveAction() {
+bool MainWindow::saveAction() {
   if (d->filename.isEmpty())
-    saveAsAction();
+    return saveAsAction();
   else
-    saveAs(d->filename);
+    return saveAs(d->filename);
 }
 
-void MainWindow::saveAsAction() {
+bool MainWindow::saveAsAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
   QFileDialog dlg;
@@ -318,14 +322,14 @@ void MainWindow::saveAsAction() {
     dlg.selectFile(fi.baseName() + ".schem");
   }
   if (!dlg.exec())
-    return;
+    return false;
   QStringList fns = dlg.selectedFiles();
   if (fns.isEmpty())
-    return;
+    return false;
 
   d->lastdir = dlg.directory().absolutePath();
   
-  saveAs(fns.first());
+  return saveAs(fns.first());
 }
 
 void MainWindow::quitAction() {
@@ -365,14 +369,23 @@ void MainWindow::load(QString fn) {
   d->filename = fn;
 }
 
-void MainWindow::saveAs(QString fn) {
+bool MainWindow::saveAs(QString fn) {
   Circuit circ(d->scene->circuit());
   circ.renumber(1);
   d->schem.setCircuit(circ);
   d->schem.selectivelyUpdateLibrary(d->lib);
-  FileIO::saveSchematic(fn, d->schem);
-  setWindowTitle(fn);
-  d->filename = fn;
+  if (FileIO::saveSchematic(fn, d->schem)) {
+    setWindowTitle(fn);
+    d->filename = fn;
+    d->unsaved = false;
+    return true;
+  } else {
+    QMessageBox::warning(this, Style::programName(),
+			 tr("Could not save schematic as “")
+			 + fn + tr("”"),
+			 QMessageBox::Ok);
+    return false;
+  }
 }
 
 void MainWindow::markChanged() {
@@ -436,8 +449,39 @@ void MainWindow::reactToSceneEdit() {
   d->schem.setCircuit(d->scene->circuit());
   if (d->partlistview->isVisible())
     d->chgtoplv->activate();
-  setWindowTitle("*" + d->filename);
-  
+  d->unsaved = true;
+  setWindowTitle("*" + (d->filename.isEmpty() ? "Untitled" : d->filename));
+}
+
+void MainWindow::closeEvent(QCloseEvent *e) {
+  if (d->unsaved) {
+    auto ret
+      = QMessageBox::warning(this, Style::programName(),
+			     tr("The schematic has been modified.\n"
+				"Do you want to save your changes?"),
+			     QMessageBox::Save
+			     | QMessageBox::Discard
+			     | QMessageBox::Cancel);
+    switch (ret) {
+    case QMessageBox::Save:
+      if (saveAction())
+	e->accept();
+      else
+	e->ignore();
+      break;
+    case QMessageBox::Cancel:
+      e->ignore();
+      break;
+    case QMessageBox::Discard:
+      e->accept();
+      break;
+    default:
+      e->accept();
+      break;
+    }
+  } else {
+    e->accept();
+  }
 }
 
 void MainWindow::reactToPartListEdit(int id) {

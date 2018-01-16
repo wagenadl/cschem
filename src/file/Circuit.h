@@ -70,6 +70,7 @@ public:
   Element const &element(int) const;
   Connection const &connection(int) const;
   bool isEmpty() const;
+  bool isValid() const;
 private:
   QSharedDataPointer<class CircuitData> d;
 };

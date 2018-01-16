@@ -16,8 +16,8 @@ public:
   MainWindow operator=(MainWindow const &) = delete;
 public slots:
   void openAction();
-  void saveAction();
-  void saveAsAction();
+  bool saveAction(); // true if actually saved
+  bool saveAsAction(); // true if actually saved
   void newAction();
   void quitAction();
   void zoomIn();
@@ -44,7 +44,7 @@ public slots:
 public:
   void load(QString filename);
   void create();
-  void saveAs(QString filename);
+  bool saveAs(QString filename); // true unless error
 private:
   void createActions();
   void createView();
@@ -55,7 +55,8 @@ private slots:
   void reactToSceneEdit();
   void reactToPartListEdit(int id);
 protected:
-  void resizeEvent(QResizeEvent *);
+  void resizeEvent(QResizeEvent *) override;
+  void closeEvent(QCloseEvent *) override;
 private:
   class MWData *d;
 };
