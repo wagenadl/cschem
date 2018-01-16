@@ -2,7 +2,7 @@
 
 #include "LibView.h"
 #include <QDebug>
-#include "SvgItem.h"
+#include "qt/SvgItem.h"
 #include "svg/PartLibrary.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QDrag>
