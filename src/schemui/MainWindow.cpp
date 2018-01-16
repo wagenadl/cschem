@@ -19,7 +19,7 @@
 #include <QDockWidget>
 #include "LibView.h"
 #include "qt/SignalAccumulator.h"
-#include "svg/Exporter.h"
+#include "svg/SvgExporter.h"
 #include  <QClipboard>
 
 class MWData {
@@ -532,7 +532,7 @@ void MainWindow::exportCircuitAction() {
 
   QString fn = fns.first();
 
-  Exporter xp(d->schem.circuit(),&d->lib);
+  SvgExporter xp(d->schem.circuit(),&d->lib);
   if (!xp.exportSvg(fn)) {
     qDebug() << "Failed to export svg";
   }
