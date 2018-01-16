@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2018-01-15T19:24:48",
-  "mod": "2018-01-15T20:24:13",
+  "mod": "2018-01-15T22:40:32",
   "cui": "0cbba112e7fc2d37",
   "stampTime": 0,
   "startPage": 5,
@@ -9,8 +9,32 @@
   "cc": [
     { "typ": "resources",
       "cre": "2018-01-15T19:24:48",
-      "mod": "2018-01-15T19:24:48",
-      "uuid": "867cbd4a"
+      "mod": "2018-01-15T22:33:13",
+      "uuid": "867cbd4a",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-01-15T22:28:15",
+          "mod": "2018-01-15T22:33:13",
+          "archive": "en_wikipedia_org_Excellon_format-13a85182",
+          "desc": "",
+          "preview": "en_wikipedia_org_Excellon_format-13a85182p.png",
+          "source": "https://en.wikipedia.org/wiki/Excellon_format",
+          "tag": "https://en.wikipedia.org/wiki/Excellon_format",
+          "title": "",
+          "uuid": "13a85182"
+        },
+        { "typ": "res",
+          "cre": "2018-01-15T22:32:07",
+          "mod": "2018-01-15T22:33:13",
+          "archive": "web_archive_org_program-4dfcf159.htm",
+          "desc": "",
+          "preview": "web_archive_org_program-4dfcf159p.png",
+          "source": "https://web.archive.org/web/20071030075236/http://www.excellon.com/manuals/program.htm",
+          "tag": "https://web.archive.org/web/20071030075236/http://www.excellon.com/manuals/program.htm",
+          "title": "",
+          "uuid": "4dfcf159"
+        }
+      ]
     },
     { "typ": "title",
       "cre": "2018-01-15T19:24:48",
@@ -313,6 +337,541 @@
           "mod": "2018-01-15T20:24:13",
           "text": "",
           "uuid": "8bd1f80b"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T21:26:38",
+      "mod": "2018-01-15T21:28:33",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "d0e83366",
+      "y0": 172.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T21:26:38",
+          "mod": "2018-01-15T21:28:33",
+          "lines": [
+            0,
+            56,
+            117,
+            169,
+            230,
+            295
+          ],
+          "text": "So, I made Element and Connection carry a Layer (one of Schematic, TopSilk, BottomSilk, Top, Bottom, Inner1, Inner2, Inner3, or Inner4). And I made Element permit types Component, Port, Junction, Via, Hole. On a board, a junction will be invisible, a via can be removed or generated when layers are changed, and a hole is permanent.",
+          "uuid": "3e75e526"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T21:28:40",
+      "mod": "2018-01-15T21:35:12",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "ad357d97",
+      "y0": 315.66,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T21:28:40",
+          "mod": "2018-01-15T21:35:12",
+          "lines": [
+            0,
+            63,
+            127,
+            191,
+            257
+          ],
+          "text": "CBoard will have to load a different default library. And that library will have to enforce a different grid. In CBoard, scale and grid is not the same. That is a complication. I can fix the scale at the time a library is constructed. Or with a PartLibrary method. Not a big deal.",
+          "uuid": "0079fc4c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T21:35:13",
+      "mod": "2018-01-15T21:37:41",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "69ebe6d1",
+      "y0": 435.49,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T21:35:13",
+          "mod": "2018-01-15T21:37:41",
+          "lines": [
+            0,
+            62,
+            118
+          ],
+          "text": "I’ll create a completely separate boardui/ folder for the new mainwindow, and move a lot of schemui/ back into ui/ to encourage reuse.",
+          "uuid": "39076d33"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T21:37:49",
+      "mod": "2018-01-15T21:46:58",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "e877e242",
+      "y0": 508.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T21:37:49",
+          "mod": "2018-01-15T21:46:58",
+          "lines": [
+            0,
+            63,
+            117
+          ],
+          "text": "One thing I need to consider carefully is coloring elements. I think that I need to apply a colorize effect to every SceneElement to represent layers. That’s easy.",
+          "uuid": "2e20a069"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T21:46:58",
+      "mod": "2018-01-15T21:47:22",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "fa0b9ab0",
+      "y0": 582.486,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T21:46:58",
+          "mod": "2018-01-15T21:47:22",
+          "lines": [
+            0,
+            53
+          ],
+          "text": "LibViewElement should be augmented to draw holes and pads.",
+          "uuid": "8d6194e3"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:03:14",
+      "mod": "2018-01-15T22:07:09",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 2,
+      "split": [
+        69.498
+      ],
+      "uuid": "7f643b20",
+      "y0": 632.818,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:03:14",
+          "mod": "2018-01-15T22:07:09",
+          "lines": [
+            0,
+            64,
+            122,
+            188
+          ],
+          "text": "I think I can let holes and pads in the inkscape file stand for themselves, and simply label them “hole:1” or “pad:K”, or whatever. Part can parse the svg. That is, it can detect <circle> elements and use the bounding box. ",
+          "uuid": "ad954a03"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:03:14",
+      "mod": "2018-01-15T22:09:04",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "7f643b20",
+      "y0": 99.166,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:03:14",
+          "mod": "2018-01-15T22:09:04",
+          "lines": [
+            0,
+            59,
+            124,
+            186,
+            251,
+            317
+          ],
+          "text": "I might like to have a special case for a pad with a hole. Inkscape sadly uses the outside of a line to mark the size of an object. svg <circle> uses r to the center of the line, and of course stroke-width in style to mark the line width. For me, the inside of the line defines the hole, the diameter of which is the critical parameter, but it is not too hard to remember that",
+          "uuid": "ad954a03",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-15T22:08:28",
+              "mod": "2018-01-15T22:08:28",
+              "end": 354,
+              "start": 351,
+              "style": 1,
+              "uuid": "609e27e0"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:03:14",
+      "mod": "2018-01-15T22:09:04",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "7f643b20",
+      "y0": 242.162,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:03:14",
+          "mod": "2018-01-15T22:09:04",
+          "lines": [
+            0
+          ],
+          "text": " Dhole = Dinkscape − 2 linewidth.",
+          "uuid": "ad954a03",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-15T22:08:36",
+              "mod": "2018-01-15T22:09:04",
+              "end": 2,
+              "start": 1,
+              "style": 1,
+              "uuid": "040e4e27"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:08:37",
+              "mod": "2018-01-15T22:09:04",
+              "end": 6,
+              "start": 2,
+              "style": 7,
+              "uuid": "fdbaf0c6"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:08:39",
+              "mod": "2018-01-15T22:09:04",
+              "end": 10,
+              "start": 9,
+              "style": 1,
+              "uuid": "763d5c61"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:08:40",
+              "mod": "2018-01-15T22:09:04",
+              "end": 18,
+              "start": 10,
+              "style": 7,
+              "uuid": "c135671b"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:08:55",
+              "mod": "2018-01-15T22:09:04",
+              "end": 32,
+              "start": 23,
+              "style": 1,
+              "uuid": "b96ecc1d"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:09:05",
+      "mod": "2018-01-15T22:09:50",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "55f565ab",
+      "y0": 269.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:09:05",
+          "mod": "2018-01-15T22:09:50",
+          "lines": [
+            0,
+            62
+          ],
+          "text": "More annoying is the fact that changing linewidth in inkscape will change Dhole as well as Dinkscape. That is decidedly clunky.",
+          "uuid": "e4666ff3",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-15T22:09:26",
+              "mod": "2018-01-15T22:09:26",
+              "end": 49,
+              "start": 40,
+              "style": 1,
+              "uuid": "3a70e07b"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:09:33",
+              "mod": "2018-01-15T22:09:33",
+              "end": 75,
+              "start": 74,
+              "style": 1,
+              "uuid": "5f99f88e"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:09:34",
+              "mod": "2018-01-15T22:09:34",
+              "end": 79,
+              "start": 75,
+              "style": 7,
+              "uuid": "6ccc7114"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:09:37",
+              "mod": "2018-01-15T22:09:37",
+              "end": 92,
+              "start": 91,
+              "style": 1,
+              "uuid": "f94aa43c"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:09:39",
+              "mod": "2018-01-15T22:09:39",
+              "end": 100,
+              "start": 92,
+              "style": 7,
+              "uuid": "2b98fc7e"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:10:18",
+      "mod": "2018-01-15T22:11:30",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "27f4c253",
+      "y0": 319.66,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:10:18",
+          "mod": "2018-01-15T22:11:30",
+          "lines": [
+            0,
+            57,
+            121,
+            188
+          ],
+          "text": "Custom holes and vias will all map to symbol “hole”; the element’s subtype will be used to contain the definition, e.g., “31:51” for a 0.031” ⌀ hole in a 0.051” ⌀ pad; “2.0:3.0:4.0” for a 2 mm hole in a 3 x 4 mm rectangular pad.",
+          "uuid": "b667e6e4",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-15T22:10:40",
+              "mod": "2018-01-15T22:10:40",
+              "end": 74,
+              "start": 67,
+              "style": 1,
+              "uuid": "895b88ac"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:11:50",
+      "mod": "2018-01-15T22:15:00",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "01eb108b",
+      "y0": 416.324,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:11:50",
+          "mod": "2018-01-15T22:15:00",
+          "lines": [
+            0,
+            64,
+            128,
+            195,
+            257,
+            317
+          ],
+          "text": "If I use inches and “scale” 254 “user units” per inch, inkscape stores data in the svg in units of multiples of 10 μm, which is helpful. It stores enough digits (up to 8) to reliably reconstruct down to 0.1 μm, even for large numbers. Likewise, if I use mm and document scale 100 user units per mm, I again get 10 μm units in the svg.",
+          "uuid": "1560feea"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:16:18",
+      "mod": "2018-01-15T22:16:51",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "c26eb223",
+      "y0": 559.32,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:16:18",
+          "mod": "2018-01-15T22:16:51",
+          "lines": [
+            0,
+            39,
+            104
+          ],
+          "text": "I created Style::layerColor(Layer) and Style::textColor(Layer). This is helpful, because the text color for Layer::Top can be the layer color for Layer::TopSilk.",
+          "uuid": "24211d95"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:17:28",
+      "mod": "2018-01-15T22:17:48",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "ca27bccf",
+      "y0": 632.818,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:17:28",
+          "mod": "2018-01-15T22:17:48",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "(I might at some point want to enable straight text as an Element, but that’s not for now.)",
+          "uuid": "a43c8f43"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:24:19",
+      "mod": "2018-01-15T22:24:48",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 3,
+      "split": [
+        23.166
+      ],
+      "uuid": "79ddf366",
+      "y0": 683.15,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:24:19",
+          "mod": "2018-01-15T22:24:48",
+          "lines": [
+            0,
+            58,
+            120
+          ],
+          "text": "The Gerber file format is defined in a 300-page document, but creating a simple writer should be easy enough. (Although I am not too sure about rendering text.)",
+          "uuid": "0edc0035"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:28:00",
+      "mod": "2018-01-15T22:33:48",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "b1f4001d",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:28:00",
+          "mod": "2018-01-15T22:33:48",
+          "lines": [
+            0,
+            62,
+            109,
+            172,
+            228,
+            287
+          ],
+          "text": "Hole to be drilled in circuit boards are defined by “Excellon format NC files” https://en.wikipedia.org/wiki/Excellon_format, which are basically G-code. The definition is here: https://web.archive.org/web/20071030075236/http://www.excellon.com/manuals/program.htm. It looks unpleasant, but I can probably get some simple examples from geda/etc.",
+          "uuid": "f5270944",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-15T22:28:15",
+              "mod": "2018-01-15T22:28:15",
+              "end": 124,
+              "res": [
+                "https://en.wikipedia.org/wiki/Excellon_format"
+              ],
+              "start": 79,
+              "style": 4,
+              "uuid": "1eeee09c"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-15T22:32:07",
+              "mod": "2018-01-15T22:32:07",
+              "end": 264,
+              "res": [
+                "https://web.archive.org/web/20071030075236/http://www.excellon.com/manuals/program.htm"
+              ],
+              "start": 178,
+              "style": 4,
+              "uuid": "871da2ab"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:34:03",
+      "mod": "2018-01-15T22:35:52",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "cb8946f5",
+      "y0": 265.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:34:03",
+          "mod": "2018-01-15T22:35:52",
+          "lines": [
+            0,
+            61,
+            119,
+            184
+          ],
+          "text": "The question is: Do I really want to do all this work? Or is there a way to export from CSchem to some open source PCB production program. I rather like that idea: It is gschem that I don’t like at all. pcb might be fine.",
+          "uuid": "c14a691d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-15T22:40:07",
+      "mod": "2018-01-15T22:40:32",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "7ceeea10",
+      "y0": 361.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-15T22:40:07",
+          "mod": "2018-01-15T22:40:32",
+          "lines": [
+            0,
+            63,
+            122
+          ],
+          "text": "If that is what I end up doing, all this stuff about layers in cschem becomes irrelevant. But I am not going to delete it now.",
+          "uuid": "c9af2494"
         }
       ]
     }

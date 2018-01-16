@@ -52,7 +52,7 @@ MainWindow::MainWindow(PartLibrary const *lib): d(new MWData()) {
   if (lib)
     d->lib = *lib;
   else
-    d->lib = PartLibrary::defaultLibrary();
+    d->lib = PartLibrary::defaultSymbols();
   createView();
   createDocks();
   createActions();

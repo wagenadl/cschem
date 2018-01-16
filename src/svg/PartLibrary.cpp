@@ -123,7 +123,12 @@ QPolygonF PartLibrary::simplifyPath(QPolygonF pp) const {
   return pp;
 }
 
-PartLibrary const &PartLibrary::defaultLibrary() {
+PartLibrary const &PartLibrary::defaultSymbols() {
   static PartLibrary lib(":symbols.svg");
+  return lib;
+}
+
+PartLibrary const &PartLibrary::defaultPackages() {
+  static PartLibrary lib(":packages.svg");
   return lib;
 }

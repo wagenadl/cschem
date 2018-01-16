@@ -80,13 +80,13 @@ bool SceneConnectionData::isDangling() const {
 }
 
 QPen SceneConnectionData::normalPen() const {
-  return QPen(isDangling() ? Style::danglingColor() : Style::connectionColor(),
+  return QPen(isDangling() ? Style::danglingColor() : Style::layerColor(),
 	      scene->library()->lineWidth(),
 	      Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
 }
 
 QPen SceneConnectionData::draftPen() const {
-  return QPen(isDangling() ? Style::danglingColor() : Style::connectionColor(),
+  return QPen(isDangling() ? Style::danglingColor() : Style::layerColor(),
 	      Style::connectionDraftWidthFactor()
 	      * scene->library()->lineWidth(),
 	      Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
@@ -296,7 +296,7 @@ void SceneConnection::hover(int seg) {
   d->hoverseg = d->segments[seg];
 
   PartLibrary const *lib = d->scene->library();
-  d->hoverseg->setPen(QPen(Style::connectionHoverColor(),
+  d->hoverseg->setPen(QPen(Style::hoverColor(),
 			   Style::connectionHoverWidthFactor()*lib->lineWidth(),
                            Qt::SolidLine, Qt::RoundCap));
   d->hoverseg->setZValue(-1);
