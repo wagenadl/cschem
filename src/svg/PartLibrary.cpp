@@ -124,6 +124,6 @@ QPolygonF PartLibrary::simplifyPath(QPolygonF pp) const {
 }
 
 PartLibrary const &PartLibrary::defaultLibrary() {
-  static PartLibrary lib(":parts.svg");
+  static PartLibrary lib(":symbols.svg");
   return lib;
 }
