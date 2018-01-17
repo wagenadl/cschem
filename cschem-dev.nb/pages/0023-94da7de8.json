@@ -1,0 +1,146 @@
+{ "typ": "page",
+  "cre": "2018-01-17T10:15:46",
+  "mod": "2018-01-17T10:27:29",
+  "cui": "6f9315ecc4870892",
+  "stampTime": 0,
+  "startPage": 23,
+  "unlocked": false,
+  "uuid": "94da7de8",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-17T10:15:46",
+      "mod": "2018-01-17T10:15:46",
+      "uuid": "ed61e0a1"
+    },
+    { "typ": "title",
+      "cre": "2018-01-17T10:15:46",
+      "mod": "2018-01-17T10:15:50",
+      "uuid": "edd839a7",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-17T10:15:46",
+          "mod": "2018-01-17T10:15:50",
+          "lines": [
+            0
+          ],
+          "text": "Design class",
+          "uuid": "e3162d7b"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-17T10:15:50",
+      "mod": "2018-01-17T10:22:22",
+      "h": 235.66,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "13c3fbd2",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-17T10:15:50",
+          "mod": "2018-01-17T10:22:22",
+          "lines": [
+            0,
+            64,
+            122,
+            189,
+            246,
+            313,
+            375,
+            436,
+            494,
+            559
+          ],
+          "text": "I’d like to have a class called Design which contains the Scene and perhaps a new LibScene. Design contains the Schem and Scene will no longer contain the Circuit: it will instead point to the circuit in Design. But I don’t want Schem to contain pointers to Circuits, unless it’s a QSharedPointer. I think that I like that idea: make Schem::circuit() return a shared pointer (const and nonconst versions) so that direct manipulation is possible. For some reason, I am much happier with writing schem.circuit()→insert(…) than with schem.circuit().insert(…). I don’t seem to like functions returning (nonconst) references.",
+          "uuid": "e4b831a1",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-17T10:18:03",
+              "mod": "2018-01-17T10:18:03",
+              "end": 223,
+              "start": 218,
+              "style": 1,
+              "uuid": "9abfcbd9"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-17T10:22:52",
+      "mod": "2018-01-17T10:24:52",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "2e7caa0f",
+      "y0": 307.66,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-17T10:22:52",
+          "mod": "2018-01-17T10:24:52",
+          "lines": [
+            0,
+            62,
+            126,
+            185
+          ],
+          "text": "Do I want to extend this idea to Circuit::element() returning a shared pointer to the element? I don’t think so. At least for now, let’s keep Element and Connection as simple data that gets copied (at least conceptually).",
+          "uuid": "b84bab10"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-17T10:25:17",
+      "mod": "2018-01-17T10:26:03",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "3dedfc30",
+      "y0": 404.324,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-17T10:25:17",
+          "mod": "2018-01-17T10:26:03",
+          "lines": [
+            0,
+            60,
+            116,
+            180
+          ],
+          "text": "Note that at present a Schem is nothing more than a Circuit plus a SymbolLibrary, but in the future I might support multiple sheets, each with a separate Circuit, all contained in the Schem.",
+          "uuid": "d0dc8034"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-17T10:26:16",
+      "mod": "2018-01-17T10:27:29",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "cac747c3",
+      "y0": 500.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-17T10:26:16",
+          "mod": "2018-01-17T10:27:29",
+          "lines": [
+            0,
+            53,
+            114,
+            153,
+            212,
+            268
+          ],
+          "text": "I want to deprecate Circuit::remove(int) in favor of Circuit::remove(Element const &), Circuit::remove(Connection const &), Circuit::removeElement(int), Circuit::removeConnection(int). It is not elegant that the namespaces of connections and elements are mixed in the remove() method.",
+          "uuid": "86b30376"
+        }
+      ]
+    }
+  ]
+}
