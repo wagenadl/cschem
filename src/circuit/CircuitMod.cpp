@@ -35,22 +35,22 @@ void CircuitModData::insert(Element const &elt) {
 }
 
 void CircuitModData::drop(Connection const &con) {
-  circ.remove(con.id());
+  circ.removeConnection(con.id());
   acons << con.id();
 }
 
 void CircuitModData::drop(Element const &elt) {
-  circ.remove(elt.id());
+  circ.removeElement(elt.id());
   aelts << elt.id();
 }
 
 void CircuitModData::dropCon(int con) {
-  circ.remove(con);
+  circ.removeConnection(con);
   acons << con;
 }
 
 void CircuitModData::dropElt(int elt) {
-  circ.remove(elt);
+  circ.removeElement(elt);
   aelts << elt;
 }
 
@@ -554,8 +554,7 @@ bool CircuitModData::removeOverlappingJunctions(int id) {
 	  drop(con);
       }
     }
-    circ.remove(j);
-    aelts << j;
+    dropElt(j);
   }
   return true;
 }

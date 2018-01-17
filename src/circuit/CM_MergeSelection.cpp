@@ -12,7 +12,7 @@ public:
     topgeom(top, d->lib) {
     bot = d->circ;
     for (Connection const &c: top.connections())
-      bot.remove(c.id());
+      bot.removeConnection(c.id());
     CircuitMod mod(bot, d->lib);
     for (Element const &e: top.elements())
       mod.deleteElement(e.id());
@@ -22,10 +22,10 @@ public:
   CM_Merge(CircuitModData *d, int conid):
     d(d),
     any(false),
-    top(Circuit() << d->circ.connection(conid)),
+    top(Circuit(d->circ.connection(conid))),
     topgeom(top, d->lib) {
     bot = d->circ;
-    bot.remove(conid);
+    bot.removeConnection(conid);
     botgeom = Geometry(bot, d->lib);
   }
   void considerPinPin();
