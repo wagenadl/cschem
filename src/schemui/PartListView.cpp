@@ -10,7 +10,7 @@
 #include <QDebug>
 
 enum Columns {
-  COL_PartID = 0,
+  COL_Ref = 0,
   COL_Value,
   COL_Vendor,
   COL_PartNo,
@@ -35,13 +35,13 @@ public:
 PartListView::PartListView(Schem *schem, QWidget *parent):
   TextTable(parent), d(new PLVData(this, schem)) {
   setColumnCount(COL_N);
-  setColumnHeader(COL_PartID, "Part");
+  setColumnHeader(COL_Ref, "Ref.");
   setColumnHeader(COL_Value, "Value");
   setColumnHeader(COL_Vendor, "Vendor");
   setColumnHeader(COL_PartNo, "Cat #");
   setColumnHeader(COL_Notes, "Notes");
   setColumnHidden(COL_ID, true);
-  sortByColumn(COL_PartID, Qt::AscendingOrder);
+  sortByColumn(COL_Ref, Qt::AscendingOrder);
   connect(this, &PartListView::cellChanged,
           this, &PartListView::internalChange);
   rebuild();
@@ -142,12 +142,12 @@ void PartListView::internalChange(int n) {
 QList<QStringList> PartListView::partList() const {
   QList<QStringList> res;
   QStringList hdr;
-  hdr << "Part" << "Value" << "Vendor" << "Cat.#" << "Notes";
+  hdr << "Ref." << "Value" << "Vendor" << "Cat.#" << "Notes";
   res << hdr;
   int N = rowCount();
   for (int n=0; n<N; n++) {
     QStringList line;
-    line << text(n, COL_PartID) << text(n, COL_Value)
+    line << text(n, COL_Ref) << text(n, COL_Value)
 	 << text(n, COL_Vendor) << text(n, COL_PartNo)
 	 << text(n, COL_Notes);
     res << line;
