@@ -6828,14 +6828,14 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="455"
        cy="1332"
        r="7"
-       inkscape:label="pin:pos" />
+       inkscape:label="pin:+" />
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="pin:A-8-84"
        cx="455"
        cy="1374"
        r="7"
-       inkscape:label="pin:neg" />
+       inkscape:label="pin:-" />
   </g>
   <g
      id="g7706"
@@ -7059,7 +7059,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
     <circle
        inkscape:transform-center-y="2.3834746"
        inkscape:transform-center-x="65.942797"
-       inkscape:label="pin:VinM"
+       inkscape:label="pin:-"
        r="7"
        cy="534"
        cx="1253"
@@ -7068,7 +7068,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
     <circle
        inkscape:transform-center-y="2.3834746"
        inkscape:transform-center-x="65.942797"
-       inkscape:label="pin:VinP"
+       inkscape:label="pin:+"
        r="7"
        cy="506"
        cx="1253"
@@ -7077,7 +7077,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
     <circle
        inkscape:transform-center-y="2.3834746"
        inkscape:transform-center-x="65.942797"
-       inkscape:label="pin:Vout"
+       inkscape:label="pin:out"
        r="7"
        cy="520"
        cx="1337"
@@ -7876,14 +7876,14 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#010101;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     </g>
     <circle
-       inkscape:label="pin:neg"
+       inkscape:label="pin:-"
        r="7"
        cy="1367"
        cx="406"
        id="pin:A-8-84-3"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     <circle
-       inkscape:label="pin:pos"
+       inkscape:label="pin:+"
        r="7"
        cy="1330.9719"
        cx="406"
@@ -7938,14 +7938,14 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          inkscape:connector-curvature="0" />
     </g>
     <circle
-       inkscape:label="pin:pos"
+       inkscape:label="pin:+"
        r="7"
        cy="856"
        cx="539"
        id="pin:A-8-67-4-1-6-7"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     <circle
-       inkscape:label="pin:neg"
+       inkscape:label="pin:-"
        r="7"
        cy="905"
        cx="539"

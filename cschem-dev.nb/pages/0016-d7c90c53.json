@@ -1,0 +1,454 @@
+{ "typ": "page",
+  "cre": "2018-01-16T19:02:29",
+  "mod": "2018-01-16T20:06:28",
+  "cui": "8b885ec8307ce15f",
+  "stampTime": 0,
+  "startPage": 16,
+  "unlocked": false,
+  "uuid": "d7c90c53",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-16T19:02:29",
+      "mod": "2018-01-16T19:32:10",
+      "uuid": "b334a227",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-01-16T19:32:10",
+          "mod": "2018-01-16T19:32:10",
+          "archive": "_1_-0c5008aa.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "0c5008aa"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2018-01-16T19:02:29",
+      "mod": "2018-01-16T19:02:37",
+      "uuid": "378bd4fb",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:02:29",
+          "mod": "2018-01-16T19:02:37",
+          "lines": [
+            0
+          ],
+          "text": "Thinking about the parts list",
+          "uuid": "f4725604"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:02:37",
+      "mod": "2018-01-16T19:03:23",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "57dd1dad",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:02:37",
+          "mod": "2018-01-16T19:03:23",
+          "lines": [
+            0,
+            60,
+            124
+          ],
+          "text": "I want parts to be autonumbered when they are first dragged into the schematic. If the user then wishes to hide the labels, that’s fine, but each part should have a name.",
+          "uuid": "92eacdb9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:03:24",
+      "mod": "2018-01-16T19:03:45",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "893b5ee2",
+      "y0": 145.498,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:03:24",
+          "mod": "2018-01-16T19:03:45",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "In the parts list, that name should be labeled “Ref.” rather than “Part.”",
+          "uuid": "58391f99"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:03:57",
+      "mod": "2018-01-16T19:04:46",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9ec08fe8",
+      "y0": 195.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:03:57",
+          "mod": "2018-01-16T19:04:46",
+          "lines": [
+            0,
+            62
+          ],
+          "text": "The parts list should have a bar where I can type things like “R7-9: 100k” and “D8: Mouser”.",
+          "uuid": "b7b77d7f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:04:57",
+      "mod": "2018-01-16T19:18:34",
+      "h": 281.992,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7d1c1d51",
+      "y0": 246.162,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:04:57",
+          "mod": "2018-01-16T19:18:34",
+          "lines": [
+            0,
+            62,
+            119,
+            184,
+            242,
+            299,
+            357,
+            419,
+            477,
+            538,
+            599,
+            666
+          ],
+          "text": "Packages should be listed there as well. I want to be able to say “DIP8” and “WDIP20” [wide DIP], “R300” [for a 0.300” spacing resistor-like element], “LED5” [for a 0.1” spaced LED of 5 mm ⌀], “TO220/GDS” [for a MOSFET in TO-220 package with GDS pinout], “C100” or “C200” [for an unpolarized radial capacitor] (or “C1” and “C2”, those could be synonyms for “C100” and “C200”), “CP1” [for a polarized radial capacitor], “teensy” [for the unusually wide teensy board], “scsi68”, “idc34” [for a flat cable connector], “molex156” [for 0.156” spaced molex; number of pins is automatic]. I want packaging to be automatically inferred if not given. In fact, I want default values to be suggested.",
+          "uuid": "d6927fb7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:14:48",
+      "mod": "2018-01-16T19:30:01",
+      "h": 258.826,
+      "ind": 1,
+      "sheet": 0,
+      "split": [
+        162.162
+      ],
+      "uuid": "216fb616",
+      "y0": 528.154,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:14:48",
+          "mod": "2018-01-16T19:30:01",
+          "lines": [
+            0,
+            58,
+            117,
+            170,
+            225,
+            274,
+            322,
+            381,
+            441,
+            498,
+            557
+          ],
+          "text": "I will have a special mapping file between cschem package names and geda/pcb package names. This is an xml file with stanzas like <package name=”r100” pcb=”ACY100”/>, or <package name=”cp1” pcb=”RCY100P” map=”pos=1 neg=2”/>, <package name=”led5” pcb=”LED5” map=”A=1 K=2”/>. “TO220/GDS” is grabbed by <package name=”to220” pcb=”TO220W”/>; the “/GDS” generates an implicit «map=”G=1 D=2 S=3”». (I might accept «map=”AK”» or «map=”pos,neg”» as shorthand for «map=”A=1 K=2”», etc.) My packages will be case-insensitive. Note that geda’s “TO220” is a lying-down version. I won’t try to do automatic generation of “DIPn”. ",
+          "uuid": "ae300607",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T19:25:56",
+              "mod": "2018-01-16T19:25:56",
+              "end": 613,
+              "start": 612,
+              "style": 1,
+              "uuid": "f0974402"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:14:48",
+      "mod": "2018-01-16T19:30:29",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "216fb616",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:14:48",
+          "mod": "2018-01-16T19:30:29",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "I would like to be able to provide previews. The language of the “.fp” files in /usr/share/pcb/pcblib-newlib/ is pretty simple:",
+          "uuid": "ae300607"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:30:39",
+      "mod": "2018-01-16T19:31:17",
+      "h": 197.347,
+      "ind": 6,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "780dbe42",
+      "y0": 218.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:30:39",
+          "mod": "2018-01-16T19:31:17",
+          "lines": [
+            0,
+            62,
+            105,
+            107,
+            139,
+            171,
+            212,
+            259,
+            294,
+            331,
+            349
+          ],
+          "text": "Element(0x00 \"Bottom lead polar circular component (typically capacitor)\" \"\" \"RCY100P\" 200 0 0 100 0x00)\n(\n    Pin(50 100 60 30 \"1\" 0x101)\n    Pin(150 100 60 30 \"2\" 0x01)\n    ElementArc(100 100 100 100 0 360 10)\n    ElementLine(-60 100            -20 100 10)\n    ElementLine(-40 80 -40 120 10)\n    ElementLine(220 100 260  100 10)\n    Mark (50 100)\n)",
+          "uuid": "685280a5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:31:22",
+      "mod": "2018-01-16T19:32:09",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "81124399",
+      "y0": 416.343,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:31:22",
+          "mod": "2018-01-16T19:32:09",
+          "lines": [
+            0
+          ],
+          "text": "which looks like this:",
+          "uuid": "5eb26219"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-01-16T19:32:10",
+      "mod": "2018-01-16T19:32:33",
+      "h": 99.7546,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "a3f59e1b",
+      "xref": 0.0,
+      "y0": 443.509,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-01-16T19:32:10",
+          "mod": "2018-01-16T19:32:13",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 336.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.243317,
+          "uuid": "1b548657",
+          "width": 470.0,
+          "x": 0.0,
+          "y": 0.0
+        },
+        { "typ": "gfxnote",
+          "cre": "2018-01-16T19:32:22",
+          "mod": "2018-01-16T19:32:33",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 311.028,
+          "uuid": "c65dc54a",
+          "x": 138.972,
+          "y": 19.009,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-01-16T19:32:22",
+              "mod": "2018-01-16T19:32:33",
+              "lines": [
+                0,
+                50
+              ],
+              "text": "Note that the “+” is encoded as two “ElementLine” constructs.",
+              "uuid": "c7add016"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:33:23",
+      "mod": "2018-01-16T19:45:11",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "b4ff613f",
+      "y0": 543.264,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:33:23",
+          "mod": "2018-01-16T19:45:11",
+          "lines": [
+            0,
+            57
+          ],
+          "text": "The “old” library files are much more complicated, since they use M4, but who cares.",
+          "uuid": "75adf354"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:45:23",
+      "mod": "2018-01-16T19:58:14",
+      "h": 189.328,
+      "ind": 1,
+      "sheet": 1,
+      "split": [
+        92.664
+      ],
+      "uuid": "2a6e4c73",
+      "y0": 593.596,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:45:23",
+          "mod": "2018-01-16T19:58:14",
+          "lines": [
+            0,
+            50,
+            114,
+            173,
+            229,
+            290,
+            352,
+            416
+          ],
+          "text": "<package name=“D300” pcb=“ALF300” map=”K=1 A=2”/> (yes, really, opposite polarity of “RCY100P” and “LED5”). For a single standard opamp, I could have <package name=”opamp1” pcb=”DIP8” map=”+=3 –=2 out=6” net=”Vdd=7 Vss=4”/>. (It would be nice to be able to draw a picture of that somehow.) For a dual opamp, I could have «A:+=3 A:–=2 A:out=1 B:+=5 …». Then, in the parts list I could perhaps write “[A1,A2]=OPA2350; opamp2” to group amplifiers A1 and A2 together.",
+          "uuid": "ab7004fe",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T19:57:00",
+              "mod": "2018-01-16T19:57:00",
+              "end": 446,
+              "start": 445,
+              "style": 7,
+              "uuid": "084cc677"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T19:57:03",
+              "mod": "2018-01-16T19:57:03",
+              "end": 453,
+              "start": 452,
+              "style": 7,
+              "uuid": "2aa78ce9"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T19:57:04",
+              "mod": "2018-01-16T19:57:04",
+              "end": 452,
+              "start": 451,
+              "style": 1,
+              "uuid": "f5567fb2"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T19:57:06",
+              "mod": "2018-01-16T19:57:06",
+              "end": 445,
+              "start": 444,
+              "style": 1,
+              "uuid": "11def4bb"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T19:58:53",
+      "mod": "2018-01-16T20:04:33",
+      "h": 235.66,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "c8d07ee3",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T19:58:53",
+          "mod": "2018-01-16T20:04:33",
+          "lines": [
+            0,
+            61,
+            123,
+            185,
+            249,
+            303,
+            364,
+            432,
+            495,
+            549
+          ],
+          "text": "The logic for power nets is this: I normally have power nets Vdd, Vcc, AGnd, DGnd, Gnd, Vee, Vss. Others may be defined by explicit ports. Any of these power nets that is not mentioned explicitly on the schematic, has default routing: Vcc ↔ Vdd are equated; AGnd ↔ Gnd ↔ DGnd are equated; Vee ↔ Vss are equated. Next up, Vee ↔ Gnd ↔ Vss are equated. If there is a net called “+12V” or similar (as long as it is > 5 V), that catches Vdd; “–15V” or similar, that catches Vss. “+5V”, “+3.3V”, etc. catch Vcc. “–5V” catches Vee, but I expect that to be vanishingly rare.",
+          "uuid": "5502d214"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:05:06",
+      "mod": "2018-01-16T20:06:28",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "b0b036a6",
+      "y0": 404.324,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:05:06",
+          "mod": "2018-01-16T20:06:28",
+          "lines": [
+            0,
+            57,
+            121
+          ],
+          "text": "Now, the parts list becomes pretty fancy, with the “[…]” syntax. I think that it will be best to pull the value, vendor, partno fields out of <element> and into a separate <part>.",
+          "uuid": "8ad7d6cf"
+        }
+      ]
+    }
+  ]
+}
