@@ -21,6 +21,9 @@ Circuit::Circuit(Circuit const &o) {
   d = o.d;
 }
 
+Circuit::Circuit(Connection const &con): Circuit() {
+  insert(con);
+}
 
 Circuit &Circuit::operator=(Circuit const &o) {
   d = o.d;
@@ -91,9 +94,9 @@ void Circuit::insert(Connection const &c) {
   d->connections[c.id()] = c;
 }
 
-void Circuit::remove(int id) {
-  d.detach();
+void Circuit::removeElement(int id) {
   if (d->elements.contains(id)) {
+    d.detach();
     d->elements.remove(id);
     QList<int> cids;
     for (auto const &c: connections()) 
@@ -101,7 +104,14 @@ void Circuit::remove(int id) {
         cids << c.id();
     for (int cid: cids)
       d->connections.remove(cid);
-  } else if (d->connections.contains(id)) {
+  } else {
+    qDebug() << "Nothing to remove for " << id;
+  }
+}
+
+void Circuit::removeConnection(int id) {
+  if (d->connections.contains(id)) {
+    d.detach();
     d->connections.remove(id);
   } else {
     qDebug() << "Nothing to remove for " << id;

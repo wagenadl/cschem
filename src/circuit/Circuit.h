@@ -17,14 +17,15 @@ public:
   Circuit(Circuit const &);
   Circuit &operator=(Circuit const &);
   ~Circuit();
+  explicit Circuit(Connection const &); // create a circuit consisting
+  // of just one connection
 public:
   void insert(Element const &); // or replace
   void insert(Connection const &);
-  Circuit &operator<<(Element const &elt) { insert(elt); return *this; }
-  Circuit &operator<<(Connection const &con) { insert(con); return *this; }
-  void remove(int id);
-  /* Removes an element or a connection.  Connections to/from a
-     deleted element are also deleted. */
+  void removeElement(int id);
+  /* Removes an element. Connections to/from the element are also deleted. */
+  void removeConnection(int id);
+  /* Removes a connection. */
   QSet<int> connectionsTo(QSet<int> ids) const;
   /* Connections with "toId" in the set ("fromId" is irrelevant) */
   QSet<int> connectionsFrom(QSet<int> ids) const;
