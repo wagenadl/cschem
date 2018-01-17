@@ -10,7 +10,7 @@
 class MainWindow: public QMainWindow {
   Q_OBJECT;
 public:
-  explicit MainWindow(class PartLibrary const *lib=0);
+  explicit MainWindow(class SymbolLibrary const *lib=0);
   virtual ~MainWindow();
   MainWindow(MainWindow const &) = delete;
   MainWindow operator=(MainWindow const &) = delete;
@@ -32,7 +32,7 @@ public slots:
   void redoAction();
   void removeDanglingAction();
   void showLibrary();
-  void showPartsList();
+  void showSymbolsList();
   void showVirtuals();
   void rotateCCWAction();
   void rotateCWAction();

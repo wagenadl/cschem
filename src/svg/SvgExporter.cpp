@@ -2,8 +2,8 @@
 
 #include "SvgExporter.h"
 #include "Geometry.h"
-#include "PartLibrary.h"
-#include "Part.h"
+#include "SymbolLibrary.h"
+#include "Symbol.h"
 #include "circuit/Circuit.h"
 #include "circuit/Element.h"
 #include "circuit/Connection.h"
@@ -15,7 +15,7 @@
 
 class SvgExporterData {
 public:
-  SvgExporterData(Circuit const &circ, PartLibrary const *lib):
+  SvgExporterData(Circuit const &circ, SymbolLibrary const *lib):
     circ(circ), lib(lib),
     geom(circ, lib) {
   }
@@ -24,14 +24,14 @@ public:
   void writeConnection(QXmlStreamWriter &sw, Connection const &elt);
 public:
   Circuit circ;
-  PartLibrary const *lib;
+  SymbolLibrary const *lib;
   Geometry geom;
 };
 
 
 void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   QString sym = elt.symbol();
-  Part const &part = lib->part(sym);
+  Symbol const &symbol = lib->symbol(sym);
 
   QPointF p0 = lib->upscale(elt.position());
   int r = elt.rotation();
@@ -45,16 +45,16 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
     xform += QString(" rotate(%1)").arg(r*-90);
   if (flp)
     xform += QString(" scale(-1,1)");
-  QPointF p1 = part.svgOrigin();
+  QPointF p1 = symbol.svgOrigin();
   xform += QString(" translate(%1,%2)").arg(-p1.x()).arg(-p1.y());
   sw.writeStartElement("g");
   sw.writeAttribute("transform", xform);
-  qDebug() << "writing " << sym << part.isValid();
-  part.writeSvg(sw);
+  qDebug() << "writing " << sym << symbol.isValid();
+  symbol.writeSvg(sw);
   sw.writeEndElement(); // g
 
   // origin for labels
-  QPointF po = part.shiftedBBox().center();
+  QPointF po = symbol.shiftedBBox().center();
   QTransform xf;
   xf.rotate(elt.rotation()*-90);
   if (elt.isFlipped())
@@ -124,7 +124,7 @@ void SvgExporterData::writeBBox(QXmlStreamWriter &sw) {
 		    .arg(bbox.width()).arg(bbox.height()));
 }
 
-SvgExporter::SvgExporter(Circuit const &circ, PartLibrary const *lib):
+SvgExporter::SvgExporter(Circuit const &circ, SymbolLibrary const *lib):
   d(new SvgExporterData(circ, lib)) {
 }
 
@@ -133,7 +133,7 @@ SvgExporter::~SvgExporter() {
 }
 
 bool SvgExporter::exportSvg(QString const &fn) {
-  qDebug() << "part names" << d->lib->partNames();
+  qDebug() << "symbol names" << d->lib->symbolNames();
   QFile file(fn);
   if (file.open(QFile::WriteOnly)) {
     QXmlStreamWriter sw(&file);
@@ -141,7 +141,7 @@ bool SvgExporter::exportSvg(QString const &fn) {
     sw.setAutoFormattingIndent(2);
     sw.writeStartDocument("1.0", false);
     sw.writeStartElement("svg");
-    Part::writeNamespaces(sw);
+    Symbol::writeNamespaces(sw);
     d->writeBBox(sw);
 
     sw.writeStartElement("g"); // put the whole thing in a group

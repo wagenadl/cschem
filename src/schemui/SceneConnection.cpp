@@ -3,7 +3,7 @@
 #include "SceneConnection.h"
 #include <QGraphicsLineItem>
 #include "circuit/Connection.h"
-#include "svg/PartLibrary.h"
+#include "svg/SymbolLibrary.h"
 #include "Scene.h"
 #include <QDebug>
 #include <QGraphicsColorizeEffect>
@@ -186,7 +186,7 @@ QPointF SceneConnectionData::moveDelta(QPointF sp) {
 
 QPolygonF SceneConnectionData::path() const {
   Connection const &c = scene->circuit().connection(id);
-  PartLibrary const *lib = scene->library();
+  SymbolLibrary const *lib = scene->library();
 
   QPolygonF pp;
   if (!c.danglingStart())
@@ -237,7 +237,7 @@ void SceneConnection::temporaryTranslate(QPoint delta) {
 void SceneConnection::setLineWidth(double frac) {
   if (d->segments.isEmpty())
     return;
-  PartLibrary const *lib = scene()->library();
+  SymbolLibrary const *lib = scene()->library();
   QPen p = d->segments.first()->pen();
   p.setWidthF(lib->lineWidth() *frac);
   for (auto *seg: d->segments)
@@ -295,7 +295,7 @@ void SceneConnection::hover(int seg) {
 
   d->hoverseg = d->segments[seg];
 
-  PartLibrary const *lib = d->scene->library();
+  SymbolLibrary const *lib = d->scene->library();
   d->hoverseg->setPen(QPen(Style::hoverColor(),
 			   Style::connectionHoverWidthFactor()*lib->lineWidth(),
                            Qt::SolidLine, Qt::RoundCap));

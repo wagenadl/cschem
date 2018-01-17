@@ -8,14 +8,14 @@
 
 class Editor: public QGraphicsView {
 public:
-  Editor(class PartLibrary const *lib, class Schem *schem, QWidget *parent=0);
+  Editor(class SymbolLibrary const *lib, class Schem *schem, QWidget *parent=0);
   ~Editor();
   void keyPressEvent(QKeyEvent *) override;
   class Scene *scene() const { return scene_; }
   class Schem const *schematic() const { return schem; }
-  class PartLibrary const *library() const { return lib; }
+  class SymbolLibrary const *library() const { return lib; }
 private:
-  PartLibrary const *lib;
+  SymbolLibrary const *lib;
   Schem *schem;
   class Scene *scene_;
 };

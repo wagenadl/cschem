@@ -10,10 +10,10 @@
 #include <QDebug>
 
 enum Columns {
-  COL_Part = 0,
+  COL_PartID = 0,
   COL_Value,
   COL_Vendor,
-  COL_Partno,
+  COL_PartNo,
   COL_Notes,
   COL_ID,
   COL_N,
@@ -35,13 +35,13 @@ public:
 PartListView::PartListView(Schem *schem, QWidget *parent):
   TextTable(parent), d(new PLVData(this, schem)) {
   setColumnCount(COL_N);
-  setColumnHeader(COL_Part, "Part");
+  setColumnHeader(COL_PartID, "Part");
   setColumnHeader(COL_Value, "Value");
   setColumnHeader(COL_Vendor, "Vendor");
-  setColumnHeader(COL_Partno, "Cat #");
+  setColumnHeader(COL_PartNo, "Cat #");
   setColumnHeader(COL_Notes, "Notes");
   setColumnHidden(COL_ID, true);
-  sortByColumn(COL_Part, Qt::AscendingOrder);
+  sortByColumn(COL_PartID, Qt::AscendingOrder);
   connect(this, &PartListView::cellChanged,
           this, &PartListView::internalChange);
   rebuild();
@@ -95,7 +95,7 @@ void PartListView::resetWidth() {
 void PLVData::rebuildRow(int n, Element const &elt) {
   view->setText(n, COL_Value, elt.value());
   view->setText(n, COL_Vendor, elt.info().vendor);
-  view->setText(n, COL_Partno, elt.info().partno);
+  view->setText(n, COL_PartNo, elt.info().partno);
   view->setText(n, COL_Notes, elt.info().notes);
   QString name = elt.name();
   name.replace(".1", "");   
@@ -113,7 +113,7 @@ void PartListView::internalChange(int n) {
   if (circ.elements().contains(id)) {
     QString val0 = text(n, COL_Value);
     QString vendor = text(n, COL_Vendor);
-    QString partno = text(n, COL_Partno);
+    QString partno = text(n, COL_PartNo);
     QString notes = text(n, COL_Notes);
 
     Element elt = circ.element(id);
@@ -147,8 +147,8 @@ QList<QStringList> PartListView::partList() const {
   int N = rowCount();
   for (int n=0; n<N; n++) {
     QStringList line;
-    line << text(n, COL_Part) << text(n, COL_Value)
-	 << text(n, COL_Vendor) << text(n, COL_Partno)
+    line << text(n, COL_PartID) << text(n, COL_Value)
+	 << text(n, COL_Vendor) << text(n, COL_PartNo)
 	 << text(n, COL_Notes);
     res << line;
   }

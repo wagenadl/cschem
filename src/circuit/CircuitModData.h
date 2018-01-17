@@ -9,8 +9,8 @@
 #include "circuit/Circuit.h"
 #include "circuit/PinID.h"
 #include "circuit/Router.h"
-#include "svg/Part.h"
-#include "svg/PartLibrary.h"
+#include "svg/Symbol.h"
+#include "svg/SymbolLibrary.h"
 #include "circuit/Net.h"
 #include <QDebug>
 
@@ -26,7 +26,7 @@ struct OverlapResult {
 
 class CircuitModData {
 public:
-  CircuitModData(Circuit const &circ, PartLibrary const *lib):
+  CircuitModData(Circuit const &circ, SymbolLibrary const *lib):
     circ(circ), lib(lib) {
   }
   OverlapResult overlappingStart(Connection const &a, Connection const &b) const;
@@ -61,7 +61,7 @@ public:
   void dropElt(int);
  public:
   Circuit circ;
-  PartLibrary const *lib;
+  SymbolLibrary const *lib;
   QSet<int> acons;
   QSet<int> aelts;
 };

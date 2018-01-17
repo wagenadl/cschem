@@ -5,7 +5,7 @@
 #include "file/Schem.h"
 #include "Scene.h"
 
-Editor::Editor(class PartLibrary const *lib, Schem *schem, QWidget *parent):
+Editor::Editor(class SymbolLibrary const *lib, Schem *schem, QWidget *parent):
   QGraphicsView(parent), lib(lib), schem(schem) {
   setInteractive(true);
   scene_ = new Scene(lib);

@@ -76,25 +76,25 @@ public:
   QSet<int> avoidConnections;
 };
 
-void HoverManager::newDrag(Part const &part) {
-  PartLibrary const *lib = d->scene->library();
+void HoverManager::newDrag(Symbol const &symbol) {
+  SymbolLibrary const *lib = d->scene->library();
   d->selectionPoints.clear();
-  for (QString p: part.pinNames())
+  for (QString p: symbol.pinNames())
     d->selectionPoints
-      << PointInfo(lib->downscale(part.shiftedPinPosition(p)), 0, p);
+      << PointInfo(lib->downscale(symbol.shiftedPinPosition(p)), 0, p);
   d->haveMagnet = false;
   d->avoidConnections.clear();
 }
 
 void HoverManager::formSelection(QSet<int> elts) {
   Circuit const &circ = d->scene->circuit();
-  PartLibrary const *lib = d->scene->library();
+  SymbolLibrary const *lib = d->scene->library();
   Geometry geom(circ, lib);
   d->selectionPoints.clear();
   for (int e: elts) {
     Element const &elt(circ.element(e));
-    Part const &part(lib->part(elt.symbol()));
-    for (QString p: part.pinNames()) 
+    Symbol const &symbol(lib->symbol(elt.symbol()));
+    for (QString p: symbol.pinNames()) 
       d->selectionPoints << PointInfo(geom.pinPosition(elt, p), e, p);
   }
   d->avoidConnections
@@ -361,7 +361,7 @@ void HoverManager::unhover() {
 
 QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
   Circuit const &circ = scene->circuit();
-  PartLibrary const *lib = scene->library();
+  SymbolLibrary const *lib = scene->library();
   Geometry geom(circ, lib);
   QList<QPoint> pts;
   // Let's see what might stick here
@@ -397,7 +397,7 @@ void HoverManager::doneDragging() {
 }
 
 void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
-  PartLibrary const *lib = scene->library();
+  SymbolLibrary const *lib = scene->library();
   int n=0;
   for (QPoint p: pts) {
     if (floatMarkers.size() <= n)
