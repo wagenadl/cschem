@@ -1,6 +1,6 @@
 // qschem.cpp
 
-#include "svg/PartLibrary.h"
+#include "svg/SymbolLibrary.h"
 #include "file/FileIO.h"
 #include "circuit/Schem.h"
 #include <QApplication>

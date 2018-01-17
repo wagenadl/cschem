@@ -1,7 +1,7 @@
 // Schem.cpp
 
 #include "Schem.h"
-#include "svg/PartLibrary.h"
+#include "svg/SymbolLibrary.h"
 #include <QDebug>
 
 class SchemData: public QSharedData {
@@ -9,8 +9,8 @@ public:
   SchemData(bool valid): valid(valid) { }
 public:
   Circuit circuit;
-  //Parts parts;
-  PartLibrary library;
+  //Symbols symbols;
+  SymbolLibrary library;
   bool valid;
 };  
 
@@ -30,8 +30,8 @@ Schem::Schem(QXmlStreamReader &src): Schem() {
       if (src.name()=="circuit") {
         src >> d->circuit;
 	d->valid = d->circuit.isValid();
-      //} else if (src.name()=="parts") {
-      //  src >> d->parts;
+      //} else if (src.name()=="symbols") {
+      //  src >> d->symbols;
       } else if (src.name()=="svg") {
         d->library.merge(src);
       } else {
@@ -67,13 +67,13 @@ void Schem::setCircuit(Circuit const &c) {
   d->circuit = c;
 }
 
-//Parts const &Schem::parts() const {
-//  return d->parts;
+//Symbols const &Schem::symbols() const {
+//  return d->symbols;
 //}
 //
-//void Schem::setParts(Parts const &p) {
+//void Schem::setSymbols(Symbols const &p) {
 //  d.detach();
-//  d->parts = p;
+//  d->symbols = p;
 //}
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Schem &c) {
@@ -85,28 +85,28 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Schem const &c) {
   sr.writeStartElement("cschem");
   sr.writeDefaultNamespace("http://www.danielwagenaar.net/cschem-ns.html");
   sr << c.circuit();
-  //sr << c.parts();
+  //sr << c.symbols();
   c.saveSvg(sr);
   sr.writeEndElement();
   return sr;
 };
 
-PartLibrary const &Schem::library() const {
+SymbolLibrary const &Schem::library() const {
   return d->library;
 }
 
-void Schem::selectivelyUpdateLibrary(PartLibrary const &lib) {
+void Schem::selectivelyUpdateLibrary(SymbolLibrary const &lib) {
   QSet<QString> syms;
   for (Element const &elt: circuit().elements())
     syms << elt.symbol();
   for (QString sym: syms) 
     if (lib.contains(sym))
-      d->library.insert(lib.part(sym));
+      d->library.insert(lib.symbol(sym));
 }
 
 void Schem::saveSvg(QXmlStreamWriter &sw) const {
   sw.writeStartElement("svg");
-  Part::writeNamespaces(sw);
+  Symbol::writeNamespaces(sw);
 
   sw.setAutoFormatting(false);
 
@@ -115,7 +115,7 @@ void Schem::saveSvg(QXmlStreamWriter &sw) const {
     syms << elt.symbol();
   for (QString sym: syms) 
     if (d->library.contains(sym))
-      d->library.part(sym).element().write(sw);
+      d->library.symbol(sym).element().write(sw);
   
   sw.writeEndElement();
 
@@ -124,7 +124,7 @@ void Schem::saveSvg(QXmlStreamWriter &sw) const {
 }
 
 bool Schem::isEmpty() const {
-  return circuit().isEmpty(); // && parts().isEmpty();
+  return circuit().isEmpty(); // && symbols().isEmpty();
 }
 
 bool Schem::isValid() const {

@@ -6,7 +6,7 @@
 
 class SvgExporter {
 public:
-  SvgExporter(class Circuit const &circ, class PartLibrary const *lib);
+  SvgExporter(class Circuit const &circ, class SymbolLibrary const *lib);
   ~SvgExporter();
   SvgExporter(SvgExporter const &) = delete;
   SvgExporter &operator=(SvgExporter const &) = delete;

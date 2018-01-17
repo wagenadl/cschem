@@ -75,7 +75,7 @@ bool CircuitModData::rewire(QSet<int> cc, PinID old, PinID new_) {
   return any;
 }
 
-CircuitMod::CircuitMod(Circuit const &circ, PartLibrary const *lib):
+CircuitMod::CircuitMod(Circuit const &circ, SymbolLibrary const *lib):
   d(new CircuitModData(circ, lib)) {
 }
 

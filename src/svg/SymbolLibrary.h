@@ -1,22 +1,22 @@
-// PartLibrary.h
+// SymbolLibrary.h
 
-#ifndef PARTLIBRARY_H
+#ifndef SYMBOLLIBRARY_H
 
-#define PARTLIBRARY_H
+#define SYMBOLLIBRARY_H
 
-#include "Part.h"
+#include "Symbol.h"
 
-class PartLibrary {
+class SymbolLibrary {
 public:
-  PartLibrary(QString fn);
-  PartLibrary();
+  SymbolLibrary(QString fn);
+  SymbolLibrary();
   void merge(QString fn);
   void merge(QXmlStreamReader &sr); // must point to <svg> element
-  void insert(Part const &);
-  ~PartLibrary();
-  QStringList partNames() const;
+  void insert(Symbol const &);
+  ~SymbolLibrary();
+  QStringList symbolNames() const;
   bool contains(QString) const;
-  Part part(QString) const;
+  Symbol symbol(QString) const;
   int scale() const;
   QPoint downscale(QPointF) const;
   QPointF upscale(QPoint) const;
@@ -25,12 +25,11 @@ public:
   QPointF nearestGrid(QPointF) const;
   double lineWidth() const;
   QPolygonF simplifyPath(QPolygonF) const;
-  static PartLibrary const &defaultSymbols();
-  static PartLibrary const &defaultPackages();
+  static SymbolLibrary const &defaultSymbols();
 private:
-  void scanParts(XmlElement const &src);
+  void scanSymbols(XmlElement const &src);
 private:
-  QMap<QString, Part> parts_;
+  QMap<QString, Symbol> symbols_;
 };
 
 #endif

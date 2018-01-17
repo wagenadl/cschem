@@ -145,13 +145,13 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
   d->id = elt.id();
   d->sym = elt.symbol();
 
-  PartLibrary const *lib = d->scene->library();
-  Part const &part = lib->part(d->sym);
-  if (!part.isValid())
+  SymbolLibrary const *lib = d->scene->library();
+  Symbol const &symbol = lib->symbol(d->sym);
+  if (!symbol.isValid())
     qDebug() << "Cannot find svg for symbol" << d->sym;
 
   d->element = new SvgItem(this);
-  d->element->setRenderer(part.renderer());
+  d->element->setRenderer(symbol.renderer());
   
   parent->addItem(this);
   rebuild();
@@ -188,7 +188,7 @@ void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
   Circuit const &circ = d->scene->circuit();
-  PartLibrary const *lib = d->scene->library();
+  SymbolLibrary const *lib = d->scene->library();
   d->delta0 = circ.element(d->id).position() - lib->downscale(e->scenePos());
   qDebug() << "Element Mouse press" << e->pos() << pos();
   QGraphicsItem::mousePressEvent(e);
@@ -225,7 +225,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 void SceneElement::temporaryTranslate(QPoint delta) {
   Circuit const &circ = d->scene->circuit();
   Element elt(circ.element(d->id));
-  PartLibrary const *lib = d->scene->library();
+  SymbolLibrary const *lib = d->scene->library();
 
   setPos(lib->upscale(elt.position() + delta));
 }
@@ -234,14 +234,14 @@ void SceneElement::rebuild() {
   // Reconstruct element
   Circuit const &circ = d->scene->circuit();
   Element elt(circ.element(d->id));
-  PartLibrary const *lib = d->scene->library();
-  Part const &part = lib->part(elt.symbol());
+  SymbolLibrary const *lib = d->scene->library();
+  Symbol const &symbol = lib->symbol(elt.symbol());
 
   prepareGeometryChange();
 
-  d->element->setRenderer(part.renderer());
+  d->element->setRenderer(symbol.renderer());
   
-  QPointF orig = part.bbOrigin();
+  QPointF orig = symbol.bbOrigin();
   QTransform xf;
   xf.translate(orig.x(), orig.y());
   xf.rotate(elt.rotation()*-90);
@@ -249,12 +249,12 @@ void SceneElement::rebuild() {
     xf.scale(-1, 1);
   xf.translate(-orig.x(), -orig.y());
   d->element->setTransform(xf);
-  d->element->setPos(part.shiftedBBox().topLeft());
+  d->element->setPos(symbol.shiftedBBox().topLeft());
 
   setPos(lib->scale() * elt.position());
 
   // origin for labels
-  QRectF bb = part.shiftedBBox();
+  QRectF bb = symbol.shiftedBBox();
   QPointF p0 = bb.center();
   QTransform xfl;
   xfl.rotate(elt.rotation()*-90);
