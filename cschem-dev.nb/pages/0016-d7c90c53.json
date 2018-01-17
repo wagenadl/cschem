@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2018-01-16T19:02:29",
-  "mod": "2018-01-16T20:19:17",
+  "mod": "2018-01-16T20:51:36",
   "cui": "8b885ec8307ce15f",
   "stampTime": 0,
   "startPage": 16,
@@ -452,9 +452,9 @@
     },
     { "typ": "textblock",
       "cre": "2018-01-16T20:19:05",
-      "mod": "2018-01-16T20:19:17",
-      "h": 27.166,
-      "ind": 1,
+      "mod": "2018-01-16T20:22:10",
+      "h": 19.147,
+      "ind": 3,
       "sheet": 2,
       "split": [ ],
       "uuid": "27741fec",
@@ -462,12 +462,372 @@
       "cc": [
         { "typ": "text",
           "cre": "2018-01-16T20:19:05",
-          "mod": "2018-01-16T20:19:17",
+          "mod": "2018-01-16T20:21:48",
           "lines": [
             0
           ],
-          "text": "[I once again replaced the word “Part” with “Symbol” ",
+          "text": "[I once again replaced the word “Part” with “Symbol”.]",
           "uuid": "ac3da8e5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:21:52",
+      "mod": "2018-01-16T20:24:28",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "9e284dce",
+      "y0": 496.969,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:21:52",
+          "mod": "2018-01-16T20:24:28",
+          "lines": [
+            0,
+            61,
+            128,
+            193,
+            255
+          ],
+          "text": "The only attribute that would remain inside <element> is the name, which really is the reference, but I’ll keep calling it name inside the code, because I cannot possibly rename all instances, plus “ref” could be confusing in QSharedData. Should I rename it in the xml? No.",
+          "uuid": "5c820f4d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:24:43",
+      "mod": "2018-01-16T20:25:50",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "9548adf4",
+      "y0": 616.799,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:24:43",
+          "mod": "2018-01-16T20:25:50",
+          "lines": [
+            0,
+            62,
+            123
+          ],
+          "text": "Do I really need to pull <part> out of <element>? I think so, because there is no other obvious way to create an “[A1,A2]” item.",
+          "uuid": "3adda3a9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:27:33",
+      "mod": "2018-01-16T20:30:35",
+      "h": 189.328,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "3bec5a25",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:27:33",
+          "mod": "2018-01-16T20:30:35",
+          "lines": [
+            0,
+            59,
+            113,
+            175,
+            239,
+            301,
+            362,
+            420
+          ],
+          "text": "Now. When I first create an element, there simply is not a <part> line for it. A part line gets generated in two circumstances: When a value gets defined in the schematic, or when something happens in the parts list view. Each line in the parts list view corresponds to a <part>, which can correspond to one or more <elements>. A <part> has its own id which has nothing to do with the id of the corresponding <element>. Rather, they are linked by the name. Here are two <parts>:",
+          "uuid": "53b26d06",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T20:28:14",
+              "mod": "2018-01-16T20:28:14",
+              "end": 140,
+              "start": 135,
+              "style": 1,
+              "uuid": "6aaf22e9"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:29:42",
+              "mod": "2018-01-16T20:29:42",
+              "end": 351,
+              "start": 349,
+              "style": 1,
+              "uuid": "508093d3"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:29:52",
+              "mod": "2018-01-16T20:29:52",
+              "end": 387,
+              "start": 385,
+              "style": 1,
+              "uuid": "8c6b4fe1"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:30:12",
+              "mod": "2018-01-16T20:30:12",
+              "end": 455,
+              "start": 451,
+              "style": 1,
+              "uuid": "c5787b73"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:30:36",
+      "mod": "2018-01-16T20:31:30",
+      "h": 36.967,
+      "ind": 6,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "77e64b41",
+      "y0": 261.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:30:36",
+          "mod": "2018-01-16T20:31:30",
+          "lines": [
+            0,
+            54
+          ],
+          "text": "<part name=”R1” id=”301” value=”10 kΩ” package=”R500” notes=”1W”/>",
+          "uuid": "701f616d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:31:31",
+      "mod": "2018-01-16T20:32:16",
+      "h": 36.967,
+      "ind": 6,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "f773ad24",
+      "y0": 298.295,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:31:31",
+          "mod": "2018-01-16T20:32:16",
+          "lines": [
+            0,
+            46
+          ],
+          "text": "<part name=”[A1,A2]” id=”302” value=”OPA2350” package=”opamp2”/>",
+          "uuid": "9dd40ecb"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:32:04",
+      "mod": "2018-01-16T20:39:43",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "c729977c",
+      "y0": 335.262,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:32:04",
+          "mod": "2018-01-16T20:39:43",
+          "lines": [
+            0,
+            65,
+            130,
+            193,
+            249,
+            303
+          ],
+          "text": "The parts list view should notify the scene (ideally not through a signal; those are supposed to be used for optional notices) of value changes. The appropriate label for A1 in this case is “½ OPA2350,” although plain “OPA2350” might be OK too. For logic elements, I might use U1.1 through U1.6 for the subcomponents. In that case, ",
+          "uuid": "fe09b7c2",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T20:33:02",
+              "mod": "2018-01-16T20:33:02",
+              "end": 172,
+              "start": 171,
+              "style": 1,
+              "uuid": "df14daf5"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:33:02",
+              "mod": "2018-01-16T20:33:02",
+              "end": 173,
+              "start": 172,
+              "style": 7,
+              "uuid": "5b9faf99"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:34:08",
+              "mod": "2018-01-16T20:34:08",
+              "end": 278,
+              "start": 277,
+              "style": 1,
+              "uuid": "c6013dd5"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:34:12",
+              "mod": "2018-01-16T20:34:12",
+              "end": 281,
+              "start": 278,
+              "style": 7,
+              "uuid": "bae50b73"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:34:14",
+              "mod": "2018-01-16T20:34:14",
+              "end": 291,
+              "start": 290,
+              "style": 1,
+              "uuid": "fa0bd71c"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:34:17",
+              "mod": "2018-01-16T20:34:17",
+              "end": 294,
+              "start": 291,
+              "style": 7,
+              "uuid": "7e8788d8"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:34:28",
+      "mod": "2018-01-16T20:34:50",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "e8183294",
+      "y0": 478.258,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:34:28",
+          "mod": "2018-01-16T20:34:47",
+          "lines": [
+            0
+          ],
+          "text": "<part name=”U1” id=302” value=”74LS08” package=”DIP14”/>",
+          "uuid": "95836111"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:34:52",
+      "mod": "2018-01-16T20:35:45",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "2db59917",
+      "y0": 497.405,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:34:52",
+          "mod": "2018-01-16T20:35:45",
+          "lines": [
+            0,
+            61,
+            124
+          ],
+          "text": "would be a sensible part definition. Would I want U1.4 to be labeled as “⅙ 74LS08”? Or just “74LS08”? Probably, this should be a setting somewhere.",
+          "uuid": "0d02c6d9",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T20:35:08",
+              "mod": "2018-01-16T20:35:08",
+              "end": 51,
+              "start": 50,
+              "style": 1,
+              "uuid": "1376443a"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T20:35:10",
+              "mod": "2018-01-16T20:35:10",
+              "end": 54,
+              "start": 51,
+              "style": 7,
+              "uuid": "fbb7daa1"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:36:51",
+      "mod": "2018-01-16T20:38:41",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "ce5fb0d1",
+      "y0": 570.903,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:36:51",
+          "mod": "2018-01-16T20:38:41",
+          "lines": [
+            0,
+            61,
+            126,
+            183
+          ],
+          "text": "Would it be a good idea to have each <part> contain an eltid attribute, so that the link is not broken in a rename operation? Otherwise, a rename would have to be explicitly signaled between the scene and the part list view.",
+          "uuid": "fbeb265f",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T20:37:02",
+              "mod": "2018-01-16T20:37:02",
+              "end": 60,
+              "start": 55,
+              "style": 1,
+              "uuid": "43b3e0d2"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:42:05",
+      "mod": "2018-01-16T20:51:36",
+      "h": 281.992,
+      "ind": 1,
+      "sheet": 3,
+      "split": [
+        23.166
+      ],
+      "uuid": "3dede8dc",
+      "y0": 667.567,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:42:05",
+          "mod": "2018-01-16T20:51:36",
+          "lines": [
+            0,
+            56,
+            123,
+            181,
+            240,
+            299,
+            359,
+            422,
+            480,
+            548,
+            610,
+            675
+          ],
+          "text": "Right now, a Scene gets constructed with a pointer to a nonconst Library, and its Circuit gets set once by Editor. I think that is not a good thing. It would be better if the Scene contained a Schem, and allows the part list view selective access to it through MainWindow. The part list view can do things like updatePart(Part const &) and renamePart(QString oldname, QString newname) to the scene. In fact, the part list should probably have direct access to the scene. When the scene changes a value, it can signal this for the part list to pick up on, and when it renames a part, ditto. The parts list view does not direcly operate on the Schem; it relies on the Scene to effect changes.",
+          "uuid": "05038172"
         }
       ]
     }

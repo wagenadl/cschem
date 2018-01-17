@@ -81,7 +81,7 @@ void MainWindow::createDocks() {
   showLibrary();
 
   d->partlistview = new PartListView(&d->schem);
-  d->partlistviewdock = new QDockWidget("Part list", this);
+  d->partlistviewdock = new QDockWidget("Parts list", this);
   d->partlistviewdock->setWidget(d->partlistview);
   showSymbolsList();
   d->chgtoplv = new SignalAccumulator(this);
@@ -575,7 +575,7 @@ void MainWindow::exportPartListAction() {
       ts << "\n";
     }
   } else {
-    qDebug() << "Failed to export part list";
+    qDebug() << "Failed to export parts list";
     // should show error box
   }
 }
