@@ -1,0 +1,1025 @@
+{ "typ": "page",
+  "cre": "2018-01-16T15:44:55",
+  "mod": "2018-01-16T17:01:28",
+  "cui": "2aebfff959a0b90d",
+  "stampTime": 0,
+  "startPage": 10,
+  "unlocked": false,
+  "uuid": "f9cd1a33",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-16T15:44:55",
+      "mod": "2018-01-16T17:01:26",
+      "uuid": "70f74ce3",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-01-16T15:46:14",
+          "mod": "2018-01-16T15:46:15",
+          "archive": "_1_-741660c6.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "741660c6"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T15:46:29",
+          "mod": "2018-01-16T15:46:29",
+          "archive": "_2_-4749184d.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*2",
+          "title": "",
+          "uuid": "4749184d"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T15:47:41",
+          "mod": "2018-01-16T15:47:41",
+          "archive": "_3_-856dd905.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*3",
+          "title": "",
+          "uuid": "856dd905"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T15:50:20",
+          "mod": "2018-01-16T15:50:20",
+          "archive": "_4_-f9cae465.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*4",
+          "title": "",
+          "uuid": "f9cae465"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T15:51:34",
+          "mod": "2018-01-16T15:51:34",
+          "archive": "_5_-29b2fb38.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*5",
+          "title": "",
+          "uuid": "29b2fb38"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T15:53:03",
+          "mod": "2018-01-16T15:53:03",
+          "archive": "_6_-3d3f12c1.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*6",
+          "title": "",
+          "uuid": "3d3f12c1"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T15:53:29",
+          "mod": "2018-01-16T15:53:29",
+          "archive": "_7_-40a84eda.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*7",
+          "title": "",
+          "uuid": "40a84eda"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T15:54:42",
+          "mod": "2018-01-16T15:54:42",
+          "archive": "_8_-3cbd60a9.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*8",
+          "title": "",
+          "uuid": "3cbd60a9"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T16:10:19",
+          "mod": "2018-01-16T16:10:19",
+          "archive": "usr_resistor_1-31e5214d.sym",
+          "desc": "",
+          "preview": "usr_resistor_1-31e5214dp.png",
+          "source": "file:///usr/share/gEDA/sym/analog/resistor-1.sym",
+          "tag": "/usr/share/gEDA/sym/analog/resistor-1.sym",
+          "title": "",
+          "uuid": "31e5214d"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T16:11:12",
+          "mod": "2018-01-16T16:11:12",
+          "archive": "home_geda_eg-d93cda15.sch",
+          "desc": "",
+          "preview": "home_geda_eg-d93cda15p.png",
+          "source": "file:///home/wagenaar/progs/cschem/cschem/doc/geda-eg.sch",
+          "tag": "/home/wagenaar/progs/cschem/cschem/doc/geda-eg.sch",
+          "title": "",
+          "uuid": "d93cda15"
+        },
+        { "typ": "res",
+          "cre": "2018-01-16T16:58:27",
+          "mod": "2018-01-16T17:01:26",
+          "archive": "wiki_geda_project_org_geda_file_format_spec-47fcc6d7",
+          "desc": "",
+          "preview": "wiki_geda_project_org_geda_file_format_spec-47fcc6d7p.png",
+          "source": "http://wiki.geda-project.org/geda:file_format_spec",
+          "tag": "http://wiki.geda-project.org/geda:file_format_spec",
+          "title": "",
+          "uuid": "47fcc6d7"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2018-01-16T15:44:55",
+      "mod": "2018-01-16T15:45:02",
+      "uuid": "961e57cb",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T15:44:55",
+          "mod": "2018-01-16T15:45:02",
+          "lines": [
+            0
+          ],
+          "text": "GSchem",
+          "uuid": "442f5434"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T15:45:02",
+      "mod": "2018-01-16T15:46:06",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0ec65be7",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T15:45:02",
+          "mod": "2018-01-16T15:46:06",
+          "lines": [
+            0,
+            63,
+            121
+          ],
+          "text": "GSchem is a circuit design program that’s part of gEDA. It has lots of features but a nonstandard user interface and its output is not meant to be pretty. Here is a screenshot:",
+          "uuid": "af0e9ef6"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-01-16T15:46:14",
+      "mod": "2018-01-16T15:46:39",
+      "h": 389.954,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "d920f8dc",
+      "xref": 0.0,
+      "y0": 145.498,
+      "yref": 2.48999,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-01-16T15:46:29",
+          "mod": "2018-01-16T15:46:29",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 892.0,
+          "res": [
+            "*2"
+          ],
+          "resName": "*2",
+          "scale": 0.416988,
+          "uuid": "99856380",
+          "width": 1036.0,
+          "x": 0.0,
+          "y": 11.49
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T15:47:23",
+      "mod": "2018-01-16T15:47:40",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "34be3e9c",
+      "y0": 535.452,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T15:47:23",
+          "mod": "2018-01-16T15:47:40",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "It can actually export eps, with pretty decent results in inkscape: ",
+          "uuid": "051a7298",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T15:47:24",
+              "mod": "2018-01-16T15:47:24",
+              "end": 6,
+              "start": 3,
+              "style": 1,
+              "uuid": "1a4c3d58"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-01-16T15:47:41",
+      "mod": "2018-01-16T15:47:41",
+      "h": 133.685,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "130a6fc0",
+      "xref": 0.0,
+      "y0": 72.0,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-01-16T15:47:41",
+          "mod": "2018-01-16T15:47:41",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 286.0,
+          "res": [
+            "*3"
+          ],
+          "resName": "*3",
+          "scale": 0.404494,
+          "uuid": "1141a681",
+          "width": 1068.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T15:47:43",
+      "mod": "2018-01-16T15:52:00",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "9f449a44",
+      "y0": 205.685,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T15:47:43",
+          "mod": "2018-01-16T15:52:00",
+          "lines": [
+            0
+          ],
+          "text": "Still, I would argue that there is room for CSchem:",
+          "uuid": "46e498b9"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-01-16T15:51:34",
+      "mod": "2018-01-16T15:53:31",
+      "h": 169.005,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "c28d821c",
+      "xref": 0.0,
+      "y0": 232.851,
+      "yref": -8.6157,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-01-16T15:53:29",
+          "mod": "2018-01-16T15:53:31",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 618.0,
+          "res": [
+            "*7"
+          ],
+          "resName": "*7",
+          "scale": 0.244344,
+          "uuid": "a08254ca",
+          "width": 1768.0,
+          "x": 0.0,
+          "y": 0.384305,
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-01-16T15:53:30",
+              "mod": "2018-01-16T15:53:31",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "388ee2b7",
+              "x": 287.502,
+              "y": 455.86,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-01-16T15:53:30",
+                  "mod": "2018-01-16T15:53:31",
+                  "lines": [
+                    0
+                  ],
+                  "text": "inkscape",
+                  "uuid": "b25cb46b"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-01-16T15:50:20",
+      "mod": "2018-01-16T15:54:50",
+      "h": 246.191,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "3295ba15",
+      "xref": 0.0,
+      "y0": 419.856,
+      "yref": 0.814562,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-01-16T15:54:42",
+          "mod": "2018-01-16T15:54:50",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 624.0,
+          "res": [
+            "*8"
+          ],
+          "resName": "*8",
+          "scale": 0.36569,
+          "uuid": "9fc835af",
+          "width": 956.0,
+          "x": 0.0,
+          "y": 9.81456,
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-01-16T15:54:45",
+              "mod": "2018-01-16T15:54:48",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "bc049d62",
+              "x": 315.615,
+              "y": 549.348,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-01-16T15:54:45",
+                  "mod": "2018-01-16T15:54:48",
+                  "lines": [
+                    0
+                  ],
+                  "text": "screen shot",
+                  "uuid": "47aad21d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T15:51:48",
+      "mod": "2018-01-16T15:56:52",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 1,
+      "split": [
+        23.166
+      ],
+      "uuid": "30dd66b3",
+      "y0": 666.047,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T15:51:48",
+          "mod": "2018-01-16T15:56:52",
+          "lines": [
+            0,
+            59,
+            120,
+            175,
+            237
+          ],
+          "text": "CSchem is much easier to use, I think, although GSchem has excellent keyboard shortcut support, which might be helpful. My dragging of elements is superior, though: Even with “rubberbanding” enabled, nets easily fall apart, and dragging connections around always disconnects them.",
+          "uuid": "0a3b5a29"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T15:57:59",
+      "mod": "2018-01-16T16:11:12",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "19a7497a",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T15:57:59",
+          "mod": "2018-01-16T16:10:56",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "GSchem has a particularly simple file format. The RC filter shown* looks like this:",
+          "uuid": "e2a07440",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T16:10:57",
+              "mod": "2018-01-16T16:10:57",
+              "end": 66,
+              "start": 65,
+              "style": 6,
+              "uuid": "cb60b88a"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T16:10:57",
+              "mod": "2018-01-16T16:10:57",
+              "end": 66,
+              "start": 65,
+              "style": 5,
+              "uuid": "d613e04f"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2018-01-16T16:10:57",
+          "mod": "2018-01-16T16:11:12",
+          "h": 20.767,
+          "ind": 1,
+          "sheet": 2,
+          "split": [ ],
+          "tag": "*",
+          "uuid": "8d5ad2c1",
+          "y0": 687.233,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-01-16T16:10:57",
+              "mod": "2018-01-16T16:11:12",
+              "lines": [
+                0
+              ],
+              "text": "/home/wagenaar/progs/cschem/cschem/doc/geda-eg.sch",
+              "uuid": "68e0fee5",
+              "cc": [
+                { "typ": "markup",
+                  "cre": "2018-01-16T16:11:12",
+                  "mod": "2018-01-16T16:11:12",
+                  "end": 50,
+                  "res": [
+                    "/home/wagenaar/progs/cschem/cschem/doc/geda-eg.sch"
+                  ],
+                  "start": 0,
+                  "style": 4,
+                  "uuid": "427a3de6"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T15:58:41",
+      "mod": "2018-01-16T16:10:35",
+      "h": 429.007,
+      "ind": 2,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "d7c875d8",
+      "y0": 218.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T15:58:41",
+          "mod": "2018-01-16T16:10:35",
+          "lines": [
+            0,
+            13,
+            45,
+            80,
+            82,
+            111,
+            127,
+            156,
+            166,
+            195,
+            205,
+            234,
+            251,
+            253,
+            290,
+            292,
+            322,
+            339,
+            370,
+            380,
+            382,
+            384,
+            412,
+            440
+          ],
+          "text": "v 20130925 2\nC 40000 40000 0 0 0 title-B.sym\nC 44700 47300 1 0 0 resistor-1.sym\n{\nT 45000 47700 5 10 0 0 0 0 1\ndevice=RESISTOR\nT 44900 47600 5 10 1 1 0 0 1\nrefdes=R1\nT 44800 47100 5 10 1 1 0 0 1\nvalue=10k\nT 44700 47300 5 10 0 0 0 0 1\nfootprint=ACY300\n}\nC 46800 46500 1 90 0 capacitor-1.sym\n{\nT 46100 46700 5 10 0 0 90 0 1\ndevice=CAPACITOR\nT 47200 47200 5 10 1 1 180 0 1\nrefdes=C1\n…\n}\nN 43400 47400 44700 47400 4\nN 43000 46900 43000 46500 4\n…",
+          "uuid": "2b5df9cd"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T15:59:19",
+      "mod": "2018-01-16T16:01:04",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 2,
+      "split": [
+        23.166
+      ],
+      "uuid": "441e6265",
+      "y0": 648.003,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T15:59:19",
+          "mod": "2018-01-16T16:01:04",
+          "lines": [
+            0,
+            63
+          ],
+          "text": "I think all that matters are the “C” and “N” lines that define components and nets:",
+          "uuid": "0be0e09a"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:01:34",
+      "mod": "2018-01-16T16:12:44",
+      "h": 161.707,
+      "ind": 2,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "44286a83",
+      "y0": 99.166,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:01:34",
+          "mod": "2018-01-16T16:12:44",
+          "lines": [
+            0,
+            49,
+            93,
+            142,
+            191,
+            240,
+            289,
+            338,
+            388
+          ],
+          "text": "\nC 44700 47300 1 0 0 resistor-1.sym          [a]\nC 46800 46500 1 90 0 capacitor-1.sym    [b]\nC 42900 46900 1 0 0 BNC-1.sym                [c]\nC 48800 46900 1 0 1 BNC-1.sym                [d]\nN 43400 47400 44700 47400 4                  [1]\nN 43000 46900 43000 46500 4                  [2]\nN 48700 46500 48700 46900 4                  [3]\nN 45600 47400 48300 47400 4                  [4] \nN 43000 46500 48700 46500 4                  [5]",
+          "uuid": "8de1f37d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:01:43",
+      "mod": "2018-01-16T16:09:11",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "a0325d43",
+      "y0": 260.873,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:01:43",
+          "mod": "2018-01-16T16:09:11",
+          "lines": [
+            0,
+            63,
+            127
+          ],
+          "text": "I wish those nets were more obviously annotated. It is strange that connections aren’t made explicit. I guess the “.sym” files explain everything, but that seems curious.",
+          "uuid": "bb8dfad2"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:09:16",
+      "mod": "2018-01-16T16:10:19",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "f9514209",
+      "y0": 334.371,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:09:16",
+          "mod": "2018-01-16T16:10:12",
+          "lines": [
+            0
+          ],
+          "text": "The “resistor-1.sym” file* contains pertinent information:",
+          "uuid": "8c4ae747",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T16:10:12",
+              "mod": "2018-01-16T16:10:12",
+              "end": 26,
+              "start": 25,
+              "style": 6,
+              "uuid": "2cb98f6c"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T16:10:12",
+              "mod": "2018-01-16T16:10:12",
+              "end": 26,
+              "start": 25,
+              "style": 5,
+              "uuid": "bd5bf35c"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2018-01-16T16:10:12",
+          "mod": "2018-01-16T16:10:19",
+          "h": 20.767,
+          "ind": 1,
+          "sheet": 3,
+          "split": [ ],
+          "tag": "*",
+          "uuid": "8bada9db",
+          "y0": 687.233,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-01-16T16:10:12",
+              "mod": "2018-01-16T16:10:19",
+              "lines": [
+                0
+              ],
+              "text": "/usr/share/gEDA/sym/analog/resistor-1.sym",
+              "uuid": "44e0279e",
+              "cc": [
+                { "typ": "markup",
+                  "cre": "2018-01-16T16:10:19",
+                  "mod": "2018-01-16T16:10:19",
+                  "end": 41,
+                  "res": [
+                    "/usr/share/gEDA/sym/analog/resistor-1.sym"
+                  ],
+                  "start": 0,
+                  "style": 4,
+                  "uuid": "cc0fcca0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:09:50",
+      "mod": "2018-01-16T16:13:28",
+      "h": 232.987,
+      "ind": 6,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "c6f69a7c",
+      "y0": 361.537,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:09:50",
+          "mod": "2018-01-16T16:13:28",
+          "lines": [
+            0,
+            2,
+            26,
+            28,
+            52,
+            64,
+            88,
+            97,
+            122,
+            133,
+            158,
+            170,
+            172
+          ],
+          "text": "…\nP 900 100 750 100 1 0 0\n{\nT 800 150 5 8 0 1 0 0 1\npinnumber=2\nT 800 150 5 8 0 0 0 0 1\npinseq=2\nT 800 150 5 8 0 1 0 0 1 \npinlabel=2\nT 800 150 5 8 0 1 0 0 1 \npintype=pas\n}\n\nP 0 100 152 100 1 0 0",
+          "uuid": "bfd8eaae"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:10:06",
+      "mod": "2018-01-16T16:16:00",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "653bb858",
+      "y0": 594.524,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:10:06",
+          "mod": "2018-01-16T16:16:00",
+          "lines": [
+            0,
+            63,
+            123,
+            191
+          ],
+          "text": "along with a lot of graphical stuff that doesn’t matter to ue. Since (44700,47300) + (900,100) = (45600,47400), that binds pin 2 of the resistor [a] to net [4]. I am guessing “90” in the 5th column means rotate, and “1” in the 6th column means mirror.",
+          "uuid": "775611e0"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:16:00",
+      "mod": "2018-01-16T16:27:09",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "db63037d",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:16:00",
+          "mod": "2018-01-16T16:27:09",
+          "lines": [
+            0,
+            55,
+            113,
+            167,
+            234,
+            301
+          ],
+          "text": "How does PCB know which “resistor-1.sym” file to load? There are two: one in /usr/share/gEDA/sym/analog/resistor-1.sym and one in /usr/share/gEDA/sym/gnetman/resistor-1.sym. In fact, it uses a helper program called gnetlist to create “.net” files. Those can be created by hand as well; they look like this:",
+          "uuid": "54bebd64",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T16:16:07",
+              "mod": "2018-01-16T16:16:07",
+              "end": 23,
+              "start": 18,
+              "style": 1,
+              "uuid": "dc2a6564"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T16:26:34",
+              "mod": "2018-01-16T16:26:34",
+              "end": 223,
+              "start": 215,
+              "style": 1,
+              "uuid": "ccd78561"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "tableblock",
+      "cre": "2018-01-16T16:27:21",
+      "mod": "2018-01-16T16:27:22",
+      "h": 85.498,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "2f247fb2",
+      "y0": 214.996,
+      "cc": [
+        { "typ": "table",
+          "cre": "2018-01-16T16:27:21",
+          "mod": "2018-01-16T16:27:22",
+          "len": [
+            12,
+            15,
+            12,
+            10,
+            12,
+            15
+          ],
+          "nc": 2,
+          "nr": 3,
+          "text": "\nunnamed_net3\nJ2-2 J1-2 C1-1 \nunnamed_net2\nJ1-1 R1-1 \nunnamed_net1\nJ2-1 C1-2 R1-2 \n",
+          "uuid": "2ac68dd8"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:27:27",
+      "mod": "2018-01-16T16:34:39",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "413ad7fa",
+      "y0": 300.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:27:27",
+          "mod": "2018-01-16T16:34:39",
+          "lines": [
+            0,
+            61,
+            120,
+            184,
+            245,
+            310
+          ],
+          "text": "With such a “.net” file, pcb can deal with “.sch” files with messed up coordinates for the components and missing nets; you just have to load the messy “.sch” file and then the “.net” file. It is important to have actually existing “.sym” files mentioned in the “.sch”, but it seems fine if those “.sym” files have different pin counts (fewer or more, no problem).",
+          "uuid": "53afd8c8",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T16:28:05",
+              "mod": "2018-01-16T16:28:05",
+              "end": 28,
+              "start": 25,
+              "style": 1,
+              "uuid": "30730e98"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T16:31:11",
+              "mod": "2018-01-16T16:31:11",
+              "end": 195,
+              "start": 193,
+              "style": 1,
+              "uuid": "af810cf1"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:37:10",
+      "mod": "2018-01-16T16:40:27",
+      "h": 189.328,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "a70f8157",
+      "y0": 443.49,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:37:10",
+          "mod": "2018-01-16T16:40:27",
+          "lines": [
+            0,
+            65,
+            129,
+            190,
+            258,
+            320,
+            384,
+            447
+          ],
+          "text": "pcb will save the path of the “.sch” in its “.pcb” file, but not the path of the netlist. So updating is not practical without a valid “.sch”. In other words, CSchem should learn to produce valid “.sch” files. Of course it can limit itself to the most basic devices. But it does have to be careful about overlapping “N” lines: my “geda-eg.sch” file has only 5 “N” lines, and gnetlist infers that the capacitor has its pins on the middle of two of them.",
+          "uuid": "9b10cfa4",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T16:37:13",
+              "mod": "2018-01-16T16:37:13",
+              "end": 3,
+              "start": 0,
+              "style": 1,
+              "uuid": "f3b051fe"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T16:40:13",
+              "mod": "2018-01-16T16:40:13",
+              "end": 383,
+              "start": 375,
+              "style": 1,
+              "uuid": "31155449"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:58:10",
+      "mod": "2018-01-16T17:01:25",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 4,
+      "split": [
+        69.498
+      ],
+      "uuid": "82feb3bc",
+      "y0": 632.818,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:58:10",
+          "mod": "2018-01-16T17:01:25",
+          "lines": [
+            0,
+            52,
+            115,
+            176,
+            233,
+            303,
+            365
+          ],
+          "text": "gSchem can handle symbols embedded in the schematic file: http://wiki.geda-project.org/geda:file_format_spec. That should make it pretty straightforward to generate .sch files from within cschem. I could make cschem put explicit pin locations in the file in a new <pins> section that it will not itself load. Then an external tool could more easily reconstruct the connections. ",
+          "uuid": "de37e0e0",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T16:58:27",
+              "mod": "2018-01-16T16:58:27",
+              "end": 108,
+              "res": [
+                "http://wiki.geda-project.org/geda:file_format_spec"
+              ],
+              "start": 58,
+              "style": 4,
+              "uuid": "29594f15"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T16:58:10",
+      "mod": "2018-01-16T17:01:28",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "82feb3bc",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T16:58:10",
+          "mod": "2018-01-16T17:01:28",
+          "lines": [
+            0
+          ],
+          "text": "<pin x=”X” y=”Y” pin=”elt:pin” />",
+          "uuid": "de37e0e0",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-16T17:00:39",
+              "mod": "2018-01-16T17:01:25",
+              "end": 9,
+              "start": 8,
+              "style": 1,
+              "uuid": "2f2697a1"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T17:00:41",
+              "mod": "2018-01-16T17:01:25",
+              "end": 15,
+              "start": 14,
+              "style": 1,
+              "uuid": "460dd3ef"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-16T17:00:44",
+              "mod": "2018-01-16T17:01:25",
+              "end": 30,
+              "start": 22,
+              "style": 1,
+              "uuid": "38b03920"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T17:01:21",
+      "mod": "2018-01-16T17:01:21",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "7912dc8b",
+      "y0": 187.811,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T17:01:21",
+          "mod": "2018-01-16T17:01:21",
+          "text": "",
+          "uuid": "41c8aea3"
+        }
+      ]
+    }
+  ]
+}
