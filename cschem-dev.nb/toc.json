@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-01-11T07:59:12",
-  "mod": "2018-01-16T17:01:25",
+  "mod": "2018-01-16T19:50:08",
   "uuid": "1751eb90",
   "cc": [
     { "typ": "entry",
@@ -32,12 +32,21 @@
     },
     { "typ": "entry",
       "cre": "2018-01-16T15:44:55",
-      "mod": "2018-01-16T17:01:25",
-      "seen": "2018-01-16T15:44:55",
+      "mod": "2018-01-16T19:02:24",
+      "seen": "2018-01-16T19:02:24",
       "sheetCount": 6,
       "startPage": 10,
       "title": "GSchem",
       "uuid": "f9cd1a33"
+    },
+    { "typ": "entry",
+      "cre": "2018-01-16T19:02:29",
+      "mod": "2018-01-16T19:50:08",
+      "seen": "2018-01-16T19:02:29",
+      "sheetCount": 3,
+      "startPage": 16,
+      "title": "Thinking about the parts list",
+      "uuid": "d7c90c53"
     }
   ]
 }
