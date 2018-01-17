@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2018-01-16T19:02:29",
-  "mod": "2018-01-16T20:06:28",
+  "mod": "2018-01-16T20:19:17",
   "cui": "8b885ec8307ce15f",
   "stampTime": 0,
   "startPage": 16,
@@ -260,7 +260,7 @@
     { "typ": "gfxblock",
       "cre": "2018-01-16T19:32:10",
       "mod": "2018-01-16T19:32:33",
-      "h": 99.7546,
+      "h": 99.7545,
       "sheet": 1,
       "split": [ ],
       "uuid": "a3f59e1b",
@@ -447,6 +447,27 @@
           ],
           "text": "Now, the parts list becomes pretty fancy, with the “[…]” syntax. I think that it will be best to pull the value, vendor, partno fields out of <element> and into a separate <part>.",
           "uuid": "8ad7d6cf"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-16T20:19:05",
+      "mod": "2018-01-16T20:19:17",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "27741fec",
+      "y0": 477.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-16T20:19:05",
+          "mod": "2018-01-16T20:19:17",
+          "lines": [
+            0
+          ],
+          "text": "[I once again replaced the word “Part” with “Symbol” ",
+          "uuid": "ac3da8e5"
         }
       ]
     }
