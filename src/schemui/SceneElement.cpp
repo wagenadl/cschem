@@ -20,7 +20,7 @@ SceneElementData::~SceneElementData() {
 }
 
 void SceneElementData::markHover() {
-  if (hover) {
+  if (hover && !nhover && !vhover) {
     auto *ef = new QGraphicsColorizeEffect;
     ef->setColor(element->parentItem()->isSelected()
 		 ? Style::selectedElementHoverColor()
@@ -96,15 +96,9 @@ void SceneElementData::getNameText() {
   if (txt == "nn")
     txt = "";
   if (txt.isEmpty())
-    txt = PartNumbering::abbreviation(elt.symbol());
+    txt = circ.autoName(elt.symbol());
   elt.setName(txt);
   circ.insert(elt);
-  if (txt.size()==1 && txt[0].isLetter()) {
-    // inserting it twice is required, otherwise autoname won't work
-    txt = circ.autoName(txt);
-    elt.setName(txt);
-    circ.insert(elt);
-  }
   setNameText();
   scene->annotationInternallyEdited(elt.id());
 }
@@ -278,6 +272,8 @@ void SceneElement::rebuild() {
 		       d.data(), SLOT(moveName(QPointF)));
       QObject::connect(d->name, SIGNAL(removalRequested()),
 		       d.data(), SLOT(removeName()));
+      QObject::connect(d->name, SIGNAL(hovering(bool)),
+                       d.data(), SLOT(nameHovering(bool)));
     }
     QPoint p = elt.namePos();
     if (p.isNull()) {
@@ -310,6 +306,8 @@ void SceneElement::rebuild() {
 		       d.data(), SLOT(moveValue(QPointF)));
       QObject::connect(d->value, SIGNAL(removalRequested()),
 		       d.data(), SLOT(removeValue()));
+      QObject::connect(d->name, SIGNAL(hovering(bool)),
+                       d.data(), SLOT(valueHovering(bool)));
     }
     QPoint p = elt.valuePos();
     if (p.isNull()) {
@@ -346,6 +344,16 @@ void SceneElement::unhover() {
     d->hover = false;
     d->markHover();
   }
+}
+
+void SceneElementData::nameHovering(bool h) {
+  nhover = h;
+  markHover();
+}
+
+void SceneElementData::valueHovering(bool h) {
+  vhover = h;
+  markHover();
 }
 
 SceneElement::WeakPtr::WeakPtr(SceneElement *s,

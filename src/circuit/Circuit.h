@@ -62,8 +62,11 @@ public:
   Circuit &operator+=(Circuit const &);
   /* Bluntly merges two circuits, not worrying about overlapping
      connections, conflicting IDs, or anything like that. */
-  QString autoName(QString pfx) const;
-  /* Returns a name like "R11" that is not yet in use in the circuit. */
+  int availableNumber(QString pfx) const; 
+  /* Returns a number that is not yet in use in the circuit for a name starting
+     with PFX. */
+ QString autoName(QString sym) const;
+  /* Creates an automatic name for an element with symbol SYM. */
 public:
   QMap<int, class Element> const &elements() const;
   QMap<int, class Connection> const &connections() const;

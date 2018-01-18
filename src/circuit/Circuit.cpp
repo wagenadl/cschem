@@ -3,6 +3,7 @@
 #include "Circuit.h"
 #include <QDebug>
 #include "PinID.h"
+#include "PartNumbering.h"
 
 class CircuitData: public QSharedData {
 public:
@@ -291,7 +292,7 @@ Circuit &Circuit::operator+=(Circuit const &o) {
   return *this;
 }
   
-QString Circuit::autoName(QString pfx) const {
+int Circuit::availableNumber(QString pfx) const {
   QSet<int> used;
   for (Element const &elt: elements()) 
     if (elt.name().startsWith(pfx)) 
@@ -301,5 +302,21 @@ QString Circuit::autoName(QString pfx) const {
   while (used.contains(n))
     n++;
 
-  return pfx + QString::number(n);
+  return n;
+}
+
+QString Circuit::autoName(QString sym) const {
+  if (sym.startsWith("port:")) {
+    QStringList bits = sym.split(":");
+    bits.removeFirst();
+    if (bits.first() == "generic")
+      return "V" + QString::number(availableNumber("V"));
+    else
+      return bits.last();
+  } else if (sym.startsWith("part:")) {
+    QString pfx = PartNumbering::abbreviation(sym);
+    return pfx + QString::number(availableNumber(pfx));
+  } else {
+    return "nn";
+  }
 }
