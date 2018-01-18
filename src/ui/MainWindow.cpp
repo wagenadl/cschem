@@ -18,7 +18,7 @@
 #include "PartListView.h"
 #include <QDockWidget>
 #include "LibView.h"
-#include "qt/SignalAccumulator.h"
+#include "ui/SignalAccumulator.h"
 #include "svg/SvgExporter.h"
 #include  <QClipboard>
 

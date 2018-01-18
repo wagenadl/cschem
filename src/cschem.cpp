@@ -5,8 +5,8 @@
 #include "circuit/Schem.h"
 #include <QApplication>
 #include <QGraphicsView>
-#include "schemui/Scene.h"
-#include "schemui/MainWindow.h"
+#include "ui/Scene.h"
+#include "ui/MainWindow.h"
 #include "circuit/Net.h"
 #include <QDebug>
 
