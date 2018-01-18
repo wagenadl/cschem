@@ -400,8 +400,13 @@ void SceneElement::paint(QPainter *painter,
 }
 
 QRectF SceneElement::boundingRect() const {
-  return d->element->mapRectToParent(d->element->boundingRect()
-				     .adjusted(-2, -2, 2, 2));
+  if (d->sym=="junction") {
+    return d->element->mapRectToParent(d->element->boundingRect()
+                                       .adjusted(-6, -6, 6, 6));
+  } else {
+    return d->element->mapRectToParent(d->element->boundingRect()
+                                       .adjusted(-2, -2, 2, 2));
+  }
 }
 
 QString SceneElement::symbol() const {
