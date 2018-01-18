@@ -10,7 +10,7 @@
 #include "XmlElement.h"
 #include <QXmlStreamWriter>
 #include <QDebug>
-#include "schemui/Style.h"
+#include "ui/Style.h"
 #include <QTransform>
 
 class SvgExporterData {

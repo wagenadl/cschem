@@ -4,7 +4,7 @@
 
 #define FLOATINGSYMBOL_H
 
-#include "qt/SvgItem.h"
+#include "ui/SvgItem.h"
 
 class FloatingSymbol: public SvgItem {
 public:
