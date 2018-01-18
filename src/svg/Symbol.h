@@ -32,6 +32,8 @@ public:
   static void writeNamespaces(QXmlStreamWriter &sw);
   static void forgetRenderer(Symbol const &);
   QSharedPointer<class QSvgRenderer> renderer() const;
+  QRectF shiftedAnnotationBBox(QString id) const;
+  Qt::Alignment annotationAlignment(QString id) const;
 private:
   QSharedDataPointer<class SymbolData> d;
 };
