@@ -3,6 +3,7 @@
 #include "Element.h"
 #include "IDFactory.h"
 #include <QPoint>
+#include "PartNumbering.h"
 
 class ElementData: public QSharedData {
 public:
@@ -79,6 +80,7 @@ Element Element::junction(QPoint p) {
   Element elt;
   elt.d->type = Type::Junction;
   elt.d->position = p;
+  elt.autoSetVisibility();
   return elt;
 }
 
@@ -87,7 +89,7 @@ Element Element::port(QString subtype, QPoint p) {
   elt.d->type = Type::Port;
   elt.d->subtype = subtype;
   elt.d->position = p;
-  elt.d->nameVis = subtype.startsWith("generic:") ? true : false;
+  elt.autoSetVisibility();
   return elt;
 }
 
@@ -96,9 +98,7 @@ Element Element::component(QString subtype, QPoint p) {
   elt.d->type = Type::Component;
   elt.d->subtype = subtype;
   elt.d->position = p;
-  elt.d->nameVis = true;
-  if (!subtype.startsWith("connector:"))
-    elt.d->valueVis = true;
+  elt.autoSetVisibility();
   return elt;
 }
 
@@ -341,3 +341,8 @@ Layer Element::layer() const {
 void Element::setLayer(Layer l) {
   d->layer = l;
 }
+
+void Element::autoSetVisibility() {
+  d->nameVis = PartNumbering::initiallyShowName(symbol());
+  d->valueVis = PartNumbering::initiallyShowValue(symbol());
+}    

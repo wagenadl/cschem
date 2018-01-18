@@ -13,6 +13,8 @@ public:
   static QString prettyValue(QString value, QString name="");
   static QString shortValue(QString value, QString name="");
   static QString htmlToSvg(QString html);
+  static bool initiallyShowValue(QString symbol);
+  static bool initiallyShowName(QString symbol);
 };
 
 #endif
