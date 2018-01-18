@@ -72,6 +72,7 @@ void SceneElementData::moveName(QPointF delta) {
 }
 
 void SceneElementData::setNameText() {
+  // Copy name from circuit to widget
   // Called when escape pressed
   Circuit &circ = scene->circuit(); 
   Element const &elt(circ.element(id));
@@ -88,6 +89,7 @@ void SceneElementData::setNameText() {
 }
 
 void SceneElementData::getNameText() {
+  // Copy name from widget to circuit
   // Called when return pressed
   scene->makeUndoStep();
   Circuit &circ = scene->circuit(); 
@@ -104,6 +106,7 @@ void SceneElementData::getNameText() {
 }
 
 void SceneElementData::setValueText() {
+  // Copy value from circuit to widget
   Circuit &circ = scene->circuit(); 
   Element const &elt(circ.element(id));
   QString txt = elt.value();
@@ -119,6 +122,7 @@ void SceneElementData::setValueText() {
 }
 
 void SceneElementData::getValueText() {
+  // Copy value from widget to circuit
   scene->makeUndoStep();
   Circuit &circ = scene->circuit(); 
   Element elt(circ.element(id));

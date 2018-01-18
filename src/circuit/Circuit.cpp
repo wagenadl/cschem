@@ -307,16 +307,11 @@ int Circuit::availableNumber(QString pfx) const {
 
 QString Circuit::autoName(QString sym) const {
   if (sym.startsWith("port:")) {
-    QStringList bits = sym.split(":");
-    bits.removeFirst();
-    if (bits.first() == "generic")
-      return "V" + QString::number(availableNumber("V"));
-    else
-      return bits.last();
+    return "";
   } else if (sym.startsWith("part:")) {
     QString pfx = PartNumbering::abbreviation(sym);
     return pfx + QString::number(availableNumber(pfx));
   } else {
-    return "nn";
+    return "";
   }
 }
