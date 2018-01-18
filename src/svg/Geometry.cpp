@@ -174,11 +174,9 @@ QRectF Geometry::defaultAnnotationSvgBoundingRect(Element const &elt,
       QRectF r
 	= QRectF(QPointF(bb.bottomRight()) + d->lib->upscale(QPoint(1, 2)),
 		 d->lib->scale()*QSizeF(5, 1));
-      qDebug() << "dflt" << elt.symbol() << annotation << r;
       return r;
     }
   } else {
-    qDebug() << "dflt1" << elt.symbol() << annotation << r0 << xf.mapRect(r0);
     return xf.mapRect(r0);
   }
 }
@@ -188,11 +186,9 @@ QRect Geometry::boundingRect(Element const &elt) const {
     return QRect();
   Symbol const &prt(d->lib->symbol(elt.symbol()));
   QRectF bb = prt.shiftedBBox();
-  qDebug() << "br" << elt.symbol() << bb;
   QTransform xf = d->symbolToCircuitTransformation(elt);
   bb = xf.mapRect(bb);
   bb.adjust(-0.5, -0.5, 0.5, 0.5);
-  qDebug() << "=>" << bb;
   return bb.toRect();
 }
 
@@ -311,7 +307,6 @@ bool Geometry::isZeroLength(Connection const &con) const {
   if (!con.isValid())
     return true;
   QPolygon p = connectionPath(con);
-  qDebug() << "iZL" << con.report() << p;
   if (p.size() <= 1)
     return true;
   else

@@ -335,7 +335,6 @@ void Scene::moveSelection(QPoint delta) {
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "Scene: mousePress" << e->scenePos();
   d->mousexy = e->scenePos();
   d->hovermanager->setPrimaryPurpose((d->connbuilder ||
                                       e->modifiers() & Qt::ShiftModifier)
@@ -382,7 +381,6 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "Scene: mouseRelease" << e->scenePos();
   d->mousexy = e->scenePos();
   d->hovermanager->setPrimaryPurpose((d->connbuilder ||
                                       e->modifiers() & Qt::ShiftModifier)
@@ -415,7 +413,6 @@ void Scene::keyReleaseEvent(QKeyEvent *e) {
 }
 
 void Scene::keyPressEvent(QKeyEvent *e) {
-  qDebug() << "scene::keypress" << focusItem();
   if (e->key()==Qt::Key_Shift
       && d->hovermanager->primaryPurpose() != HoverManager::Purpose::None)
     d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::Connecting);
@@ -448,8 +445,6 @@ void SceneData::keyPressAnywhere(QKeyEvent *e) {
   //   }
   //   break;
   case Qt::Key_Delete:
-    qDebug() << "delete" << ee.isEmpty() << hovermanager->onElement()
-	     << hovermanager->element();
     if (hovermanager->onElement()) {
       preact();
       CircuitMod cm(circ, lib);
@@ -567,8 +562,6 @@ void SceneData::finalizeConnection() {
     for (int c: cc) 
       cm.simplifyConnection(c);
     for (int c: cc)
-      qDebug() << "Connection" << circ.connection(c).report();
-    for (int c: cc)
       cm.removeConnectionsEquivalentTo(c);
     for (int c: cc)
       cm.adjustOverlappingConnections(c);
@@ -590,7 +583,6 @@ QMap<int, class SceneConnection *> const &Scene::connections() const {
 }
 
 void Scene::modifyConnection(int id, QPolygonF newpath) {
-  qDebug() << newpath << id;
   if (!connections().contains(id))
     return;
 
@@ -678,10 +670,8 @@ QPointF SceneData::moveDragIn(QPointF scenepos) {
   if (!dragin)
     return scenepos;
   QPoint p = lib->downscale(scenepos - dragin->shiftedCenter());
-  qDebug() << "movedragin" << scenepos << dragin->shiftedCenter() << p;
   p = hovermanager->tentativelyMoveSelection(p);
   QPointF res = lib->upscale(p);
-  qDebug() << " => " << p << res;
   dragin->setSymbolPosition(res);
   return res;
 }
@@ -708,7 +698,6 @@ bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
 }
 
 bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
-  qDebug() << "import" << filename << "at" << pos << "NYI";
   SymbolLibrary pl(filename);
   if (pl.symbolNames().isEmpty())
     return false;
@@ -744,7 +733,6 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
 
 void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
   clearSelection();
-  qDebug() << "plonk" << symbol << scenepos;
   QPoint pt = d->lib->downscale(scenepos);
   Element elt;
   if (symbol.startsWith("part:"))
@@ -768,7 +756,6 @@ void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
 void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
   d->hovermanager->update(e->scenePos());
   QMimeData const *md = e->mimeData();
-  qDebug() << "drag enter" << md->formats();
   if (md->hasFormat("application/x-dnd-cschem")) {
     d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::None);
     d->startSymbolDragIn(QString(md->data("application/x-dnd-cschem")),
@@ -776,7 +763,6 @@ void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
     e->accept();
   } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
-    qDebug() << "urls" << urls;
     QString fn;
     for (QUrl url: urls) {
       if (url.isLocalFile() && url.path().endsWith(".svg")) {
@@ -822,13 +808,11 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
   d->hideDragIn();
 
   QMimeData const *md = e->mimeData();
-  qDebug() << "drop" << md->formats();
   if (md->hasFormat("application/x-dnd-cschem")) {
     plonk(QString(md->data("application/x-dnd-cschem")), droppos, true);
     e->accept();
   } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
-    qDebug() << "urls" << urls;
     bool take = false;
     d->preact();
     clearSelection();
@@ -849,22 +833,18 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
 }
 
 void Scene::focusInEvent(QFocusEvent *e) {
-  qDebug() << "Scene::focusin";
   QGraphicsScene::focusInEvent(e);
 }
 
 void Scene::focusOutEvent(QFocusEvent *e) {
-  qDebug() << "Scene::focusout";
   QGraphicsScene::focusOutEvent(e);
 }
 
 void Scene::annotationInternallyEdited(int id) {
-  qDebug() <<"internally edited" << id;
   emit annotationEdited(id);
 }
 
 void Scene::setComponentValue(int id, QString val) {
-  qDebug() <<"externally edited" << id;
   if (d->circ.elements().contains(id)) {
     Element elt = d->circ.element(id);
     elt.setValue(val);
