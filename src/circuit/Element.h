@@ -21,6 +21,7 @@ public:
   struct Info {
     QString vendor;
     QString partno;
+    QString package;
     QString notes;
   };
 public:

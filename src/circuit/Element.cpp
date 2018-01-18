@@ -71,6 +71,7 @@ void Element::readAttributes(QXmlStreamReader &src) {
   d->flip = a.value("flip").toInt() ? true : false;
   d->info.vendor = a.value("vendor").toString();
   d->info.partno = a.value("partno").toString();
+  d->info.package = a.value("package").toString();
   d->info.notes = a.value("notes").toString();
 }  
 
@@ -86,6 +87,7 @@ Element Element::port(QString subtype, QPoint p) {
   elt.d->type = Type::Port;
   elt.d->subtype = subtype;
   elt.d->position = p;
+  elt.d->nameVis = true;
   return elt;
 }
 
@@ -94,6 +96,8 @@ Element Element::component(QString subtype, QPoint p) {
   elt.d->type = Type::Component;
   elt.d->subtype = subtype;
   elt.d->position = p;
+  elt.d->nameVis = true;
+  elt.d->valueVis = true;
   return elt;
 }
 
@@ -303,6 +307,8 @@ void Element::writeAttributes(QXmlStreamWriter &sw) const {
     sw.writeAttribute("vendor", info().vendor);
   if (!info().partno.isEmpty())
     sw.writeAttribute("partno", info().partno);
+  if (!info().package.isEmpty())
+    sw.writeAttribute("package", info().notes);
   if (!info().notes.isEmpty())
     sw.writeAttribute("notes", info().notes);
   

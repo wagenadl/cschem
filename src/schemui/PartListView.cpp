@@ -14,6 +14,7 @@ enum Columns {
   COL_Value,
   COL_Vendor,
   COL_PartNo,
+  COL_Package,
   COL_Notes,
   COL_ID,
   COL_N,
@@ -39,6 +40,7 @@ PartListView::PartListView(Schem *schem, QWidget *parent):
   setColumnHeader(COL_Value, "Value");
   setColumnHeader(COL_Vendor, "Vendor");
   setColumnHeader(COL_PartNo, "Cat #");
+  setColumnHeader(COL_Package, "Pkg.");
   setColumnHeader(COL_Notes, "Notes");
   setColumnHidden(COL_ID, true);
   sortByColumn(COL_Ref, Qt::AscendingOrder);
@@ -96,6 +98,7 @@ void PLVData::rebuildRow(int n, Element const &elt) {
   view->setText(n, COL_Value, elt.value());
   view->setText(n, COL_Vendor, elt.info().vendor);
   view->setText(n, COL_PartNo, elt.info().partno);
+  view->setText(n, COL_Package, elt.info().package);
   view->setText(n, COL_Notes, elt.info().notes);
   QString name = elt.name();
   name.replace(".1", "");   
@@ -114,6 +117,7 @@ void PartListView::internalChange(int n) {
     QString val0 = text(n, COL_Value);
     QString vendor = text(n, COL_Vendor);
     QString partno = text(n, COL_PartNo);
+    QString package = text(n, COL_Package);
     QString notes = text(n, COL_Notes);
 
     Element elt = circ.element(id);
@@ -123,11 +127,13 @@ void PartListView::internalChange(int n) {
     if (elt.value() != val
         || elt.info().vendor != vendor
         || elt.info().partno != partno
+        || elt.info().package != package
         || elt.info().notes != notes) {
       elt.setValue(val);
       Element::Info info;
       info.vendor = vendor;
       info.partno = partno;
+      info.package = package;
       info.notes = notes;
       elt.setInfo(info);
       circ.insert(elt);
@@ -142,14 +148,14 @@ void PartListView::internalChange(int n) {
 QList<QStringList> PartListView::partList() const {
   QList<QStringList> res;
   QStringList hdr;
-  hdr << "Ref." << "Value" << "Vendor" << "Cat.#" << "Notes";
+  hdr << "Ref." << "Value" << "Vendor" << "Cat.#" << "Pkg." << "Notes";
   res << hdr;
   int N = rowCount();
   for (int n=0; n<N; n++) {
     QStringList line;
     line << text(n, COL_Ref) << text(n, COL_Value)
 	 << text(n, COL_Vendor) << text(n, COL_PartNo)
-	 << text(n, COL_Notes);
+	 << text(n, COL_Package) << text(n, COL_Notes);
     res << line;
   }
   return res;
