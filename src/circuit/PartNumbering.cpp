@@ -27,8 +27,8 @@ QString PartNumbering::abbreviation(QString symbol) {
 }
 
 bool PartNumbering::initiallyShowValue(QString symbol) {
+  static QSet<QString> yes{"resistor", "capacitor", "inductor"};
   QStringList bits = symbol.split(":");
-  QSet<QString> yes{"resistor", "capacitor", "inductor"};
   for (QString b: bits)
     if (yes.contains(b))
       return true;
