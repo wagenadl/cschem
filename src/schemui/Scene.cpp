@@ -495,13 +495,17 @@ void Scene::redo() {
 }
 
 int Scene::elementAt(QPointF scenepos, int exclude) const {
-  if (!itemAt(scenepos, QTransform()))
-    return -1; // shortcut in case nothing there at all
-  
-  for (auto e: d->elts)
-    if (e->id() != exclude
-        && e->boundingRect().contains(e->mapFromScene(scenepos)))
-      return e->id();
+  QGraphicsItem *it = itemAt(scenepos, QTransform());
+
+  SceneElement *e = dynamic_cast<SceneElement *>(it);
+  while (it && !e) {
+    it = it->parentItem();
+    e = dynamic_cast<SceneElement *>(it);
+  }
+
+  if (e && e->id() != exclude
+      && e->boundingRect().contains(e->mapFromScene(scenepos)))
+    return e->id();
 
   return -1;
 }
