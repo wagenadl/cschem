@@ -31,13 +31,13 @@
      inkscape:snap-midpoints="false"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:zoom="3.4997072"
-     inkscape:cx="113.52331"
-     inkscape:cy="630.12236"
+     inkscape:zoom="9.8986668"
+     inkscape:cx="597.96128"
+     inkscape:cy="622.61482"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g2892"
+     inkscape:current-layer="g4859"
      inkscape:snap-intersection-paths="true"
      inkscape:object-paths="true">
     <inkscape:grid
@@ -8490,6 +8490,12 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          y="831.7146"
          ry="4.8575492"
          rx="4.8575497" />
+      <path
+         style="opacity:1;fill:#000000;fill-opacity:0.98881429;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m 653.6117,831.7146 h 2.41213 l -7.26968,7.82013 v -2.96258 c 0,-2.69109 2.16647,-4.85755 4.85755,-4.85755 z"
+         id="rect4841-0-0-9"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="sccss" />
     </g>
   </g>
   <g
@@ -8563,6 +8569,12 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          cx="602"
          id="circle2039-1-2-6"
          style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.49999988;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         style="opacity:1;fill:#000000;fill-opacity:0.98881429;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         d="m 597.6117,831.09595 2.41213,0 -7.26968,7.82013 0,-2.96258 c 0,-2.69109 2.16647,-4.85755 4.85755,-4.85755 z"
+         id="rect4841-0-0"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="sccss" />
     </g>
   </g>
   <g

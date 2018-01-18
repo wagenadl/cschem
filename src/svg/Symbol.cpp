@@ -34,6 +34,9 @@ public:
   QString groupId; // id of contents element
   QMap<QString, QString> pinIds;
   QString originId;
+  QMap<QString, QRectF> annotationBBox;
+  QMap<QString, Qt::Alignment> annotationAlign;
+  QMap<QString, QRectF> shAnnotationBBox;
 };
 
 QPointF Symbol::svgOrigin() const {
@@ -49,6 +52,8 @@ void SymbolData::newshift() {
   shbbox = bbox.translated(-origin);
   for (QString p: pp)
     shpins[p] = pins[p] - origin;
+  for (QString p: annotationBBox.keys())
+    shAnnotationBBox[p] = annotationBBox[p].translated(-origin);
 }
 
 void Symbol::writeNamespaces(QXmlStreamWriter &sr) {
@@ -63,7 +68,7 @@ void Symbol::writeNamespaces(QXmlStreamWriter &sr) {
 }
 
 void SymbolData::writeSvg(QXmlStreamWriter &sw, bool withpins) const {
-  static QSet<QString> skip{"pin","annotation"};
+  static QSet<QString> skip{"pin", "annotation"};
   elt.writeStartElement(sw);
   for (auto &c: elt.children()) {
     if (!withpins && c.type()==XmlNode::Type::Element
@@ -154,11 +159,39 @@ void SymbolData::scanPins(XmlElement const &elt) {
     QString label = elt.attributes().value("inkscape:label").toString();
     if (label.startsWith("pin")) {
       QString name = label.mid(4);
-      QString x = elt.attributes().value("cx").toString();
-      QString y = elt.attributes().value("cy").toString();
-      pins[name] = QPointF(x.toInt(), y.toInt());
+      double x = elt.attributes().value("cx").toDouble();
+      double y = elt.attributes().value("cy").toDouble();
+      pins[name] = QPointF(x, y);
       pinIds[name] = elt.attributes().value("id").toString();
     }
+  } else if (elt.qualifiedName()=="rect") {
+    QString label = elt.attributes().value("inkscape:label").toString();
+    if (label.startsWith("annotation:")) {
+      QStringList bits = label.split(":");
+      if (bits.size()>=2) {
+	QString name = bits[1];
+	double x = elt.attributes().value("x").toDouble();
+	double y = elt.attributes().value("y").toDouble();
+	double w = elt.attributes().value("width").toDouble();
+	double h = elt.attributes().value("height").toDouble();
+	annotationBBox[name] = QRectF(QPointF(x, y), QSizeF(w, h));
+
+	static QMap<QString, Qt::Alignment> map{
+	  {"left",  Qt::AlignLeft | Qt::AlignVCenter },
+	  {"right",  Qt::AlignRight | Qt::AlignVCenter },
+	  {"center",  Qt::AlignHCenter | Qt::AlignVCenter }
+	};
+	if (bits.size()>=3) {
+	  QString align = bits[2];
+	  if (map.contains(align)) {
+	    annotationAlign[name] = map[align];
+	  } else {
+	    qDebug() << "Unknown alignment" << align << "in" << label;
+	  }
+	}
+      }
+    }
+    
   } else if (elt.qualifiedName()=="g") {
     groupId = elt.attributes().value("id").toString();
   }
@@ -232,4 +265,16 @@ QSharedPointer<QSvgRenderer> Symbol::renderer() const {
   return map[d->name];
 }
 
+  
+QRectF Symbol::shiftedAnnotationBBox(QString id) const {
+  return d->shAnnotationBBox.contains(id)
+    ? d->shAnnotationBBox[id]
+    : QRectF();
+}
+
+Qt::Alignment Symbol::annotationAlignment(QString id) const {
+  return d->annotationAlign.contains(id)
+    ? d->annotationAlign[id]
+    : (Qt::AlignLeft | Qt::AlignVCenter);
+}
   
