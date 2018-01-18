@@ -32,7 +32,16 @@ public:
   QRect boundingRect(int elt) const;
   QRect boundingRect(class Element const &elt) const;
   QRect boundingRect() const; // for whole circuit
-  /* boundingRect is naive about annotations */
+  /* boundingRect ignores annotations */
+  QRectF svgBoundingRect(class Element const &elt) const;
+  /* Bounding box of (rotated and flipped) symbol relative to its first pin. */
+  QRectF defaultAnnotationSvgBoundingRect(class Element const &elt,
+					  QString annotation) const;
+  /* This is the bounding rectangle, in svg coordinates rather than circuit
+     coordinates, relative to the origin (first pin) of the element, of the
+     named annotation ("name" or "value" in the present implementation) as
+     defined by the svg. When the svg doesn't define a bbox, a reasonable
+     suggestion is returned. */
   struct Intersection {
     Intersection(int n=-1, QPoint q=QPoint()):
       index(n), q(q) {
