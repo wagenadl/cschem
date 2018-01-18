@@ -8,6 +8,7 @@
 #include <QTextBlock>
 #include <QTextLayout>
 #include <QDebug>
+#include <QGraphicsColorizeEffect>
 
 class SAData {
 public:
@@ -30,6 +31,7 @@ SceneAnnotation::SceneAnnotation(double movestep, QGraphicsItem *parent):
   setFont(Style::annotationFont());
   setTextInteractionFlags(Qt::TextEditorInteraction);
   setFlags(ItemIsFocusable);
+  setAcceptHoverEvents(true);
 }
 
 SceneAnnotation::~SceneAnnotation() {
@@ -39,6 +41,11 @@ SceneAnnotation::~SceneAnnotation() {
 void SceneAnnotation::focusOutEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusOutEvent(e);
   emit returnPressed(); // hmmm..
+}
+
+void SceneAnnotation::focusInEvent(QFocusEvent *e) {
+  QGraphicsTextItem::focusInEvent(e);
+  setGraphicsEffect(0);
 }
  
 void SceneAnnotation::keyPressEvent(QKeyEvent *e) {
@@ -118,4 +125,16 @@ void SceneAnnotation::setBaseline(QPointF p) {
   QPointF p1 = line.position();
   setPos(p - p0 - p1 - QPointF(0, line.ascent()));
   qDebug() << "SA: " << pos() << p << p0 << p1;
+}
+
+void SceneAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+  auto *ef = new QGraphicsColorizeEffect;
+  ef->setColor(Style::hoverColor());
+  setGraphicsEffect(ef);
+  emit hovering(true);
+}
+  
+void SceneAnnotation::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+  setGraphicsEffect(0);
+  emit hovering(false);
 }

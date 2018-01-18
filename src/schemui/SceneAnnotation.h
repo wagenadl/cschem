@@ -21,12 +21,16 @@ signals:
   void escapePressed();
   void moved(QPointF delta);
   void removalRequested();
+  void hovering(bool);
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+  void focusInEvent(QFocusEvent *) override;
   void focusOutEvent(QFocusEvent *) override;
+  void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
+  void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
 private:
   class SAData *d;
 };

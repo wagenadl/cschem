@@ -87,7 +87,7 @@ Element Element::port(QString subtype, QPoint p) {
   elt.d->type = Type::Port;
   elt.d->subtype = subtype;
   elt.d->position = p;
-  elt.d->nameVis = true;
+  elt.d->nameVis = subtype.startsWith("generic:") ? true : false;
   return elt;
 }
 
@@ -97,7 +97,8 @@ Element Element::component(QString subtype, QPoint p) {
   elt.d->subtype = subtype;
   elt.d->position = p;
   elt.d->nameVis = true;
-  elt.d->valueVis = true;
+  if (!subtype.startsWith("connector:"))
+    elt.d->valueVis = true;
   return elt;
 }
 

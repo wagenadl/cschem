@@ -6884,7 +6884,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g7720"
-     inkscape:label="port:ground">
+     inkscape:label="port:power:ground">
     <g
        transform="translate(-29.93697,738.7421)"
        id="g2396">
@@ -6919,7 +6919,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g7749"
-     inkscape:label="port:Vee">
+     inkscape:label="port:power:Vee">
     <g
        transform="translate(0,453.58335)"
        id="g1435">
@@ -6956,7 +6956,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g7789"
-     inkscape:label="port:Vcc">
+     inkscape:label="port:power:Vcc">
     <g
        id="g7766">
       <path
@@ -8416,7 +8416,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g2892"
-     inkscape:label="port:left">
+     inkscape:label="port:generic:left">
     <circle
        inkscape:label="pin"
        r="7"
@@ -8453,7 +8453,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
      transform="rotate(-90,210.26416,931.34433)" />
   <g
      id="g2462"
-     inkscape:label="port:in">
+     inkscape:label="port:generic:in">
     <path
        inkscape:connector-curvature="0"
        id="path1300-3"

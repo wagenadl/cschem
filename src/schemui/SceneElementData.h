@@ -18,6 +18,7 @@ public:
     value = 0;
     dragmoved = false;
     hover = false;
+    nhover = vhover = false;
   }
   virtual ~SceneElementData();
 public:
@@ -31,6 +32,8 @@ public slots:
   void getValueText();
   void moveValue(QPointF delta);
   void removeValue();
+  void nameHovering(bool);
+  void valueHovering(bool);
 public:
   class Scene *scene;
   int id;
@@ -42,6 +45,7 @@ public:
 public:
   bool dragmoved;
   bool hover;
+  bool nhover, vhover;
 };
 
 #endif
