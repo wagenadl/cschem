@@ -188,7 +188,6 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   Circuit const &circ = d->scene->circuit();
   SymbolLibrary const *lib = d->scene->library();
   d->delta0 = circ.element(d->id).position() - lib->downscale(e->scenePos());
-  qDebug() << "Element Mouse press" << e->pos() << pos();
   QGraphicsItem::mousePressEvent(e);
 }
 
@@ -197,11 +196,9 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib->downscale(e->scenePos()) + d->delta0;
   QPoint oldpos = circ.element(d->id).position();
-  qDebug() << "Mouse move" << newpos << oldpos;
   QGraphicsItem::mouseMoveEvent(e);
   
   if (d->dragmoved || newpos != oldpos) {
-    qDebug() << "Position changed" << newpos << oldpos;
     d->scene->tentativelyMoveSelection(newpos - oldpos, !d->dragmoved);
     d->dragmoved = true;
   }
@@ -212,10 +209,8 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib->downscale(e->scenePos()) + d->delta0;
   QPoint oldpos = circ.element(d->id).position();
-  qDebug() << "Mouse release" << newpos << oldpos;
   QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
-    qDebug() << "Position changed";
     d->scene->moveSelection(newpos - oldpos);
   }
 }
@@ -253,7 +248,6 @@ void SceneElement::rebuild() {
 
   // Reconstruct name
   if (elt.isNameVisible()) {
-    qDebug() << "name visible on" << elt.report();
     if (d->name) {
       d->name->show();
     } else {
@@ -275,7 +269,6 @@ void SceneElement::rebuild() {
       Geometry geom(circ, lib);
       QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "name");
       p = abb.bottomLeft().toPoint();
-      qDebug() << "SceneElt name. abb" << abb << "p" << p;
       elt.setNamePos(p);
       d->scene->circuit().insert(elt);
     }

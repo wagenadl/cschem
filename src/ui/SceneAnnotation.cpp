@@ -124,7 +124,6 @@ void SceneAnnotation::setBaseline(QPointF p) {
   QTextLine line = lay->lineAt(0);
   QPointF p1 = line.position();
   setPos(p - p0 - p1 - QPointF(0, line.ascent()));
-  qDebug() << "SA: " << pos() << p << p0 << p1;
 }
 
 void SceneAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
