@@ -167,11 +167,11 @@ void Connection::setToId(int id) {
 }
 
 void Connection::unsetFrom() {
-  setFrom(0, "-");
+  setFrom(0, PinID::NOPIN);
 }
 
 void Connection::unsetTo() {
-  setTo(0, "-");
+  setTo(0, PinID::NOPIN);
 }
 
 void Connection::setFromPin(QString pin) {

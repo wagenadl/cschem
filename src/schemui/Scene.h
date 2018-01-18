@@ -27,7 +27,7 @@ public:
   QMap<int, class SceneConnection *> const &connections() const;
   int elementAt(QPointF scenepos, int exclude=-1) const;
   QString pinAt(QPointF scenepos, int elementId) const;
-  // returns "-" if none
+  // returns NOPIN if none
   int connectionAt(QPointF scenepos, int *segmentp=0) const;
   void modifyConnection(int id, QPolygonF path);
   void copyToClipboard(bool cut=false);

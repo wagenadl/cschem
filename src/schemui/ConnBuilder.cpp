@@ -93,7 +93,7 @@ bool ConnBuilderData::considerCompletion() {
   if (elt>0) {
     QString pin = scene->pinAt(l.p2(), elt);
     qDebug() << "at" << elt << pin;
-    if (pin != "-") {
+    if (pin != PinID::NOPIN) {
       forceCompletion(elt, pin);
       return true;
     }

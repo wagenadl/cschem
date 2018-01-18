@@ -28,7 +28,7 @@ public:
   bool onPin() const;
   bool onFakePin() const;
   int element() const; // -1 if none
-  QString pin() const; // "-" if none
+  QString pin() const; // NOPIN if none
   int connection() const; // -1 if none
   int segment() const; // -1 if not on connection
   void formSelection(QSet<int> elts);
