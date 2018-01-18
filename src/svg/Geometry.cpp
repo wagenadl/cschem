@@ -32,6 +32,8 @@ public:
   QPoint pinPosition(int elt, QString pin) const;
   QPoint pinPosition(Element const &elt, QString pin) const;
   QPolygon connectionPath(Connection const &con) const;
+  QTransform symbolToCircuitTransformation(Element const &elt) const;
+  QTransform symbolToSceneElementTransformation(Element const &elt) const;
 public:
   Circuit circ;
   SymbolLibrary const *lib;
@@ -60,6 +62,27 @@ Geometry &Geometry::operator=(Geometry &&o) {
 
 Geometry::~Geometry() {
   delete d;
+}
+
+QTransform GeometryData::symbolToCircuitTransformation(Element const &elt)
+  const {
+  QTransform xf;
+  xf.translate(elt.position().x(), elt.position().y());
+  double s = lib->scale();
+  xf.scale(1/s, 1/s);
+  xf.rotate(-elt.rotation()*90);
+  if (elt.isFlipped())
+    xf.scale(-1, 1);
+  return xf;
+}
+
+QTransform GeometryData::symbolToSceneElementTransformation(Element const &elt)
+  const {
+  QTransform xf;
+  xf.rotate(-elt.rotation()*90);
+  if (elt.isFlipped())
+    xf.scale(-1, 1);
+  return xf;
 }
 
 PinID Geometry::pinAt(QPoint p) const {
@@ -119,19 +142,54 @@ QRect Geometry::boundingRect(int elt) const {
     return QRect();
 }
 
+QRectF Geometry::svgBoundingRect(Element const &elt) const {
+  if (!d) {
+    qDebug() << "Cannot calculate svgBoundingRect w/o data";
+    return QRectF();
+  }
+  
+  QTransform xf = d->symbolToSceneElementTransformation(elt);
+  Symbol const &sym(d->lib->symbol(elt.symbol()));
+  QRectF bb = sym.shiftedBBox();
+  qDebug() << "svgboundingrect" << elt.symbol() << bb << xf.mapRect(bb);
+  return xf.mapRect(bb);
+}
+
+QRectF Geometry::defaultAnnotationSvgBoundingRect(Element const &elt,
+						  QString annotation) const {
+  if (!d) {
+    qDebug() << "Cannot calculate defaultAnnotationSvgBoundingRect w/o data";
+    return QRectF();
+  }
+  
+  QTransform xf = d->symbolToSceneElementTransformation(elt);
+  Symbol const &sym(d->lib->symbol(elt.symbol()));
+  QRectF r0 = sym.shiftedAnnotationBBox(annotation);
+  if (r0.isEmpty()) {
+    if (annotation=="value") {
+      r0 = defaultAnnotationSvgBoundingRect(elt, "name");
+      return r0.translated(0, d->lib->scale()*3);
+    } else {
+      QRectF bb = svgBoundingRect(elt);
+      QRectF r
+	= QRectF(QPointF(bb.bottomRight()) + d->lib->upscale(QPoint(1, 2)),
+		 d->lib->scale()*QSizeF(5, 1));
+      qDebug() << "dflt" << elt.symbol() << annotation << r;
+      return r;
+    }
+  } else {
+    qDebug() << "dflt1" << elt.symbol() << annotation << r0 << xf.mapRect(r0);
+    return xf.mapRect(r0);
+  }
+}
+
 QRect Geometry::boundingRect(Element const &elt) const {
   if (!d)
     return QRect();
   Symbol const &prt(d->lib->symbol(elt.symbol()));
   QRectF bb = prt.shiftedBBox();
   qDebug() << "br" << elt.symbol() << bb;
-  QTransform xf;
-  xf.translate(elt.position().x(), elt.position().y());
-  double s = d->lib->scale();
-  xf.scale(1/s, 1/s);
-  xf.rotate(-elt.rotation()*90);
-  if (elt.isFlipped())
-    xf.scale(-1, 1);
+  QTransform xf = d->symbolToCircuitTransformation(elt);
   bb = xf.mapRect(bb);
   bb.adjust(-0.5, -0.5, 0.5, 0.5);
   qDebug() << "=>" << bb;
@@ -149,11 +207,17 @@ QRect Geometry::boundingRect() const {
 QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
   Symbol const &prt(lib->symbol(elt.symbol()));
   QPointF pp = prt.shiftedPinPosition(pin);
+  QTransform xf = symbolToCircuitTransformation(elt);
+  QPoint p0 = xf.map(pp).toPoint();
+  
   if  (elt.isFlipped())
     pp = QPointF(-pp.x(), pp.y());
   for (int k=0; k<elt.rotation(); k++)
     pp = QPointF(pp.y(), -pp.x());
-  return elt.position() + lib->downscale(pp);
+  QPoint p1 = elt.position() + lib->downscale(pp);
+  if (p1!=p0)
+    qDebug() << "TRANSFORMATION MISMATCH" << p0 << p1 << elt.report();
+  return p1;
 }
 
 QPoint Geometry::centerOfPinMass() const {

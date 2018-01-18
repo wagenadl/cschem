@@ -251,16 +251,6 @@ void SceneElement::rebuild() {
 
   setPos(lib->scale() * elt.position());
 
-  // origin for labels
-  QRectF bb = symbol.shiftedBBox();
-  QPointF p0 = bb.center();
-  QTransform xfl;
-  xfl.rotate(elt.rotation()*-90);
-  if (elt.isFlipped())
-    xfl.scale(-1, 1);
-  p0 = xfl.map(p0);
-  bb = xfl.mapRect(bb);
-  
   // Reconstruct name
   if (elt.isNameVisible()) {
     qDebug() << "name visible on" << elt.report();
@@ -279,14 +269,17 @@ void SceneElement::rebuild() {
       QObject::connect(d->name, SIGNAL(hovering(bool)),
                        d.data(), SLOT(nameHovering(bool)));
     }
+
     QPoint p = elt.namePos();
     if (p.isNull()) {
-      QPointF bl = bb.bottomLeft() - p0;
-      p = (bl + lib->upscale(QPoint(4, 3))).toPoint();
+      Geometry geom(circ, lib);
+      QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "name");
+      p = abb.bottomLeft().toPoint();
+      qDebug() << "SceneElt name. abb" << abb << "p" << p;
       elt.setNamePos(p);
       d->scene->circuit().insert(elt);
     }
-    d->name->setBaseline(p + p0);
+    d->name->setBaseline(p);
     d->setNameText();
     if (elt.name().isEmpty()) {
       d->getNameText(); // automated magic
@@ -315,12 +308,13 @@ void SceneElement::rebuild() {
     }
     QPoint p = elt.valuePos();
     if (p.isNull()) {
-      QPointF bl = bb.bottomLeft() - p0;
-      p = (bl + lib->upscale(QPoint(4, 6))).toPoint();
+      Geometry geom(circ, lib);
+      QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "value");
+      p = abb.bottomLeft().toPoint();
       elt.setValuePos(p);
       d->scene->circuit().insert(elt);
     }
-    d->value->setBaseline(p + p0);
+    d->value->setBaseline(p);
     d->setValueText();
   } else if (d->value) {
     d->value->hide();
