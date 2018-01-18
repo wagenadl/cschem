@@ -63,11 +63,12 @@ void Symbol::writeNamespaces(QXmlStreamWriter &sr) {
 }
 
 void SymbolData::writeSvg(QXmlStreamWriter &sw, bool withpins) const {
+  static QSet<QString> skip{"pin","annotation"};
   elt.writeStartElement(sw);
   for (auto &c: elt.children()) {
     if (!withpins && c.type()==XmlNode::Type::Element
-	&& c.element().attributes().value("inkscape:label")
-	.startsWith("pin")) {
+	&& skip.contains(c.element().attributes().value("inkscape:label")
+			 .split(":").first().toString())) {
       // skip
     } else {
       c.write(sw);
