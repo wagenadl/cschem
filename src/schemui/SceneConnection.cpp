@@ -217,7 +217,12 @@ void SceneConnection::setPath(QPolygonF const &path) {
       addToGroup(d->segments.last());
     }
     auto *seg = d->segments[k-1];
-    seg->setLine(QLineF(path[k-1], path[k]));
+    QLineF line(path[k-1], path[k]);
+    seg->setLine(line);
+    if (line.length()==0)
+      seg->hide();
+    else
+      seg->show();
     seg->setPen(d->normalPen());
   }
 }

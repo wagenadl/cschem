@@ -512,14 +512,14 @@ static double L2(QPointF p) {
 
 QString Scene::pinAt(QPointF scenepos, int elementId) const {
   if (!d->elts.contains(elementId))
-    return "-";
+    return PinID::NOPIN;
   QString sym = d->circ.element(elementId).symbol();
   Symbol const &symbol = library()->symbol(sym);
   double r = library()->scale();
   for (auto p: symbol.pinNames())
     if (L2(scenepos - pinPosition(elementId, p)) <= 1.1*r*r)
       return p;
-  return "-";
+  return PinID::NOPIN;
 }
 
 int Scene::connectionAt(QPointF scenepos, int *segp) const {

@@ -30,7 +30,7 @@ class HoverManagerData {
 public:
   HoverManagerData(Scene *scene): scene(scene) {
     elt = -1;
-    pin = "-";
+    pin = PinID::NOPIN;
     con = -1;
     seg = -1;
     fakepin = false;
@@ -166,11 +166,11 @@ bool HoverManagerData::onPin() const {
     return false;
   case HoverManager::Purpose::Moving:
     if (elt>0)
-      return pin!="-" && !isjunc;
+      return pin!=PinID::NOPIN && !isjunc;
     else
       return false;
   case HoverManager::Purpose::Connecting:
-    return (elt>0 && pin!="-"); // IN NEAR FUTURE: || con>0;
+    return (elt>0 && pin!=PinID::NOPIN); // IN NEAR FUTURE: || con>0;
   }
   return false; // not executed
 }
@@ -181,14 +181,14 @@ bool HoverManagerData::onElement() const {
     return false;
   case HoverManager::Purpose::Moving:
     if (elt>0)
-      return pin=="-" || isjunc;
+      return pin==PinID::NOPIN || isjunc;
     else
       return false;
   case HoverManager::Purpose::Connecting:
     if (con>0)
       return false;
     else if (elt>0)
-      return pin=="-" || isjunc;
+      return pin==PinID::NOPIN || isjunc;
     else
       return false;
   }
@@ -225,10 +225,18 @@ void HoverManagerData::update() {
     elt = scene->elementAt(pt);
 
   // see if we are at a pin
-  if (elt>0)
+  if (elt>0) {
     pin = scene->pinAt(pt, elt);
-  else
-    pin = "-";
+    if (pin==PinID::NOPIN) {
+      // if not, shrink area of hovering
+      double x = scene->library()->scale()/2;
+      if (!elts[elt]->boundingRect().adjusted(x,x,-x,-x)
+          .contains(elts[elt]->mapFromScene(pt)))
+        elt = -1;
+    }
+  } else {
+    pin = PinID::NOPIN;
+  }
 
   if (elt>0)
     isjunc = circ.element(elt).type() == Element::Type::Junction;
@@ -344,7 +352,7 @@ int HoverManager::element() const {
 }
 
 QString HoverManager::pin() const {
-  return onPin() ? d->pin : "-";
+  return onPin() ? d->pin : PinID::NOPIN;
 }
 
 int HoverManager::connection() const {
@@ -372,7 +380,7 @@ QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
     QString pin;
     if (elt>0) {
       pin = scene->pinAt(pup, elt);
-      if (pin != "-") {
+      if (pin != PinID::NOPIN) {
         if (geom.pinPosition(elt, pin)==p)
           pts << p;
       }
