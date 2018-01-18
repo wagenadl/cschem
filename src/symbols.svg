@@ -12,7 +12,7 @@
    viewBox="0 0 1800 1500"
    height="1500"
    width="1800"
-   sodipodi:docname="parts.svg"
+   sodipodi:docname="symbols.svg"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -32,8 +32,8 @@
      inkscape:snap-bbox="false"
      inkscape:snap-bbox-midpoints="true"
      inkscape:zoom="2.4746667"
-     inkscape:cx="1299.3971"
-     inkscape:cy="1319.4805"
+     inkscape:cx="296.83785"
+     inkscape:cy="575.13784"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -8452,28 +8452,25 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
      id="g7766-9"
      transform="rotate(-90,210.26416,931.34433)" />
   <g
-     id="g2583"
-     transform="translate(-8.59104,15.39151)"
+     id="g2462"
      inkscape:label="port:in">
     <path
        inkscape:connector-curvature="0"
        id="path1300-3"
-       d="M 322,883.67121 V 865.00359"
-       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       transform="rotate(-90,210.26416,931.34433)" />
+       d="M 154,835.00001 H 135.33238"
+       style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m 314.28657,855.20009 h 15.42686 L 322,865.16891 Z"
+       d="m 125.52888,842.71344 v -15.42686 l 9.96882,7.71343 z"
        id="path7801-6"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc"
-       transform="rotate(-90,210.26416,931.34433)" />
+       sodipodi:nodetypes="ccccc" />
     <circle
        transform="rotate(-90)"
        inkscape:label="pin"
        r="7"
-       cy="162.91983"
-       cx="-819.60852"
+       cy="154.3288"
+       cx="-835"
        id="pin:A-8-67-4-3-2"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
   </g>

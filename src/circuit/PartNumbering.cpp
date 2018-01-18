@@ -8,14 +8,16 @@
 QString PartNumbering::abbreviation(QString symbol) {
   static QStringList map{
     "connector", "J",
-      "diode", "D",
-      "resistor", "R",
-      "opamp", "A",
-      "transistor", "Q",
-      "logic", "U",
-      "inductor", "L",
-      "battery", "B" };
-
+    "diode", "D",
+    "resistor", "R",
+    "capacitor", "C",
+    "opamp", "A",
+    "transistor", "Q",
+    "logic", "U",
+    "inductor", "L",
+    "battery", "B"
+  };
+  
   QStringList bits = symbol.split(":");
   QSet<QString> set = QSet<QString>::fromList(bits);
   for (int k=0; k<map.size(); k+=2)
