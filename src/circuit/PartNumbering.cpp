@@ -26,6 +26,20 @@ QString PartNumbering::abbreviation(QString symbol) {
   return "U";
 }
 
+bool PartNumbering::initiallyShowValue(QString symbol) {
+  QStringList bits = symbol.split(":");
+  QSet<QString> yes{"resistor", "capacitor", "inductor"};
+  for (QString b: bits)
+    if (yes.contains(b))
+      return true;
+  return false;
+}
+
+bool PartNumbering::initiallyShowName(QString symbol) {
+  return symbol.startsWith("part:");
+}
+
+
 QString PartNumbering::nameToHtml(QString name) {
   if (name.mid(1).toDouble()>0)
     return "<i>" + name.left(1) + "</i>"
@@ -61,3 +75,4 @@ QString PartNumbering::shortValue(QString value, QString) {
 QString PartNumbering::htmlToSvg(QString html) {
   return html;
 }
+ 

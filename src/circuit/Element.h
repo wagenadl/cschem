@@ -68,7 +68,8 @@ public:
   void setFlipped(bool);
   void translate(QPoint delta);
   void setLayer(Layer); // only for board; forces flipped
-protected:
+  void autoSetVisibility();
+ protected:
   friend QXmlStreamWriter &operator<<(QXmlStreamWriter &, Element const &);
   friend QXmlStreamReader &operator>>(QXmlStreamReader &, Element &);
   virtual void writeAttributes(QXmlStreamWriter &) const;
