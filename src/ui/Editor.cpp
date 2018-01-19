@@ -14,6 +14,7 @@ Editor::Editor(class SymbolLibrary const *lib, Schem *schem, QWidget *parent):
   scale(2, 2);
   setMouseTracking(true);
   setDragMode(RubberBandDrag);
+  setSizeHint(mapFromScene(scene_->sceneBoundingRect().size()) + QSize(50, 50));
 }
 
 Editor::~Editor() {

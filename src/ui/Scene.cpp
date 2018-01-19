@@ -21,6 +21,7 @@ public:
     hovermanager = 0;
     connbuilder = 0;
     dragin = 0;
+    bgitem = 0;
   }
   void rebuild();
   void keyPressAnywhere(QKeyEvent *);
@@ -28,7 +29,7 @@ public:
   void startConnectionFromPin(QPointF);
   void startConnectionFromConnection(QPointF);
   static QRectF minRect() {
-    return QRectF(0, 0, 600, 400);
+    return QRectF(0, 0, 1100, 900);
   }
   void resetSceneRect();
   QPointF pinPosition(int id, QString pin) const {
@@ -110,6 +111,7 @@ public:
   QList< QSet<int> > redoselections;
   ConnBuilder *connbuilder;
   FloatingSymbol *dragin;
+  QGraphicsRectItem *bgitem;
 };
 
 void SceneData::startConnectionFromPin(QPointF pos) {
@@ -168,8 +170,19 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
 }
 
 void SceneData::resetSceneRect() {
-  scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10, -10, 10, 10)
-		      | minRect());
+  if (!bgitem) {
+    scene->setBackgroundBrush(QColor(224, 224, 224));
+    bgitem = scene->addRect(minRect(), QPen(Qt::NoPen),
+			    QBrush(QColor(255,255,255)));
+  }
+  QRectF r0 = minRect();
+  for (auto e: elts)
+    r0 |= e->sceneBoundingRect();
+  for (auto c: conns)
+    r0 |= c->sceneBoundingRect();
+  r0.adjust(-10, -10, 10, 10);
+  bgitem->setRect(r0);
+  scene->setSceneRect(r0);
 }  
 
 void SceneData::rotateElement(int id, int steps) {
