@@ -27,6 +27,10 @@ public:
   void finalizeConnection();
   void startConnectionFromPin(QPointF);
   void startConnectionFromConnection(QPointF);
+  static QRectF minRect() {
+    return QRectF(0, 0, 600, 400);
+  }
+  void resetSceneRect();
   QPointF pinPosition(int id, QString pin) const {
     if (circ.elements().contains(id))
       return lib->upscale(Geometry(circ, lib).pinPosition(id, pin));
@@ -159,10 +163,14 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
   if (!eltids.isEmpty())
     scene->annotationInternallyEdited(-1); // crude
 
-  scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10, -10, 10, 10));
-  
+  resetSceneRect();
   hovermanager->update();
 }
+
+void SceneData::resetSceneRect() {
+  scene->setSceneRect(scene->itemsBoundingRect().adjusted(-10, -10, 10, 10)
+		      | minRect());
+}  
 
 void SceneData::rotateElement(int id, int steps) {
   CircuitMod cm(circ, lib);
@@ -203,6 +211,7 @@ Scene::Scene(SymbolLibrary *lib, QObject *parent):
   // test->setTextInteractionFlags(Qt::TextEditorInteraction);
   // test->setFlags(QGraphicsItem::ItemIsFocusable);
   // addItem(test);
+  d->resetSceneRect();
 }
 
 void Scene::setCircuit(Circuit const &c) {
@@ -231,6 +240,8 @@ void SceneData::rebuild() {
   
   for (auto const &c: circ.connections())
     conns[c.id()] = new SceneConnection(scene, c);
+
+  resetSceneRect();
 }
 
 QPointF Scene::pinPosition(int eltid, QString pin) const {
