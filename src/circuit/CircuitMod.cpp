@@ -825,6 +825,14 @@ bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
 	QPoint dp = elt.position() - p0;
 	elt.setPosition(p0 + QPoint(dp.y(), -dp.x()));
       }
+      QPoint np = elt.namePos();
+      for (int k=0; k<steps; k++)
+	np = QPoint(np.y(), -np.x());
+      elt.setNamePos(np);
+      QPoint vp = elt.valuePos();
+      for (int k=0; k<steps; k++)
+	vp = QPoint(vp.y(), -vp.x());
+      elt.setValuePos(vp);
       d->insert(elt);
     }
   }
@@ -850,6 +858,8 @@ bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
 }
 
 bool CircuitMod::rotateElement(int eltid, int steps) {
+  steps &= 3;
+
   if (!d->circ.elements().contains(eltid))
     return false;
   Circuit c0 = d->circ;
@@ -857,8 +867,16 @@ bool CircuitMod::rotateElement(int eltid, int steps) {
   Element elt = d->circ.element(eltid);
   QPoint dx0 = geom.centerOfPinMass(elt);
   elt.setRotation(elt.rotation() + steps);
+  QPoint np = elt.namePos();
+  for (int k=0; k<steps; k++)
+    np = QPoint(np.y(), -np.x());
+  elt.setNamePos(np);
+  QPoint vp = elt.valuePos();
+  for (int k=0; k<steps; k++)
+    vp = QPoint(vp.y(), -vp.x());
+  elt.setValuePos(vp);
   QPoint dx1 = geom.centerOfPinMass(elt);
-    elt.setPosition(elt.position() + dx0 - dx1);
+  elt.setPosition(elt.position() + dx0 - dx1);
   d->insert(elt);
   QSet<int> ee; ee << eltid;
   for (int c: d->circ.connectionsFrom(ee) + d->circ.connectionsTo(ee))
@@ -878,6 +896,12 @@ bool CircuitMod::flipElements(QSet<int> eltids) {
       p0 += geom.centerOfPinMass(elt);
       N++;
     }
+    QPoint np = elt.namePos();
+    np = QPoint(-np.x(), np.y());
+    elt.setNamePos(np);
+    QPoint vp = elt.valuePos();
+    vp = QPoint(-vp.x(), vp.y());
+    elt.setValuePos(vp);
   }
   p0 /= N; // original CM
   
@@ -916,6 +940,12 @@ bool CircuitMod::flipElement(int eltid) {
   Geometry geom(d->circ, d->lib);
   Element elt = d->circ.element(eltid);
   elt.setFlipped(!elt.isFlipped());
+  QPoint np = elt.namePos();
+  np = QPoint(-np.x(), np.y());
+  elt.setNamePos(np);
+  QPoint vp = elt.valuePos();
+  vp = QPoint(-vp.x(), vp.y());
+  elt.setValuePos(vp);
   d->insert(elt);
   QSet<int> ee; ee << eltid;
   for (int c: d->circ.connectionsFrom(ee) + d->circ.connectionsTo(ee))
