@@ -21,7 +21,6 @@ public:
     hovermanager = 0;
     connbuilder = 0;
     dragin = 0;
-    bgitem = 0;
   }
   void rebuild();
   void keyPressAnywhere(QKeyEvent *);
@@ -29,9 +28,10 @@ public:
   void startConnectionFromPin(QPointF);
   void startConnectionFromConnection(QPointF);
   static QRectF minRect() {
-    return QRectF(0, 0, 1100, 900);
+    return QRectF(-1000, -1000, 2000, 2000);
   }
   void resetSceneRect();
+  void growSceneRect(QSet<int> const &eltids);
   QPointF pinPosition(int id, QString pin) const {
     if (circ.elements().contains(id))
       return lib->upscale(Geometry(circ, lib).pinPosition(id, pin));
@@ -111,7 +111,6 @@ public:
   QList< QSet<int> > redoselections;
   ConnBuilder *connbuilder;
   FloatingSymbol *dragin;
-  QGraphicsRectItem *bgitem;
 };
 
 void SceneData::startConnectionFromPin(QPointF pos) {
@@ -165,23 +164,26 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
   if (!eltids.isEmpty())
     scene->annotationInternallyEdited(-1); // crude
 
-  resetSceneRect();
+  growSceneRect(eltids);
   hovermanager->update();
 }
 
+void SceneData::growSceneRect(QSet<int> const &eltids) {
+  QRectF r0;
+  for (int id: eltids)
+    if  (elts.contains(id))
+      r0 |= elts[id]->sceneBoundingRect();
+  r0.adjust(-100, -100, 100, 100);
+  scene->setSceneRect(r0 | scene->sceneRect());
+}
+
 void SceneData::resetSceneRect() {
-  if (!bgitem) {
-    scene->setBackgroundBrush(QColor(224, 224, 224));
-    bgitem = scene->addRect(minRect(), QPen(Qt::NoPen),
-			    QBrush(QColor(255,255,255)));
-  }
   QRectF r0 = minRect();
   for (auto e: elts)
     r0 |= e->sceneBoundingRect();
   for (auto c: conns)
     r0 |= c->sceneBoundingRect();
-  r0.adjust(-10, -10, 10, 10);
-  bgitem->setRect(r0);
+  r0.adjust(-100, -100, 100, 100);
   scene->setSceneRect(r0);
 }  
 

@@ -68,9 +68,9 @@ MainWindow::MainWindow(SymbolLibrary const *lib): d(new MWData()) {
     w = w0;
   if (h < h0)
     h = h0;
-  QPoint p0 = d->view->mapFromScene(d->scene->sceneRect().bottomRight());
-  //  resize(w, h);
-  resize(d->libview->width() + p0.x() + 100, p0.y() + 100);
+  //  QPoint p0 = d->view->mapFromScene(d->scene->sceneRect().bottomRight());
+  resize(w, h);
+  // resize(d->libview->width() + p0.x() + 100, p0.y() + 100);
   d->partlistviewdock->hide();
 }
 
@@ -583,7 +583,7 @@ void MainWindow::exportPartListAction() {
 }
 
 void MainWindow::circuitToClipboardAction() {
-  QRectF rr = d->scene->itemsBoundingRect();
+  QRectF rr = d->scene->itemsBoundingRect().adjusted(-2, -2, 2, 2);
   QSizeF ss = rr.size();
   QSizeF sdest = 2*ss;
   QRectF rdest = QRectF(QPointF(), sdest);
