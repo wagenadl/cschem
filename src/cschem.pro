@@ -9,8 +9,6 @@ CONFIG += debug_and_release
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 MAKEFILE = Makefile-cschem
 
-include(common.pri)
-
 # Input
 HEADERS += ui/Scene.h   ui/SceneElement.h   ui/SceneConnection.h
 SOURCES += ui/Scene.cpp ui/SceneElement.cpp ui/SceneConnection.cpp

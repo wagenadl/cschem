@@ -244,9 +244,11 @@ QPoint Geometry::centerOfPinMass(Element const &elt) const {
   Symbol const &symbol(d->lib->symbol(elt.symbol()));
   QStringList pins = symbol.pinNames();
   QPointF sum;
+  int N = pins.size();
   for (QString p: pins)
     sum += pinPosition(elt, p);
-  return (sum/pins.size()).toPoint();
+  qDebug() << "copm" << elt.report() << sum << N << (sum/N).toPoint();
+  return (sum/N).toPoint();
 }
 
 QPolygon Geometry::connectionPath(int conid) const {
