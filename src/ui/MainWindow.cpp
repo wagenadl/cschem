@@ -68,7 +68,9 @@ MainWindow::MainWindow(SymbolLibrary const *lib): d(new MWData()) {
     w = w0;
   if (h < h0)
     h = h0;
-  resize(w, h);
+  QPoint p0 = d->view->mapFromScene(d->scene->sceneRect().bottomRight());
+  //  resize(w, h);
+  resize(d->libview->width() + p0.x() + 100, p0.y() + 100);
   d->partlistviewdock->hide();
 }
 
