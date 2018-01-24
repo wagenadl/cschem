@@ -54,7 +54,7 @@ public:
     reallymoving = false;
   }
   QPolygonF path() const;
-  QPointF moveDelta(QPointF sp);
+  QPointF moveDelta(QPointF sp, bool nomagnet=false);
   QPen normalPen() const;
   QPen draftPen() const;
   bool isDangling() const;
@@ -92,11 +92,13 @@ QPen SceneConnectionData::draftPen() const {
 	      Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
 }
 
-QPointF SceneConnectionData::moveDelta(QPointF sp) {
+QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
   if (moveseg<0)
     return QPointF();
   double s = scene->library()->scale();
   QPointF delta = scene->library()->nearestGrid(sp - movestart);
+  if (nomagnet)
+    return delta;
   QPointF ll = origpath[moveseg + 1] - origpath[moveseg];
   if (ll.isNull()) {
     // null line, don't know what to do exactly
@@ -387,7 +389,8 @@ void SceneConnection::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   if (d->moveseg<0)
     return;
 
-  QPointF delta = d->moveDelta(e->scenePos());
+  QPointF delta = d->moveDelta(e->scenePos(),
+			       e->modifiers() & Qt::ControlModifier);
   
   if (!d->reallymoving && !delta.isNull())
     d->startRealMove();
@@ -418,7 +421,8 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   
   auto const *lib = d->scene->library();
   auto const &circ = d->scene->circuit();
-  QPointF delta = d->moveDelta(e->scenePos());
+  QPointF delta = d->moveDelta(e->scenePos(),
+			       e->modifiers() & Qt::ControlModifier);
   path[d->moveseg] += delta;
   path[d->moveseg+1] += delta;
   if (d->moveseg==0

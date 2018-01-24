@@ -429,8 +429,8 @@ QPoint HoverManagerData::tryNearby(QPoint del, QList<QPoint> &pts) {
   return del;
 }
 
-QPoint HoverManager::tentativelyMoveSelection(QPoint del) {
-  if (d->haveMagnet) {
+QPoint HoverManager::tentativelyMoveSelection(QPoint del, bool nomagnet) {
+  if (d->haveMagnet && !nomagnet) {
     if ((del - d->magnetDelta).manhattanLength() < 3)
       del = d->magnetDelta;
     else
@@ -438,7 +438,7 @@ QPoint HoverManager::tentativelyMoveSelection(QPoint del) {
   }
   
   QList<QPoint> pts = d->seeWhatSticks(del);
-  if (pts.isEmpty()) 
+  if (pts.isEmpty() && !nomagnet) 
     del = d->tryNearby(del, pts);
 
   if (!pts.isEmpty()) { 

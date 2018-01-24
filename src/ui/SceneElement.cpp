@@ -199,7 +199,8 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   QGraphicsItem::mouseMoveEvent(e);
   
   if (d->dragmoved || newpos != oldpos) {
-    d->scene->tentativelyMoveSelection(newpos - oldpos, !d->dragmoved);
+    d->scene->tentativelyMoveSelection(newpos - oldpos, !d->dragmoved,
+				       e->modifiers() & Qt::ControlModifier);
     d->dragmoved = true;
   }
 }
@@ -211,7 +212,8 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   QPoint oldpos = circ.element(d->id).position();
   QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
-    d->scene->moveSelection(newpos - oldpos);
+    d->scene->moveSelection(newpos - oldpos,
+			    e->modifiers() & Qt::ControlModifier);
   }
 }
 

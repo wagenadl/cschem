@@ -32,7 +32,7 @@ public:
   int connection() const; // -1 if none
   int segment() const; // -1 if not on connection
   void formSelection(QSet<int> elts);
-  QPoint tentativelyMoveSelection(QPoint delta);
+  QPoint tentativelyMoveSelection(QPoint delta, bool nomagnet=false);
   void newDrag(class Symbol const &);
   QPoint updateDrag(QPoint p);
   void doneDragging();
