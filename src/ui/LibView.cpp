@@ -37,11 +37,14 @@ public:
     delete scene; // that deletes the items, right?
   }
   void addSymbol(QString symbol);
+  void addHeader(QString symbol, QString label);
+  double nextY() const;
 public:
   LibView *view;
   QGraphicsScene *scene;
   SymbolLibrary const *lib;
   QMap<QString, SvgItem *> items;
+  QMap<QString, QGraphicsTextItem *> headers;
 };
 
 void LibViewElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
@@ -82,13 +85,28 @@ void LibViewElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
   setGraphicsEffect(0);
 }
 
+double LibViewData::nextY() const {
+  return (items.isEmpty() && headers.isEmpty())
+	  ? 0 : scene->itemsBoundingRect().bottom() + 14;
+}
+    
 void LibViewData::addSymbol(QString symbol) {
-  double y = items.isEmpty() ? 0 : scene->itemsBoundingRect().bottom() + 14;
   SvgItem *item = new LibViewElement(symbol, view);
   item->setRenderer(lib->symbol(symbol).renderer());
   scene->addItem(item);
   items[symbol] = item;
-  item->setPos(QPointF(0, y));
+  item->setPos(QPointF(0, nextY()));
+}
+
+void LibViewData::addHeader(QString symbol, QString label) {
+  QGraphicsTextItem *header = new QGraphicsTextItem(label);
+  QFont f = header->font();
+  //  f.setStyle(Qt::ItalicStyle);
+  f.setPointSize(f.pointSize() * .75);
+  header->setFont(f);
+  scene->addItem(header);
+  headers[symbol] = header;
+  header->setPos(QPointF(0, nextY()));
 }
 
 LibView::LibView(QWidget *parent): QGraphicsView(parent),
@@ -110,6 +128,16 @@ void LibView::clear() {
   d->scene->setSceneRect(d->scene->itemsBoundingRect());
 }
 
+static bool symbolLessThan(QString a, QString b) {
+  int portdif = b.startsWith("port:") - a.startsWith("port:");
+  int contdif = b.contains(":container:") - a.contains(":container:");
+  if  (portdif)
+    return portdif<0;
+  if (contdif)
+    return contdif>0;
+  return a.toLower() < b.toLower();
+}
+ 
 void LibView::rebuild(class SymbolLibrary const *lib) {
   if (lib)
     d->lib = lib;
@@ -121,12 +149,26 @@ void LibView::rebuild(class SymbolLibrary const *lib) {
 
   QStringList symbols = d->lib->symbolNames();
   std::sort(symbols.begin(), symbols.end(),
-	    [](QString a, QString b) { return a.toLower() < b.toLower(); });
+	    [](QString a, QString b) { return symbolLessThan(a,b); });
   qDebug() << "symbolnames" << symbols;
-  for (QString s: symbols) 
-    if (s.startsWith("port:") || s.startsWith("part:"))
-      d->addSymbol(s);
-
+  QString lastheader = "";
+  for (QString s: symbols) {
+    if (!(s.startsWith("port:") || s.startsWith("part:")))
+      continue;
+    QString header;
+    if (s.startsWith("port:"))
+      header = "Ports";
+    else if (s.contains(":container:"))
+      header = "Containers";
+    else
+      header = "Parts";
+    if (header != lastheader) {
+      d->addHeader(s, header);
+      lastheader = header;
+    }
+    d->addSymbol(s);
+  }
+  
   QRectF r = d->scene->itemsBoundingRect();
   
   double w = r.width();
