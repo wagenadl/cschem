@@ -288,11 +288,12 @@ QSet<int> Scene::selectedElements() const {
   return d->selectedElements();
 }
 
-void Scene::tentativelyMoveSelection(QPoint delta, bool first) {
+void Scene::tentativelyMoveSelection(QPoint delta, bool first,
+				     bool nomagnet) {
   QSet<int> selection = selectedElements();
   if (first)
     d->hovermanager->formSelection(selection);
-  delta = d->hovermanager->tentativelyMoveSelection(delta);
+  delta = d->hovermanager->tentativelyMoveSelection(delta, nomagnet);
   QSet<int> internalcons = d->circ.connectionsIn(selection);
   QSet<int> fromcons = d->circ.connectionsFrom(selection) - internalcons;
   QSet<int> tocons = d->circ.connectionsTo(selection) - internalcons;
@@ -307,8 +308,8 @@ void Scene::tentativelyMoveSelection(QPoint delta, bool first) {
     d->conns[id]->temporaryTranslateTo(delta);
 }
 
-void Scene::moveSelection(QPoint delta) {
-  delta = d->hovermanager->tentativelyMoveSelection(delta);
+void Scene::moveSelection(QPoint delta, bool nomagnet) {
+  delta = d->hovermanager->tentativelyMoveSelection(delta, nomagnet);
   d->hovermanager->doneDragging();
 
   QSet<int> selection = selectedElements();

@@ -20,8 +20,8 @@ public:
   Circuit const &circuit() const;
   Circuit &circuit();
   QPointF pinPosition(int eltid, QString pin) const;
-  void moveSelection(QPoint delta);
-  void tentativelyMoveSelection(QPoint delta, bool first);
+  void moveSelection(QPoint delta, bool nomagnet);
+  void tentativelyMoveSelection(QPoint delta, bool first, bool nomagnet);
   QSet<int> selectedElements() const;
   QMap<int, class SceneElement *> const &elements() const;
   QMap<int, class SceneConnection *> const &connections() const;
