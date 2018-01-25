@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cschem xmlns="http://www.danielwagenaar.net/qschem-ns.html">
+  <packages>
+    <!-- Symbols may be matched loosely. That is, a symbol named
+         "part:diode:zener" would match a default rule with symbol
+         "diode", but "zener" would be a better match, and
+         "diode:zener" even better.
+
+         A practical algorithm is that a rule "A:B:C" can match a
+         symbol "X:Y:A:B:C:Z" but not "A:B:Y:C". Score is 2^k for a
+         match at the k-th level. So "resistor" matches
+         "part:passive:resistor" with a score of 2^2 and
+         "capacitor:polarized" matches
+         "part:passive:capacitor:polarized" with a score of
+         2^2+2^3. Rule "diode:LED" matches "part:diode:LED" with a
+         score of 2^1+2^2, outscoring rule "diode", which only scores
+         2^1, and rule "LED", which scores 2^2.
+
+         Container symbols like "part:container:X" automatically match
+         to package "X".
+
+         Ideally, rules should be checked for matching pin counts, but
+         that is complicated by containers that are represented in the
+         circuit by multiple symbols (e.g., two
+         "part:ic:virtual:opamp" and one
+         "part:container:opamp2"). Perhaps this is not a real
+         argument, since containers generally work without an explicit
+         <rule>. Another complication is that maps are not contained
+         in this file if they are simple, e.g., for the dip8
+         <package>. That means that cschem does not know how many pins
+         a dip8 has without looking at the pcb files.
+    -->
+    <rule symbol="resistor" package="r3"/>
+    <rule symbol="capacitor:polarized" package="cp1"/>
+    <rule symbol="capacitor" package="c1"/>
+    <rule symbol="diode:LED" package="led5"/>
+    <rule symbol="diode" package="d3"/>
+    
+    <package name="r3" pcb="ACY300"/>
+    <package name="r4" pcb="ACY400"/>
+    <package name="r5" pcb="ACY500"/>
+    <package name="r6" pcb="ACY600"/>
+    <package name="r7" pcb="ACY700"/>
+    
+    <package name="c1" pcb="RCY100"/>
+    <package name="c2" pcb="RCY200"/>    
+
+    <package name="cp1" pcb="RCY100P" map="+-"/>
+    <package name="cp2" pcb="RCY200P" map="+-"/>
+
+    <package name="led5" pcb="LED5" map="AK"/>
+    <package name="d3" pcb="ALF300" map="KA"/>
+    
+    <package name="to220" pcb="TO220W"/>
+
+    <package name="dip6" pcb="DIP6"/>
+    <package name="dip8" pcb="DIP8"/>
+    <package name="dip14" pcb="DIP14"/>
+    <package name="dip16" pcb="DIP16"/>
+
+    <package name="opamp1" pcb="DIP8"
+	     map="+=3 -=2 out=6 Vdd=7 Vss=4"/>
+    <package name="opamp2" pcb="DIP8"
+	     map="A:+=3 A:-=2 A:out=1 B:+=5 B:-=6 B:out=5 Vdd=8 Vss=4"/>
+  </packages>
+</cschem>
