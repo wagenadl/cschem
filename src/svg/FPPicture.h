@@ -11,11 +11,22 @@ class FPPicture {
      from them. */
 public:
   struct PinInfo {
+    PinInfo() {
+      number = 0;
+      flags = 0;
+      drillDiameter =0;
+      padDiameter = 0;
+      maskDiameter = 0;
+      clearanceDiameter = 0;
+    }
     QString name;
     int number;
+    bool isSquare;
     QPoint position;
-    int innerdiam;
-    int outerdiam;
+    int drillDiameter;
+    int padDiameter;
+    int maskDiameter;
+    int clearanceDiameter;
   };
 public:
   FPPicture(QString fn);
@@ -27,7 +38,7 @@ public:
 		   http://pcb.geda-project.org/pcb-cvs/pcb.html#Element-syntax
 		   call this "value". */
   QString description() const; // e.g., "Axial polar component..."
-  QMap<QString, PinInfo> const &pins() const;
+  QMap<int, PinInfo> const &pins() const; // organized by number
 private:
   QSharedPointer<class FPPicData> d;
 };

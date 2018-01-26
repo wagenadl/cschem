@@ -19,13 +19,13 @@ public:
   QString refdes;
   QString name;
   QPicture picture;
-  QPoint mxy;
-  QPoint txy;
+  QPoint markpos;
+  QPoint textpos;
   int tdir;
   int tscale;
   int flags;
   int tflags;
-  QMap<QString, PinInfo> pins;
+  QMap<int, PinInfo> pins; // organized by number
 };
 
 void FPPicData::parseElementLine(QStringList args, QPainter &p) {
@@ -43,26 +43,45 @@ void FPPicData::parseElementArc(QStringList args, QPainter &p) {
 void FPPicData::parsePin(QStringList args, QPainter &p) {
   if (args.size()<5)
     return;
+  FPPicture::PinInfo pin;
   int x = args.takeFirst().toInt();
   int y = args.takeFirst().toInt();
-  int flags = args.takeLast().toInt(0, 0);
-  int number = args.takeLast().unquote().toInt();
-  QString name = args.takeLast().unquote();
-  if (args.size()==9) {
-    // rX rY Thickness Clearance Mask Drill "Name" "Number" NFlags
-  } else if (args.size()==7) {
-    // aX aY Thickness Drill "Name" "Number" NFlags
-  } else if (args.size()==6) {
-    // aX aY Thickness Drill "Name" NFlags
-  } else if (args.size()==5) {
-    // aX aY Thickness "Name" NFlags
+  pin.position = QPoint(x, y);
+  pin.padDiameter = args.takeFirst().toInt();
+  QString flags = args.takeLast();
+  if (isQuoted(flags)) 
+    pin.isQuare = unquote(flags).split(",").contains("square");
+  else
+    pin.isSquare = flags.toInt() & 0x0100;
+  QString nn = args.takeLast().unquote()();
+  pin.number = nn.toInt();
+  if (args.size()==4) {
+    // [rX rY Thickness] Clearance Mask Drill "Name" ["Number" NFlags]
+    // Let's hope we already have a mark, otherwise, we're going to fail
+    pin.position += markpos;
+    pin.clearanceDiameter = args.takeFirst().toInt();
+    pin.drillDiameter = args.takeFirst().toInt();
+    pin.name = args.takeFirst().unquote();
+  } else if (args.size()==2) {
+    // [aX aY Thickness] Drill "Name" ["Number" NFlags]
+    pin.drillDiameter =  args.takeFirst().toInt();
+    pin.name = args.takeFirst().unquote();
+  } else if (args.size()==1) {
+    // [aX aY Thickness] Drill ["Name" NFlags]
+    pin.drillDiameter =  args.takeFirst().toInt();
+    pin.name = nn;
+  } else if (args.size()==0) {
+    // [aX aY Thickness] ["Name" NFlags]
+    pin.name = nn;
   } else {
+    return;
   }
+  pin.clearanceDiameter += pin.padDiameter;
 }
 
 void FPPicData::parseMark(QStringList args, QPainter &) {
   if (args.size() != 2)
-    mxy = QPoint(args[0].toInt(), args[1].toInt());
+    markpos = QPoint(args[0].toInt(), args[1].toInt());
 }
 
 
@@ -106,7 +125,7 @@ bool FPPicData::parseElement(QStringList args) {
   if (args.size()>=7) {
     int x = args.takeFirst().toInt();
     int y = args.takeFirst().toInt();
-    d->mxy = QPoint(x, y);
+    d->markpos = QPoint(x, y);
   }
   if (args.size()<5) {
     qDebug() << "Syntax error for element" << line;
@@ -115,7 +134,7 @@ bool FPPicData::parseElement(QStringList args) {
   
   int x = args.takeFirst().toInt();
   int y = args.takeFirst().toInt();
-  d->txy = QPoint(x, y);
+  d->textpos = QPoint(x, y);
   d->tdir = args.takeFirst().toInt();
   d->tscale = args.takeFirst().toInt();
   d->tflags = args.takeFirst().toInt(0, 0); // allow hex
