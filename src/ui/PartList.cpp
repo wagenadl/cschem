@@ -49,7 +49,11 @@ QVariant PartList::data(QModelIndex const &index,
   Element const &elt = d->elements[r];
   switch (Column(c)) {
   case Column::Id: return elt.id();
-  case Column::Name: return elt.name();
+  case Column::Name:
+    if (role==Qt::DisplayRole) 
+      return PartNumbering::nameToHtml(elt.name());
+    else
+      return elt.name();
   case Column::Value: return elt.value();
   case Column::Vendor: return elt.info().vendor;
   case Column::CatNo: return elt.info().partno;

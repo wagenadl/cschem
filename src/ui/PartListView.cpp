@@ -2,8 +2,11 @@
 
 #include "PartListView.h"
 #include "PartList.h"
+#include "HtmlDelegate.h"
 
 PartListView::PartListView(QWidget *parent): QTableView(parent) {
+  HtmlDelegate *delegate = new HtmlDelegate(this);
+  setItemDelegateForColumn(int(PartList::Column::Name), delegate);
 }
 
 PartListView::~PartListView() {
