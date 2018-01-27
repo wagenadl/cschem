@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include "LibView.h"
 #include "PartListView.h"
+#include "PartList.h"
 #include <QDockWidget>
 #include "LibView.h"
 #include "ui/SignalAccumulator.h"
@@ -42,7 +43,6 @@ public:
   QDockWidget *libviewdock;
   PartListView *partlistview;
   QDockWidget *partlistviewdock;
-  SignalAccumulator *chgtoplv;
   bool unsaved;
 };
 
@@ -82,15 +82,10 @@ void MainWindow::createDocks() {
   d->libviewdock->setWidget(d->libview);
   showLibrary();
 
-  d->partlistview = new PartListView(&d->schem);
+  d->partlistview = new PartListView(this);
   d->partlistviewdock = new QDockWidget("Parts list", this);
   d->partlistviewdock->setWidget(d->partlistview);
   showSymbolsList();
-  d->chgtoplv = new SignalAccumulator(this);
-  connect(d->chgtoplv, &SignalAccumulator::activated,
-          d->partlistview, &PartListView::rebuild);
-  connect(d->partlistview, &PartListView::valueEdited,
-          this, &MainWindow::reactToPartListEdit);
 }
 
 void MainWindow::showLibrary() {
@@ -101,7 +96,6 @@ void MainWindow::showLibrary() {
 
 void MainWindow::showSymbolsList() {
   addDockWidget(Qt::RightDockWidgetArea, d->partlistviewdock);
-  d->partlistview->rebuild();
   d->partlistviewdock->show();
 }
 
@@ -342,6 +336,7 @@ void MainWindow::quitAction() {
 
 void MainWindow::create() {
   if (d->scene) {
+    d->partlistview->setModel(0);
     d->view->setScene(0);
     delete d->scene;
   }
@@ -350,10 +345,9 @@ void MainWindow::create() {
   setWindowTitle(Style::programName());
   d->filename = "";
 
-  connect(d->scene, &Scene::annotationEdited,
-          this, &MainWindow::reactToSceneEdit);
   connect(d->scene, SIGNAL(libraryChanged()),
 	  d->libview, SLOT(rebuild()));
+  d->partlistview->setModel(d->scene->partlist());
 }
 
 void MainWindow::load(QString fn) {
@@ -365,7 +359,7 @@ void MainWindow::load(QString fn) {
   for (QString name: d->schem.library().symbolNames())
     d->lib.insert(d->schem.library().symbol(name));
   d->scene->setCircuit(d->schem.circuit());
-  d->partlistview->rebuild();
+  d->partlistview->setModel(d->scene->partlist());
   d->libview->rebuild();
   setWindowTitle(fn);
   d->filename = fn;
@@ -447,14 +441,6 @@ void MainWindow::plonk(QString sym) {
                                                   d->view->height()/2)));
 }
 
-void MainWindow::reactToSceneEdit() {
-  d->schem.setCircuit(d->scene->circuit());
-  if (d->partlistview->isVisible())
-    d->chgtoplv->activate();
-  d->unsaved = true;
-  setWindowTitle("*" + (d->filename.isEmpty() ? "Untitled" : d->filename));
-}
-
 void MainWindow::closeEvent(QCloseEvent *e) {
   if (d->unsaved) {
     auto ret
@@ -484,10 +470,6 @@ void MainWindow::closeEvent(QCloseEvent *e) {
   } else {
     e->accept();
   }
-}
-
-void MainWindow::reactToPartListEdit(int id) {
-  d->scene->setComponentValue(id, d->schem.circuit().element(id).value());
 }
 
 void MainWindow::resizeEvent(QResizeEvent *e) {
@@ -568,7 +550,7 @@ void MainWindow::exportPartListAction() {
   QFile file(fn);
   if (file.open(QFile::WriteOnly)) {
     QTextStream ts(&file);
-    for (QStringList  line: d->partlistview->partList()) {
+    for (QStringList  line: d->partlistview->model()->asTable()) {
       for (QString &str: line) {
 	str.replace("\"", tr("”"));
 	str = "\"" + str + "\"";
@@ -598,7 +580,7 @@ void MainWindow::circuitToClipboardAction() {
 }
  
 void MainWindow::partListToClipboardAction() {
-  QList<QStringList> symbols = d->partlistview->partList();
+  QList<QStringList> symbols = d->partlistview->model()->asTable();
   QString text;
   for (QStringList const &line: symbols)
     text += line.join("\t") + "\n";

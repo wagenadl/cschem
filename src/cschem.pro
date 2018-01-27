@@ -46,7 +46,7 @@ HEADERS += circuit/PartNumbering.h
 SOURCES += circuit/PartNumbering.cpp
 HEADERS += ui/SignalAccumulator.h   ui/TextTable.h
 SOURCES += ui/SignalAccumulator.cpp ui/TextTable.cpp
-HEADERS += ui/SvgItem.h
-SOURCES += ui/SvgItem.cpp
+HEADERS += ui/SvgItem.h   ui/PartList.h
+SOURCES += ui/SvgItem.cpp ui/PartList.cpp
 
 RESOURCES += cschem.qrc
