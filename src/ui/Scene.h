@@ -16,6 +16,7 @@ public:
   ~Scene();
   void setCircuit(Circuit const &);
   void setComponentValue(int eltid, QString value);
+  void updateFromPartList(Element const &);
   SymbolLibrary const *library() const;
   Circuit const &circuit() const;
   Circuit &circuit();
@@ -42,6 +43,7 @@ public:
   void simplifySegment(int con, int eg);
   void unhover();
   void rehover();
+  class PartList *partlist() const;
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;
@@ -57,7 +59,6 @@ protected:
 public:
   void annotationInternallyEdited(int id);
 signals:
-  void annotationEdited(int id);
   void libraryChanged();
 private:
   class SceneData *d;

@@ -13,6 +13,7 @@
 #include <QMimeData>
 #include "SceneAnnotation.h"
 #include "FloatingSymbol.h"
+#include "PartList.h"
 
 class SceneData {
 public:
@@ -21,67 +22,21 @@ public:
     hovermanager = 0;
     connbuilder = 0;
     dragin = 0;
+    partlist = 0;
   }
   void rebuild();
   void keyPressAnywhere(QKeyEvent *);
   void finalizeConnection();
   void startConnectionFromPin(QPointF);
   void startConnectionFromConnection(QPointF);
-  static QRectF minRect() {
-    return QRectF(-1000, -1000, 2000, 2000);
-  }
+  static QRectF minRect();
   void resetSceneRect();
   void growSceneRect(QSet<int> const &eltids);
-  QPointF pinPosition(int id, QString pin) const {
-    if (circ.elements().contains(id))
-      return lib->upscale(Geometry(circ, lib).pinPosition(id, pin));
-    else 
-      return QPoint();
-  }
-  bool undo() {
-    if (undobuffer.isEmpty())
-      return false;
-
-    redobuffer << circ;
-    redoselections << selectedElements();
-
-    circ = undobuffer.takeLast();
-    rebuild();
-
-    scene->clearSelection();
-    for (int id: undoselections.takeLast())
-      if (elts.contains(id))
-        elts[id]->setSelected(true);
-
-    return true;
-  }
-  bool redo() {
-    if (redobuffer.isEmpty())
-      return false;
-
-    undobuffer << circ;
-    undoselections << selectedElements();
-
-    circ = redobuffer.takeLast();
-    rebuild();
-
-    scene->clearSelection();
-    for (int id: redoselections.takeLast())
-      if (elts.contains(id))
-        elts[id]->setSelected(true);
-
-    return true;
-  }
-  void preact() {
-    undobuffer << circ;
-    undoselections << selectedElements();
-    redobuffer.clear();
-    redoselections.clear();
-  }
-  void unact() {
-    undobuffer.removeLast();
-    undoselections.removeLast();
-  }
+  QPointF pinPosition(int id, QString pin) const;
+  bool undo();
+  bool redo();
+  void preact();
+  void unact();
   QSet<int> selectedElements() const;
   void rotateElement(int id, int steps=1);
   void rotateSelection(int steps=1);
@@ -111,7 +66,67 @@ public:
   QList< QSet<int> > redoselections;
   ConnBuilder *connbuilder;
   FloatingSymbol *dragin;
+  PartList *partlist;
 };
+
+QRectF SceneData::minRect() {
+  return QRectF(-1000, -1000, 2000, 2000);
+}
+
+QPointF SceneData::pinPosition(int id, QString pin) const {
+  if (circ.elements().contains(id))
+    return lib->upscale(Geometry(circ, lib).pinPosition(id, pin));
+  else 
+    return QPoint();
+}
+
+bool SceneData::undo() {
+  if (undobuffer.isEmpty())
+    return false;
+
+  redobuffer << circ;
+  redoselections << selectedElements();
+
+  circ = undobuffer.takeLast();
+  rebuild();
+
+  scene->clearSelection();
+  for (int id: undoselections.takeLast())
+    if (elts.contains(id))
+      elts[id]->setSelected(true);
+
+  return true;
+}
+
+bool SceneData::redo() {
+  if (redobuffer.isEmpty())
+    return false;
+
+  undobuffer << circ;
+  undoselections << selectedElements();
+
+  circ = redobuffer.takeLast();
+  rebuild();
+
+  scene->clearSelection();
+  for (int id: redoselections.takeLast())
+    if (elts.contains(id))
+      elts[id]->setSelected(true);
+
+  return true;
+}
+
+void SceneData::preact() {
+  undobuffer << circ;
+  undoselections << selectedElements();
+  redobuffer.clear();
+  redoselections.clear();
+}
+
+void SceneData::unact() {
+  undobuffer.removeLast();
+  undoselections.removeLast();
+}
 
 void SceneData::startConnectionFromPin(QPointF pos) {
   scene->clearSelection();
@@ -161,11 +176,9 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
     }
   }
 
-  if (!eltids.isEmpty())
-    scene->annotationInternallyEdited(-1); // crude
-
   growSceneRect(eltids);
   hovermanager->update();
+  partlist->rebuild();
 }
 
 void SceneData::growSceneRect(QSet<int> const &eltids) {
@@ -220,6 +233,7 @@ Scene::Scene(SymbolLibrary *lib, QObject *parent):
   QGraphicsScene(parent) {
   d = new SceneData(this, lib);
   d->hovermanager = new HoverManager(this);
+  d->partlist = new PartList(this);  
   // auto *test = new QGraphicsTextItem;
   // test->setHtml("Hello world");
   // test->setPos(QPointF(100, 50));
@@ -257,6 +271,7 @@ void SceneData::rebuild() {
     conns[c.id()] = new SceneConnection(scene, c);
 
   resetSceneRect();
+  partlist->rebuild();
 }
 
 QPointF Scene::pinPosition(int eltid, QString pin) const {
@@ -867,8 +882,21 @@ void Scene::focusOutEvent(QFocusEvent *e) {
   QGraphicsScene::focusOutEvent(e);
 }
 
-void Scene::annotationInternallyEdited(int id) {
-  emit annotationEdited(id);
+void Scene::annotationInternallyEdited(int /*id*/) {
+  d->partlist->rebuild();
+}
+
+void Scene::updateFromPartList(Element const &elt) {
+  int id = elt.id();
+  if (d->circ.elements().contains(id)) {
+    Element e = d->circ.element(id);
+    e.setName(elt.name());
+    e.setValue(elt.value());
+    e.setInfo(elt.info());
+    d->circ.insert(e);
+  }
+  if (d->elts.contains(id))
+    d->elts[id]->rebuild();
 }
 
 void Scene::setComponentValue(int id, QString val) {
@@ -926,4 +954,8 @@ void Scene::unhover() {
 
 void Scene::rehover() {
   d->hovermanager->update();
+}
+
+PartList *Scene::partlist() const {
+  return d->partlist;
 }

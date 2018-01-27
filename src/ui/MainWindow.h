@@ -52,8 +52,6 @@ private:
   void createDocks();
 private slots:
   void plonk(QString);
-  void reactToSceneEdit();
-  void reactToPartListEdit(int id);
 protected:
   void resizeEvent(QResizeEvent *) override;
   void closeEvent(QCloseEvent *) override;
