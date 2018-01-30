@@ -635,7 +635,7 @@ void MainWindow::selectionToPartList() {
   QSet<int> sel = d->scene->selectedElements();
   qDebug() << "selection: " << sel;
   if (sel.size()==1) {
-    Element const &elt(d->scene->circuit().element(*sel.begin()));
+    Element const &elt(d->scene->circuit().elements[*sel.begin()]);
     d->packagepreview->setPackage(elt.name + ":" + elt.info.package);
   }
   if (d->recursedepth == 1)

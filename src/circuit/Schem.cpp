@@ -100,7 +100,7 @@ void Schem::saveSymbolLibrary(QXmlStreamWriter &sw, bool onlyused) const {
 
   QSet<QString> syms;
   if (onlyused) 
-    for (Element const &elt: d->circuit.elements())
+    for (Element const &elt: d->circuit.elements)
       syms << elt.symbol();
   else
     for (QString s: d->library.symbolNames())

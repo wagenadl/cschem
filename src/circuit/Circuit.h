@@ -4,7 +4,6 @@
 
 #define CIRCUIT_H
 
-#include <QSharedData>
 #include <QXmlStreamReader>
 #include "Element.h"
 #include "Connection.h"
@@ -14,18 +13,13 @@
 class Circuit {
 public:
   Circuit();
-  Circuit(Circuit const &);
-  Circuit &operator=(Circuit const &);
-  ~Circuit();
-  explicit Circuit(Connection const &); // create a circuit consisting
-  // of just one connection
+  explicit Circuit(Connection const &);
+  /* create a circuit consisting of just one connection */
 public:
-  void insert(Element const &); // or replace
+  void insert(Element const &);
   void insert(Connection const &);
-  void removeElement(int id);
+  void removeElementWithConnections(int id);
   /* Removes an element. Connections to/from the element are also deleted. */
-  void removeConnection(int id);
-  /* Removes a connection. */
   QSet<int> connectionsTo(QSet<int> ids) const;
   /* Connections with "toId" in the set ("fromId" is irrelevant) */
   QSet<int> connectionsFrom(QSet<int> ids) const;
@@ -59,7 +53,7 @@ public:
   Circuit restset(QSet<int> elts) const;
   /* Creates a copy of what is left of this circuit when the subset is
      taken out. */
-  Circuit &operator+=(Circuit const &);
+  void merge(Circuit const &);
   /* Bluntly merges two circuits, not worrying about overlapping
      connections, conflicting IDs, or anything like that. */
   int availableNumber(QString pfx) const; 
@@ -67,17 +61,14 @@ public:
      with PFX. */
  QString autoName(QString sym) const;
   /* Creates an automatic name for an element with symbol SYM. */
-public:
-  QMap<int, class Element> const &elements() const;
-  QMap<int, class Connection> const &connections() const;
-  Element const &element(int) const;
-  Connection const &connection(int) const;
   bool isEmpty() const;
   bool isValid() const;
+  void invalidate();
+public:
+  QMap<int, Element> elements;
+  QMap<int, Connection> connections;
 private:
-  QSharedDataPointer<class CircuitData> d;
-  friend QXmlStreamWriter &operator<<(QXmlStreamWriter &, Circuit const &);
-  friend QXmlStreamReader &operator>>(QXmlStreamReader &, Circuit &);
+  bool valid;
 };
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Circuit const &);

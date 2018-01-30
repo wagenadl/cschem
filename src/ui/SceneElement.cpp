@@ -32,13 +32,13 @@ void SceneElementData::markHover() {
 }  
 
 void SceneElementData::removeName() {
-  Element elt(scene->circuit().element(id));
+  Element elt(scene->circuit().elements[id]);
   elt.nameVisible = false;
   scene->modifyElementAnnotations(elt);
 }
 
 void SceneElementData::removeValue() {
-  Element elt(scene->circuit().element(id));
+  Element elt(scene->circuit().elements[id]);
   elt.valueVisible = false;
   scene->modifyElementAnnotations(elt);
 }
@@ -46,7 +46,7 @@ void SceneElementData::removeValue() {
 void SceneElementData::moveValue(QPointF delta) {
   if (delta.isNull())
     return;
-  Element elt(scene->circuit().element(id));
+  Element elt(scene->circuit().elements[id]);
   elt.valuePosition += delta.toPoint();
   scene->modifyElementAnnotations(elt);
 }
@@ -54,7 +54,7 @@ void SceneElementData::moveValue(QPointF delta) {
 void SceneElementData::moveName(QPointF delta) {
   if (delta.isNull())
     return;
-  Element elt(scene->circuit().element(id));
+  Element elt(scene->circuit().elements[id]);
   elt.namePosition += delta.toPoint();
   scene->modifyElementAnnotations(elt);
 }
@@ -63,7 +63,7 @@ void SceneElementData::nameTextToWidget() {
   // Copy name from circuit to widget
   // Called when escape pressed
   Circuit const &circ = scene->circuit(); 
-  Element const &elt(circ.element(id));
+  Element const &elt(circ.elements[id]);
   QString txt = elt.name;
   if (txt.isEmpty()) {
     name->setHtml("<i>nn</i>");
@@ -79,7 +79,7 @@ void SceneElementData::nameTextToWidget() {
 void SceneElementData::nameTextToCircuit() {
   // Copy name from widget to circuit
   // Called when return pressed
-  Element elt(scene->circuit().element(id));
+  Element elt(scene->circuit().elements[id]);
   QString txt = name->toPlainText();
   if (txt == "nn")
     txt = "";
@@ -91,7 +91,7 @@ void SceneElementData::nameTextToCircuit() {
 
 void SceneElementData::valueTextToWidget() {
   // Copy value from circuit to widget
-  QString txt = scene->circuit().element(id).value;
+  QString txt = scene->circuit().elements[id].value;
   if (txt.isEmpty()) {
     value->setHtml("<i>value</i>");
     value->setDefaultTextColor(Style::faintColor());
@@ -105,7 +105,7 @@ void SceneElementData::valueTextToWidget() {
 
 void SceneElementData::valueTextToCircuit() {
   // Copy value from widget to circuit
-  Element elt(scene->circuit().element(id));
+  Element elt(scene->circuit().elements[id]);
   QString txt = value->toPlainText();
   if (txt == "value")
     txt = "";
@@ -150,7 +150,7 @@ SceneElement::~SceneElement() {
 // }
 
 void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
-  Element elt = d->scene->circuit().element(d->id);
+  Element elt = d->scene->circuit().elements[d->id];
   if (elt.type == Element::Type::Component
       || elt.type == Element::Type::Port) {
     elt.nameVisible = true;
@@ -164,7 +164,7 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
   Circuit const &circ = d->scene->circuit();
   SymbolLibrary const &lib = d->scene->library();
-  d->delta0 = circ.element(d->id).position - lib.downscale(e->scenePos());
+  d->delta0 = circ.elements[d->id].position - lib.downscale(e->scenePos());
   QGraphicsItem::mousePressEvent(e);
 }
 
@@ -172,7 +172,7 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
-  QPoint oldpos = circ.element(d->id).position;
+  QPoint oldpos = circ.elements[d->id].position;
   QGraphicsItem::mouseMoveEvent(e);
   
   if (d->dragmoved || newpos != oldpos) {
@@ -186,7 +186,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
-  QPoint oldpos = circ.element(d->id).position;
+  QPoint oldpos = circ.elements[d->id].position;
   QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
     d->scene->moveSelection(newpos - oldpos,
@@ -196,7 +196,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 
 void SceneElement::temporaryTranslate(QPoint delta) {
   Circuit const &circ = d->scene->circuit();
-  Element elt(circ.element(d->id));
+  Element elt(circ.elements[d->id]);
   SymbolLibrary const &lib = d->scene->library();
 
   setPos(lib.upscale(elt.position + delta));
@@ -205,7 +205,7 @@ void SceneElement::temporaryTranslate(QPoint delta) {
 void SceneElement::rebuild() {
   // Reconstruct element
   Circuit const &circ = d->scene->circuit();
-  Element elt(circ.element(d->id));
+  Element elt(circ.elements[d->id]);
   SymbolLibrary const &lib = d->scene->library();
   Symbol const &symbol = lib.symbol(elt.symbol());
 
@@ -255,7 +255,7 @@ void SceneElement::rebuild() {
     d->nameTextToWidget();
     if (elt.name.isEmpty()) {
       d->nameTextToCircuit(); // automated magic
-      elt = circ.element(d->id);
+      elt = circ.elements[d->id];
     }
   } else if (d->name) {
     d->name->hide();
