@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <cschem xmlns="http://www.danielwagenaar.net/qschem-ns.html">
-  <packages>
+  <packaging>
     <!-- Symbols may be matched loosely. That is, a symbol named
          "part:diode:zener" would match a default rule with symbol
          "diode", but "zener" would be a better match, and
@@ -62,5 +62,5 @@
 	     map="+=3 -=2 out=6 Vdd=7 Vss=4"/>
     <package name="opamp2" pcb="DIP8"
 	     map="A:+=3 A:-=2 A:out=1 B:+=5 B:-=6 B:out=5 Vdd=8 Vss=4"/>
-  </packages>
+  </packaging>
 </cschem>
