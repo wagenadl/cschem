@@ -112,13 +112,8 @@ void LibViewData::addHeader(QString symbol, QString label) {
 LibView::LibView(QWidget *parent): QGraphicsView(parent),
                                    d(new LibViewData(this)) {
   setScene(d->scene);
-}
-
-LibView::LibView(class SymbolLibrary const *lib, QWidget *parent):
-  LibView(parent) {
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  setLibrary(lib);
 }
 
 void LibView::clear() {

@@ -6,20 +6,20 @@
 
 #include <QGraphicsScene>
 #include <QGraphicsItem>
-#include "circuit/Circuit.h"
+#include "circuit/Schem.h"
 #include "svg/SymbolLibrary.h"
 
 class Scene: public QGraphicsScene {
   Q_OBJECT;
 public:
-  Scene(SymbolLibrary *lib, QObject *parent=0);
+  Scene(Schem const &schem, QObject *parent=0);
   ~Scene();
-  void setCircuit(Circuit const &);
   void setComponentValue(int eltid, QString value);
   void updateFromPartList(Element const &);
-  SymbolLibrary const *library() const;
+  SymbolLibrary const &library() const;
   Circuit const &circuit() const;
   Circuit &circuit();
+  Schem const &schem() const;
   QPointF pinPosition(int eltid, QString pin) const;
   void moveSelection(QPoint delta, bool nomagnet);
   void tentativelyMoveSelection(QPoint delta, bool first, bool nomagnet);

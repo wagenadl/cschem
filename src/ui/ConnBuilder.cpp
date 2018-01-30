@@ -38,7 +38,7 @@ public:
 public:
   Scene *scene;
   Circuit circ;
-  SymbolLibrary const *lib;
+  SymbolLibrary const &lib;
   QSet<int> junctions;
   QSet<int> connections;
   int majorcon;
@@ -68,8 +68,8 @@ void ConnBuilderData::reset() {
 
 bool ConnBuilderData::fixPenultimate() {
   if (segments.size()==2
-      && segments[0]->line().length() < scene->library()->scale()
-      && segments[1]->line().length() < scene->library()->scale())
+      && segments[0]->line().length() < scene->library().scale()
+      && segments[1]->line().length() < scene->library().scale())
     return false;
       
   QLineF l = segments.last()->line();
@@ -102,7 +102,7 @@ bool ConnBuilderData::considerCompletion() {
   int c = scene->connectionAt(l.p2(), &seg);
   if (c>0) {
     CircuitMod cm(circ, lib);
-    int junc = cm.injectJunction(c, lib->downscale(l.p2()));
+    int junc = cm.injectJunction(c, lib.downscale(l.p2()));
     qDebug() << "Drop onto connection" << c << junc;
     if (junc>0) {
       circ = cm.circuit();
@@ -133,7 +133,7 @@ void ConnBuilderData::forceDanglingCompletion() {
 }
 
 QPolygonF ConnBuilderData::simplifiedPoints() const {
-  return scene->library()->simplifyPath(points);
+  return scene->library().simplifyPath(points);
 }
 
 void ConnBuilderData::buildConnection() {
@@ -155,7 +155,7 @@ void ConnBuilderData::buildConnection() {
     pp.removeLast();
   QPolygon via;
   for (auto p: pp)
-    via << scene->library()->downscale(p);
+    via << scene->library().downscale(p);
   c.setVia(via);
   circ.insert(c);
   connections << c.id();
@@ -192,7 +192,7 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   qDebug() << "othercons" << othercons;
   
   // must add a junction, or this will be confusing
-  Element j(Element::junction(scene->library()->downscale(pt)));
+  Element j(Element::junction(scene->library().downscale(pt)));
   circ.insert(j);
   junctions << j.id();
   
@@ -231,7 +231,7 @@ ConnBuilder::~ConnBuilder() {
 void ConnBuilder::startFromConnection(QPointF fromPos, int conId, int seg) {
   qDebug() << "startfromcon" << fromPos << conId << seg;
   CircuitMod cm(d->circ, d->lib);
-  int junc = cm.injectJunction(conId, d->lib->downscale(fromPos));
+  int junc = cm.injectJunction(conId, d->lib.downscale(fromPos));
   if (junc>0) {
     d->circ = cm.circuit();
     startFromPin(fromPos, junc, "");
@@ -249,11 +249,11 @@ void ConnBuilder::startFromPin(QPointF fromPos, int fromId, QString fromPin) {
   d->fromId = fromId;
   d->fromPin = fromPin;
 
-  QPointF p1 = d->lib->nearestGrid(fromPos);
+  QPointF p1 = d->lib.nearestGrid(fromPos);
   QPointF p0 = p1;
   if (fromId>0) {
     Geometry geom(d->circ, d->lib);
-    p0 = d->lib->upscale(geom.pinPosition(fromId, fromPin));
+    p0 = d->lib.upscale(geom.pinPosition(fromId, fromPin));
   }
   d->points << p0;
   qDebug() << "p0 p1" << p0 << p1;
@@ -299,7 +299,7 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
     return;
   qDebug() << "ConnBuilder: move " << e->scenePos();
   QPointF p0 = d->points.last();
-  QPointF p = d->lib->nearestGrid(e->scenePos());
+  QPointF p = d->lib.nearestGrid(e->scenePos());
   QPointF dp = p - p0;
   int N = d->segments.size();
   auto *gli1 = d->segments[N-2];

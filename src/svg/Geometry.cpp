@@ -24,7 +24,7 @@ public:
 
 class GeometryData {
 public:
-  GeometryData(Circuit const &circ, SymbolLibrary const *lib):
+  GeometryData(Circuit const &circ, SymbolLibrary const &lib):
     circ(circ), lib(lib) {
   }
   void ensurePinDB();
@@ -36,12 +36,12 @@ public:
   QTransform symbolToSceneElementTransformation(Element const &elt) const;
 public:
   Circuit circ;
-  SymbolLibrary const *lib;
+  SymbolLibrary lib;
   mutable QMap<OrderedPoint, PinID> pindb;
   mutable QMap<OrderedPoint, int> condb;
 };
 
-Geometry::Geometry(Circuit const &circ, SymbolLibrary const *lib):
+Geometry::Geometry(Circuit const &circ, SymbolLibrary const &lib):
   d(new GeometryData(circ, lib)) {
 }
 
@@ -68,7 +68,7 @@ QTransform GeometryData::symbolToCircuitTransformation(Element const &elt)
   const {
   QTransform xf;
   xf.translate(elt.position().x(), elt.position().y());
-  double s = lib->scale();
+  double s = lib.scale();
   xf.scale(1/s, 1/s);
   xf.rotate(-elt.rotation()*90);
   if (elt.isFlipped())
@@ -99,7 +99,7 @@ void GeometryData::ensurePinDB() {
   if (!pindb.isEmpty())
     return; // already done
   for (auto const &elt: circ.elements()) {
-    Symbol const &prt(lib->symbol(elt.symbol()));
+    Symbol const &prt(lib.symbol(elt.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();
@@ -149,7 +149,7 @@ QRectF Geometry::svgBoundingRect(Element const &elt) const {
   }
   
   QTransform xf = d->symbolToSceneElementTransformation(elt);
-  Symbol const &sym(d->lib->symbol(elt.symbol()));
+  Symbol const &sym(d->lib.symbol(elt.symbol()));
   QRectF bb = sym.shiftedBBox();
   qDebug() << "svgboundingrect" << elt.symbol() << bb << xf.mapRect(bb);
   return xf.mapRect(bb);
@@ -163,17 +163,17 @@ QRectF Geometry::defaultAnnotationSvgBoundingRect(Element const &elt,
   }
   
   QTransform xf = d->symbolToSceneElementTransformation(elt);
-  Symbol const &sym(d->lib->symbol(elt.symbol()));
+  Symbol const &sym(d->lib.symbol(elt.symbol()));
   QRectF r0 = sym.shiftedAnnotationBBox(annotation);
   if (r0.isEmpty()) {
     if (annotation=="value") {
       r0 = defaultAnnotationSvgBoundingRect(elt, "name");
-      return r0.translated(0, d->lib->scale()*3);
+      return r0.translated(0, d->lib.scale()*3);
     } else {
       QRectF bb = svgBoundingRect(elt);
       QRectF r
-	= QRectF(QPointF(bb.bottomRight()) + d->lib->upscale(QPoint(1, 2)),
-		 d->lib->scale()*QSizeF(5, 1));
+	= QRectF(QPointF(bb.bottomRight()) + d->lib.upscale(QPoint(1, 2)),
+		 d->lib.scale()*QSizeF(5, 1));
       return r;
     }
   } else {
@@ -184,7 +184,7 @@ QRectF Geometry::defaultAnnotationSvgBoundingRect(Element const &elt,
 QRect Geometry::boundingRect(Element const &elt) const {
   if (!d)
     return QRect();
-  Symbol const &prt(d->lib->symbol(elt.symbol()));
+  Symbol const &prt(d->lib.symbol(elt.symbol()));
   QRectF bb = prt.shiftedBBox();
   QTransform xf = d->symbolToCircuitTransformation(elt);
   bb = xf.mapRect(bb);
@@ -201,7 +201,7 @@ QRect Geometry::boundingRect() const {
 }
 
 QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
-  Symbol const &prt(lib->symbol(elt.symbol()));
+  Symbol const &prt(lib.symbol(elt.symbol()));
   QPointF pp = prt.shiftedPinPosition(pin);
   QTransform xf = symbolToCircuitTransformation(elt);
   QPoint p0 = xf.map(pp).toPoint();
@@ -210,7 +210,7 @@ QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
     pp = QPointF(-pp.x(), pp.y());
   for (int k=0; k<elt.rotation(); k++)
     pp = QPointF(pp.y(), -pp.x());
-  QPoint p1 = elt.position() + lib->downscale(pp);
+  QPoint p1 = elt.position() + lib.downscale(pp);
   if (p1!=p0)
     qDebug() << "TRANSFORMATION MISMATCH" << p0 << p1 << elt.report();
   return p1;
@@ -222,7 +222,7 @@ QPoint Geometry::centerOfPinMass() const {
   int N = 0;
   QPointF sum;
   for (Element const &elt: d->circ.elements()) {
-    Symbol const &symbol(d->lib->symbol(elt.symbol()));
+    Symbol const &symbol(d->lib.symbol(elt.symbol()));
     QStringList pins = symbol.pinNames();
     N += pins.size();
     for (QString p: pins)
@@ -241,7 +241,7 @@ QPoint Geometry::centerOfPinMass(int eltid) const {
 QPoint Geometry::centerOfPinMass(Element const &elt) const {
   if (!d)
     return QPoint();
-  Symbol const &symbol(d->lib->symbol(elt.symbol()));
+  Symbol const &symbol(d->lib.symbol(elt.symbol()));
   QStringList pins = symbol.pinNames();
   QPointF sum;
   int N = pins.size();

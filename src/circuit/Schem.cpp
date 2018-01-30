@@ -6,7 +6,8 @@
 
 class SchemData: public QSharedData {
 public:
-  SchemData(bool valid): valid(valid) { }
+  SchemData(bool valid):
+    valid(valid), library(SymbolLibrary::defaultSymbols()) { }
 public:
   Circuit circuit;
   //Symbols symbols;
@@ -62,19 +63,10 @@ Circuit const &Schem::circuit() const {
   return d->circuit;
 }
 
-void Schem::setCircuit(Circuit const &c) {
+Circuit & Schem::circuit() {
   d.detach();
-  d->circuit = c;
+  return d->circuit;
 }
-
-//Symbols const &Schem::symbols() const {
-//  return d->symbols;
-//}
-//
-//void Schem::setSymbols(Symbols const &p) {
-//  d.detach();
-//  d->symbols = p;
-//}
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Schem &c) {
   c = Schem(sr);
@@ -86,7 +78,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Schem const &c) {
   sr.writeDefaultNamespace("http://www.danielwagenaar.net/cschem-ns.html");
   sr << c.circuit();
   //sr << c.symbols();
-  c.saveSvg(sr);
+  c.saveSymbolLibrary(sr);
   sr.writeEndElement();
   return sr;
 };
@@ -95,24 +87,25 @@ SymbolLibrary const &Schem::library() const {
   return d->library;
 }
 
-void Schem::selectivelyUpdateLibrary(SymbolLibrary const &lib) {
-  QSet<QString> syms;
-  for (Element const &elt: circuit().elements())
-    syms << elt.symbol();
-  for (QString sym: syms) 
-    if (lib.contains(sym))
-      d->library.insert(lib.symbol(sym));
+SymbolLibrary &Schem::library() {
+  d.detach();
+  return d->library;
 }
 
-void Schem::saveSvg(QXmlStreamWriter &sw) const {
+void Schem::saveSymbolLibrary(QXmlStreamWriter &sw, bool onlyused) const {
   sw.writeStartElement("svg");
   Symbol::writeNamespaces(sw);
 
   sw.setAutoFormatting(false);
 
   QSet<QString> syms;
-  for (Element const &elt: circuit().elements())
-    syms << elt.symbol();
+  if (onlyused) 
+    for (Element const &elt: d->circuit.elements())
+      syms << elt.symbol();
+  else
+    for (QString s: d->library.symbolNames())
+      syms << s;
+  
   for (QString sym: syms) 
     if (d->library.contains(sym))
       d->library.symbol(sym).element().write(sw);
@@ -120,7 +113,6 @@ void Schem::saveSvg(QXmlStreamWriter &sw) const {
   sw.writeEndElement();
 
   sw.setAutoFormatting(true);
-
 }
 
 bool Schem::isEmpty() const {

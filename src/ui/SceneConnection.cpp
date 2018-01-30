@@ -81,22 +81,22 @@ bool SceneConnectionData::isDangling() const {
 
 QPen SceneConnectionData::normalPen() const {
   return QPen(isDangling() ? Style::danglingColor() : Style::layerColor(),
-	      scene->library()->lineWidth(),
+	      scene->library().lineWidth(),
 	      Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
 }
 
 QPen SceneConnectionData::draftPen() const {
   return QPen(isDangling() ? Style::danglingColor() : Style::layerColor(),
 	      Style::connectionDraftWidthFactor()
-	      * scene->library()->lineWidth(),
+	      * scene->library().lineWidth(),
 	      Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin);
 }
 
 QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
   if (moveseg<0)
     return QPointF();
-  double s = scene->library()->scale();
-  QPointF delta = scene->library()->nearestGrid(sp - movestart);
+  double s = scene->library().scale();
+  QPointF delta = scene->library().nearestGrid(sp - movestart);
   if (nomagnet)
     return delta;
   QPointF ll = origpath[moveseg + 1] - origpath[moveseg];
@@ -188,13 +188,13 @@ QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
 
 QPolygonF SceneConnectionData::path() const {
   Connection const &c = scene->circuit().connection(id);
-  SymbolLibrary const *lib = scene->library();
+  SymbolLibrary const &lib = scene->library();
 
   QPolygonF pp;
   if (!c.danglingStart())
     pp << scene->pinPosition(c.fromId(), c.fromPin());
   for (QPoint p: c.via())
-    pp << lib->scale()*p;
+    pp << lib.scale()*p;
   if (!c.danglingEnd())
     pp << scene->pinPosition(c.toId(), c.toPin());
   qDebug() << "Connection" << c.report() << pp;
@@ -236,7 +236,7 @@ void SceneConnection::rebuild() {
 
 void SceneConnection::temporaryTranslate(QPoint delta) {
   auto path = d->path();
-  path.translate(d->scene->library()->upscale(delta));
+  path.translate(d->scene->library().upscale(delta));
   setPath(path);
   setLineWidth(.5);
 }
@@ -244,23 +244,23 @@ void SceneConnection::temporaryTranslate(QPoint delta) {
 void SceneConnection::setLineWidth(double frac) {
   if (d->segments.isEmpty())
     return;
-  SymbolLibrary const *lib = scene()->library();
+  SymbolLibrary const &lib = scene()->library();
   QPen p = d->segments.first()->pen();
-  p.setWidthF(lib->lineWidth() *frac);
+  p.setWidthF(lib.lineWidth() *frac);
   for (auto *seg: d->segments)
     seg->setPen(p);
 }
 
 void SceneConnection::temporaryTranslateFrom(QPoint delta) {
   auto path = d->path();
-  path.first() += d->scene->library()->upscale(delta);
+  path.first() += d->scene->library().upscale(delta);
   setPath(path);
   setLineWidth(.5);
 }
 
 void SceneConnection::temporaryTranslateTo(QPoint delta) {
   auto path = d->path();
-  path.last() += d->scene->library()->upscale(delta);
+  path.last() += d->scene->library().upscale(delta);
   setPath(path);
   setLineWidth(.5);
 }
@@ -302,9 +302,9 @@ void SceneConnection::hover(int seg) {
 
   d->hoverseg = d->segments[seg];
 
-  SymbolLibrary const *lib = d->scene->library();
+  SymbolLibrary const &lib = d->scene->library();
   d->hoverseg->setPen(QPen(Style::hoverColor(),
-			   Style::connectionHoverWidthFactor()*lib->lineWidth(),
+			   Style::connectionHoverWidthFactor()*lib.lineWidth(),
                            Qt::SolidLine, Qt::RoundCap));
   d->hoverseg->setZValue(-1);
 }
@@ -419,7 +419,7 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   QPolygonF path = d->origpath;
   setPath(path);
   
-  auto const *lib = d->scene->library();
+  auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
   QPointF delta = d->moveDelta(e->scenePos(),
 			       e->modifiers() & Qt::ControlModifier);
@@ -431,7 +431,7 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   if (d->moveseg==d->segments.size()-1
       && !circ.connection(d->id).danglingEnd())
     path.append(d->origpath.last());
-  d->scene->modifyConnection(d->id, lib->simplifyPath(path));
+  d->scene->modifyConnection(d->id, lib.simplifyPath(path));
 }
 
 SceneConnection::WeakPtr::WeakPtr(SceneConnection *s,

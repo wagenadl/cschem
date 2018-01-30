@@ -9,7 +9,7 @@
 
 class CircuitMod {
 public:
-  CircuitMod(class Circuit const &, class SymbolLibrary const *);
+  CircuitMod(class Circuit const &, class SymbolLibrary const &);
   CircuitMod(CircuitMod const &) = delete;
   CircuitMod &operator=(CircuitMod const &) = delete;
   ~CircuitMod();

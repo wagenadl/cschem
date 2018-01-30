@@ -11,7 +11,7 @@
 
 class Geometry {
 public:
-  Geometry(class Circuit const &, class SymbolLibrary const *);
+  Geometry(class Circuit const &, class SymbolLibrary const &);
   ~Geometry();
   Geometry();
   Geometry(Geometry const &) = delete;
