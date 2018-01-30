@@ -18,7 +18,7 @@ public:
   void updateFromPartList(Element const &);
   SymbolLibrary const &library() const;
   Circuit const &circuit() const;
-  Circuit &circuit();
+  Circuit &circuit(); // this is used by SceneElement. It shouldn't be.
   Schem const &schem() const;
   QPointF pinPosition(int eltid, QString pin) const;
   void moveSelection(QPoint delta, bool nomagnet);

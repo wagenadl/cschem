@@ -296,6 +296,7 @@ Circuit const &Scene::circuit() const {
 }
 
 Circuit &Scene::circuit() {
+  qDebug() << "non-const Scene::circuit() is deprecated";
   return d->circ();
 }
 
