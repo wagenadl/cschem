@@ -16,12 +16,14 @@
 #include <QMessageBox>
 #include "LibView.h"
 #include "PartListView.h"
+#include "PackagePreview.h"
 #include "PartList.h"
 #include <QDockWidget>
 #include "LibView.h"
 #include "ui/SignalAccumulator.h"
 #include "svg/SvgExporter.h"
 #include  <QClipboard>
+#include <QItemSelectionModel>
 
 class MWData {
 public:
@@ -30,7 +32,9 @@ public:
     scene(0),
     libview(0), libviewdock(0),
     partlistview(0), partlistviewdock(0),
-    unsaved(false) {
+    packagepreview(0), packagepreviewdock(0),
+    unsaved(false),
+    recursedepth(0) {
   }
 public:
   SymbolLibrary lib;
@@ -43,7 +47,10 @@ public:
   QDockWidget *libviewdock;
   PartListView *partlistview;
   QDockWidget *partlistviewdock;
+  PackagePreview *packagepreview;
+  QDockWidget *packagepreviewdock;
   bool unsaved;
+  int recursedepth;
 };
 
 QString MWData::lastdir;
@@ -85,18 +92,45 @@ void MainWindow::createDocks() {
   d->partlistview = new PartListView(this);
   d->partlistviewdock = new QDockWidget("Parts list", this);
   d->partlistviewdock->setWidget(d->partlistview);
-  showSymbolsList();
+  showPartsList();
+  
+  d->packagepreview = new PackagePreview(this);
+  d->packagepreviewdock = new QDockWidget("Package preview", this);
+  d->packagepreviewdock->setWidget(d->packagepreview);
+  showPackagePreview();
 }
 
 void MainWindow::showLibrary() {
-  addDockWidget(Qt::LeftDockWidgetArea, d->libviewdock);
-  d->libviewdock->show();
+  bool vis = d->libviewdock->isVisible();
+  qDebug() << "lib vis" << vis;
+  if (vis) {
+    d->libviewdock->hide();
+  } else {
+    d->libviewdock->show();
+    addDockWidget(Qt::LeftDockWidgetArea, d->libviewdock);
+  }
 }
 
+void MainWindow::showPartsList() {
+  bool vis = d->partlistviewdock->isVisible();
+  qDebug() << "partslist vis" << vis;
+  if (vis) {
+    d->partlistviewdock->hide();
+  } else {
+    d->partlistviewdock->show();
+    addDockWidget(Qt::RightDockWidgetArea, d->partlistviewdock);
+  }
+}
 
-void MainWindow::showSymbolsList() {
-  addDockWidget(Qt::RightDockWidgetArea, d->partlistviewdock);
-  d->partlistviewdock->show();
+void MainWindow::showPackagePreview() {
+  bool vis = d->packagepreviewdock->isVisible();
+  qDebug() << "package preview vis" << vis;
+  if (vis) {
+    d->packagepreviewdock->hide();
+  } else {
+    d->packagepreviewdock->show();
+    addDockWidget(Qt::RightDockWidgetArea, d->packagepreviewdock);
+  }
 }
 
 void MainWindow::showVirtuals() {
@@ -144,7 +178,6 @@ void MainWindow::createActions() {
   menu->addAction(act);
 
   act = new QAction(tr("Export &parts list as csv…"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
   connect(act, &QAction::triggered, this, &MainWindow::exportPartListAction);
   menu->addAction(act);
 
@@ -153,7 +186,7 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::circuitToClipboardAction);
   menu->addAction(act);
 
-  act = new QAction(tr("Copy symbols lis&t to clipboard"), this);
+  act = new QAction(tr("Copy parts lis&t to clipboard"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
   connect(act, &QAction::triggered,
 	  this, &MainWindow::partListToClipboardAction);
@@ -250,14 +283,21 @@ void MainWindow::createActions() {
   menu->addAction(act);
 
   act = new QAction(tr("&Library"), this);
-  act->setStatusTip(tr("Show library pane"));
+  act->setStatusTip(tr("Show/hide library pane"));
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
   connect(act, &QAction::triggered, this, &MainWindow::showLibrary);
   menu->addAction(act);
 
-
   act = new QAction(tr("&Parts List"), this);
-  act->setStatusTip(tr("Show parts list"));
-  connect(act, &QAction::triggered, this, &MainWindow::showSymbolsList);
+  act->setStatusTip(tr("Show/hide parts list"));
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+  connect(act, &QAction::triggered, this, &MainWindow::showPartsList);
+  menu->addAction(act);
+
+  act = new QAction(tr("Package previe&w"), this);
+  act->setStatusTip(tr("Show/hide package preview"));
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
+  connect(act, &QAction::triggered, this, &MainWindow::showPackagePreview);
   menu->addAction(act);
   
   menuBar()->addSeparator();
@@ -344,10 +384,19 @@ void MainWindow::create() {
   d->view->setScene(d->scene);
   setWindowTitle(Style::programName());
   d->filename = "";
-
-  connect(d->scene, SIGNAL(libraryChanged()),
-	  d->libview, SLOT(rebuild()));
+  
   d->partlistview->setModel(d->scene->partlist());
+  d->partlistviewdock->show();
+
+  connect(d->scene, &Scene::libraryChanged,
+	  d->libview, &LibView::rebuild);
+
+  connect(d->scene, &Scene::selectionChanged,
+	  this, &MainWindow::selectionToPartList);
+
+  connect(d->partlistview->selectionModel(),
+	  &QItemSelectionModel::selectionChanged,
+	  this, &MainWindow::selectionFromPartList);
 }
 
 void MainWindow::load(QString fn) {
@@ -360,9 +409,14 @@ void MainWindow::load(QString fn) {
     d->lib.insert(d->schem.library().symbol(name));
   d->scene->setCircuit(d->schem.circuit());
   d->partlistview->setModel(d->scene->partlist());
+  connect(d->partlistview->selectionModel(),
+	  &QItemSelectionModel::selectionChanged,
+	  this, &MainWindow::selectionFromPartList);
+
   d->libview->rebuild();
   setWindowTitle(fn);
   d->filename = fn;
+  d->partlistviewdock->show();
 }
 
 bool MainWindow::saveAs(QString fn) {
@@ -587,3 +641,30 @@ void MainWindow::partListToClipboardAction() {
   QApplication::clipboard()->setText(text);
   
 } 
+
+void MainWindow::selectionToPartList() {
+  d->recursedepth ++;
+  qDebug() << "selection to partlist";
+  QSet<int> sel = d->scene->selectedElements();
+  qDebug() << "selection: " << sel;
+  if (sel.size()==1) {
+    Element const &elt(d->scene->circuit().element(*sel.begin()));
+    d->packagepreview->setPackage(elt.name() + ":" + elt.info().package);
+  }
+  if (d->recursedepth == 1)
+    d->partlistview->selectElements(sel);
+  qDebug() << "end to partlist";
+  d->recursedepth --;
+}
+
+void MainWindow::selectionFromPartList() {
+  d->recursedepth ++;
+  qDebug() << "selection from partlist";
+  QSet<int> sel = d->partlistview->selectedElements();
+  qDebug() << "selection: " << sel;
+  if (d->recursedepth == 1)
+    d->scene->selectElements(sel);
+  qDebug() << "end from partlist";
+  d->recursedepth --;
+}
+

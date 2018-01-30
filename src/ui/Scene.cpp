@@ -303,6 +303,16 @@ QSet<int> Scene::selectedElements() const {
   return d->selectedElements();
 }
 
+void Scene::selectElements(QSet<int> const &set) {
+  QSet<int> old = selectedElements();
+  for (int id: set-old)
+    if (d->elts.contains(id))
+      d->elts[id]->setSelected(true);
+  for (int id: old-set)
+    if (d->elts.contains(id))
+      d->elts[id]->setSelected(false);
+}
+
 void Scene::tentativelyMoveSelection(QPoint delta, bool first,
 				     bool nomagnet) {
   QSet<int> selection = selectedElements();

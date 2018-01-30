@@ -32,7 +32,8 @@ public slots:
   void redoAction();
   void removeDanglingAction();
   void showLibrary();
-  void showSymbolsList();
+  void showPartsList();
+  void showPackagePreview();
   void showVirtuals();
   void rotateCCWAction();
   void rotateCWAction();
@@ -52,6 +53,8 @@ private:
   void createDocks();
 private slots:
   void plonk(QString);
+  void selectionToPartList();
+  void selectionFromPartList();
 protected:
   void resizeEvent(QResizeEvent *) override;
   void closeEvent(QCloseEvent *) override;

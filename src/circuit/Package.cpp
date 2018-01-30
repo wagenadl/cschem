@@ -82,11 +82,15 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Package &c) {
   QString map = a.value("map").toString();
   if (map.contains(" ")) {
     // map of type "name1=number1 name2=number2 ..."
+    int k = 0;
     QStringList lst = map.split(" ");
     for (QString p: lst) {
       QStringList bits = p.split("=");
-      if (bits.size()==2) {
-	d->map[bits[0]] = bits[1].toInt();
+      if (bits.size()==1) {
+	d->map[bits[0]] = ++k;
+      } else if (bits.size()==2) {
+	k = bits[1].toInt();
+	d->map[bits[0]] = k;
       } else {
 	qDebug() << "Cannot interpret" << p << "as a pin map element";
       }
