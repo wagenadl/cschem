@@ -17,7 +17,7 @@ Connection Router::reroute(int conid,
   Geometry origgeom(origcirc, lib);
   Geometry newgeom(newcirc, lib);
   
-  Connection con = newcirc.connection(conid);
+  Connection con = newcirc.connections[conid];
 
   QPoint origStart = origgeom.pinPosition(con.from());
   QPoint origEnd = origgeom.pinPosition(con.to());

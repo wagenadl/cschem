@@ -182,7 +182,7 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   // multiple connections to that pin.
   if (id<=0)
     return -1; // don't worry if dangling
-  if (circ.element(id).type == Element::Type::Junction)
+  if (circ.elements[id].type == Element::Type::Junction)
     return -1; // easy if already junction
   QSet<int> othercons = circ.connectionsOn(id, pin);
   if (othercons.isEmpty())
@@ -204,7 +204,7 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   
   // move other connections to junction
   for (int o: othercons) {
-    Connection c(circ.connection(o));
+    Connection c(circ.connections[o]);
     if (c.fromId == id)
       c.setFrom(j.id);
     if (c.toId == id) 
@@ -347,17 +347,17 @@ bool ConnBuilder::isAbandoned() const {
 QList<Connection> ConnBuilder::connections() const {
   QList<Connection> lst;
   if (d->majorcon > 0)
-    lst << d->circ.connection(d->majorcon);
+    lst << d->circ.connections[d->majorcon];
   for (int id: d->connections)
     if (id != d->majorcon)
-      lst << d->circ.connection(id);
+      lst << d->circ.connections[id];
   return lst;
 }
 
 QList<Element> ConnBuilder::junctions() const {
   QList<Element> lst;
   for (int id: d->junctions)
-    lst << d->circ.element(id);
+    lst << d->circ.elements[id];
   return lst;
 }
   

@@ -78,7 +78,7 @@ QRectF SceneData::minRect() {
 }
 
 QPointF SceneData::pinPosition(int id, QString pin) const {
-  if (circ().elements().contains(id))
+  if (circ().elements.contains(id))
     return lib().upscale(Geometry(circ(), lib()).pinPosition(id, pin));
   else 
     return QPoint();
@@ -158,11 +158,11 @@ void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
 
 void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
   for (int id: conids) {
-    if (circ().connections().contains(id)) {
+    if (circ().connections.contains(id)) {
       if (conns.contains(id))
         conns[id]->rebuild();
       else
-        conns[id] = new SceneConnection(scene, circ().connection(id));
+        conns[id] = new SceneConnection(scene, circ().connections[id]);
     } else if (conns.contains(id)) {
       delete conns[id];
       conns.remove(id);
@@ -170,11 +170,11 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
   }
 
   for (int id: eltids) {
-    if (circ().elements().contains(id)) {
+    if (circ().elements.contains(id)) {
       if (elts.contains(id))
         elts[id]->rebuild();
       else
-        elts[id] = new SceneElement(scene, circ().element(id));
+        elts[id] = new SceneElement(scene, circ().elements[id]);
     } else if (elts.contains(id)) {
       delete elts[id];
       elts.remove(id);
@@ -269,10 +269,10 @@ void SceneData::rebuild() {
     delete i;
   conns.clear();
 
-  for (auto const &c: circ().elements()) 
+  for (auto const &c: circ().elements) 
     elts[c.id] = new SceneElement(scene, c);
   
-  for (auto const &c: circ().connections())
+  for (auto const &c: circ().connections)
     conns[c.id] = new SceneConnection(scene, c);
 
   resetSceneRect();
@@ -376,8 +376,8 @@ void Scene::moveSelection(QPoint delta, bool nomagnet) {
     // Just a little sanity check
     Circuit newcirc = cm.circuit();
     for (int id: selection)
-      if (!newcirc.elements().contains(id))
-	qDebug() << "Selected element" << origCirc.element(id).report()
+      if (!newcirc.elements.contains(id))
+	qDebug() << "Selected element" << origCirc.elements[id].report()
 		 << "got deleted in move. This might be bad.";
     // End of sanity check
 
@@ -573,7 +573,7 @@ static double L2(QPointF p) {
 QString Scene::pinAt(QPointF scenepos, int elementId) const {
   if (!d->elts.contains(elementId))
     return PinID::NOPIN;
-  QString sym = d->circ().element(elementId).symbol();
+  QString sym = d->circ().elements[elementId].symbol();
   Symbol const &symbol = library().symbol(sym);
   double r = library().scale();
   for (auto p: symbol.pinNames())
@@ -650,7 +650,7 @@ void Scene::modifyElementAnnotations(Element const &elt) {
 
   d->preact();
   
-  Element elt0 = d->circ().element(id);
+  Element elt0 = d->circ().elements[id];
   elt0.copyAnnotationsFrom(elt);
   d->circ().insert(elt0);
   if (d->elts.contains(id))
@@ -665,7 +665,7 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
 
   d->preact();
   
-  Connection con(d->circ().connection(id));
+  Connection con(d->circ().connections[id]);
   if (con.fromId > 0)
     newpath.removeFirst();
   if (con.toId > 0)
@@ -716,11 +716,11 @@ void Scene::pasteFromClipboard() {
     return;
   }
   d->preact();
-  d->circ() += pp;
-  d->rebuildAsNeeded(QSet<int>::fromList(pp.elements().keys()),
-                     QSet<int>::fromList(pp.connections().keys()));
+  d->circ().merge(pp);
+  d->rebuildAsNeeded(QSet<int>::fromList(pp.elements.keys()),
+                     QSet<int>::fromList(pp.connections.keys()));
   clearSelection();
-  for (int id: pp.elements().keys()) 
+  for (int id: pp.elements.keys()) 
     if (d->elts.contains(id))
       d->elts[id]->setSelected(true);
 }
@@ -797,7 +797,7 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
       ee << elt.id;
       cm.mergeSelection(ee);
     }
-    for (Element const &elt: circ().elements())
+    for (Element const &elt: circ().elements)
       if (elt.symbol()==symbol)
 	cm.forceRebuildElement(elt.id);
     
@@ -918,12 +918,11 @@ void Scene::focusOutEvent(QFocusEvent *e) {
 
 void Scene::updateFromPartList(Element const &elt) {
   int id = elt.id;
-  if (d->circ().elements().contains(id)) {
-    Element e = d->circ().element(id);
+  if (d->circ().elements.contains(id)) {
+    Element &e(d->circ().elements[id]);
     e.name = elt.name;
     e.value = elt.value;
     e.info = elt.info;
-    d->circ().insert(e);
   }
   if (d->elts.contains(id))
     d->elts[id]->rebuild();

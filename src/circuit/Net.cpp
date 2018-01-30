@@ -24,7 +24,7 @@ void NetData::add(int c) {
     return;
   connections << c;
   qDebug() << "  added";
-  Connection const &con = circ.connection(c);
+  Connection const &con = circ.connections[c];
   add(con.from());
   add(con.to());
 }

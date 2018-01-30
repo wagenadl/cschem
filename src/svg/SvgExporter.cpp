@@ -157,10 +157,10 @@ bool SvgExporter::exportSvg(QString const &fn) {
       .arg(Style::annotationFont().family());
     sw.writeAttribute("style", style);
     
-    for (Element const &elt: d->circ.elements())
+    for (Element const &elt: d->circ.elements)
       d->writeElement(sw, elt);
 
-    for (Connection const &con: d->circ.connections())
+    for (Connection const &con: d->circ.connections)
       d->writeConnection(sw, con);
     sw.writeEndElement(); // g
     sw.writeEndElement(); // svg

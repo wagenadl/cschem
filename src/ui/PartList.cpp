@@ -10,7 +10,7 @@
 class PartListData {
 public:
   PartListData(Scene *scene): scene(scene) {
-    elements = scene->circuit().elements().values();
+    elements = scene->circuit().elements.values();
   }
 public:
   Scene *scene;
@@ -147,7 +147,7 @@ int PartList::rowCount(QModelIndex const &parent) const {
 void PartList::rebuild() {
   // Regrab circuit from scene, update rows as needed.
   // Let's first see what we simply need to drop
-  QMap<int, Element> newmap = d->scene->circuit().elements();
+  QMap<int, Element> newmap = d->scene->circuit().elements;
   for (int n: newmap.keys())
     if (newmap[n].type != Element::Type::Component)
       newmap.remove(n);
