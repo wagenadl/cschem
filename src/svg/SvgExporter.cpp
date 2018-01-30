@@ -12,11 +12,12 @@
 #include <QDebug>
 #include "ui/Style.h"
 #include <QTransform>
+#include "circuit/Schem.h"
 
 class SvgExporterData {
 public:
-  SvgExporterData(Circuit const &circ, SymbolLibrary const *lib):
-    circ(circ), lib(lib),
+  SvgExporterData(Schem const &schem):
+    circ(schem.circuit()), lib(schem.library()),
     geom(circ, lib) {
   }
   void writeBBox(QXmlStreamWriter &sw);
@@ -24,16 +25,16 @@ public:
   void writeConnection(QXmlStreamWriter &sw, Connection const &elt);
 public:
   Circuit circ;
-  SymbolLibrary const *lib;
+  SymbolLibrary const &lib;
   Geometry geom;
 };
 
 
 void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   QString sym = elt.symbol();
-  Symbol const &symbol = lib->symbol(sym);
+  Symbol const &symbol = lib.symbol(sym);
 
-  QPointF p0 = lib->upscale(elt.position());
+  QPointF p0 = lib.upscale(elt.position());
   int r = elt.rotation();
   bool flp = elt.isFlipped();
 
@@ -100,10 +101,10 @@ void SvgExporterData::writeConnection(QXmlStreamWriter &sw, Connection const &co
   sw.writeStartElement("path");
   sw.writeAttribute("id", QString("con%1").arg(con.id()));
   QStringList bits;
-  QPointF p = lib->upscale(pp.takeFirst());
+  QPointF p = lib.upscale(pp.takeFirst());
   bits << QString("M %1,%2").arg(p.x()).arg(p.y());
   for (QPoint p0: pp) {
-    QPointF p = lib->upscale(p0);
+    QPointF p = lib.upscale(p0);
     bits << QString("L %1,%2").arg(p.x()).arg(p.y());
   }
   sw.writeAttribute("d", bits.join(" "));
@@ -111,9 +112,9 @@ void SvgExporterData::writeConnection(QXmlStreamWriter &sw, Connection const &co
 }
 
 void SvgExporterData::writeBBox(QXmlStreamWriter &sw) {
-  QRectF bbox = lib->upscale(geom.boundingRect());
+  QRectF bbox = lib.upscale(geom.boundingRect());
   // Add space for annotations. This could be more elegant:
-  double s = lib->scale();
+  double s = lib.scale();
   double mrg = 6*s;
   bbox.adjust(-mrg, -mrg, mrg, mrg);
 
@@ -124,8 +125,8 @@ void SvgExporterData::writeBBox(QXmlStreamWriter &sw) {
 		    .arg(bbox.width()).arg(bbox.height()));
 }
 
-SvgExporter::SvgExporter(Circuit const &circ, SymbolLibrary const *lib):
-  d(new SvgExporterData(circ, lib)) {
+SvgExporter::SvgExporter(Schem const &schem):
+  d(new SvgExporterData(schem)) {
 }
 
 SvgExporter::~SvgExporter() {
@@ -133,7 +134,7 @@ SvgExporter::~SvgExporter() {
 }
 
 bool SvgExporter::exportSvg(QString const &fn) {
-  qDebug() << "symbol names" << d->lib->symbolNames();
+  qDebug() << "symbol names" << d->lib.symbolNames();
   QFile file(fn);
   if (file.open(QFile::WriteOnly)) {
     QXmlStreamWriter sw(&file);
@@ -147,7 +148,7 @@ bool SvgExporter::exportSvg(QString const &fn) {
     sw.writeStartElement("g"); // put the whole thing in a group
     QString style = "opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;";
     style += "stroke:#000000;";
-    style += QString("stroke-width:%1;").arg(d->lib->lineWidth());
+    style += QString("stroke-width:%1;").arg(d->lib.lineWidth());
     style += "stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;";
     style += "stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;";
     style += "font-style:normal;font-variant:normal;font-weight:normal;";

@@ -37,10 +37,8 @@ public:
     recursedepth(0) {
   }
 public:
-  SymbolLibrary lib;
   QGraphicsView *view;
   Scene *scene;
-  Schem schem;
   QString filename;
   static QString lastdir;
   LibView *libview;
@@ -55,17 +53,13 @@ public:
 
 QString MWData::lastdir;
     
-MainWindow::MainWindow(SymbolLibrary const *lib): d(new MWData()) {
-  if (lib)
-    d->lib = *lib;
-  else
-    d->lib = SymbolLibrary::defaultSymbols();
+MainWindow::MainWindow(): d(new MWData()) {
   createView();
   createDocks();
   createActions();
   d->view->scale(1.5, 1.5);
   d->libview->scale(1.5);
-  create();
+  create(Schem());
   int w0 = 10 * d->libview->width();
   int h0 = 3 * w0 / 4;
   qDebug() << w0 << h0;
@@ -82,7 +76,7 @@ MainWindow::MainWindow(SymbolLibrary const *lib): d(new MWData()) {
 }
 
 void MainWindow::createDocks() {
-  d->libview = new LibView(&d->lib);
+  d->libview = new LibView();
   connect(d->libview, SIGNAL(activated(QString)),
           this, SLOT(plonk(QString)));
   d->libviewdock = new QDockWidget("Library", this);
@@ -318,8 +312,8 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::newAction() {
-  auto *mw = d->schem.isEmpty() ? this : new MainWindow(&d->lib);
-  mw->create();
+  auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
+  mw->create(Schem());
   mw->show();
 }
 
@@ -331,7 +325,7 @@ void MainWindow::openAction() {
 					    d->lastdir,
 					    tr("Schematics (*.schem)"));
   if (!fn.isEmpty()) {
-    auto *mw = d->schem.isEmpty() ? this : new MainWindow(&d->lib);
+    auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
     mw->load(fn);
     mw->show();
   }
@@ -374,16 +368,18 @@ void MainWindow::quitAction() {
 
 
 
-void MainWindow::create() {
+void MainWindow::create(Schem const &schem) {
   if (d->scene) {
     d->partlistview->setModel(0);
     d->view->setScene(0);
     delete d->scene;
   }
-  d->scene = new Scene(&d->lib);
+  d->scene = new Scene(schem);
   d->view->setScene(d->scene);
   setWindowTitle(Style::programName());
   d->filename = "";
+
+  d->libview->setLibrary(&d->scene->library());
   
   d->partlistview->setModel(d->scene->partlist());
   d->partlistviewdock->show();
@@ -400,31 +396,17 @@ void MainWindow::create() {
 }
 
 void MainWindow::load(QString fn) {
-  create();
-  qDebug() << "Created schematic";
-  d->schem = FileIO::loadSchematic(fn);
-  qDebug() << "loaded schematic. symbol names:" << d->schem.library().symbolNames();
-  d->libview->clear();
-  for (QString name: d->schem.library().symbolNames())
-    d->lib.insert(d->schem.library().symbol(name));
-  d->scene->setCircuit(d->schem.circuit());
-  d->partlistview->setModel(d->scene->partlist());
-  connect(d->partlistview->selectionModel(),
-	  &QItemSelectionModel::selectionChanged,
-	  this, &MainWindow::selectionFromPartList);
+  create(FileIO::loadSchematic(fn));
 
   d->libview->rebuild();
   setWindowTitle(fn);
   d->filename = fn;
-  d->partlistviewdock->show();
 }
 
 bool MainWindow::saveAs(QString fn) {
-  Circuit circ(d->scene->circuit());
-  circ.renumber(1);
-  d->schem.setCircuit(circ);
-  d->schem.selectivelyUpdateLibrary(d->lib);
-  if (FileIO::saveSchematic(fn, d->schem)) {
+  Schem schem = d->scene->schem();
+  schem.circuit().renumber(1);
+  if (FileIO::saveSchematic(fn, schem)) {
     setWindowTitle(fn);
     d->filename = fn;
     d->unsaved = false;
@@ -544,8 +526,6 @@ void MainWindow::rotateCWAction() {
 }
 
 void MainWindow::exportCircuitAction() {
-  d->schem.setCircuit(d->scene->circuit());
-  
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
   
@@ -570,7 +550,7 @@ void MainWindow::exportCircuitAction() {
 
   QString fn = fns.first();
 
-  SvgExporter xp(d->schem.circuit(),&d->lib);
+  SvgExporter xp(d->scene->schem());
   if (!xp.exportSvg(fn)) {
     qDebug() << "Failed to export svg";
   }

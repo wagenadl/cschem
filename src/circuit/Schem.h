@@ -7,6 +7,7 @@
 #include <QSharedData>
 #include <QXmlStreamReader>
 #include "Circuit.h"
+
 //#include "Symbols.h"
 
 class Schem {
@@ -18,15 +19,16 @@ public:
   ~Schem();
 public:
   Circuit const &circuit() const;
-  void setCircuit(Circuit const &);
+  Circuit &circuit();
   //Symbols const &symbols() const;
   //void setSymbols(Symbols const &);
   bool isEmpty() const;
   bool isValid() const;
   class SymbolLibrary const &library() const;
-  void selectivelyUpdateLibrary(SymbolLibrary const &);
+  class SymbolLibrary &library();
 public:
-  void saveSvg(QXmlStreamWriter &dst) const;
+  void saveSymbolLibrary(QXmlStreamWriter &dst,
+                         bool onlySaveUsedSymbols=true) const;
 private:
   QSharedDataPointer<class SchemData> d;
 };

@@ -8,7 +8,7 @@
 #include <QDebug>
 #include "svg/Geometry.h"
 
-Router::Router(SymbolLibrary const *lib): lib(lib) {
+Router::Router(SymbolLibrary const &lib): lib(lib) {
 }
 
 Connection Router::reroute(int conid,

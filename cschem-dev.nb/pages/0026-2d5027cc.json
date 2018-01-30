@@ -1,0 +1,78 @@
+{ "typ": "page",
+  "cre": "2018-01-29T19:19:00",
+  "mod": "2018-01-29T19:22:24",
+  "cui": "69dd87eed81349db",
+  "stampTime": 0,
+  "startPage": 26,
+  "unlocked": false,
+  "uuid": "2d5027cc",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-29T19:19:00",
+      "mod": "2018-01-29T19:19:00",
+      "uuid": "255dda50"
+    },
+    { "typ": "title",
+      "cre": "2018-01-29T19:19:00",
+      "mod": "2018-01-29T19:19:11",
+      "uuid": "d1da88a1",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T19:19:00",
+          "mod": "2018-01-29T19:19:11",
+          "lines": [
+            0
+          ],
+          "text": "Schem in Scene",
+          "uuid": "8959f6b0"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T19:19:06",
+      "mod": "2018-01-29T19:19:57",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f318625a",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T19:19:06",
+          "mod": "2018-01-29T19:19:57",
+          "lines": [
+            0,
+            58,
+            120,
+            183
+          ],
+          "text": "So far, the MainWindow has held the SymbolLibrary and the Scene has held the Circuit. But really, both should be in the Scene. That is a much simpler arrangement, and it restores the Schem to its proper glory.",
+          "uuid": "553a9cfe"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T19:21:54",
+      "mod": "2018-01-29T19:22:24",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a0ec4440",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T19:21:54",
+          "mod": "2018-01-29T19:22:24",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "I am replacing Schem::setCircuit() with a non-const version of circuit() that allows direct access. Same for Schem::library().",
+          "uuid": "18001d4b"
+        }
+      ]
+    }
+  ]
+}

@@ -10,7 +10,7 @@
 class MainWindow: public QMainWindow {
   Q_OBJECT;
 public:
-  explicit MainWindow(class SymbolLibrary const *lib=0);
+  MainWindow();
   virtual ~MainWindow();
   MainWindow(MainWindow const &) = delete;
   MainWindow operator=(MainWindow const &) = delete;
@@ -44,7 +44,7 @@ public slots:
   void partListToClipboardAction();
 public:
   void load(QString filename);
-  void create();
+  void create(class Schem const &schem);
   bool saveAs(QString filename); // true unless error
 private:
   void createActions();

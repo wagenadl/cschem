@@ -143,8 +143,8 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
   d->id = elt.id();
   d->sym = elt.symbol();
 
-  SymbolLibrary const *lib = d->scene->library();
-  Symbol const &symbol = lib->symbol(d->sym);
+  SymbolLibrary const &lib = d->scene->library();
+  Symbol const &symbol = lib.symbol(d->sym);
   if (!symbol.isValid())
     qDebug() << "Cannot find svg for symbol" << d->sym;
 
@@ -186,15 +186,15 @@ void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
   Circuit const &circ = d->scene->circuit();
-  SymbolLibrary const *lib = d->scene->library();
-  d->delta0 = circ.element(d->id).position() - lib->downscale(e->scenePos());
+  SymbolLibrary const &lib = d->scene->library();
+  d->delta0 = circ.element(d->id).position() - lib.downscale(e->scenePos());
   QGraphicsItem::mousePressEvent(e);
 }
 
 void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
-  QPoint newpos = lib->downscale(e->scenePos()) + d->delta0;
+  QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
   QPoint oldpos = circ.element(d->id).position();
   QGraphicsItem::mouseMoveEvent(e);
   
@@ -208,7 +208,7 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
-  QPoint newpos = lib->downscale(e->scenePos()) + d->delta0;
+  QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
   QPoint oldpos = circ.element(d->id).position();
   QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
@@ -220,17 +220,17 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 void SceneElement::temporaryTranslate(QPoint delta) {
   Circuit const &circ = d->scene->circuit();
   Element elt(circ.element(d->id));
-  SymbolLibrary const *lib = d->scene->library();
+  SymbolLibrary const &lib = d->scene->library();
 
-  setPos(lib->upscale(elt.position() + delta));
+  setPos(lib.upscale(elt.position() + delta));
 }
 
 void SceneElement::rebuild() {
   // Reconstruct element
   Circuit const &circ = d->scene->circuit();
   Element elt(circ.element(d->id));
-  SymbolLibrary const *lib = d->scene->library();
-  Symbol const &symbol = lib->symbol(elt.symbol());
+  SymbolLibrary const &lib = d->scene->library();
+  Symbol const &symbol = lib.symbol(elt.symbol());
 
   prepareGeometryChange();
 
@@ -246,14 +246,14 @@ void SceneElement::rebuild() {
   d->element->setTransform(xf);
   d->element->setPos(symbol.shiftedBBox().topLeft());
 
-  setPos(lib->scale() * elt.position());
+  setPos(lib.scale() * elt.position());
 
   // Reconstruct name
   if (elt.isNameVisible()) {
     if (d->name) {
       d->name->show();
     } else {
-      d->name = new SceneAnnotation(d->scene->library()->scale(), this);
+      d->name = new SceneAnnotation(d->scene->library().scale(), this);
       QObject::connect(d->name, SIGNAL(returnPressed()),
 		       d.data(), SLOT(getNameText()));
       QObject::connect(d->name, SIGNAL(escapePressed()),
@@ -289,7 +289,7 @@ void SceneElement::rebuild() {
     if (d->value) {
       d->value->show();
     } else {
-      d->value = new SceneAnnotation(d->scene->library()->scale(), this);
+      d->value = new SceneAnnotation(d->scene->library().scale(), this);
       QObject::connect(d->value, SIGNAL(returnPressed()),
 		       d.data(), SLOT(getValueText()));
       QObject::connect(d->value, SIGNAL(escapePressed()),

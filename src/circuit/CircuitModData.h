@@ -26,7 +26,7 @@ struct OverlapResult {
 
 class CircuitModData {
 public:
-  CircuitModData(Circuit const &circ, SymbolLibrary const *lib):
+  CircuitModData(Circuit const &circ, SymbolLibrary const &lib):
     circ(circ), lib(lib) {
   }
   OverlapResult overlappingStart(Connection const &a, Connection const &b) const;
@@ -61,7 +61,7 @@ public:
   void dropElt(int);
  public:
   Circuit circ;
-  SymbolLibrary const *lib;
+  SymbolLibrary lib;
   QSet<int> acons;
   QSet<int> aelts;
 };

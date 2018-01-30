@@ -25,7 +25,7 @@ public:
     elements[row].setValue(value);
     scene->updateFromPartList(elements[row]);
   }
-  Should add: setPackage, etc. Scene is the keeper of the master Circuit
+  // Should add: setPackage, etc. Scene is the keeper of the master Circuit
 public:
   Scene *scene;
   QList<Element> elements; // list elements are rows of the model

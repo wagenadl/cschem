@@ -10,7 +10,6 @@ class LibView: public QGraphicsView {
   Q_OBJECT;
 public:
   explicit LibView(QWidget *parent=0);
-  explicit LibView(class SymbolLibrary const *lib, QWidget *parent=0);
   void scale(double);
   ~LibView();
 signals:

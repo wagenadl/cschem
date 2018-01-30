@@ -36,7 +36,7 @@ public:
     fakepin = false;
     isjunc = false;
     primaryPurpose = HoverManager::Purpose::Moving;
-    r = scene->library()->scale();
+    r = scene->library().scale();
     pinMarker = 0;
     haveMagnet = false;
   }
@@ -77,23 +77,23 @@ public:
 };
 
 void HoverManager::newDrag(Symbol const &symbol) {
-  SymbolLibrary const *lib = d->scene->library();
+  SymbolLibrary const &lib = d->scene->library();
   d->selectionPoints.clear();
   for (QString p: symbol.pinNames())
     d->selectionPoints
-      << PointInfo(lib->downscale(symbol.shiftedPinPosition(p)), 0, p);
+      << PointInfo(lib.downscale(symbol.shiftedPinPosition(p)), 0, p);
   d->haveMagnet = false;
   d->avoidConnections.clear();
 }
 
 void HoverManager::formSelection(QSet<int> elts) {
   Circuit const &circ = d->scene->circuit();
-  SymbolLibrary const *lib = d->scene->library();
+  SymbolLibrary const &lib = d->scene->library();
   Geometry geom(circ, lib);
   d->selectionPoints.clear();
   for (int e: elts) {
     Element const &elt(circ.element(e));
-    Symbol const &symbol(lib->symbol(elt.symbol()));
+    Symbol const &symbol(lib.symbol(elt.symbol()));
     for (QString p: symbol.pinNames()) 
       d->selectionPoints << PointInfo(geom.pinPosition(elt, p), e, p);
   }
@@ -229,7 +229,7 @@ void HoverManagerData::update() {
     pin = scene->pinAt(pt, elt);
     if (pin==PinID::NOPIN) {
       // if not, shrink area of hovering
-      double x = scene->library()->scale()/2;
+      double x = scene->library().scale()/2;
       if (!elts[elt]->boundingRect().adjusted(x,x,-x,-x)
           .contains(elts[elt]->mapFromScene(pt)))
         elt = -1;
@@ -269,29 +269,29 @@ void HoverManagerData::update() {
     unhighlightPin();
   } else if (onConnection()) {
     Connection ccc(scene->circuit().connection(con));
-    auto *lib = scene->library();
+    auto const &lib = scene->library();
     if (seg==0
 	&& ccc.danglingStart()
 	&& !ccc.via().isEmpty()
-	&& QLineF(pt, lib->upscale(ccc.via().first())).length() < r) {
+	&& QLineF(pt, lib.upscale(ccc.via().first())).length() < r) {
       // near dangling start
-      pinpos = lib->upscale(ccc.via().first());
+      pinpos = lib.upscale(ccc.via().first());
       fakepin = true;
       highlightPin();
       unhighlightSegment();
     } else if (seg==ccc.via().size()-(ccc.danglingStart()?2:1)
 	       && ccc.danglingEnd()
 	       && !ccc.via().isEmpty()
-	       &&  QLineF(pt, lib->upscale(ccc.via().last())).length() < r) {
-      pinpos = lib->upscale(ccc.via().last());
+	       &&  QLineF(pt, lib.upscale(ccc.via().last())).length() < r) {
+      pinpos = lib.upscale(ccc.via().last());
       fakepin = true;
       highlightPin();
       unhighlightSegment();
     } else if (primaryPurpose==HoverManager::Purpose::Connecting) {
       Geometry geom(circ, lib);
-      Geometry::Intersection ii(geom.intersection(lib->downscale(pt),
+      Geometry::Intersection ii(geom.intersection(lib.downscale(pt),
                                                   con, false));
-      pinpos = lib->upscale(ii.q);
+      pinpos = lib.upscale(ii.q);
       fakepin = true;
       highlightPin();
       unhighlightSegment();
@@ -369,13 +369,13 @@ void HoverManager::unhover() {
 
 QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
   Circuit const &circ = scene->circuit();
-  SymbolLibrary const *lib = scene->library();
+  SymbolLibrary const &lib = scene->library();
   Geometry geom(circ, lib);
   QList<QPoint> pts;
   // Let's see what might stick here
   for (auto const &info: selectionPoints) {
     QPoint p = info.pt + del;
-    QPointF pup = lib->upscale(p);
+    QPointF pup = lib.upscale(p);
     int elt = scene->elementAt(pup, info.elt);
     QString pin;
     if (elt>0) {
@@ -405,12 +405,12 @@ void HoverManager::doneDragging() {
 }
 
 void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
-  SymbolLibrary const *lib = scene->library();
+  SymbolLibrary const &lib = scene->library();
   int n=0;
   for (QPoint p: pts) {
     if (floatMarkers.size() <= n)
       floatMarkers << new PinMarker(scene);
-    QPointF pup = lib->upscale(p);
+    QPointF pup = lib.upscale(p);
     floatMarkers[n]->setRect(QRectF(pup - QPointF(r, r), 2 * QSizeF(r, r)));
     floatMarkers[n]->setBrush(Style::pinHighlightColor());
     n++;
