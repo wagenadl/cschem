@@ -14,7 +14,6 @@ class Scene: public QGraphicsScene {
 public:
   Scene(Schem const &schem, QObject *parent=0);
   ~Scene();
-  void setComponentValue(int eltid, QString value);
   void updateFromPartList(Element const &);
   SymbolLibrary const &library() const;
   Circuit const &circuit() const;
@@ -59,14 +58,14 @@ protected:
   void dropEvent(QGraphicsSceneDragDropEvent *) override;
   void focusInEvent(QFocusEvent *) override;
   void focusOutEvent(QFocusEvent *) override;
-public:
-  void annotationInternallyEdited(int id);
 signals:
   void libraryChanged();
+  void circuitChanged();
 private:
-  //void makeUndoStep();
+  void emitCircuitChanged();
 private:
   class SceneData *d;
+  friend class SceneData;
 };
 
 #endif

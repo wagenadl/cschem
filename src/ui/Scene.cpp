@@ -153,6 +153,7 @@ void SceneData::startConnectionFromConnection(QPointF pos) {
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
   circ() = cm.circuit();
   rebuildAsNeeded(cm.affectedElements(), cm.affectedConnections());
+  scene->emitCircuitChanged();
 }
 
 void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
@@ -643,12 +644,13 @@ QMap<int, class SceneConnection *> const &Scene::connections() const {
 }
 
 void Scene::modifyElementAnnotations(Element const &elt) {
-  if (!elements().contains(elt.id()))
+  int id = elt.id();
+  if (!elements().contains(id))
     return;
 
   d->preact();
   
-  Element elt0 = d->circ().element(elt.id());
+  Element elt0 = d->circ().element(id);
   elt0.setInfo(elt.info());
   elt0.setValue(elt.value());
   elt0.setName(elt.name());
@@ -657,14 +659,11 @@ void Scene::modifyElementAnnotations(Element const &elt) {
   elt0.setValueVisible(elt.isValueVisible());
   elt0.setNameVisible(elt.isNameVisible());
   d->circ().insert(elt0);
-
-  CircuitMod cm(d->circ(), d->lib());
-  cm.forceRebuildElement(elt.id());
-  d->rebuildAsNeeded(cm);
-
-  unhover();
-  rehover();
- }
+  if (d->elts.contains(id))
+    d->elts[id]->rebuild();
+  d->partlist->rebuild();
+  emitCircuitChanged();
+}
 
 void Scene::modifyConnection(int id, QPolygonF newpath) {
   if (!connections().contains(id))
@@ -924,10 +923,6 @@ void Scene::focusOutEvent(QFocusEvent *e) {
   QGraphicsScene::focusOutEvent(e);
 }
 
-void Scene::annotationInternallyEdited(int /*id*/) {
-  d->partlist->rebuild();
-}
-
 void Scene::updateFromPartList(Element const &elt) {
   int id = elt.id();
   if (d->circ().elements().contains(id)) {
@@ -939,16 +934,7 @@ void Scene::updateFromPartList(Element const &elt) {
   }
   if (d->elts.contains(id))
     d->elts[id]->rebuild();
-}
-
-void Scene::setComponentValue(int id, QString val) {
-  if (d->circ().elements().contains(id)) {
-    Element elt = d->circ().element(id);
-    elt.setValue(val);
-    d->circ().insert(elt);
-  }
-  if (d->elts.contains(id))
-    d->elts[id]->rebuild();
+  emitCircuitChanged();
 }
 
 void SceneData::rotateElementOrSelection(int dir) {
@@ -1000,4 +986,8 @@ void Scene::rehover() {
 
 PartList *Scene::partlist() const {
   return d->partlist;
+}
+
+void Scene::emitCircuitChanged() {
+  emit circuitChanged();
 }

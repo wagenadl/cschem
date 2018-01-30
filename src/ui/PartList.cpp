@@ -74,32 +74,35 @@ bool PartList::setData(QModelIndex const &index, QVariant const &value,
 
   Element &elt(d->elements[r]);
   Element::Info info = elt.info();
+  QString txt = value.toString();
   switch (Column(c)) {
   case Column::Name:
-    d->setName(r, value.toString());
+    elt.setName(txt);
     break;
   case Column::Value:
-    d->setValue(r, value.toString());
+    txt = PartNumbering::prettyValue(txt, elt.name());
+    elt.setValue(txt);
     break;
   case Column::Vendor:
-    info.vendor = value.toString();
+    info.vendor = txt;
     elt.setInfo(info);
     break;
   case Column::CatNo: 
-    info.partno = value.toString();
+    info.partno = txt;
     elt.setInfo(info);
     break;
   case Column::Package: 
-    info.package = value.toString();
+    info.package = txt;
     elt.setInfo(info);
     break;
   case Column::Notes: 
-    info.notes = value.toString();
+    info.notes = txt;
     elt.setInfo(info);
     break;
   default:
     return false;
   }
+  d->scene->updateFromPartList(elt);
   emit dataChanged(index, index);
   return true;
 }
