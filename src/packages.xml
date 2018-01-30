@@ -30,11 +30,11 @@
          <package>. That means that cschem does not know how many pins
          a dip8 has without looking at the pcb files.
     -->
-    <rule symbol="resistor" package="r3"/>
-    <rule symbol="capacitor:polarized" package="cp1"/>
-    <rule symbol="capacitor" package="c1"/>
-    <rule symbol="diode:LED" package="led5"/>
-    <rule symbol="diode" package="d3"/>
+    <rule symbol="resistor" packages="r3 r4 r5 r6 r7"/>
+    <rule symbol="capacitor:polarized" packages="cp1 cp2"/>
+    <rule symbol="capacitor" packages="c1 c2"/>
+    <rule symbol="diode:LED" packages="led5"/>
+    <rule symbol="diode" packages="d3"/>
     
     <package name="r3" pcb="ACY300"/>
     <package name="r4" pcb="ACY400"/>
