@@ -33,13 +33,13 @@ void SceneElementData::markHover() {
 
 void SceneElementData::removeName() {
   Element elt(scene->circuit().element(id));
-  elt.setNameVisible(false);
+  elt.nameVisible = false;
   scene->modifyElementAnnotations(elt);
 }
 
 void SceneElementData::removeValue() {
   Element elt(scene->circuit().element(id));
-  elt.setValueVisible(false);
+  elt.valueVisible = false;
   scene->modifyElementAnnotations(elt);
 }
 
@@ -47,7 +47,7 @@ void SceneElementData::moveValue(QPointF delta) {
   if (delta.isNull())
     return;
   Element elt(scene->circuit().element(id));
-  elt.setValuePos(elt.valuePos() + delta.toPoint());
+  elt.valuePosition += delta.toPoint();
   scene->modifyElementAnnotations(elt);
 }
 
@@ -55,7 +55,7 @@ void SceneElementData::moveName(QPointF delta) {
   if (delta.isNull())
     return;
   Element elt(scene->circuit().element(id));
-  elt.setNamePos(elt.valuePos() + delta.toPoint());
+  elt.namePosition += delta.toPoint();
   scene->modifyElementAnnotations(elt);
 }
 
@@ -64,7 +64,7 @@ void SceneElementData::nameTextToWidget() {
   // Called when escape pressed
   Circuit const &circ = scene->circuit(); 
   Element const &elt(circ.element(id));
-  QString txt = elt.name();
+  QString txt = elt.name;
   if (txt.isEmpty()) {
     name->setHtml("<i>nn</i>");
     name->setDefaultTextColor(Style::faintColor());
@@ -85,13 +85,13 @@ void SceneElementData::nameTextToCircuit() {
     txt = "";
   if (txt.isEmpty())
     txt = scene->circuit().autoName(elt.symbol());
-  elt.setName(txt);
+  elt.name = txt;
   scene->modifyElementAnnotations(elt);
 }
 
 void SceneElementData::valueTextToWidget() {
   // Copy value from circuit to widget
-  QString txt = scene->circuit().element(id).value();
+  QString txt = scene->circuit().element(id).value;
   if (txt.isEmpty()) {
     value->setHtml("<i>value</i>");
     value->setDefaultTextColor(Style::faintColor());
@@ -109,8 +109,8 @@ void SceneElementData::valueTextToCircuit() {
   QString txt = value->toPlainText();
   if (txt == "value")
     txt = "";
-  txt = PartNumbering::prettyValue(txt, elt.name());
-  elt.setValue(txt);
+  txt = PartNumbering::prettyValue(txt, elt.name);
+  elt.value = txt;
   scene->modifyElementAnnotations(elt);
 }
 
@@ -118,7 +118,7 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
   d(new SceneElementData) {
   //
   d->scene = parent;
-  d->id = elt.id();
+  d->id = elt.id;
   d->sym = elt.symbol();
 
   SymbolLibrary const &lib = d->scene->library();
@@ -151,11 +151,11 @@ SceneElement::~SceneElement() {
 
 void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
   Element elt = d->scene->circuit().element(d->id);
-  if (elt.type() == Element::Type::Component
-      || elt.type() == Element::Type::Port) {
-    elt.setNameVisible(true);
-    if (elt.type() == Element::Type::Component)
-      elt.setValueVisible(true);
+  if (elt.type == Element::Type::Component
+      || elt.type == Element::Type::Port) {
+    elt.nameVisible = true;
+    if (elt.type == Element::Type::Component)
+      elt.valueVisible = true;
     d->scene->modifyElementAnnotations(elt);
   }
 }
@@ -164,7 +164,7 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
   Circuit const &circ = d->scene->circuit();
   SymbolLibrary const &lib = d->scene->library();
-  d->delta0 = circ.element(d->id).position() - lib.downscale(e->scenePos());
+  d->delta0 = circ.element(d->id).position - lib.downscale(e->scenePos());
   QGraphicsItem::mousePressEvent(e);
 }
 
@@ -172,7 +172,7 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
-  QPoint oldpos = circ.element(d->id).position();
+  QPoint oldpos = circ.element(d->id).position;
   QGraphicsItem::mouseMoveEvent(e);
   
   if (d->dragmoved || newpos != oldpos) {
@@ -186,7 +186,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
-  QPoint oldpos = circ.element(d->id).position();
+  QPoint oldpos = circ.element(d->id).position;
   QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
     d->scene->moveSelection(newpos - oldpos,
@@ -199,7 +199,7 @@ void SceneElement::temporaryTranslate(QPoint delta) {
   Element elt(circ.element(d->id));
   SymbolLibrary const &lib = d->scene->library();
 
-  setPos(lib.upscale(elt.position() + delta));
+  setPos(lib.upscale(elt.position + delta));
 }
 
 void SceneElement::rebuild() {
@@ -216,17 +216,17 @@ void SceneElement::rebuild() {
   QPointF orig = symbol.bbOrigin();
   QTransform xf;
   xf.translate(orig.x(), orig.y());
-  xf.rotate(elt.rotation()*-90);
-  if (elt.isFlipped())
+  xf.rotate(elt.rotation*-90);
+  if (elt.flipped)
     xf.scale(-1, 1);
   xf.translate(-orig.x(), -orig.y());
   d->element->setTransform(xf);
   d->element->setPos(symbol.shiftedBBox().topLeft());
 
-  setPos(lib.scale() * elt.position());
+  setPos(lib.scale() * elt.position);
 
   // Reconstruct name
-  if (elt.isNameVisible()) {
+  if (elt.nameVisible) {
     if (d->name) {
       d->name->show();
     } else {
@@ -243,17 +243,17 @@ void SceneElement::rebuild() {
                        d.data(), SLOT(nameHovering(bool)));
     }
 
-    QPoint p = elt.namePos();
+    QPoint p = elt.namePosition;
     if (p.isNull()) {
       Geometry geom(circ, lib);
       QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "name");
       p = abb.bottomLeft().toPoint();
-      elt.setNamePos(p);
+      elt.namePosition = p;
       d->scene->modifyElementAnnotations(elt);
     }
     d->name->setBaseline(p);
     d->nameTextToWidget();
-    if (elt.name().isEmpty()) {
+    if (elt.name.isEmpty()) {
       d->nameTextToCircuit(); // automated magic
       elt = circ.element(d->id);
     }
@@ -262,7 +262,7 @@ void SceneElement::rebuild() {
   }
   
   // Reconstruct value
-  if (elt.isValueVisible()) {
+  if (elt.valueVisible) {
     if (d->value) {
       d->value->show();
     } else {
@@ -278,12 +278,12 @@ void SceneElement::rebuild() {
       QObject::connect(d->name, SIGNAL(hovering(bool)),
                        d.data(), SLOT(valueHovering(bool)));
     }
-    QPoint p = elt.valuePos();
+    QPoint p = elt.valuePosition;
     if (p.isNull()) {
       Geometry geom(circ, lib);
       QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "value");
       p = abb.bottomLeft().toPoint();
-      elt.setValuePos(p);
+      elt.valuePosition = p;
       d->scene->modifyElementAnnotations(elt);
     }
     d->value->setBaseline(p);

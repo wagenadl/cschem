@@ -270,7 +270,7 @@ void SceneData::rebuild() {
   conns.clear();
 
   for (auto const &c: circ().elements()) 
-    elts[c.id()] = new SceneElement(scene, c);
+    elts[c.id] = new SceneElement(scene, c);
   
   for (auto const &c: circ().connections())
     conns[c.id] = new SceneConnection(scene, c);
@@ -607,9 +607,9 @@ void SceneData::finalizeConnection() {
     QList<int> cc;
     for (auto c: connbuilder->junctions()) {
       circ().insert(c);
-      if (elts.contains(c.id()))
-        delete elts[c.id()];
-      elts[c.id()] = new SceneElement(scene, c);
+      if (elts.contains(c.id))
+        delete elts[c.id];
+      elts[c.id] = new SceneElement(scene, c);
     }
     for (auto c: connbuilder->connections()) {
       circ().insert(c);
@@ -627,7 +627,7 @@ void SceneData::finalizeConnection() {
     for (int c: cc)
       cm.adjustOverlappingConnections(c);
     for (auto c: connbuilder->junctions())
-      cm.removePointlessJunction(c.id());
+      cm.removePointlessJunction(c.id);
     rebuildAsNeeded(cm);
   }
 
@@ -644,20 +644,14 @@ QMap<int, class SceneConnection *> const &Scene::connections() const {
 }
 
 void Scene::modifyElementAnnotations(Element const &elt) {
-  int id = elt.id();
+  int id = elt.id;
   if (!elements().contains(id))
     return;
 
   d->preact();
   
   Element elt0 = d->circ().element(id);
-  elt0.setInfo(elt.info());
-  elt0.setValue(elt.value());
-  elt0.setName(elt.name());
-  elt0.setValuePos(elt.valuePos());
-  elt0.setNamePos(elt.namePos());
-  elt0.setValueVisible(elt.isValueVisible());
-  elt0.setNameVisible(elt.isNameVisible());
+  elt0.copyAnnotationsFrom(elt);
   d->circ().insert(elt0);
   if (d->elts.contains(id))
     d->elts[id]->rebuild();
@@ -800,12 +794,12 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
     cm.addElement(elt);
     if (merge) {
       QSet<int> ee;
-      ee << elt.id();
+      ee << elt.id;
       cm.mergeSelection(ee);
     }
     for (Element const &elt: circ().elements())
       if (elt.symbol()==symbol)
-	cm.forceRebuildElement(elt.id());
+	cm.forceRebuildElement(elt.id);
     
     rebuildAsNeeded(cm);
   }
@@ -828,7 +822,7 @@ void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
     cm.addElement(elt);
     if (merge) {
       QSet<int> ee;
-      ee << elt.id();
+      ee << elt.id;
       cm.mergeSelection(ee);
     }
     d->rebuildAsNeeded(cm);
@@ -923,12 +917,12 @@ void Scene::focusOutEvent(QFocusEvent *e) {
 }
 
 void Scene::updateFromPartList(Element const &elt) {
-  int id = elt.id();
+  int id = elt.id;
   if (d->circ().elements().contains(id)) {
     Element e = d->circ().element(id);
-    e.setName(elt.name());
-    e.setValue(elt.value());
-    e.setInfo(elt.info());
+    e.name = elt.name;
+    e.value = elt.value;
+    e.info = elt.info;
     d->circ().insert(e);
   }
   if (d->elts.contains(id))

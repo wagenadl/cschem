@@ -239,7 +239,7 @@ void HoverManagerData::update() {
   }
 
   if (elt>0)
-    isjunc = circ.element(elt).type() == Element::Type::Junction;
+    isjunc = circ.element(elt).type == Element::Type::Junction;
   else
     isjunc = false;
 

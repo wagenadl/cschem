@@ -34,9 +34,9 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   QString sym = elt.symbol();
   Symbol const &symbol = lib.symbol(sym);
 
-  QPointF p0 = lib.upscale(elt.position());
-  int r = elt.rotation();
-  bool flp = elt.isFlipped();
+  QPointF p0 = lib.upscale(elt.position);
+  int r = elt.rotation;
+  bool flp = elt.flipped;
 
   sw.writeStartElement("g");
   QString xform = QString("translate(%1,%2)").arg(p0.x()).arg(p0.y());
@@ -57,18 +57,18 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   // origin for labels
   QPointF po = symbol.shiftedBBox().center();
   QTransform xf;
-  xf.rotate(elt.rotation()*-90);
-  if (elt.isFlipped())
+  xf.rotate(elt.rotation*-90);
+  if (elt.flipped)
     xf.scale(-1, 1);
   po = xf.map(po);
   
-  if (elt.isNameVisible()) {
-    QPointF p = elt.namePos() + po;
+  if (elt.nameVisible) {
+    QPointF p = elt.namePosition + po;
     sw.writeStartElement("text");
     sw.writeAttribute("style", "fill:#000000;stroke:none;font-style:italic");
     sw.writeAttribute("x", QString("%1").arg(p.x()));
     sw.writeAttribute("y", QString("%1").arg(p.y()));
-    QString txt = elt.name();
+    QString txt = elt.name;
     if (txt.mid(1).toDouble()>0) {
       // letter + number
       sw.writeCharacters(txt.left(1));
@@ -83,13 +83,13 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
     }
     sw.writeEndElement();
   }
-  if (elt.isValueVisible()) {
-    QPointF p = elt.valuePos() + po;
+  if (elt.valueVisible) {
+    QPointF p = elt.valuePosition + po;
     sw.writeStartElement("text");
     sw.writeAttribute("style", "fill:#000000;stroke:none");
     sw.writeAttribute("x", QString("%1").arg(p.x()));
     sw.writeAttribute("y", QString("%1").arg(p.y()));
-    QString txt = elt.value();
+    QString txt = elt.value;
     sw.writeCharacters(txt);
     sw.writeEndElement();
   }

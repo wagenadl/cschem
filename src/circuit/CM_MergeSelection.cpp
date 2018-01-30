@@ -15,7 +15,7 @@ public:
       bot.removeConnection(c.id);
     CircuitMod mod(bot, d->lib);
     for (Element const &e: top.elements())
-      mod.deleteElement(e.id());
+      mod.deleteElement(e.id);
     bot = mod.circuit();
     botgeom = Geometry(bot, d->lib);
   }
@@ -81,7 +81,7 @@ void CM_Merge::considerPinPin() {
       continue;
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
-      PinID pidbot(eltbot.id(), p);
+      PinID pidbot(eltbot.id, p);
       QPoint pos = botgeom.pinPosition(eltbot, p);
       PinID pidtop = topgeom.pinAt(pos);
       if (pidtop.isValid()) { // gotcha
@@ -102,7 +102,7 @@ void CM_Merge::considerPinCon() {
       continue;
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
-      PinID pidbot(eltbot.id(), p);
+      PinID pidbot(eltbot.id, p);
       QPoint pos = botgeom.pinPosition(eltbot, p);
       int contop = topgeom.connectionAt(pos);
       if (contop>0) {
@@ -129,7 +129,7 @@ void CM_Merge::considerConPin() {
       continue;
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
-      PinID pidtop(elttop.id(), p);
+      PinID pidtop(elttop.id, p);
       QPoint pos = topgeom.pinPosition(elttop, p);
       int conbot = botgeom.connectionAt(pos);
       qDebug() << "top pin" << elttop.report() << p << pos << conbot; 
@@ -200,7 +200,7 @@ int CircuitModData::addInPlaceConnection(PinID pidbot, int conid, QPoint pos) {
   for (int c: circ.connectionsOn(PinID(jid))) 
     qDebug() << "connections onto our junction" << circ.connection(c).report();
   Element const &eltbot(circ.element(pidbot.element()));
-  if (eltbot.type()!=Element::Type::Junction) {
+  if (eltbot.type!=Element::Type::Junction) {
     // rewire any connections to old pin to our new connection
     for (int c: circ.connectionsOn(pidbot)) 
       qDebug() << "will rewire" << circ.connection(c).report();
@@ -218,18 +218,18 @@ int CircuitModData::addInPlaceConnection(PinID pidbot, PinID pidtop,
   int jid = -1;
   Element const &elttop(circ.element(pidtop.element()));
   Element const &eltbot(circ.element(pidbot.element()));
-  if (eltbot.type()==Element::Type::Junction
-      || elttop.type()==Element::Type::Junction) {
+  if (eltbot.type==Element::Type::Junction
+      || elttop.type==Element::Type::Junction) {
     // At least one junction, so we'll connect the two and rewire
     // old connections from any non-junction.
-    if (eltbot.type()==Element::Type::Junction) 
-      jid = eltbot.id();
+    if (eltbot.type==Element::Type::Junction) 
+      jid = eltbot.id;
     else 
       // Bottom is not a junction -> rewire its previous connections
       rewire(circ.connectionsOn(pidbot), pidbot, pidtop);
 	  
-    if (elttop.type()==Element::Type::Junction) 
-      jid = elttop.id();
+    if (elttop.type==Element::Type::Junction) 
+      jid = elttop.id;
     else 
       // Top is not a junction -> rewire its previous connections
       rewire(circ.connectionsOn(pidtop), pidtop, pidbot);
@@ -246,14 +246,14 @@ int CircuitModData::addInPlaceConnection(PinID pidbot, PinID pidtop,
       insert(Connection(pidtop, pidbot));
     } else {
       Element junc(Element::junction(pos));
-      PinID pidj(junc.id());
+      PinID pidj(junc.id);
       // Rewire old connections to either top or bottom pin
       rewire(cctop, pidtop, pidj);
       rewire(ccbot, pidbot, pidj);
       insert(Connection(pidtop, pidj));
       insert(Connection(pidbot, pidj));
       insert(junc);
-      jid = junc.id();
+      jid = junc.id;
     }
   }
   return jid;

@@ -31,7 +31,7 @@ void CircuitModData::insert(Connection const &con) {
 
 void CircuitModData::insert(Element const &elt) {
   circ.insert(elt);
-  aelts << elt.id();
+  aelts << elt.id;
 }
 
 void CircuitModData::drop(Connection const &con) {
@@ -40,8 +40,8 @@ void CircuitModData::drop(Connection const &con) {
 }
 
 void CircuitModData::drop(Element const &elt) {
-  circ.removeElement(elt.id());
-  aelts << elt.id();
+  circ.removeElement(elt.id);
+  aelts << elt.id;
 }
 
 void CircuitModData::dropCon(int con) {
@@ -105,7 +105,7 @@ bool CircuitMod::deleteElement(int id) {
   
   QSet<int> cc = d->circ.connectionsOn(id);
 
-  bool isjunc = d->circ.element(id).type() == Element::Type::Junction;
+  bool isjunc = d->circ.element(id).type == Element::Type::Junction;
   if (isjunc && cc.size()==2)
     return removePointlessJunction(id);
   if  (isjunc && cc.size()==4)
@@ -226,7 +226,7 @@ void CircuitModData::makeDanglingAt(int id, QSet<int> cc) {
 }
 
 bool CircuitModData::removePointlessJunction(int id) {
-  if (circ.element(id).type() != Element::Type::Junction)
+  if (circ.element(id).type != Element::Type::Junction)
     return false;
   
   QList<int> cc = circ.connectionsOn(id, "").toList();
@@ -245,7 +245,7 @@ bool CircuitModData::removePointlessJunction(int id) {
       con1.reverse();
 
     con0.setTo(con1.to());
-    con0.via << circ.element(id).position();
+    con0.via << circ.element(id).position;
     con0.via += con1.via;
     Geometry geom(circ, lib);
     con0.via = geom.viaFromPath(con0,
@@ -274,11 +274,11 @@ bool CircuitMod::deleteConnection(int id) {
   d->drop(con);
   
   int from = con.fromId;
-  if (d->circ.element(from).type() == Element::Type::Junction)
+  if (d->circ.element(from).type == Element::Type::Junction)
     removePointlessJunction(from);
 
   int to = con.toId;
-  if (d->circ.element(to).type() == Element::Type::Junction) 
+  if (d->circ.element(to).type == Element::Type::Junction) 
     removePointlessJunction(to);
 
   return true;
@@ -518,7 +518,7 @@ bool CircuitMod::simplifyConnection(int id) {
 
 bool CircuitModData::removeOverlappingJunctions(int id) {
   Element junc(circ.element(id));
-  if (junc.type() != Element::Type::Junction)
+  if (junc.type != Element::Type::Junction)
     return false;
   
   QSet<int> jj;
@@ -526,9 +526,9 @@ bool CircuitModData::removeOverlappingJunctions(int id) {
     Connection con(circ.connection(c));
     int id1 = con.fromId==id ? con.toId : con.fromId;
     Element junc1(circ.element(id1));
-    if (junc1.type() == Element::Type::Junction
+    if (junc1.type == Element::Type::Junction
 	&& id1 != id
-	&& junc1.position() == junc.position())
+	&& junc1.position == junc.position)
       jj << id1;
   }
   if (jj.isEmpty())
@@ -590,13 +590,13 @@ void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   Element j = Element::junction(joint);
   Connection c;
   c.setFrom(a.from());
-  c.setTo(j.id(), "");
+  c.setTo(j.id);
   insert(j);
   insert(c);
 
   // Reroute both original connections to start at joint.
-  a.setFrom(j.id(), "");
-  b.setFrom(j.id(), "");
+  a.setFrom(j.id);
+  b.setFrom(j.id);
   a.via = patha;
   b.via = pathb;
   insert(a);
@@ -605,9 +605,9 @@ void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   // The original starting point may have become a useless junction, so:
   removePointlessJunction(c.fromId);
 
-  removeOverlappingJunctions(j.id());
-  if (removePointlessJunction(j.id()))
-    aelts.remove(j.id()); // unusual case: we previously inserted j, so
+  removeOverlappingJunctions(j.id);
+  if (removePointlessJunction(j.id))
+    aelts.remove(j.id); // unusual case: we previously inserted j, so
   // now we can simply remove it.
 }
 
@@ -744,28 +744,28 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
     // Insert at start of dangling. This is easy.
     Element junc(Element::junction(inter.q));
     con.via.removeFirst();
-    con.setFrom(junc.id());
+    con.setFrom(junc.id);
     insert(con);
     insert(junc);
     qDebug() << "inject at start of dangling";
-    return junc.id();
+    return junc.id;
   }
   if (con.danglingEnd() && inter.q==path.last()) {
     // Insert at end of dangling. This is easy.
     Element junc(Element::junction(inter.q));
     con.via.removeLast();
-    con.setTo(junc.id());
+    con.setTo(junc.id);
     insert(con);
     insert(junc);
     qDebug() << "inject at end of dangling" << con.report() << junc.report();
-    return junc.id();
+    return junc.id;
   }
 
   Element junc(Element::junction(inter.q));
   Connection con1;
   con1.setTo(con.to());
-  con.setTo(junc.id());
-  con1.setFrom(junc.id());
+  con.setTo(junc.id);
+  con1.setFrom(junc.id);
   QPolygon via = con.via;
   int seg = inter.index;
   if (con.danglingStart())
@@ -792,7 +792,7 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
   insert(con1);
   insert(junc);
   qDebug() << "inject somewhere else" << con.report() << con1.report();  
-  return junc.id();
+  return junc.id;
 }
 
 bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
@@ -814,19 +814,17 @@ bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
   for (int id: eltids) {
     Element elt = d->circ.element(id);
     if (elt.isValid()) {
-      elt.setRotation(elt.rotation() + steps);
+      elt.rotation += steps;
       for (int k=0; k<steps; k++) {
-	QPoint dp = elt.position() - p0;
-	elt.setPosition(p0 + QPoint(dp.y(), -dp.x()));
+	QPoint dp = elt.position - p0;
+	elt.position = p0 + QPoint(dp.y(), -dp.x());
       }
-      QPoint np = elt.namePos();
       for (int k=0; k<steps; k++)
-	np = QPoint(np.y(), -np.x());
-      elt.setNamePos(np);
-      QPoint vp = elt.valuePos();
+	elt.namePosition
+	  = QPoint(elt.namePosition.y(), -elt.namePosition.x());
       for (int k=0; k<steps; k++)
-	vp = QPoint(vp.y(), -vp.x());
-      elt.setValuePos(vp);
+	elt.valuePosition
+	  = QPoint(elt.valuePosition.y(), -elt.valuePosition.x());
       d->insert(elt);
     }
   }
@@ -858,17 +856,15 @@ bool CircuitMod::rotateElement(int eltid, int steps) {
   Geometry geom(d->circ, d->lib);
   Element elt = d->circ.element(eltid);
   QPoint dx0 = geom.centerOfPinMass(elt);
-  elt.setRotation(elt.rotation() + steps);
-  QPoint np = elt.namePos();
+  elt.rotation += steps;
   for (int k=0; k<steps; k++)
-    np = QPoint(np.y(), -np.x());
-  elt.setNamePos(np);
-  QPoint vp = elt.valuePos();
-  for (int k=0; k<steps; k++)
-    vp = QPoint(vp.y(), -vp.x());
-  elt.setValuePos(vp);
+    elt.namePosition
+      = QPoint(elt.namePosition.y(), -elt.namePosition.x());
+      for (int k=0; k<steps; k++)
+	elt.valuePosition
+	  = QPoint(elt.valuePosition.y(), -elt.valuePosition.x());
   QPoint dx1 = geom.centerOfPinMass(elt);
-  elt.setPosition(elt.position() + dx0 - dx1);
+  elt.position += + dx0 - dx1;
   d->insert(elt);
   QSet<int> ee; ee << eltid;
   for (int c: d->circ.connectionsFrom(ee) + d->circ.connectionsTo(ee))
@@ -888,21 +884,17 @@ bool CircuitMod::flipElements(QSet<int> eltids) {
       p0 += geom.centerOfPinMass(elt);
       N++;
     }
-    QPoint np = elt.namePos();
-    np = QPoint(-np.x(), np.y());
-    elt.setNamePos(np);
-    QPoint vp = elt.valuePos();
-    vp = QPoint(-vp.x(), vp.y());
-    elt.setValuePos(vp);
+    elt.namePosition.setX(-elt.namePosition.x());
+    elt.valuePosition.setX(-elt.valuePosition.x());
   }
-  p0 /= N; // original CM
+  p0 /= N; // original CMp
   
   for (int id: eltids) {
     Element elt = d->circ.element(id);
     if (elt.isValid()) {
-      elt.setFlipped(!elt.isFlipped());
-      QPoint dp = elt.position() - p0;
-      elt.setPosition(p0 + QPoint(-dp.x(), dp.y()));
+      elt.flipped = !elt.flipped;
+      QPoint dp = elt.position - p0;
+      elt.position = p0 + QPoint(-dp.x(), dp.y());
       d->insert(elt);
     }
   }
@@ -929,13 +921,9 @@ bool CircuitMod::flipElement(int eltid) {
   Circuit c0 = d->circ;
   Geometry geom(d->circ, d->lib);
   Element elt = d->circ.element(eltid);
-  elt.setFlipped(!elt.isFlipped());
-  QPoint np = elt.namePos();
-  np = QPoint(-np.x(), np.y());
-  elt.setNamePos(np);
-  QPoint vp = elt.valuePos();
-  vp = QPoint(-vp.x(), vp.y());
-  elt.setValuePos(vp);
+  elt.flipped = !elt.flipped;
+  elt.namePosition.setX(-elt.namePosition.x());
+  elt.valuePosition.setX(-elt.valuePosition.x());
   d->insert(elt);
   QSet<int> ee; ee << eltid;
   for (int c: d->circ.connectionsFrom(ee) + d->circ.connectionsTo(ee))

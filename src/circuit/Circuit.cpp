@@ -50,7 +50,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
       if (n=="component" || n=="port" || n=="junction") {
 	Element elt;
 	sr >> elt;
-	c.d->elements[elt.id()] = elt;
+	c.d->elements[elt.id] = elt;
       } else if (n=="connection") {
 	Connection con;
 	sr >> con;
@@ -84,7 +84,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
 
 void Circuit::insert(Element const &e) {
   d.detach();
-  d->elements[e.id()] = e;
+  d->elements[e.id] = e;
 }
 
 void Circuit::insert(Connection const &c) {
@@ -176,7 +176,7 @@ void Circuit::translate(QSet<int> ids, QPoint delta) {
   d.detach();
   for (int id: ids)
     if (d->elements.contains(id))
-      d->elements[id].setPosition(d->elements[id].position() + delta);
+      d->elements[id].position += delta;
   for (int id: connectionsIn(ids))
     for (QPoint &p: d->connections[id].via)
       p += delta;
@@ -185,7 +185,7 @@ void Circuit::translate(QSet<int> ids, QPoint delta) {
 void Circuit::translate(QPoint delta) {
   d.detach();
   for (Element &elt: d->elements)
-    elt.setPosition(elt.position() + delta);
+    elt.position += delta;
   for (Connection &con: d->connections)
     con.via.translate(delta);
 }
@@ -209,8 +209,8 @@ int Circuit::renumber(int start, QMap<int, int> *mapout) {
   d->elements.clear();
 
   for (Element elt: elts) {
-    int oldid = elt.id();
-    elt.setId(start);
+    int oldid = elt.id;
+    elt.id = start;
     d->elements.remove(oldid);
     d->elements[start] = elt;
     eltmap[oldid] = start;
@@ -282,7 +282,7 @@ int Circuit::maxId() const {
 
 Circuit &Circuit::operator+=(Circuit const &o) {
   for (auto elt: o.elements())
-    d->elements[elt.id()] = elt;
+    d->elements[elt.id] = elt;
   for (auto con: o.connections())
     d->connections[con.id] = con;
   return *this;
@@ -291,8 +291,8 @@ Circuit &Circuit::operator+=(Circuit const &o) {
 int Circuit::availableNumber(QString pfx) const {
   QSet<int> used;
   for (Element const &elt: elements()) 
-    if (elt.name().startsWith(pfx)) 
-      used << elt.name().mid(pfx.size()).toInt();
+    if (elt.name.startsWith(pfx)) 
+      used << elt.name.mid(pfx.size()).toInt();
 
   int n = 1;
   while (used.contains(n))

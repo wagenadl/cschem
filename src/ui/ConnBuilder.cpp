@@ -182,7 +182,7 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   // multiple connections to that pin.
   if (id<=0)
     return -1; // don't worry if dangling
-  if (circ.element(id).type() == Element::Type::Junction)
+  if (circ.element(id).type == Element::Type::Junction)
     return -1; // easy if already junction
   QSet<int> othercons = circ.connectionsOn(id, pin);
   if (othercons.isEmpty())
@@ -193,12 +193,12 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   // must add a junction, or this will be confusing
   Element j(Element::junction(scene->library().downscale(pt)));
   circ.insert(j);
-  junctions << j.id();
+  junctions << j.id;
   
   // create connection b/w original pin and new junction
   Connection c;
   c.setFrom(id, pin);
-  c.setTo(j.id());
+  c.setTo(j.id);
   circ.insert(c);
   connections << c.id;
   
@@ -206,13 +206,13 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   for (int o: othercons) {
     Connection c(circ.connection(o));
     if (c.fromId == id)
-      c.setFrom(j.id());
+      c.setFrom(j.id);
     if (c.toId == id) 
-      c.setTo(j.id());
+      c.setTo(j.id);
     circ.insert(c);
     connections << c.id;
   }
-  return j.id();
+  return j.id;
 }
 
 ConnBuilder::ConnBuilder(Scene *scene): d(new ConnBuilderData(scene)) {
