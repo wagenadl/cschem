@@ -1,0 +1,368 @@
+{ "typ": "page",
+  "cre": "2018-01-29T15:11:05",
+  "mod": "2018-01-29T15:15:41",
+  "cui": "953f88415e6392bf",
+  "stampTime": 0,
+  "startPage": 24,
+  "unlocked": false,
+  "uuid": "c2afef0f",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-01-29T15:11:05",
+      "mod": "2018-01-29T15:11:05",
+      "uuid": "9a8b3cd0"
+    },
+    { "typ": "title",
+      "cre": "2018-01-29T15:11:05",
+      "mod": "2018-01-29T15:11:07",
+      "uuid": "818631f8",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:11:05",
+          "mod": "2018-01-29T15:11:07",
+          "lines": [
+            0
+          ],
+          "text": "Packages",
+          "uuid": "f95a1045"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:11:09",
+      "mod": "2018-01-29T15:11:27",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "fac34e3e",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:11:09",
+          "mod": "2018-01-29T15:11:27",
+          "lines": [
+            0
+          ],
+          "text": "A <package> element can define a pin map in several ways:",
+          "uuid": "9d47a618"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:11:27",
+      "mod": "2018-01-29T15:11:33",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "066522d5",
+      "y0": 99.166,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:11:27",
+          "mod": "2018-01-29T15:11:33",
+          "lines": [
+            0
+          ],
+          "text": "map=”AK”",
+          "uuid": "6873ec24"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:11:33",
+      "mod": "2018-01-29T15:12:43",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "10f33c5e",
+      "y0": 118.313,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:11:33",
+          "mod": "2018-01-29T15:12:43",
+          "lines": [
+            0
+          ],
+          "text": "means ",
+          "uuid": "470abf23"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:11:33",
+      "mod": "2018-01-29T15:12:49",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "10f33c5e",
+      "y0": 145.479,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:11:33",
+          "mod": "2018-01-29T15:12:49",
+          "lines": [
+            0,
+            8
+          ],
+          "text": "“A” → 1\n“K” → 2 ",
+          "uuid": "470abf23"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:11:33",
+      "mod": "2018-01-29T15:12:41",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "10f33c5e",
+      "y0": 182.446,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:11:33",
+          "mod": "2018-01-29T15:12:41",
+          "lines": [
+            0
+          ],
+          "text": "Slightly nicer:",
+          "uuid": "470abf23"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:12:05",
+      "mod": "2018-01-29T15:12:31",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ea17300a",
+      "y0": 209.612,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:12:05",
+          "mod": "2018-01-29T15:12:31",
+          "lines": [
+            0
+          ],
+          "text": "map=”–=2 + Vss out=6 Vdd”",
+          "uuid": "436df705"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:12:35",
+      "mod": "2018-01-29T15:12:51",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "c2b23724",
+      "y0": 228.759,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:12:35",
+          "mod": "2018-01-29T15:12:36",
+          "lines": [
+            0
+          ],
+          "text": "means",
+          "uuid": "c4663efc"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:12:52",
+      "mod": "2018-01-29T15:13:24",
+      "h": 90.427,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f4fa6f46",
+      "y0": 255.925,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:12:52",
+          "mod": "2018-01-29T15:13:24",
+          "lines": [
+            0,
+            8,
+            27,
+            48,
+            58
+          ],
+          "text": "“–” → 2\n“+” → 3 [inferred]\n“Vss” → 4 [inferred]\n“out” → 6\n“Vdd” → 7 [inferred]",
+          "uuid": "e627a185"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:14:00",
+      "mod": "2018-01-29T15:14:00",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "53940a06",
+      "y0": 346.352,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:14:00",
+          "mod": "2018-01-29T15:14:00",
+          "text": "",
+          "uuid": "7f4764f4"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:14:02",
+      "mod": "2018-01-29T15:14:14",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "6b8bf726",
+      "y0": 373.518,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:14:02",
+          "mod": "2018-01-29T15:14:14",
+          "lines": [
+            0
+          ],
+          "text": "In the “packages.xml” I wrote:",
+          "uuid": "f96a0301"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-01-29T15:14:46",
+      "mod": "2018-01-29T15:15:41",
+      "h": 357.727,
+      "ind": 2,
+      "sheet": 0,
+      "split": [
+        302.94
+      ],
+      "uuid": "fc6912fe",
+      "y0": 400.684,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-01-29T15:14:46",
+          "mod": "2018-01-29T15:15:41",
+          "lines": [
+            0,
+            56,
+            123,
+            191,
+            265,
+            334,
+            406,
+            475,
+            540,
+            610,
+            643,
+            715,
+            731,
+            801,
+            871,
+            934,
+            1003,
+            1065,
+            1134,
+            1200
+          ],
+          "text": "Symbols may be matched loosely. That is, a symbol named \"part:diode:zener\" would match a default rule with symbol \"diode\", but \"zener\" would be a better match, and \"diode:zener\" even better.\n\n         A practical algorithm is that a rule \"A:B:C\" can match a symbol \"X:Y:A:B:C:Z\" but not \"A:B:Y:C\". Score is 2k for a match at the k-th level. So \"resistor\" matches \"part:passive:resistor\" with a score of 22 and \"capacitor:polarized\" matches \"part:passive:capacitor:polarized\" with a score of 22+23. Rule \"diode:LED\" matches \"part:diode:LED\" with a score of 21+22, outscoring rule \"diode\", which only scores 21, and rule \"LED\", which scores 22.\n\n         Container symbols like \"part:container:X\" automatically match to package \"X\".\n        Ideally, rules should be checked for matching pin counts, but that is complicated by containers that are represented in the circuit by multiple symbols (e.g., two \"part:ic:virtual:opamp\" and one \"part:container:opamp2\"). Perhaps this is not a real argument, since containers generally work without an explicit <rule>. Another complication is that maps are not contained in this file if they are simple, e.g., for the dip8 <package>. That means that cschem does not know how many pins a dip8 has without looking at the pcb files.",
+          "uuid": "df0a987b",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:24",
+              "mod": "2018-01-29T15:15:24",
+              "end": 493,
+              "start": 492,
+              "style": 6,
+              "uuid": "bf637a4f"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:25",
+              "mod": "2018-01-29T15:15:25",
+              "end": 496,
+              "start": 495,
+              "style": 6,
+              "uuid": "d7ff2fee"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:28",
+              "mod": "2018-01-29T15:15:28",
+              "end": 309,
+              "start": 308,
+              "style": 1,
+              "uuid": "a6309ba7"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:29",
+              "mod": "2018-01-29T15:15:29",
+              "end": 309,
+              "start": 308,
+              "style": 6,
+              "uuid": "11aa31e0"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:31",
+              "mod": "2018-01-29T15:15:31",
+              "end": 405,
+              "start": 404,
+              "style": 6,
+              "uuid": "2fe16a26"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:34",
+              "mod": "2018-01-29T15:15:34",
+              "end": 558,
+              "start": 557,
+              "style": 6,
+              "uuid": "f3f28d6b"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:36",
+              "mod": "2018-01-29T15:15:36",
+              "end": 561,
+              "start": 560,
+              "style": 6,
+              "uuid": "c724b607"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:38",
+              "mod": "2018-01-29T15:15:38",
+              "end": 641,
+              "start": 640,
+              "style": 6,
+              "uuid": "ef033491"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:41",
+              "mod": "2018-01-29T15:15:41",
+              "end": 608,
+              "start": 607,
+              "style": 6,
+              "uuid": "99149ecf"
+            },
+            { "typ": "markup",
+              "cre": "2018-01-29T15:15:48",
+              "mod": "2018-01-29T15:15:48",
+              "end": 330,
+              "start": 329,
+              "style": 1,
+              "uuid": "ab0590d5"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

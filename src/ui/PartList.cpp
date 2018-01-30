@@ -24,7 +24,8 @@ public:
       return;
     elements[row].setValue(value);
     scene->updateFromPartList(elements[row]);
-  }    
+  }
+  Should add: setPackage, etc. Scene is the keeper of the master Circuit
 public:
   Scene *scene;
   QList<Element> elements; // list elements are rows of the model
@@ -146,7 +147,6 @@ int PartList::columnCount(QModelIndex const &) const {
 }
 
 int PartList::rowCount(QModelIndex const &parent) const {
-  qDebug() << "rowcount" << d->elements.size();
   if (parent.isValid())
     return 0;
   else
