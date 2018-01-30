@@ -9,10 +9,10 @@ public:
   SchemData(bool valid):
     valid(valid), library(SymbolLibrary::defaultSymbols()) { }
 public:
+  bool valid;
   Circuit circuit;
   //Symbols symbols;
   SymbolLibrary library;
-  bool valid;
 };  
 
 Schem::Schem(bool valid) {

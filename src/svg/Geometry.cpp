@@ -67,11 +67,11 @@ Geometry::~Geometry() {
 QTransform GeometryData::symbolToCircuitTransformation(Element const &elt)
   const {
   QTransform xf;
-  xf.translate(elt.position().x(), elt.position().y());
+  xf.translate(elt.position.x(), elt.position.y());
   double s = lib.scale();
   xf.scale(1/s, 1/s);
-  xf.rotate(-elt.rotation()*90);
-  if (elt.isFlipped())
+  xf.rotate(-elt.rotation*90);
+  if (elt.flipped)
     xf.scale(-1, 1);
   return xf;
 }
@@ -79,8 +79,8 @@ QTransform GeometryData::symbolToCircuitTransformation(Element const &elt)
 QTransform GeometryData::symbolToSceneElementTransformation(Element const &elt)
   const {
   QTransform xf;
-  xf.rotate(-elt.rotation()*90);
-  if (elt.isFlipped())
+  xf.rotate(-elt.rotation*90);
+  if (elt.flipped)
     xf.scale(-1, 1);
   return xf;
 }
@@ -105,7 +105,7 @@ void GeometryData::ensurePinDB() {
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
       QPoint pos = pinPosition(elt, p);
-      pindb[pos] = PinID(elt.id(), p);
+      pindb[pos] = PinID(elt.id, p);
     }
   }
 }
@@ -206,11 +206,11 @@ QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
   QTransform xf = symbolToCircuitTransformation(elt);
   QPoint p0 = xf.map(pp).toPoint();
   
-  if  (elt.isFlipped())
+  if  (elt.flipped)
     pp = QPointF(-pp.x(), pp.y());
-  for (int k=0; k<elt.rotation(); k++)
+  for (int k=0; k<elt.rotation; k++)
     pp = QPointF(pp.y(), -pp.x());
-  QPoint p1 = elt.position() + lib.downscale(pp);
+  QPoint p1 = elt.position + lib.downscale(pp);
   if (p1!=p0)
     qDebug() << "TRANSFORMATION MISMATCH" << p0 << p1 << elt.report();
   return p1;
