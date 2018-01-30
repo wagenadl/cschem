@@ -143,23 +143,22 @@ void ConnBuilderData::buildConnection() {
     return;
   }
   Connection c;
-  c.setFromId(fromId);
-  c.setToId(toId);
-  c.setFromPin(fromPin);
-  c.setToPin(toPin);
+  c.fromId = fromId;
+  c.toId = toId;
+  c.fromPin = fromPin;
+  c.toPin = toPin;
   auto pp = simplifiedPoints();
   qDebug() << fromId << toId << pp;
   if (fromId>0)
     pp.removeFirst();
   if (toId>0)
     pp.removeLast();
-  QPolygon via;
+  c.via.clear();
   for (auto p: pp)
-    via << scene->library().downscale(p);
-  c.setVia(via);
+    c.via << scene->library().downscale(p);
   circ.insert(c);
-  connections << c.id();
-  majorcon = c.id();
+  connections << c.id;
+  majorcon = c.id;
 }
 
 void ConnBuilderData::ensureStartJunction() {
@@ -198,25 +197,20 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   
   // create connection b/w original pin and new junction
   Connection c;
-  c.setFromId(id);
-  c.setFromPin(pin);
-  c.setToId(j.id());
+  c.setFrom(id, pin);
+  c.setTo(j.id());
   circ.insert(c);
-  connections << c.id();
+  connections << c.id;
   
   // move other connections to junction
   for (int o: othercons) {
     Connection c(circ.connection(o));
-    if (c.fromId() == id) {
-      c.setFromId(j.id());
-      c.setFromPin("");
-    }
-    if (c.toId() == id) {
-      qDebug() << "rerouting" << c.id() << " from " << c.toId() << "to" << j.id();      c.setToId(j.id());
-      c.setToPin("");
-    }
+    if (c.fromId == id)
+      c.setFrom(j.id());
+    if (c.toId == id) 
+      c.setTo(j.id());
     circ.insert(c);
-    connections << c.id();
+    connections << c.id;
   }
   return j.id();
 }

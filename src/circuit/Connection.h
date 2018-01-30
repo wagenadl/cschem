@@ -4,29 +4,16 @@
 
 #define CONNECTION_H
 
-#include <QSharedData>
 #include <QXmlStreamReader>
 #include "PinID.h"
 #include <QPolygon>
-#include "Layer.h"
 
 class Connection {
 public:
   Connection();
-  Connection(Connection const &);
-  Connection &operator=(Connection const &);
-  ~Connection();
   QString report() const;
   Connection(PinID, PinID);
 public:
-  int id() const;
-  int fromId() const; // zero if dangling
-  int toId() const; // zero if dangling
-  int width() const; // only for board
-  Layer layer() const;
-  QString fromPin() const;
-  QString toPin() const;
-  QPolygon const &via() const;
   PinID from() const;
   PinID to() const;
   bool isEquivalentTo(Connection const &) const;
@@ -46,32 +33,22 @@ public:
 public:
   void setFrom(PinID);
   void setTo(PinID);
-  void setId(int);
-  void setFromId(int);
-  void setToId(int);
-  void setFromPin(QString);
-  void setToPin(QString);
   void setFrom(int id, QString pin="");
   void setTo(int id, QString pin="");
-  void setWidth(int);
-  void setLayer(Layer);
   void unsetFrom();
   void unsetTo();
-  QPolygon &via();
-  void setVia(QVector<QPoint> const &);
   void translate(QPoint delta);
   void reverse();
-protected:
-  void writeAttributes(QXmlStreamWriter &) const;
-  void readAttributes(QXmlStreamReader &);
-private:
-  QSharedDataPointer<class ConnectionData> d;
-  friend QXmlStreamWriter &operator<<(QXmlStreamWriter &, Connection const &);
-  friend QXmlStreamReader &operator>>(QXmlStreamReader &, Connection &);
+public:
+  int id;
+  int fromId;
+  int toId;
+  QString fromPin;
+  QString toPin;
+  QPolygon via;
 };
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Connection const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Connection &);
-
 
 #endif

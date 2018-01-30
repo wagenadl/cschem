@@ -54,7 +54,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
       } else if (n=="connection") {
 	Connection con;
 	sr >> con;
-	c.d->connections[con.id()] = con;
+	c.d->connections[con.id] = con;
       } else {
 	qDebug() << "Unexpected element in circuit: " << sr.name();
 	c.d->valid = false;
@@ -92,7 +92,7 @@ void Circuit::insert(Connection const &c) {
   if (!c.isValid()) {
     qDebug() << "Inserting invalid connection";
   }
-  d->connections[c.id()] = c;
+  d->connections[c.id] = c;
 }
 
 void Circuit::removeElement(int id) {
@@ -101,8 +101,8 @@ void Circuit::removeElement(int id) {
     d->elements.remove(id);
     QList<int> cids;
     for (auto const &c: connections()) 
-      if (c.fromId()==id || c.toId()==id)
-        cids << c.id();
+      if (c.fromId==id || c.toId==id)
+        cids << c.id;
     for (int cid: cids)
       d->connections.remove(cid);
   } else {
@@ -126,9 +126,9 @@ QSet<int> Circuit::connectionsOn(PinID const &pid) const {
 QSet<int> Circuit::connectionsOn(int id, QString pin) const {
   QSet<int> cids;
   for (auto const &c: d->connections) 
-    if ((c.fromId()==id && c.fromPin()==pin)
-        || (c.toId()==id && c.toPin()==pin))
-      cids << c.id();
+    if ((c.fromId==id && c.fromPin==pin)
+        || (c.toId==id && c.toPin==pin))
+      cids << c.id;
   return cids;
 }
 
@@ -136,38 +136,38 @@ QSet<int> Circuit::connectionsOn(int id, QString pin) const {
 QSet<int> Circuit::connectionsOn(int id) const {
   QSet<int> cids;
   for (auto const &c: d->connections) 
-    if (c.fromId()==id || c.toId()==id)
-      cids << c.id();
+    if (c.fromId==id || c.toId==id)
+      cids << c.id;
   return cids;
 }
 
 QSet<int> Circuit::connectionsTo(QSet<int> ids) const {
   QSet<int> cids;
   for (auto const &c: d->connections) 
-    if (ids.contains(c.toId()))
-      cids << c.id();
+    if (ids.contains(c.toId))
+      cids << c.id;
   return cids;
 }
 
 QSet<int> Circuit::connectionsFrom(QSet<int> ids) const {
   QSet<int> cids;
   for (auto const &c: d->connections) 
-    if (ids.contains(c.fromId()))
-      cids << c.id();
+    if (ids.contains(c.fromId))
+      cids << c.id;
   return cids;
 }
 
 QSet<int> Circuit::connectionsIn(QSet<int> ids) const {
   QSet<int> cids;
   for (auto const &c: d->connections) {
-    int from = c.fromId();
-    int to = c.toId();
+    int from = c.fromId;
+    int to = c.toId;
     bool gotfrom = ids.contains(from);
     bool gotto = ids.contains(to);
     if ((gotfrom && gotto)
 	|| (gotfrom && to<=0)
 	|| (gotto && from<=0))
-      cids << c.id();
+      cids << c.id;
   }
   return cids;
 }
@@ -177,11 +177,9 @@ void Circuit::translate(QSet<int> ids, QPoint delta) {
   for (int id: ids)
     if (d->elements.contains(id))
       d->elements[id].setPosition(d->elements[id].position() + delta);
-  for (int id: connectionsIn(ids)) {
-    QPolygon &via(d->connections[id].via());
-    for (QPoint &p: via)
+  for (int id: connectionsIn(ids))
+    for (QPoint &p: d->connections[id].via)
       p += delta;
-  }
 }
 
 void Circuit::translate(QPoint delta) {
@@ -189,7 +187,7 @@ void Circuit::translate(QPoint delta) {
   for (Element &elt: d->elements)
     elt.setPosition(elt.position() + delta);
   for (Connection &con: d->connections)
-    con.setVia(con.via().translated(delta));
+    con.via.translate(delta);
 }
 
 Element const &Circuit::element(int id) const {
@@ -223,19 +221,17 @@ int Circuit::renumber(int start, QMap<int, int> *mapout) {
   d->connections.clear();
   
   for (Connection con: cons) {
-    con.setId(start);
-    int from = con.fromId();
-    if (eltmap.contains(from))
-      con.setFromId(eltmap[from]);
-    else if (from>0) {
-      con.setFromId(0); // make dangling
+    con.id = start;
+    if (eltmap.contains(con.fromId))
+      con.fromId = eltmap[con.fromId];
+    else if (con.fromId>0) {
+      con.setFrom(0); // make dangling
       qDebug() << "Circuit::renumber: Disconnecting from nonexistent element";
     }
-    int to = con.toId();
-    if (eltmap.contains(to))
-      con.setToId(eltmap[to]);
-    else if (to>0) {
-      con.setToId(0); // make dangling
+    if (eltmap.contains(con.toId))
+      con.toId = eltmap[con.toId];
+    else if (con.toId>0) {
+      con.setTo(0); // make dangling
       qDebug() << "Circuit::renumber: Disconnecting from nonexistent element";
     }
     if (con.isValid()) {
@@ -288,7 +284,7 @@ Circuit &Circuit::operator+=(Circuit const &o) {
   for (auto elt: o.elements())
     d->elements[elt.id()] = elt;
   for (auto con: o.connections())
-    d->connections[con.id()] = con;
+    d->connections[con.id] = con;
   return *this;
 }
   

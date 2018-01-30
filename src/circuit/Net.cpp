@@ -25,8 +25,8 @@ void NetData::add(int c) {
   connections << c;
   qDebug() << "  added";
   Connection const &con = circ.connection(c);
-  add(PinID(con.fromId(), con.fromPin()));
-  add(PinID(con.toId(), con.toPin()));
+  add(con.from());
+  add(con.to());
 }
 
 void NetData::add(PinID const &pinid) {

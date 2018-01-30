@@ -270,11 +270,11 @@ QPolygon GeometryData::connectionPath(Connection const &con) const {
   if (!con.isValid())
     return res;
   if (!con.danglingStart())
-    res << pinPosition(con.fromId(), con.fromPin());
-  for (auto p: con.via())
+    res << pinPosition(con.fromId, con.fromPin);
+  for (auto p: con.via)
     res << p;
   if (!con.danglingEnd())
-    res << pinPosition(con.toId(), con.toPin());
+    res << pinPosition(con.toId, con.toPin);
   return res;
 }
 
@@ -330,7 +330,7 @@ void GeometryData::ensureConnectionDB() {
     return;
 
   for (auto &con: circ.connections()) {
-    int id = con.id();
+    int id = con.id;
     QPolygon poly(connectionPath(con));
     int N = poly.size();
     for (int n=0; n<N-1; n++) {

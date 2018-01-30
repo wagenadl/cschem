@@ -192,18 +192,18 @@ QPolygonF SceneConnectionData::path() const {
 
   QPolygonF pp;
   if (!c.danglingStart())
-    pp << scene->pinPosition(c.fromId(), c.fromPin());
-  for (QPoint p: c.via())
+    pp << scene->pinPosition(c.from());
+  for (QPoint p: c.via)
     pp << lib.scale()*p;
   if (!c.danglingEnd())
-    pp << scene->pinPosition(c.toId(), c.toPin());
+    pp << scene->pinPosition(c.to());
   qDebug() << "Connection" << c.report() << pp;
   return pp;
  }
 
 SceneConnection::SceneConnection(class Scene *parent, Connection const &c):
   d(new SceneConnectionData(this, parent)) {
-  d->id = c.id();
+  d->id = c.id;
 
   rebuild();
   parent->addItem(this);

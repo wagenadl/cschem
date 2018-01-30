@@ -20,6 +20,7 @@ public:
   //  Circuit &circuit();
   Schem const &schem() const;
   QPointF pinPosition(int eltid, QString pin) const;
+  QPointF pinPosition(PinID pid) const { return pinPosition(pid.element(), pid.pin()); }
   void moveSelection(QPoint delta, bool nomagnet);
   void tentativelyMoveSelection(QPoint delta, bool first, bool nomagnet);
   QSet<int> selectedElements() const;
