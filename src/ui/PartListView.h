@@ -14,6 +14,8 @@ public:
   void setModel(class PartList *);
   PartList *model() const;
   void showEvent(QShowEvent *) override;
+  QSet<int> selectedElements() const;
+  void selectElements(QSet<int> const &);
   void resetWidth();
 };
 

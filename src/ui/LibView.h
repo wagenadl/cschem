@@ -17,7 +17,8 @@ signals:
   void activated(QString);
 public slots:
   void clear();
-  void rebuild(class SymbolLibrary const *lib=0);
+  void rebuild();
+  void setLibrary(class SymbolLibrary const *lib);
 public:
   void activate(QString); // causes the signal to be emitted
   friend class LibViewData;

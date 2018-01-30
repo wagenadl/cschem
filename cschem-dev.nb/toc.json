@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-01-11T07:59:12",
-  "mod": "2018-01-24T13:07:11",
+  "mod": "2018-01-29T15:15:07",
   "uuid": "1751eb90",
   "cc": [
     { "typ": "entry",
@@ -65,6 +65,15 @@
       "startPage": 23,
       "title": "Design class",
       "uuid": "94da7de8"
+    },
+    { "typ": "entry",
+      "cre": "2018-01-29T15:11:05",
+      "mod": "2018-01-29T15:15:07",
+      "seen": "2018-01-29T15:11:05",
+      "sheetCount": 2,
+      "startPage": 24,
+      "title": "Packages",
+      "uuid": "c2afef0f"
     }
   ]
 }

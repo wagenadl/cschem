@@ -45,11 +45,11 @@
     <package name="c1" pcb="RCY100"/>
     <package name="c2" pcb="RCY200"/>    
 
-    <package name="cp1" pcb="RCY100P" map="+-"/>
-    <package name="cp2" pcb="RCY200P" map="+-"/>
+    <package name="cp1" pcb="RCY100P" map="+ -"/>
+    <package name="cp2" pcb="RCY200P" map="+ -"/>
 
-    <package name="led5" pcb="LED5" map="AK"/>
-    <package name="d3" pcb="ALF300" map="KA"/>
+    <package name="led5" pcb="LED5" map="A K"/>
+    <package name="d3" pcb="ALF300" map="K A"/>
     
     <package name="to220" pcb="TO220W"/>
 
