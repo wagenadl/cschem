@@ -18,7 +18,7 @@ public:
   void updateFromPartList(Element const &);
   SymbolLibrary const &library() const;
   Circuit const &circuit() const;
-  Circuit &circuit();
+  //  Circuit &circuit();
   Schem const &schem() const;
   QPointF pinPosition(int eltid, QString pin) const;
   void moveSelection(QPoint delta, bool nomagnet);
@@ -32,13 +32,15 @@ public:
   // returns NOPIN if none
   int connectionAt(QPointF scenepos, int *segmentp=0) const;
   void modifyConnection(int id, QPolygonF path);
+  void modifyElementAnnotations(Element const &);
+  /* This can change name, value, info, and position and visibility of labels,
+     but *not* element type, position, etc. */
   void copyToClipboard(bool cut=false);
   void pasteFromClipboard();
   void undo();
   void redo();
   void removeDangling();
   void plonk(QString symbol, QPointF scenepos, bool merge=false);
-  void makeUndoStep();
   void rotate(int dir=1);
   void flipx();
   void simplifySegment(int con, int eg);
@@ -61,6 +63,8 @@ public:
   void annotationInternallyEdited(int id);
 signals:
   void libraryChanged();
+private:
+  //void makeUndoStep();
 private:
   class SceneData *d;
 };

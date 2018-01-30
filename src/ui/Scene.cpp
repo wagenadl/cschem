@@ -295,9 +295,9 @@ Circuit const &Scene::circuit() const {
   return d->circ();
 }
 
-Circuit &Scene::circuit() {
-  return d->circ();
-}
+//Circuit &Scene::circuit() {
+//  return d->circ();
+//}
 
 QSet<int> SceneData::selectedElements() const {
   QSet<int> selection;
@@ -537,9 +537,9 @@ void SceneData::backspace() {
     sa->backspace();
 }
 
-void Scene::makeUndoStep() {
-  d->preact();
-}
+//void Scene::makeUndoStep() {
+//  d->preact();
+//}
 
 void Scene::undo() {
   d->undo();
@@ -641,6 +641,30 @@ QMap<int, class SceneElement *> const &Scene::elements() const {
 QMap<int, class SceneConnection *> const &Scene::connections() const {
   return d->conns;
 }
+
+void Scene::modifyElementAnnotations(Element const &elt) {
+  if (!elements().contains(elt.id()))
+    return;
+
+  d->preact();
+  
+  Element elt0 = d->circ().element(elt.id());
+  elt0.setInfo(elt.info());
+  elt0.setValue(elt.value());
+  elt0.setName(elt.name());
+  elt0.setValuePos(elt.valuePos());
+  elt0.setNamePos(elt.namePos());
+  elt0.setValueVisible(elt.isValueVisible());
+  elt0.setNameVisible(elt.isNameVisible());
+  d->circ().insert(elt0);
+
+  CircuitMod cm(d->circ(), d->lib());
+  cm.forceRebuildElement(elt.id());
+  d->rebuildAsNeeded(cm);
+
+  unhover();
+  rehover();
+ }
 
 void Scene::modifyConnection(int id, QPolygonF newpath) {
   if (!connections().contains(id))
