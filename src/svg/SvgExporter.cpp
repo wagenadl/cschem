@@ -99,7 +99,7 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
 void SvgExporterData::writeConnection(QXmlStreamWriter &sw, Connection const &con) {
   QPolygon pp(geom.connectionPath(con));
   sw.writeStartElement("path");
-  sw.writeAttribute("id", QString("con%1").arg(con.id()));
+  sw.writeAttribute("id", QString("con%1").arg(con.id));
   QStringList bits;
   QPointF p = lib.upscale(pp.takeFirst());
   bits << QString("M %1,%2").arg(p.x()).arg(p.y());

@@ -273,7 +273,7 @@ void SceneData::rebuild() {
     elts[c.id()] = new SceneElement(scene, c);
   
   for (auto const &c: circ().connections())
-    conns[c.id()] = new SceneConnection(scene, c);
+    conns[c.id] = new SceneConnection(scene, c);
 
   resetSceneRect();
   partlist->rebuild();
@@ -613,10 +613,10 @@ void SceneData::finalizeConnection() {
     }
     for (auto c: connbuilder->connections()) {
       circ().insert(c);
-      if (conns.contains(c.id()))
-        delete conns[c.id()];
-      conns[c.id()] = new SceneConnection(scene, c);
-      cc << c.id();
+      if (conns.contains(c.id))
+        delete conns[c.id];
+      conns[c.id] = new SceneConnection(scene, c);
+      cc << c.id;
     }
 
     CircuitMod cm(circ(), lib());
@@ -672,14 +672,13 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
   d->preact();
   
   Connection con(d->circ().connection(id));
-  if (con.fromId() > 0)
+  if (con.fromId > 0)
     newpath.removeFirst();
-  if (con.toId() > 0)
+  if (con.toId > 0)
     newpath.removeLast();
-  QPolygon pp;
+  con.via.clear();
   for (auto p: newpath)
-    pp << d->lib().downscale(p);
-  con.setVia(pp);
+    con.via << d->lib().downscale(p);
   d->circ().insert(con);
 
   CircuitMod cm(d->circ(), d->lib());

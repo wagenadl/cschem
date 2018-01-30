@@ -272,18 +272,18 @@ void HoverManagerData::update() {
     auto const &lib = scene->library();
     if (seg==0
 	&& ccc.danglingStart()
-	&& !ccc.via().isEmpty()
-	&& QLineF(pt, lib.upscale(ccc.via().first())).length() < r) {
+	&& !ccc.via.isEmpty()
+	&& QLineF(pt, lib.upscale(ccc.via.first())).length() < r) {
       // near dangling start
-      pinpos = lib.upscale(ccc.via().first());
+      pinpos = lib.upscale(ccc.via.first());
       fakepin = true;
       highlightPin();
       unhighlightSegment();
-    } else if (seg==ccc.via().size()-(ccc.danglingStart()?2:1)
+    } else if (seg==ccc.via.size()-(ccc.danglingStart()?2:1)
 	       && ccc.danglingEnd()
-	       && !ccc.via().isEmpty()
-	       &&  QLineF(pt, lib.upscale(ccc.via().last())).length() < r) {
-      pinpos = lib.upscale(ccc.via().last());
+	       && !ccc.via.isEmpty()
+	       &&  QLineF(pt, lib.upscale(ccc.via.last())).length() < r) {
+      pinpos = lib.upscale(ccc.via.last());
       fakepin = true;
       highlightPin();
       unhighlightSegment();

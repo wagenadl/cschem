@@ -12,7 +12,7 @@ public:
     topgeom(top, d->lib) {
     bot = d->circ;
     for (Connection const &c: top.connections())
-      bot.removeConnection(c.id());
+      bot.removeConnection(c.id);
     CircuitMod mod(bot, d->lib);
     for (Element const &e: top.elements())
       mod.deleteElement(e.id());
@@ -150,12 +150,12 @@ void CM_Merge::considerConCon() {
   // connections in TOP. We don't have to study connection ends at
   // pins; that's done in considerPinCon.
   for (Connection const &conbot: bot.connections()) {
-    for (QPoint pos: conbot.via()) {
+    for (QPoint pos: conbot.via) {
       int contop = topgeom.connectionAt(pos);
       if (contop>0) { // gotcha
-        if (Net(d->circ, contop).connections().contains(conbot.id()))
+        if (Net(d->circ, contop).connections().contains(conbot.id))
           continue; // The two are already connected
-        junctst << d->addInPlaceConnection(conbot.id(), contop, pos);
+        junctst << d->addInPlaceConnection(conbot.id, contop, pos);
         any = true;
       }
     }
@@ -163,12 +163,12 @@ void CM_Merge::considerConCon() {
 
   // And the reverse...
   for (Connection const &contop: top.connections()) {
-    for (QPoint pos: contop.via()) {
+    for (QPoint pos: contop.via) {
       int conbot = botgeom.connectionAt(pos);
       if (conbot>0) { // gotcha
-        if (Net(d->circ, contop.id()).connections().contains(conbot))
+        if (Net(d->circ, contop.id).connections().contains(conbot))
           continue; // The two are already connected
-        junctst << d->addInPlaceConnection(conbot, contop.id(), pos);
+        junctst << d->addInPlaceConnection(conbot, contop.id, pos);
         any = true;
       }
     }
