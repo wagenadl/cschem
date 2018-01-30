@@ -101,7 +101,7 @@ void LibViewData::addSymbol(QString symbol) {
 void LibViewData::addHeader(QString symbol, QString label) {
   QGraphicsTextItem *header = new QGraphicsTextItem(label);
   QFont f = header->font();
-  //  f.setStyle(Qt::ItalicStyle);
+  f.setStyle(QFont::StyleItalic);
   f.setPointSize(f.pointSize() * .75);
   header->setFont(f);
   scene->addItem(header);
@@ -118,13 +118,16 @@ LibView::LibView(class SymbolLibrary const *lib, QWidget *parent):
   LibView(parent) {
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  rebuild(lib);
+  setLibrary(lib);
 }
 
 void LibView::clear() {
   for (auto *i: d->items)
     delete i;
   d->items.clear();
+  for (auto *i: d->headers)
+    delete i;
+  d->headers.clear();
   d->scene->setSceneRect(d->scene->itemsBoundingRect());
 }
 
@@ -137,11 +140,13 @@ static bool symbolLessThan(QString a, QString b) {
     return contdif>0;
   return a.toLower() < b.toLower();
 }
- 
-void LibView::rebuild(class SymbolLibrary const *lib) {
-  if (lib)
-    d->lib = lib;
 
+void  LibView::setLibrary(class SymbolLibrary const *lib) {
+  d->lib = lib;
+  rebuild();
+}
+
+void LibView::rebuild() {
   clear();
    
   if (!d->lib)

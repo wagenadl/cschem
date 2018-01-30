@@ -58,7 +58,7 @@ void HtmlDelegate::paint(QPainter *painter, QStyleOptionViewItem const &option,
   QRect clip(0, 0, options.rect.width(), options.rect.height());
   painter->translate(options.rect.left(), options.rect.top());
   doc.drawContents(painter, clip);
-  qDebug() << "options.rect" << options.rect << "doc" << doc.idealWidth() << doc.size();
+  //  qDebug() << "options.rect" << options.rect << "doc" << doc.idealWidth() << doc.size();
 
   painter->restore();
 }
@@ -71,6 +71,6 @@ QSize HtmlDelegate::sizeHint(QStyleOptionViewItem const &option,
   QTextDocument doc;
   doc.setHtml(index.model()->data(index, Qt::DisplayRole).toString());
   doc.setTextWidth(options.rect.width());
-  qDebug() << "sizehint" << doc.idealWidth() << doc.size();
+  //  qDebug() << "sizehint" << doc.idealWidth() << doc.size();
   return QSize(doc.idealWidth(), doc.size().height());
 }
