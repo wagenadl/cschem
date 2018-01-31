@@ -32,51 +32,39 @@ void SceneElementData::markHover() {
 }  
 
 void SceneElementData::removeName() {
-  scene->makeUndoStep();
-  Circuit &circ = scene->circuit(); 
-  Element elt(circ.element(id));
-  elt.setNameVisible(false);
-  circ.insert(elt);
-  if (name)
-    name->hide();
+  Element elt(scene->circuit().elements[id]);
+  elt.nameVisible = false;
+  scene->modifyElementAnnotations(elt);
 }
 
 void SceneElementData::removeValue() {
-  scene->makeUndoStep();
-  Circuit &circ = scene->circuit(); 
-  Element elt(circ.element(id));
-  elt.setValueVisible(false);
-  circ.insert(elt);
-  if (value)
-    value->hide();
+  Element elt(scene->circuit().elements[id]);
+  elt.valueVisible = false;
+  scene->modifyElementAnnotations(elt);
 }
 
 void SceneElementData::moveValue(QPointF delta) {
   if (delta.isNull())
     return;
-  scene->makeUndoStep();
-  Circuit &circ = scene->circuit(); 
-  Element elt(circ.element(id));
-  elt.setValuePos(elt.valuePos() + delta.toPoint());
-  circ.insert(elt);
+  Element elt(scene->circuit().elements[id]);
+  elt.valuePosition += delta.toPoint();
+  scene->modifyElementAnnotations(elt);
 }
 
 void SceneElementData::moveName(QPointF delta) {
   if (delta.isNull())
     return;
-  scene->makeUndoStep();
-  Circuit &circ = scene->circuit(); 
-  Element elt(circ.element(id));
-  elt.setNamePos(elt.namePos() + delta.toPoint());
-  circ.insert(elt);
+  Element elt(scene->circuit().elements[id]);
+  elt.namePosition += delta.toPoint();
+  scene->modifyElementAnnotations(elt);
 }
 
-void SceneElementData::setNameText() {
+void SceneElementData::nameTextToWidget() {
   // Copy name from circuit to widget
   // Called when escape pressed
-  Circuit &circ = scene->circuit(); 
-  Element const &elt(circ.element(id));
-  QString txt = elt.name();
+  Circuit const &circ = scene->circuit(); 
+  Element const &elt(circ.elements[id]);
+  QString txt = elt.name;
   if (txt.isEmpty()) {
     name->setHtml("<i>nn</i>");
     name->setDefaultTextColor(Style::faintColor());
@@ -88,28 +76,22 @@ void SceneElementData::setNameText() {
     name->clearFocus();
 }
 
-void SceneElementData::getNameText() {
+void SceneElementData::nameTextToCircuit() {
   // Copy name from widget to circuit
   // Called when return pressed
-  scene->makeUndoStep();
-  Circuit &circ = scene->circuit(); 
-  Element elt(circ.element(id));
+  Element elt(scene->circuit().elements[id]);
   QString txt = name->toPlainText();
   if (txt == "nn")
     txt = "";
   if (txt.isEmpty())
-    txt = circ.autoName(elt.symbol());
-  elt.setName(txt);
-  circ.insert(elt);
-  setNameText();
-  scene->annotationInternallyEdited(elt.id());
+    txt = scene->circuit().autoName(elt.symbol());
+  elt.name = txt;
+  scene->modifyElementAnnotations(elt);
 }
 
-void SceneElementData::setValueText() {
+void SceneElementData::valueTextToWidget() {
   // Copy value from circuit to widget
-  Circuit &circ = scene->circuit(); 
-  Element const &elt(circ.element(id));
-  QString txt = elt.value();
+  QString txt = scene->circuit().elements[id].value;
   if (txt.isEmpty()) {
     value->setHtml("<i>value</i>");
     value->setDefaultTextColor(Style::faintColor());
@@ -121,26 +103,22 @@ void SceneElementData::setValueText() {
     value->clearFocus();
 }
 
-void SceneElementData::getValueText() {
+void SceneElementData::valueTextToCircuit() {
   // Copy value from widget to circuit
-  scene->makeUndoStep();
-  Circuit &circ = scene->circuit(); 
-  Element elt(circ.element(id));
+  Element elt(scene->circuit().elements[id]);
   QString txt = value->toPlainText();
   if (txt == "value")
     txt = "";
-  txt = PartNumbering::prettyValue(txt, elt.name());
-  elt.setValue(txt);
-  circ.insert(elt);
-  setValueText();
-  scene->annotationInternallyEdited(elt.id());
+  txt = PartNumbering::prettyValue(txt, elt.name);
+  elt.value = txt;
+  scene->modifyElementAnnotations(elt);
 }
 
 SceneElement::SceneElement(class Scene *parent, Element const &elt):
   d(new SceneElementData) {
   //
   d->scene = parent;
-  d->id = elt.id();
+  d->id = elt.id;
   d->sym = elt.symbol();
 
   SymbolLibrary const &lib = d->scene->library();
@@ -172,14 +150,13 @@ SceneElement::~SceneElement() {
 // }
 
 void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
-  Element elt = d->scene->circuit().element(d->id);
-  if (elt.type() == Element::Type::Component
-      || elt.type() == Element::Type::Port) {
-    elt.setNameVisible(true);
-    if (elt.type() == Element::Type::Component)
-      elt.setValueVisible(true);
-    d->scene->circuit().insert(elt);
-    rebuild();
+  Element elt = d->scene->circuit().elements[d->id];
+  if (elt.type == Element::Type::Component
+      || elt.type == Element::Type::Port) {
+    elt.nameVisible = true;
+    if (elt.type == Element::Type::Component)
+      elt.valueVisible = true;
+    d->scene->modifyElementAnnotations(elt);
   }
 }
 
@@ -187,7 +164,7 @@ void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->dragmoved = false;
   Circuit const &circ = d->scene->circuit();
   SymbolLibrary const &lib = d->scene->library();
-  d->delta0 = circ.element(d->id).position() - lib.downscale(e->scenePos());
+  d->delta0 = circ.elements[d->id].position - lib.downscale(e->scenePos());
   QGraphicsItem::mousePressEvent(e);
 }
 
@@ -195,7 +172,7 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
-  QPoint oldpos = circ.element(d->id).position();
+  QPoint oldpos = circ.elements[d->id].position;
   QGraphicsItem::mouseMoveEvent(e);
   
   if (d->dragmoved || newpos != oldpos) {
@@ -209,7 +186,7 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   auto const &lib = d->scene->library();
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
-  QPoint oldpos = circ.element(d->id).position();
+  QPoint oldpos = circ.elements[d->id].position;
   QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
     d->scene->moveSelection(newpos - oldpos,
@@ -219,16 +196,16 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 
 void SceneElement::temporaryTranslate(QPoint delta) {
   Circuit const &circ = d->scene->circuit();
-  Element elt(circ.element(d->id));
+  Element elt(circ.elements[d->id]);
   SymbolLibrary const &lib = d->scene->library();
 
-  setPos(lib.upscale(elt.position() + delta));
+  setPos(lib.upscale(elt.position + delta));
 }
 
 void SceneElement::rebuild() {
   // Reconstruct element
   Circuit const &circ = d->scene->circuit();
-  Element elt(circ.element(d->id));
+  Element elt(circ.elements[d->id]);
   SymbolLibrary const &lib = d->scene->library();
   Symbol const &symbol = lib.symbol(elt.symbol());
 
@@ -239,25 +216,25 @@ void SceneElement::rebuild() {
   QPointF orig = symbol.bbOrigin();
   QTransform xf;
   xf.translate(orig.x(), orig.y());
-  xf.rotate(elt.rotation()*-90);
-  if (elt.isFlipped())
+  xf.rotate(elt.rotation*-90);
+  if (elt.flipped)
     xf.scale(-1, 1);
   xf.translate(-orig.x(), -orig.y());
   d->element->setTransform(xf);
   d->element->setPos(symbol.shiftedBBox().topLeft());
 
-  setPos(lib.scale() * elt.position());
+  setPos(lib.scale() * elt.position);
 
   // Reconstruct name
-  if (elt.isNameVisible()) {
+  if (elt.nameVisible) {
     if (d->name) {
       d->name->show();
     } else {
       d->name = new SceneAnnotation(d->scene->library().scale(), this);
       QObject::connect(d->name, SIGNAL(returnPressed()),
-		       d.data(), SLOT(getNameText()));
+		       d.data(), SLOT(nameTextToCircuit()));
       QObject::connect(d->name, SIGNAL(escapePressed()),
-		       d.data(), SLOT(setNameText()));
+		       d.data(), SLOT(nameTextToWidget()));
       QObject::connect(d->name, SIGNAL(moved(QPointF)),
 		       d.data(), SLOT(moveName(QPointF)));
       QObject::connect(d->name, SIGNAL(removalRequested()),
@@ -266,34 +243,34 @@ void SceneElement::rebuild() {
                        d.data(), SLOT(nameHovering(bool)));
     }
 
-    QPoint p = elt.namePos();
+    QPoint p = elt.namePosition;
     if (p.isNull()) {
       Geometry geom(circ, lib);
       QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "name");
       p = abb.bottomLeft().toPoint();
-      elt.setNamePos(p);
-      d->scene->circuit().insert(elt);
+      elt.namePosition = p;
+      d->scene->modifyElementAnnotations(elt);
     }
     d->name->setBaseline(p);
-    d->setNameText();
-    if (elt.name().isEmpty()) {
-      d->getNameText(); // automated magic
-      elt = circ.element(d->id);
+    d->nameTextToWidget();
+    if (elt.name.isEmpty()) {
+      d->nameTextToCircuit(); // automated magic
+      elt = circ.elements[d->id];
     }
   } else if (d->name) {
     d->name->hide();
   }
   
   // Reconstruct value
-  if (elt.isValueVisible()) {
+  if (elt.valueVisible) {
     if (d->value) {
       d->value->show();
     } else {
       d->value = new SceneAnnotation(d->scene->library().scale(), this);
       QObject::connect(d->value, SIGNAL(returnPressed()),
-		       d.data(), SLOT(getValueText()));
+		       d.data(), SLOT(valueTextToCircuit()));
       QObject::connect(d->value, SIGNAL(escapePressed()),
-		       d.data(), SLOT(setValueText()));
+		       d.data(), SLOT(valueTextToWidget()));
       QObject::connect(d->value, SIGNAL(moved(QPointF)),
 		       d.data(), SLOT(moveValue(QPointF)));
       QObject::connect(d->value, SIGNAL(removalRequested()),
@@ -301,16 +278,16 @@ void SceneElement::rebuild() {
       QObject::connect(d->name, SIGNAL(hovering(bool)),
                        d.data(), SLOT(valueHovering(bool)));
     }
-    QPoint p = elt.valuePos();
+    QPoint p = elt.valuePosition;
     if (p.isNull()) {
       Geometry geom(circ, lib);
       QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "value");
       p = abb.bottomLeft().toPoint();
-      elt.setValuePos(p);
-      d->scene->circuit().insert(elt);
+      elt.valuePosition = p;
+      d->scene->modifyElementAnnotations(elt);
     }
     d->value->setBaseline(p);
-    d->setValueText();
+    d->valueTextToWidget();
   } else if (d->value) {
     d->value->hide();
   }

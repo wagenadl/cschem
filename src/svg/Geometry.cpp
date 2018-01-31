@@ -67,11 +67,11 @@ Geometry::~Geometry() {
 QTransform GeometryData::symbolToCircuitTransformation(Element const &elt)
   const {
   QTransform xf;
-  xf.translate(elt.position().x(), elt.position().y());
+  xf.translate(elt.position.x(), elt.position.y());
   double s = lib.scale();
   xf.scale(1/s, 1/s);
-  xf.rotate(-elt.rotation()*90);
-  if (elt.isFlipped())
+  xf.rotate(-elt.rotation*90);
+  if (elt.flipped)
     xf.scale(-1, 1);
   return xf;
 }
@@ -79,8 +79,8 @@ QTransform GeometryData::symbolToCircuitTransformation(Element const &elt)
 QTransform GeometryData::symbolToSceneElementTransformation(Element const &elt)
   const {
   QTransform xf;
-  xf.rotate(-elt.rotation()*90);
-  if (elt.isFlipped())
+  xf.rotate(-elt.rotation*90);
+  if (elt.flipped)
     xf.scale(-1, 1);
   return xf;
 }
@@ -98,14 +98,14 @@ PinID Geometry::pinAt(QPoint p) const {
 void GeometryData::ensurePinDB() {
   if (!pindb.isEmpty())
     return; // already done
-  for (auto const &elt: circ.elements()) {
+  for (auto const &elt: circ.elements) {
     Symbol const &prt(lib.symbol(elt.symbol()));
     if (!prt.isValid())
       continue;
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
       QPoint pos = pinPosition(elt, p);
-      pindb[pos] = PinID(elt.id(), p);
+      pindb[pos] = PinID(elt.id, p);
     }
   }
 }
@@ -119,7 +119,7 @@ QPoint Geometry::pinPosition(class PinID const &pid) const {
 
 QPoint Geometry::pinPosition(int eltid, QString pin) const {
   if (d)
-    return d->pinPosition(d->circ.element(eltid), pin);
+    return d->pinPosition(d->circ.elements[eltid], pin);
   else
     return QPoint();
 }
@@ -132,12 +132,12 @@ QPoint Geometry::pinPosition(Element const &elt, QString pin) const {
 }
 
 QPoint GeometryData::pinPosition(int eltid, QString pin) const {
-  return pinPosition(circ.element(eltid), pin);
+  return pinPosition(circ.elements[eltid], pin);
 }
 
 QRect Geometry::boundingRect(int elt) const {
   if (d)
-    return boundingRect(d->circ.element(elt));
+    return boundingRect(d->circ.elements[elt]);
   else
     return QRect();
 }
@@ -195,7 +195,7 @@ QRect Geometry::boundingRect(Element const &elt) const {
 QRect Geometry::boundingRect() const {
   QRect r;
   if (d)
-    for (Element const &elt: d->circ.elements())
+    for (Element const &elt: d->circ.elements)
       r |= boundingRect(elt);
   return r;
 }
@@ -206,11 +206,11 @@ QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
   QTransform xf = symbolToCircuitTransformation(elt);
   QPoint p0 = xf.map(pp).toPoint();
   
-  if  (elt.isFlipped())
+  if  (elt.flipped)
     pp = QPointF(-pp.x(), pp.y());
-  for (int k=0; k<elt.rotation(); k++)
+  for (int k=0; k<elt.rotation; k++)
     pp = QPointF(pp.y(), -pp.x());
-  QPoint p1 = elt.position() + lib.downscale(pp);
+  QPoint p1 = elt.position + lib.downscale(pp);
   if (p1!=p0)
     qDebug() << "TRANSFORMATION MISMATCH" << p0 << p1 << elt.report();
   return p1;
@@ -221,7 +221,7 @@ QPoint Geometry::centerOfPinMass() const {
     return QPoint();
   int N = 0;
   QPointF sum;
-  for (Element const &elt: d->circ.elements()) {
+  for (Element const &elt: d->circ.elements) {
     Symbol const &symbol(d->lib.symbol(elt.symbol()));
     QStringList pins = symbol.pinNames();
     N += pins.size();
@@ -233,7 +233,7 @@ QPoint Geometry::centerOfPinMass() const {
 
 QPoint Geometry::centerOfPinMass(int eltid) const {
   if (d)
-    return centerOfPinMass(d->circ.element(eltid));
+    return centerOfPinMass(d->circ.elements[eltid]);
   else
     return QPoint();
 }
@@ -253,7 +253,7 @@ QPoint Geometry::centerOfPinMass(Element const &elt) const {
 
 QPolygon Geometry::connectionPath(int conid) const {
   if (d)
-    return d->connectionPath(d->circ.connection(conid));
+    return d->connectionPath(d->circ.connections[conid]);
   else
     return QPolygon();
 }
@@ -270,11 +270,11 @@ QPolygon GeometryData::connectionPath(Connection const &con) const {
   if (!con.isValid())
     return res;
   if (!con.danglingStart())
-    res << pinPosition(con.fromId(), con.fromPin());
-  for (auto p: con.via())
+    res << pinPosition(con.fromId, con.fromPin);
+  for (auto p: con.via)
     res << p;
   if (!con.danglingEnd())
-    res << pinPosition(con.toId(), con.toPin());
+    res << pinPosition(con.toId, con.toPin);
   return res;
 }
 
@@ -298,7 +298,7 @@ QPolygon Geometry::simplifiedPath(QPolygon pp) {
 
 bool Geometry::isZeroLength(int conid) const {
   if (d)
-    return isZeroLength(d->circ.connection(conid));
+    return isZeroLength(d->circ.connections[conid]);
   else
     return false;
 }
@@ -329,8 +329,8 @@ void GeometryData::ensureConnectionDB() {
   if (!condb.isEmpty())
     return;
 
-  for (auto &con: circ.connections()) {
-    int id = con.id();
+  for (auto &con: circ.connections) {
+    int id = con.id;
     QPolygon poly(connectionPath(con));
     int N = poly.size();
     for (int n=0; n<N-1; n++) {
@@ -414,7 +414,7 @@ QPolygon Geometry::viaFromPath(class Connection const &con, QPolygon path) {
 
 QPolygon Geometry::viaFromPath(int con, QPolygon path) const {
   if (d)
-    return viaFromPath(d->circ.connection(con), path);
+    return viaFromPath(d->circ.connections[con], path);
   else
     return QPolygon();
 }

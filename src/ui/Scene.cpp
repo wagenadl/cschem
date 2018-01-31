@@ -78,7 +78,7 @@ QRectF SceneData::minRect() {
 }
 
 QPointF SceneData::pinPosition(int id, QString pin) const {
-  if (circ().elements().contains(id))
+  if (circ().elements.contains(id))
     return lib().upscale(Geometry(circ(), lib()).pinPosition(id, pin));
   else 
     return QPoint();
@@ -153,15 +153,16 @@ void SceneData::startConnectionFromConnection(QPointF pos) {
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
   circ() = cm.circuit();
   rebuildAsNeeded(cm.affectedElements(), cm.affectedConnections());
+  scene->emitCircuitChanged();
 }
 
 void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
   for (int id: conids) {
-    if (circ().connections().contains(id)) {
+    if (circ().connections.contains(id)) {
       if (conns.contains(id))
         conns[id]->rebuild();
       else
-        conns[id] = new SceneConnection(scene, circ().connection(id));
+        conns[id] = new SceneConnection(scene, circ().connections[id]);
     } else if (conns.contains(id)) {
       delete conns[id];
       conns.remove(id);
@@ -169,11 +170,11 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
   }
 
   for (int id: eltids) {
-    if (circ().elements().contains(id)) {
+    if (circ().elements.contains(id)) {
       if (elts.contains(id))
         elts[id]->rebuild();
       else
-        elts[id] = new SceneElement(scene, circ().element(id));
+        elts[id] = new SceneElement(scene, circ().elements[id]);
     } else if (elts.contains(id)) {
       delete elts[id];
       elts.remove(id);
@@ -268,11 +269,11 @@ void SceneData::rebuild() {
     delete i;
   conns.clear();
 
-  for (auto const &c: circ().elements()) 
-    elts[c.id()] = new SceneElement(scene, c);
+  for (auto const &c: circ().elements) 
+    elts[c.id] = new SceneElement(scene, c);
   
-  for (auto const &c: circ().connections())
-    conns[c.id()] = new SceneConnection(scene, c);
+  for (auto const &c: circ().connections)
+    conns[c.id] = new SceneConnection(scene, c);
 
   resetSceneRect();
   partlist->rebuild();
@@ -292,11 +293,6 @@ Schem const &Scene::schem() const {
 }
 
 Circuit const &Scene::circuit() const {
-  return d->circ();
-}
-
-Circuit &Scene::circuit() {
-  qDebug() << "non-const Scene::circuit() is deprecated";
   return d->circ();
 }
 
@@ -376,8 +372,8 @@ void Scene::moveSelection(QPoint delta, bool nomagnet) {
     // Just a little sanity check
     Circuit newcirc = cm.circuit();
     for (int id: selection)
-      if (!newcirc.elements().contains(id))
-	qDebug() << "Selected element" << origCirc.element(id).report()
+      if (!newcirc.elements.contains(id))
+	qDebug() << "Selected element" << origCirc.elements[id].report()
 		 << "got deleted in move. This might be bad.";
     // End of sanity check
 
@@ -538,9 +534,9 @@ void SceneData::backspace() {
     sa->backspace();
 }
 
-void Scene::makeUndoStep() {
-  d->preact();
-}
+//void Scene::makeUndoStep() {
+//  d->preact();
+//}
 
 void Scene::undo() {
   d->undo();
@@ -573,7 +569,7 @@ static double L2(QPointF p) {
 QString Scene::pinAt(QPointF scenepos, int elementId) const {
   if (!d->elts.contains(elementId))
     return PinID::NOPIN;
-  QString sym = d->circ().element(elementId).symbol();
+  QString sym = d->circ().elements[elementId].symbol();
   Symbol const &symbol = library().symbol(sym);
   double r = library().scale();
   for (auto p: symbol.pinNames())
@@ -607,16 +603,16 @@ void SceneData::finalizeConnection() {
     QList<int> cc;
     for (auto c: connbuilder->junctions()) {
       circ().insert(c);
-      if (elts.contains(c.id()))
-        delete elts[c.id()];
-      elts[c.id()] = new SceneElement(scene, c);
+      if (elts.contains(c.id))
+        delete elts[c.id];
+      elts[c.id] = new SceneElement(scene, c);
     }
     for (auto c: connbuilder->connections()) {
       circ().insert(c);
-      if (conns.contains(c.id()))
-        delete conns[c.id()];
-      conns[c.id()] = new SceneConnection(scene, c);
-      cc << c.id();
+      if (conns.contains(c.id))
+        delete conns[c.id];
+      conns[c.id] = new SceneConnection(scene, c);
+      cc << c.id;
     }
 
     CircuitMod cm(circ(), lib());
@@ -627,7 +623,7 @@ void SceneData::finalizeConnection() {
     for (int c: cc)
       cm.adjustOverlappingConnections(c);
     for (auto c: connbuilder->junctions())
-      cm.removePointlessJunction(c.id());
+      cm.removePointlessJunction(c.id);
     rebuildAsNeeded(cm);
   }
 
@@ -643,21 +639,36 @@ QMap<int, class SceneConnection *> const &Scene::connections() const {
   return d->conns;
 }
 
+void Scene::modifyElementAnnotations(Element const &elt) {
+  int id = elt.id;
+  if (!elements().contains(id))
+    return;
+
+  d->preact();
+  
+  Element elt0 = d->circ().elements[id];
+  elt0.copyAnnotationsFrom(elt);
+  d->circ().insert(elt0);
+  if (d->elts.contains(id))
+    d->elts[id]->rebuild();
+  d->partlist->rebuild();
+  emitCircuitChanged();
+}
+
 void Scene::modifyConnection(int id, QPolygonF newpath) {
   if (!connections().contains(id))
     return;
 
   d->preact();
   
-  Connection con(d->circ().connection(id));
-  if (con.fromId() > 0)
+  Connection con(d->circ().connections[id]);
+  if (con.fromId > 0)
     newpath.removeFirst();
-  if (con.toId() > 0)
+  if (con.toId > 0)
     newpath.removeLast();
-  QPolygon pp;
+  con.via.clear();
   for (auto p: newpath)
-    pp << d->lib().downscale(p);
-  con.setVia(pp);
+    con.via << d->lib().downscale(p);
   d->circ().insert(con);
 
   CircuitMod cm(d->circ(), d->lib());
@@ -701,11 +712,11 @@ void Scene::pasteFromClipboard() {
     return;
   }
   d->preact();
-  d->circ() += pp;
-  d->rebuildAsNeeded(QSet<int>::fromList(pp.elements().keys()),
-                     QSet<int>::fromList(pp.connections().keys()));
+  d->circ().merge(pp);
+  d->rebuildAsNeeded(QSet<int>::fromList(pp.elements.keys()),
+                     QSet<int>::fromList(pp.connections.keys()));
   clearSelection();
-  for (int id: pp.elements().keys()) 
+  for (int id: pp.elements.keys()) 
     if (d->elts.contains(id))
       d->elts[id]->setSelected(true);
 }
@@ -779,12 +790,12 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
     cm.addElement(elt);
     if (merge) {
       QSet<int> ee;
-      ee << elt.id();
+      ee << elt.id;
       cm.mergeSelection(ee);
     }
-    for (Element const &elt: circ().elements())
+    for (Element const &elt: circ().elements)
       if (elt.symbol()==symbol)
-	cm.forceRebuildElement(elt.id());
+	cm.forceRebuildElement(elt.id);
     
     rebuildAsNeeded(cm);
   }
@@ -807,7 +818,7 @@ void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
     cm.addElement(elt);
     if (merge) {
       QSet<int> ee;
-      ee << elt.id();
+      ee << elt.id;
       cm.mergeSelection(ee);
     }
     d->rebuildAsNeeded(cm);
@@ -901,31 +912,17 @@ void Scene::focusOutEvent(QFocusEvent *e) {
   QGraphicsScene::focusOutEvent(e);
 }
 
-void Scene::annotationInternallyEdited(int /*id*/) {
-  d->partlist->rebuild();
-}
-
 void Scene::updateFromPartList(Element const &elt) {
-  int id = elt.id();
-  if (d->circ().elements().contains(id)) {
-    Element e = d->circ().element(id);
-    e.setName(elt.name());
-    e.setValue(elt.value());
-    e.setInfo(elt.info());
-    d->circ().insert(e);
+  int id = elt.id;
+  if (d->circ().elements.contains(id)) {
+    Element &e(d->circ().elements[id]);
+    e.name = elt.name;
+    e.value = elt.value;
+    e.info = elt.info;
   }
   if (d->elts.contains(id))
     d->elts[id]->rebuild();
-}
-
-void Scene::setComponentValue(int id, QString val) {
-  if (d->circ().elements().contains(id)) {
-    Element elt = d->circ().element(id);
-    elt.setValue(val);
-    d->circ().insert(elt);
-  }
-  if (d->elts.contains(id))
-    d->elts[id]->rebuild();
+  emitCircuitChanged();
 }
 
 void SceneData::rotateElementOrSelection(int dir) {
@@ -977,4 +974,8 @@ void Scene::rehover() {
 
 PartList *Scene::partlist() const {
   return d->partlist;
+}
+
+void Scene::emitCircuitChanged() {
+  emit circuitChanged();
 }

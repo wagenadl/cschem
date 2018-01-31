@@ -1,7 +1,11 @@
-// FPPicture.cpp
+// PackageDrawing.cpp
 
-#include "FPPicture.h"
+#include "PackageDrawing.h"
+
+#include <QFile>
+#include <QPainter>
 #include <QRegularExpression>
+#include <QDebug>
 
 class FPPicData {
 public:
@@ -13,6 +17,9 @@ public:
   void parseElementArc(QStringList args, QPainter &);
   void parsePin(QStringList args, QPainter &);
   void parseMark(QStringList args, QPainter &);
+  static QColor silkColor() { return QColor(0, 0, 255); }
+  static QColor holeColor() { return QColor(255, 255, 255); }
+  static QColor padColor() { return QColor(0, 0, 0); }
 public:
   bool isvalid;
   QString desc;
@@ -25,35 +32,36 @@ public:
   int tscale;
   int flags;
   int tflags;
-  QMap<int, PinInfo> pins; // organized by number
+  QMap<int, PackageDrawing::PinInfo> pins; // organized by number
 };
 
 void FPPicData::parseElementLine(QStringList args, QPainter &p) {
   if (args.size() != 5)
     return;
-  p.setPen(QPen(QColor(0,0,0), args[4].toInt()));
+  p.setPen(QPen(silkColor(), args[4].toInt()));
   p.drawLine(QPoint(args[0].toInt(), args[1].toInt()),
 	     QPoint(args[2].toInt(), args[3].toInt()));
 }
 
-void FPPicData::parseElementArc(QStringList args, QPainter &p) {
+void FPPicData::parseElementArc(QStringList, QPainter &) {
+  qDebug() << "FPPicData::parseElementArc: NYI";
   // nyi
 }
 
 void FPPicData::parsePin(QStringList args, QPainter &p) {
   if (args.size()<5)
     return;
-  FPPicture::PinInfo pin;
+  PackageDrawing::PinInfo pin;
   int x = args.takeFirst().toInt();
   int y = args.takeFirst().toInt();
   pin.position = QPoint(x, y);
   pin.padDiameter = args.takeFirst().toInt();
   QString flags = args.takeLast();
   if (isQuoted(flags)) 
-    pin.isQuare = unquote(flags).split(",").contains("square");
+    pin.isSquare = unquote(flags).split(",").contains("square");
   else
     pin.isSquare = flags.toInt() & 0x0100;
-  QString nn = args.takeLast().unquote()();
+  QString nn = unquote(args.takeLast());
   pin.number = nn.toInt();
   if (args.size()==4) {
     // [rX rY Thickness] Clearance Mask Drill "Name" ["Number" NFlags]
@@ -61,11 +69,11 @@ void FPPicData::parsePin(QStringList args, QPainter &p) {
     pin.position += markpos;
     pin.clearanceDiameter = args.takeFirst().toInt();
     pin.drillDiameter = args.takeFirst().toInt();
-    pin.name = args.takeFirst().unquote();
+    pin.name = unquote(args.takeFirst());
   } else if (args.size()==2) {
     // [aX aY Thickness] Drill "Name" ["Number" NFlags]
     pin.drillDiameter =  args.takeFirst().toInt();
-    pin.name = args.takeFirst().unquote();
+    pin.name = unquote(args.takeFirst());
   } else if (args.size()==1) {
     // [aX aY Thickness] Drill ["Name" NFlags]
     pin.drillDiameter =  args.takeFirst().toInt();
@@ -77,6 +85,19 @@ void FPPicData::parsePin(QStringList args, QPainter &p) {
     return;
   }
   pin.clearanceDiameter += pin.padDiameter;
+
+  p.setBrush(QBrush(padColor()));
+  p.setPen(Qt::NoPen);
+  if (pin.isSquare)
+    p.drawRect(QRect(pin.position, QSize(pin.padDiameter, pin.padDiameter))
+		    .translated(QPoint(pin.padDiameter/2, pin.padDiameter/2)));
+  else
+    p.drawEllipse(pin.position, pin.padDiameter/2, pin.padDiameter/2);
+
+  if (pin.drillDiameter>0) {
+    p.setBrush(QBrush(holeColor()));
+    p.drawEllipse(pin.position, pin.drillDiameter/2, pin.drillDiameter/2);
+  }  
 }
 
 void FPPicData::parseMark(QStringList args, QPainter &) {
@@ -85,13 +106,13 @@ void FPPicData::parseMark(QStringList args, QPainter &) {
 }
 
 
-FPPicture::~FPPicture() {
+PackageDrawing::~PackageDrawing() {
 }
 
-FPPicture::FPPicture(FPPicture const &o): d(o.d) {
+PackageDrawing::PackageDrawing(PackageDrawing const &o): d(o.d) {
 }
 
-FPPicture &FPPicture::operator=(FPPicture const &o) {
+PackageDrawing &PackageDrawing::operator=(PackageDrawing const &o) {
   d = o.d;
   return *this;
 }
@@ -112,37 +133,37 @@ QString FPPicData::unquote(QString x) {
 
 bool FPPicData::parseElement(QStringList args) {
   if (args.size()<7) {
-    qDebug() << "Syntax error for element" << line;
+    qDebug() << "Syntax error for element" << args.join(" ");
     return false;
   }
 
   if (!isQuoted(args.first()))
-    d->flags = args.takeFirst().toInt(0, 0); // allow hex
-  d->desc = unquote(args.takeFirst());
-  d->refdes = unquote(args.takeFirst());
+    flags = args.takeFirst().toInt(0, 0); // allow hex
+  desc = unquote(args.takeFirst());
+  refdes = unquote(args.takeFirst());
   if (isQuoted(args.first()))
-    d->name = unquote(args.takeFirst());
+    name = unquote(args.takeFirst());
   if (args.size()>=7) {
     int x = args.takeFirst().toInt();
     int y = args.takeFirst().toInt();
-    d->markpos = QPoint(x, y);
+    markpos = QPoint(x, y);
   }
   if (args.size()<5) {
-    qDebug() << "Syntax error for element" << line;
+    qDebug() << "Syntax error for element" << args.join(" ");
     return false;
   }
   
   int x = args.takeFirst().toInt();
   int y = args.takeFirst().toInt();
-  d->textpos = QPoint(x, y);
-  d->tdir = args.takeFirst().toInt();
-  d->tscale = args.takeFirst().toInt();
-  d->tflags = args.takeFirst().toInt(0, 0); // allow hex
+  textpos = QPoint(x, y);
+  tdir = args.takeFirst().toInt();
+  tscale = args.takeFirst().toInt();
+  tflags = args.takeFirst().toInt(0, 0); // allow hex
 
   return true;
 }
 
-FPPicture::FPPicture(QString fn): d(new FPPicData) {
+PackageDrawing::PackageDrawing(QString fn): d(new FPPicData) {
   QFile f(fn);
   if (!f.open(QFile::ReadOnly))
     return;

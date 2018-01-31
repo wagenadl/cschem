@@ -48,7 +48,8 @@ HEADERS += ui/SignalAccumulator.h   ui/TextTable.h
 SOURCES += ui/SignalAccumulator.cpp ui/TextTable.cpp
 HEADERS += ui/SvgItem.h   ui/PartList.h   ui/HtmlDelegate.h
 SOURCES += ui/SvgItem.cpp ui/PartList.cpp ui/HtmlDelegate.cpp
-HEADERS += ui/PackagePreview.h
-SOURCES += ui/PackagePreview.cpp
-
+HEADERS += ui/PackagePreview.h   svg/PackageDrawing.h   circuit/Package.h
+SOURCES += ui/PackagePreview.cpp svg/PackageDrawing.cpp circuit/Package.cpp
+HEADERS += circuit/Packaging.h   circuit/PkgRule.h
+SOURCSE += circuit/Packaging.cpp circuit/PkgRule.cpp
 RESOURCES += cschem.qrc

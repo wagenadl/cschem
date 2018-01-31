@@ -6,14 +6,14 @@
 
 #include <QPicture>
 
-class FPPicture {
+class PackageDrawing {
   /* This class interprets pcb/geda ".fp" files and can generate a QPicture
      from them. */
 public:
   struct PinInfo {
     PinInfo() {
       number = 0;
-      flags = 0;
+      isSquare = false;
       drillDiameter =0;
       padDiameter = 0;
       maskDiameter = 0;
@@ -29,10 +29,10 @@ public:
     int clearanceDiameter;
   };
 public:
-  FPPicture(QString fn);
-  ~FPPicture();
-  FPPicture(FPPicture const &);
-  FPPicture &operator=(FPPicture const &);
+  PackageDrawing(QString fn);
+  ~PackageDrawing();
+  PackageDrawing(PackageDrawing const &);
+  PackageDrawing &operator=(PackageDrawing const &);
   QPicture picture() const;
   QString name() const; /* e.g., "ACY100P". The docs at
 		   http://pcb.geda-project.org/pcb-cvs/pcb.html#Element-syntax

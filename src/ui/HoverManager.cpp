@@ -92,7 +92,7 @@ void HoverManager::formSelection(QSet<int> elts) {
   Geometry geom(circ, lib);
   d->selectionPoints.clear();
   for (int e: elts) {
-    Element const &elt(circ.element(e));
+    Element const &elt(circ.elements[e]);
     Symbol const &symbol(lib.symbol(elt.symbol()));
     for (QString p: symbol.pinNames()) 
       d->selectionPoints << PointInfo(geom.pinPosition(elt, p), e, p);
@@ -239,7 +239,7 @@ void HoverManagerData::update() {
   }
 
   if (elt>0)
-    isjunc = circ.element(elt).type() == Element::Type::Junction;
+    isjunc = circ.elements[elt].type == Element::Type::Junction;
   else
     isjunc = false;
 
@@ -268,22 +268,22 @@ void HoverManagerData::update() {
     unhighlightSegment();
     unhighlightPin();
   } else if (onConnection()) {
-    Connection ccc(scene->circuit().connection(con));
+    Connection ccc(scene->circuit().connections[con]);
     auto const &lib = scene->library();
     if (seg==0
 	&& ccc.danglingStart()
-	&& !ccc.via().isEmpty()
-	&& QLineF(pt, lib.upscale(ccc.via().first())).length() < r) {
+	&& !ccc.via.isEmpty()
+	&& QLineF(pt, lib.upscale(ccc.via.first())).length() < r) {
       // near dangling start
-      pinpos = lib.upscale(ccc.via().first());
+      pinpos = lib.upscale(ccc.via.first());
       fakepin = true;
       highlightPin();
       unhighlightSegment();
-    } else if (seg==ccc.via().size()-(ccc.danglingStart()?2:1)
+    } else if (seg==ccc.via.size()-(ccc.danglingStart()?2:1)
 	       && ccc.danglingEnd()
-	       && !ccc.via().isEmpty()
-	       &&  QLineF(pt, lib.upscale(ccc.via().last())).length() < r) {
-      pinpos = lib.upscale(ccc.via().last());
+	       && !ccc.via.isEmpty()
+	       &&  QLineF(pt, lib.upscale(ccc.via.last())).length() < r) {
+      pinpos = lib.upscale(ccc.via.last());
       fakepin = true;
       highlightPin();
       unhighlightSegment();

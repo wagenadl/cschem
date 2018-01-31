@@ -76,7 +76,7 @@ public:
 };
 
 bool SceneConnectionData::isDangling() const {
-  return scene->circuit().connection(id).isDangling();
+  return scene->circuit().connections[id].isDangling();
 }
 
 QPen SceneConnectionData::normalPen() const {
@@ -187,23 +187,23 @@ QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
 }
 
 QPolygonF SceneConnectionData::path() const {
-  Connection const &c = scene->circuit().connection(id);
+  Connection const &c = scene->circuit().connections[id];
   SymbolLibrary const &lib = scene->library();
 
   QPolygonF pp;
   if (!c.danglingStart())
-    pp << scene->pinPosition(c.fromId(), c.fromPin());
-  for (QPoint p: c.via())
+    pp << scene->pinPosition(c.from());
+  for (QPoint p: c.via)
     pp << lib.scale()*p;
   if (!c.danglingEnd())
-    pp << scene->pinPosition(c.toId(), c.toPin());
+    pp << scene->pinPosition(c.to());
   qDebug() << "Connection" << c.report() << pp;
   return pp;
  }
 
 SceneConnection::SceneConnection(class Scene *parent, Connection const &c):
   d(new SceneConnectionData(this, parent)) {
-  d->id = c.id();
+  d->id = c.id;
 
   rebuild();
   parent->addItem(this);
@@ -346,7 +346,7 @@ void SceneConnectionData::startRealMove() {
   origpath = path();
   qDebug() << "origpath" << origpath;
   if (moveseg==0) {
-    if (!scene->circuit().connection(id).danglingStart()) {
+    if (!scene->circuit().connections[id].danglingStart()) {
       moveseg0 = new SCSegment(origpath.first(), conn);
       conn->addToGroup(moveseg0);
       moveseg0->setPen(pen);
@@ -355,7 +355,7 @@ void SceneConnectionData::startRealMove() {
     segments[moveseg-1]->setPen(pen);
   }
   if (moveseg==segments.size()-1) {
-    if (!scene->circuit().connection(id).danglingEnd()) {
+    if (!scene->circuit().connections[id].danglingEnd()) {
       movesegN = new SCSegment(origpath.last(), conn);
       conn->addToGroup(movesegN);
       movesegN->setPen(pen);
@@ -426,10 +426,10 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   path[d->moveseg] += delta;
   path[d->moveseg+1] += delta;
   if (d->moveseg==0
-      && !circ.connection(d->id).danglingStart())
+      && !circ.connections[d->id].danglingStart())
     path.prepend(d->origpath.first());
   if (d->moveseg==d->segments.size()-1
-      && !circ.connection(d->id).danglingEnd())
+      && !circ.connections[d->id].danglingEnd())
     path.append(d->origpath.last());
   d->scene->modifyConnection(d->id, lib.simplifyPath(path));
 }
