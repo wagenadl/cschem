@@ -9,7 +9,7 @@
 
 class FPPicData {
 public:
-  FPPicData() { isvalid = false; }
+  FPPicData() { valid = false; }
   static bool isQuoted(QString x);
   static QString unquote(QString x);
   bool parseElement(QStringList args);
@@ -21,7 +21,7 @@ public:
   static QColor holeColor() { return QColor(255, 255, 255); }
   static QColor padColor() { return QColor(0, 0, 0); }
 public:
-  bool isvalid;
+  bool valid;
   QString desc;
   QString refdes;
   QString name;
@@ -163,7 +163,10 @@ bool FPPicData::parseElement(QStringList args) {
   return true;
 }
 
-PackageDrawing::PackageDrawing(QString fn): d(new FPPicData) {
+PackageDrawing::PackageDrawing(): d(new FPPicData) {
+}
+
+PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
   QFile f(fn);
   if (!f.open(QFile::ReadOnly))
     return;
@@ -210,5 +213,10 @@ PackageDrawing::PackageDrawing(QString fn): d(new FPPicData) {
     }
   }
   p.end();
+
+  d->valid = true;
 }
 		  
+bool PackageDrawing::isValid() const {
+  return d->valid;
+}

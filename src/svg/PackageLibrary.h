@@ -4,12 +4,20 @@
 
 #define PACKAGELIBRARY_H
 
-class PackageLibrary {
+#include "circuit/Packaging.h"
+
+class PackageLibrary: public Packaging {
 public:
-  PackageLibrary(QString fppath, Packaging const &);
   PackageLibrary();
-  void merge(QString fppath, Packaging const &);
-  ~PackageLibrary();
+  explicit PackageLibrary(Packaging const &, QString fppath="");
+  void merge(Packaging const &);
+  void setPath(QString);
+  class PackageDrawing const &drawing(QString name); // our name, not pcb's
+public:
+  static PackageLibrary const &defaultPackages();
+  static QString defaultPath();
+private:
+  QString fppath;
 };
 
 #endif
