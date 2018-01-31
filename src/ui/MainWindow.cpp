@@ -427,7 +427,10 @@ bool MainWindow::saveAs(QString fn) {
 
 void MainWindow::markChanged() {
   d->unsaved = true;
-  setWindowTitle(d->filename + " *");
+  QString fn = d->filename;
+  if (fn.isEmpty())
+    fn = "(Untitled)";
+  setWindowTitle(fn + " *");
 }
 
 void MainWindow::zoomIn() {
