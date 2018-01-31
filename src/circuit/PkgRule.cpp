@@ -18,7 +18,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, PkgRule &c) {
 QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, PkgRule const &c) {
   sw.writeStartElement("rule");
   sw.writeAttribute("symbol", c.symbol);
-  sw.writeAttribute("packages", packages.join(" "));
+  sw.writeAttribute("packages", c.packages.join(" "));
   sw.writeEndElement();
   return sw;
 };

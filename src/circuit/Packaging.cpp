@@ -27,14 +27,13 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Packaging &c) {
     } else if (sr.isComment()) {
     } else {
       qDebug() << "Unexpected entity in packaging: " << sr.tokenType();
-      c.d->valid = false;
     }
   }
   // now at end of circuit element
   return sr;
 }
   
-QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
+QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Packaging const &c) {
   sr.writeStartElement("packaging");
   for (auto const &c: c.rules)
     sr << c;
@@ -42,4 +41,12 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
     sr << c;
   sr.writeEndElement();
   return sr;
+}
+
+Packaging &Packaging::operator+=(Packaging const &o) {
+  for (QString k: o.packages.keys())
+    packages[k] = o.packages[k];
+  for (QString k: o.rules.keys())
+    rules[k] = o.rules[k];
+  return *this;
 }
