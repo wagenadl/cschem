@@ -4,9 +4,9 @@
 
 #define PACKAGEPREVIEW_H
 
-#include <QLabel>
+#include <QWidget>
 
-class PackagePreview: public QLabel {
+class PackagePreview: public QWidget {
   Q_OBJECT;
 public:
   PackagePreview(QWidget *parent=0);
@@ -14,6 +14,8 @@ public:
 public slots:
   void setPackage(QString name);
   void setLibrary(class PackageLibrary *lib);
+protected:
+  void paintEvent(QPaintEvent *) override;
 private:
   class PackagePreviewData *d;
 };
