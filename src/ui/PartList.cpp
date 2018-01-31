@@ -10,22 +10,8 @@
 class PartListData {
 public:
   PartListData(Scene *scene): scene(scene) {
-    elements = scene->circuit().elements().values();
+    elements = scene->circuit().elements.values();
   }
-  void setName(int row, QString name) {
-    if (elements[row].name() == name)
-      return;
-    elements[row].setName(name);
-    scene->updateFromPartList(elements[row]);
-  }
-  void setValue(int row, QString value) {
-    value = PartNumbering::prettyValue(value, elements[row].name());
-    if (elements[row].value() == value)
-      return;
-    elements[row].setValue(value);
-    scene->updateFromPartList(elements[row]);
-  }
-  // Should add: setPackage, etc. Scene is the keeper of the master Circuit
 public:
   Scene *scene;
   QList<Element> elements; // list elements are rows of the model
@@ -49,18 +35,25 @@ QVariant PartList::data(QModelIndex const &index,
     return QVariant();
   Element const &elt = d->elements[r];
   switch (Column(c)) {
-  case Column::Id: return elt.id();
+  case Column::Id:
+    return elt.id;
   case Column::Name:
     if (role==Qt::DisplayRole) 
-      return PartNumbering::nameToHtml(elt.name());
+      return PartNumbering::nameToHtml(elt.name);
     else
-      return elt.name();
-  case Column::Value: return elt.value();
-  case Column::Vendor: return elt.info().vendor;
-  case Column::CatNo: return elt.info().partno;
-  case Column::Package: return elt.info().package;
-  case Column::Notes: return elt.info().notes;
-  default: return QVariant();
+      return elt.name;
+  case Column::Value:
+    return elt.value;
+  case Column::Vendor:
+    return elt.info.vendor;
+  case Column::CatNo:
+    return elt.info.partno;
+  case Column::Package:
+    return elt.info.package;
+  case Column::Notes:
+    return elt.info.notes;
+  default:
+    return QVariant();
   }
 }
 
@@ -73,33 +66,31 @@ bool PartList::setData(QModelIndex const &index, QVariant const &value,
     return false;
 
   Element &elt(d->elements[r]);
-  Element::Info info = elt.info();
+  QString txt = value.toString();
   switch (Column(c)) {
   case Column::Name:
-    d->setName(r, value.toString());
+    elt.name = txt;
     break;
   case Column::Value:
-    d->setValue(r, value.toString());
+    txt = PartNumbering::prettyValue(txt, elt.name);
+    elt.value = txt;
     break;
   case Column::Vendor:
-    info.vendor = value.toString();
-    elt.setInfo(info);
+    elt.info.vendor = txt;
     break;
   case Column::CatNo: 
-    info.partno = value.toString();
-    elt.setInfo(info);
+    elt.info.partno = txt;
     break;
   case Column::Package: 
-    info.package = value.toString();
-    elt.setInfo(info);
+    elt.info.package = txt;
     break;
   case Column::Notes: 
-    info.notes = value.toString();
-    elt.setInfo(info);
+    elt.info.notes = txt;
     break;
   default:
     return false;
   }
+  d->scene->updateFromPartList(elt);
   emit dataChanged(index, index);
   return true;
 }
@@ -156,9 +147,9 @@ int PartList::rowCount(QModelIndex const &parent) const {
 void PartList::rebuild() {
   // Regrab circuit from scene, update rows as needed.
   // Let's first see what we simply need to drop
-  QMap<int, Element> newmap = d->scene->circuit().elements();
+  QMap<int, Element> newmap = d->scene->circuit().elements;
   for (int n: newmap.keys())
-    if (newmap[n].type() != Element::Type::Component)
+    if (newmap[n].type != Element::Type::Component)
       newmap.remove(n);
   
   qDebug() << "newmap.size" << newmap.size();
@@ -168,7 +159,7 @@ void PartList::rebuild() {
   int n = 0;
   while (n<N) {
     Element const &elt = d->elements[n];
-    if (newmap.contains(elt.id())) {
+    if (newmap.contains(elt.id)) {
       // not deleting this one
       n ++;
     } else {
@@ -184,7 +175,7 @@ void PartList::rebuild() {
   QMap<int, int> oldmap;
   N = d->elements.size();
   for (int n=0; n<N; n++)
-    oldmap[d->elements[n].id()] = n;
+    oldmap[d->elements[n].id] = n;
 
   for (int id: newmap.keys()) {
     if (oldmap.contains(id)) {
@@ -215,11 +206,11 @@ QList<QStringList> PartList::asTable() const {
   hdr << "Ref." << "Value" << "Pkg." << "Vendor" << "Cat.#"  << "Notes";
   map[""] = hdr;
   for (Element const &elt: d->elements) {
-    Element::Info const &info = elt.info();
+    Element::Info const &info = elt.info;
     QStringList line;
-    line << elt.name() << elt.value()
+    line << elt.name << elt.value
          << info.package << info.vendor << info.partno << info.notes;
-    map[elt.name()] = line;
+    map[elt.name] = line;
   }
   return map.values();
 }

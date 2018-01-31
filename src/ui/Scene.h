@@ -14,13 +14,12 @@ class Scene: public QGraphicsScene {
 public:
   Scene(Schem const &schem, QObject *parent=0);
   ~Scene();
-  void setComponentValue(int eltid, QString value);
   void updateFromPartList(Element const &);
   SymbolLibrary const &library() const;
   Circuit const &circuit() const;
-  Circuit &circuit(); // this is used by SceneElement. It shouldn't be.
   Schem const &schem() const;
   QPointF pinPosition(int eltid, QString pin) const;
+  QPointF pinPosition(PinID pid) const { return pinPosition(pid.element(), pid.pin()); }
   void moveSelection(QPoint delta, bool nomagnet);
   void tentativelyMoveSelection(QPoint delta, bool first, bool nomagnet);
   QSet<int> selectedElements() const;
@@ -32,13 +31,15 @@ public:
   // returns NOPIN if none
   int connectionAt(QPointF scenepos, int *segmentp=0) const;
   void modifyConnection(int id, QPolygonF path);
+  void modifyElementAnnotations(Element const &);
+  /* This can change name, value, info, and position and visibility of labels,
+     but *not* element type, position, etc. */
   void copyToClipboard(bool cut=false);
   void pasteFromClipboard();
   void undo();
   void redo();
   void removeDangling();
   void plonk(QString symbol, QPointF scenepos, bool merge=false);
-  void makeUndoStep();
   void rotate(int dir=1);
   void flipx();
   void simplifySegment(int con, int eg);
@@ -57,12 +58,14 @@ protected:
   void dropEvent(QGraphicsSceneDragDropEvent *) override;
   void focusInEvent(QFocusEvent *) override;
   void focusOutEvent(QFocusEvent *) override;
-public:
-  void annotationInternallyEdited(int id);
 signals:
   void libraryChanged();
+  void circuitChanged();
+private:
+  void emitCircuitChanged();
 private:
   class SceneData *d;
+  friend class SceneData;
 };
 
 #endif

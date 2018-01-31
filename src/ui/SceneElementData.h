@@ -24,12 +24,12 @@ public:
 public:
   void markHover();
 public slots:
-  void setNameText();
-  void getNameText();
+  void nameTextToWidget();
+  void nameTextToCircuit();
   void moveName(QPointF delta);
   void removeName();
-  void setValueText();
-  void getValueText();
+  void valueTextToWidget();
+  void valueTextToCircuit();
   void moveValue(QPointF delta);
   void removeValue();
   void nameHovering(bool);
