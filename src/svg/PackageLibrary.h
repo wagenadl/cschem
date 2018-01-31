@@ -12,7 +12,7 @@ public:
   explicit PackageLibrary(Packaging const &, QString fppath="");
   void merge(Packaging const &);
   void setPath(QString);
-  class PackageDrawing const &drawing(QString name); // our name, not pcb's
+  class PackageDrawing const &drawing(QString name) const; // our name, not pcb's
 public:
   static PackageLibrary const &defaultPackages();
   static QString defaultPath();

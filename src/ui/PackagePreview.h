@@ -13,6 +13,7 @@ public:
   ~PackagePreview();
 public slots:
   void setPackage(QString name);
+  void setLibrary(class PackageLibrary *lib);
 private:
   class PackagePreviewData *d;
 };

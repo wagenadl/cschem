@@ -220,3 +220,20 @@ PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
 bool PackageDrawing::isValid() const {
   return d->valid;
 }
+
+QPicture PackageDrawing::picture() const {
+  return d->picture;
+}
+
+QString PackageDrawing::name() const {
+  return d->name;
+}
+
+QString PackageDrawing::description() const {
+  return d->desc;
+}
+
+QMap<int, PackageDrawing::PinInfo> const &PackageDrawing::pins() const {
+  return d->pins;
+}
+

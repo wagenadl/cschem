@@ -49,13 +49,13 @@ PackageLibrary const &PackageLibrary::defaultPackages() {
   return pkgs;
 }
 
-PackageDrawing const &PackageLibrary::drawing(QString name) {
+PackageDrawing const &PackageLibrary::drawing(QString name) const {
   static PackageDrawing nil;
   if (!packages.contains(name))
     return nil;
   QString pcb = packages[name].pcb;
   QDir dir(fppath);
-  QString fn(dir.absoluteFilePath(pcb));
+  QString fn(dir.absoluteFilePath(pcb + ".fp"));
   qDebug() << "drawing" << name << fn;
   if (!drawings().contains(fn))
     drawings()[fn] = PackageDrawing(fn);
