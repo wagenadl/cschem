@@ -33,7 +33,7 @@ public slots:
   void removeDanglingAction();
   void showLibrary();
   void showPartsList();
-  void showPackagePreview();
+  void showPackagePanel();
   void showVirtuals();
   void rotateCCWAction();
   void rotateCWAction();

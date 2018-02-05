@@ -2,6 +2,7 @@
 
 #include "PackageLibrary.h"
 #include "PackageDrawing.h"
+#include "Symbol.h"
 
 #include <QDebug>
 #include <QDir>
@@ -60,4 +61,9 @@ PackageDrawing const &PackageLibrary::drawing(QString name) const {
   if (!drawings().contains(fn))
     drawings()[fn] = PackageDrawing(fn);
   return drawings()[fn];
+}
+
+QStringList PackageLibrary::compatiblePackages(Symbol const &) const {
+  qDebug() << "Compatible packages (based on pin count) NYI";
+  return QStringList();
 }
