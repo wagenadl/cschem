@@ -14,6 +14,7 @@ public:
   double scale() const; // returns scale in pixels per 0.001". Default is 0.1.
   bool isFreeScaling() const; // true means: will expand to available space
   QSize sizeHint() const override;
+  QSize minimumSizeHint() const override;
 signals:
   void pressed(QString); // argument is name of package
 public slots:

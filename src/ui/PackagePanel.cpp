@@ -12,7 +12,6 @@
 class PackagePanelData {
 public:
   PackageLibrary const *lib;
-  bool freescale;
   double scale;
 public:
   QString currentsym;
@@ -32,43 +31,32 @@ public:
 PackagePanel::PackagePanel(QWidget *parent):
   QScrollArea(parent), d(new PackagePanelData) {
   d->lib = 0;
-  d->scale = 0.2;
-  d->freescale = false;
+  d->scale = 0.3;
   setAutoFillBackground(true);
+
+  if (!widget()) {
+    setWidget(new QWidget);
+    widget()->show();
+  }
+  setWidgetResizable(true);
+  
   d->layout = new QVBoxLayout;
   d->label1 = new QLabel("Current");
   d->layout->addWidget(d->label1);
   d->current = new PackageWidget;
   d->current->setScale(d->scale);
-  d->current->setFreeScaling(d->freescale);
+  d->current->setFreeScaling(false);
   d->layout->addWidget(d->current);
   d->label2 = new QLabel("Recommended");
   d->layout->addWidget(d->label2);
   d->label3 = new QLabel("Compatible");
   d->layout->addWidget(d->label3);
-  setLayout(d->layout);
+  widget()->setLayout(d->layout);
+  qDebug() << "size" << size() << widget()->size();
 }
 
 PackagePanel::~PackagePanel() {
   delete d;
-}
-
-void PackagePanel::setFreeScaling(bool fs) {
-  d->freescale = fs;
-  if (fs)
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  else
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-  d->current->setFreeScaling(fs);
-  for (auto *w: d->recommended)
-    w->setFreeScaling(fs);
-  for (auto *w: d->compatible)
-    w->setFreeScaling(fs);
-  update();
-}
-
-bool PackagePanel::isFreeScaling() const {
-  return d->freescale;
 }
 
 void PackagePanel::setScale(double s) {
@@ -144,9 +132,11 @@ void PackagePanel::setElement(Element const &elt) {
     auto *w = new PackageWidget();
     w->setLibrary(d->lib);
     w->setScale(d->scale);
-    w->setFreeScaling(d->freescale);
+    w->setFreeScaling(false);
     w->setPackage(s);
     d->recommended << w;
     d->layout->insertWidget(idx++, w);
   }
+
+  qDebug() << "size" << size() << widget()->size() << widget()->sizeHint();
 }

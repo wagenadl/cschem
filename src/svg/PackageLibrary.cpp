@@ -57,7 +57,6 @@ PackageDrawing const &PackageLibrary::drawing(QString name) const {
   QString pcb = packages[name].pcb;
   QDir dir(fppath);
   QString fn(dir.absoluteFilePath(pcb + ".fp"));
-  qDebug() << "drawing" << name << fn;
   if (!drawings().contains(fn))
     drawings()[fn] = PackageDrawing(fn);
   return drawings()[fn];
