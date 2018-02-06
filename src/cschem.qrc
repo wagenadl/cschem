@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource>
         <file alias="symbols.svg">symbols.svg</file>
+        <file alias="packages.xml">packages.xml</file>
     </qresource>
 </RCC>

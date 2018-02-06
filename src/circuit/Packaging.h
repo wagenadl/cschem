@@ -13,6 +13,9 @@
 class Packaging {
 public:
   QString report() const;
+  Packaging &operator+=(Packaging const &o);
+  QString recommendedPackage(QString symbol) const;
+  QStringList recommendedPackages(QString symbol) const;
 public:
   QMap<QString, Package> packages;
   QMap<QString, PkgRule> rules;

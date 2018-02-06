@@ -30,26 +30,26 @@
          <package>. That means that cschem does not know how many pins
          a dip8 has without looking at the pcb files.
     -->
-    <rule symbol="resistor" packages="r3 r4 r5 r6 r7"/>
-    <rule symbol="capacitor:polarized" packages="cp1 cp2"/>
-    <rule symbol="capacitor" packages="c1 c2"/>
+    <rule symbol="resistor" packages="r300 r400 r500 r600 r700"/>
+    <rule symbol="capacitor:polarized" packages="cp100 cp200"/>
+    <rule symbol="capacitor" packages="c100 c200"/>
     <rule symbol="diode:LED" packages="led5"/>
-    <rule symbol="diode" packages="d3"/>
+    <rule symbol="diode" packages="d300"/>
     
-    <package name="r3" pcb="ACY300"/>
-    <package name="r4" pcb="ACY400"/>
-    <package name="r5" pcb="ACY500"/>
-    <package name="r6" pcb="ACY600"/>
-    <package name="r7" pcb="ACY700"/>
+    <package name="r300" pcb="ACY300"/>
+    <package name="r400" pcb="ACY400"/>
+    <package name="r500" pcb="ACY500"/>
+    <package name="r600" pcb="ACY600"/>
+    <package name="r700" pcb="ACY700"/>
     
-    <package name="c1" pcb="RCY100"/>
-    <package name="c2" pcb="RCY200"/>    
+    <package name="c100" pcb="RCY100"/>
+    <package name="c200" pcb="RCY200"/>    
 
-    <package name="cp1" pcb="RCY100P" map="+ -"/>
-    <package name="cp2" pcb="RCY200P" map="+ -"/>
+    <package name="cp100" pcb="RCY100P" map="+ -"/>
+    <package name="cp200" pcb="RCY200P" map="+ -"/>
 
     <package name="led5" pcb="LED5" map="A K"/>
-    <package name="d3" pcb="ALF300" map="K A"/>
+    <package name="d300" pcb="ALF300" map="K A"/>
     
     <package name="to220" pcb="TO220W"/>
 
