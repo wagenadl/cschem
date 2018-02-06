@@ -19,6 +19,8 @@ public slots:
   void clear();
   void setLibrary(class PackageLibrary const *lib);
   void setScale(double pix_per_mil);
+private slots:
+  void press(QString);
 private:
   class PackagePanelData *d;
 };

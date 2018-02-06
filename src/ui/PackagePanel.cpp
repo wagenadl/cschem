@@ -42,14 +42,21 @@ PackagePanel::PackagePanel(QWidget *parent):
   
   d->layout = new QVBoxLayout;
   d->label1 = new QLabel("Current");
+  QFont f = d->label1->font();
+  f.setStyle(QFont::StyleItalic);
+  d->label1->setFont(f);
   d->layout->addWidget(d->label1);
   d->current = new PackageWidget;
+  connect(d->current, &PackageWidget::pressed,
+          this, &PackagePanel::press);
   d->current->setScale(d->scale);
   d->current->setFreeScaling(false);
   d->layout->addWidget(d->current);
   d->label2 = new QLabel("Recommended");
+  d->label2->setFont(f);
   d->layout->addWidget(d->label2);
   d->label3 = new QLabel("Compatible");
+  d->label3->setFont(f);
   d->layout->addWidget(d->label3);
   widget()->setLayout(d->layout);
   qDebug() << "size" << size() << widget()->size();
@@ -130,6 +137,8 @@ void PackagePanel::setElement(Element const &elt) {
   // insert in layout
   for (QString s: rec) {
     auto *w = new PackageWidget();
+    connect(w, &PackageWidget::pressed,
+            this, &PackagePanel::press);
     w->setLibrary(d->lib);
     w->setScale(d->scale);
     w->setFreeScaling(false);
@@ -140,3 +149,8 @@ void PackagePanel::setElement(Element const &elt) {
 
   qDebug() << "size" << size() << widget()->size() << widget()->sizeHint();
 }
+
+void PackagePanel::press(QString s) {
+  emit pressed(s);
+}
+    
