@@ -35,7 +35,7 @@ void PackageWidget::setFreeScaling(bool fs) {
   if (fs)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   else
-    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
   update();
 }
 
@@ -45,6 +45,7 @@ bool PackageWidget::isFreeScaling() const {
 
 void PackageWidget::setScale(double s) {
   d->scale = s;
+  updateGeometry();
   update();
 }
 
@@ -60,6 +61,7 @@ void PackageWidget::setLibrary(class PackageLibrary const *lib) {
 void PackageWidget::setPackage(QString name) {
   qDebug() << "setpackage" << name;
   d->name = name;
+  updateGeometry();
   update();
 }
 
@@ -76,7 +78,18 @@ QSize PackageWidget::sizeHint() const {
   if (drw.isValid()) {
     QPicture pic = drw.picture();
     QRect bb = pic.boundingRect();
-    return (QSizeF(bb.size()) * d->scale / 10.0).toSize();
+    return (QSizeF(bb.size()) * d->scale).toSize() + QSize(8, 8);
+  } else {
+    return QSize(10,10); // what can we do?
+  }
+}
+
+QSize PackageWidget::minimumSizeHint() const {
+  PackageDrawing drw = d->drawing();
+  if (drw.isValid()) {
+    QPicture pic = drw.picture();
+    QRect bb = pic.boundingRect();
+    return (QSizeF(bb.size()) * d->scale).toSize() + QSize(8, 8);
   } else {
     return QSize(10,10); // what can we do?
   }
@@ -91,15 +104,17 @@ void PackageWidget::paintEvent(QPaintEvent *) {
     QPicture pic = drw.picture();
     QRect bb = pic.boundingRect();
     QSize s = size();
-    double xr = s.width() * .8 / bb.width();
-    double yr = s.height() * .8 / bb.height();
+    double xr = (s.width() - 8) * 1. / bb.width();
+    double yr = (s.height() - 8) * 1. / bb.height();
     double r = xr < yr ? xr : yr;
     if (!d->freescale) 
       if (r > d->scale)
 	r = d->scale;
-    QPoint p0((s.width() - r*bb.width())/2, (s.height() - r*bb.height())/2);
+    ptr.translate(s.width()/2, s.height()/2);
+    //    QPoint p0((s.width() - r*bb.width())/2, (s.height() - r*bb.height())/2);
     ptr.scale(r, r);
-    ptr.drawPicture(p0 - bb.topLeft(), pic);
+    ptr.translate(bb.topLeft() - bb.center());
+    ptr.drawPicture(QPointF(0,0), pic);
   }
 }
 
