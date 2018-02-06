@@ -16,7 +16,7 @@
 #include <QMessageBox>
 #include "LibView.h"
 #include "PartListView.h"
-#include "PackagePreview.h"
+#include "PackagePanel.h"
 #include "PartList.h"
 #include <QDockWidget>
 #include "LibView.h"
@@ -32,7 +32,7 @@ public:
     scene(0),
     libview(0), libviewdock(0),
     partlistview(0), partlistviewdock(0),
-    packagepreview(0), packagepreviewdock(0),
+    packagepanel(0), packagepaneldock(0),
     unsaved(false),
     recursedepth(0) {
   }
@@ -45,8 +45,8 @@ public:
   QDockWidget *libviewdock;
   PartListView *partlistview;
   QDockWidget *partlistviewdock;
-  PackagePreview *packagepreview;
-  QDockWidget *packagepreviewdock;
+  PackagePanel *packagepanel;
+  QDockWidget *packagepaneldock;
   bool unsaved;
   int recursedepth;
 };
@@ -88,10 +88,10 @@ void MainWindow::createDocks() {
   d->partlistviewdock->setWidget(d->partlistview);
   showPartsList();
   
-  d->packagepreview = new PackagePreview(this);
-  d->packagepreviewdock = new QDockWidget("Package preview", this);
-  d->packagepreviewdock->setWidget(d->packagepreview);
-  showPackagePreview();
+  d->packagepanel = new PackagePanel(this);
+  d->packagepaneldock = new QDockWidget("Package preview", this);
+  d->packagepaneldock->setWidget(d->packagepanel);
+  showPackagePanel();
 }
 
 void MainWindow::showLibrary() {
@@ -116,14 +116,14 @@ void MainWindow::showPartsList() {
   }
 }
 
-void MainWindow::showPackagePreview() {
-  bool vis = d->packagepreviewdock->isVisible();
+void MainWindow::showPackagePanel() {
+  bool vis = d->packagepaneldock->isVisible();
   qDebug() << "package preview vis" << vis;
   if (vis) {
-    d->packagepreviewdock->hide();
+    d->packagepaneldock->hide();
   } else {
-    d->packagepreviewdock->show();
-    addDockWidget(Qt::RightDockWidgetArea, d->packagepreviewdock);
+    d->packagepaneldock->show();
+    addDockWidget(Qt::RightDockWidgetArea, d->packagepaneldock);
   }
 }
 
@@ -291,7 +291,7 @@ void MainWindow::createActions() {
   act = new QAction(tr("Package previe&w"), this);
   act->setStatusTip(tr("Show/hide package preview"));
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
-  connect(act, &QAction::triggered, this, &MainWindow::showPackagePreview);
+  connect(act, &QAction::triggered, this, &MainWindow::showPackagePanel);
   menu->addAction(act);
   
   menuBar()->addSeparator();
@@ -380,6 +380,7 @@ void MainWindow::create(Schem const &schem) {
   d->filename = "";
 
   d->libview->setLibrary(&d->scene->library());
+  d->packagepanel->setLibrary(&d->scene->schem().packaging());
   
   d->partlistview->setModel(d->scene->partlist());
   d->partlistviewdock->show();
@@ -427,7 +428,10 @@ bool MainWindow::saveAs(QString fn) {
 
 void MainWindow::markChanged() {
   d->unsaved = true;
-  setWindowTitle(d->filename + " *");
+  QString fn = d->filename;
+  if (fn.isEmpty())
+    fn = "(Untitled)";
+  setWindowTitle(fn + " *");
 }
 
 void MainWindow::zoomIn() {
@@ -636,7 +640,9 @@ void MainWindow::selectionToPartList() {
   qDebug() << "selection: " << sel;
   if (sel.size()==1) {
     Element const &elt(d->scene->circuit().elements[*sel.begin()]);
-    d->packagepreview->setPackage(elt.name + ":" + elt.info.package);
+    d->packagepanel->setElement(elt);
+  } else {
+    d->packagepanel->clear();
   }
   if (d->recursedepth == 1)
     d->partlistview->selectElements(sel);

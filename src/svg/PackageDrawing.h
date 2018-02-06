@@ -29,6 +29,7 @@ public:
     int clearanceDiameter;
   };
 public:
+  PackageDrawing();
   PackageDrawing(QString fn);
   ~PackageDrawing();
   PackageDrawing(PackageDrawing const &);
@@ -39,6 +40,7 @@ public:
 		   call this "value". */
   QString description() const; // e.g., "Axial polar component..."
   QMap<int, PinInfo> const &pins() const; // organized by number
+  bool isValid() const;
 private:
   QSharedPointer<class FPPicData> d;
 };

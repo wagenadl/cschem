@@ -1,8 +1,8 @@
 // PkgRule.h
 
-#ifndef PACKAGE_H
+#ifndef PKGRULE_H
 
-#define PACKAGE_H
+#define PKGRULE_H
 
 #include <QXmlStreamReader>
 #include <QStringList>
