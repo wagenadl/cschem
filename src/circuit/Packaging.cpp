@@ -102,7 +102,7 @@ QStringList Packaging::recommendedPackages(QString symbol) const {
       continue;
     int scr = 1<<idx;
     while (!key.isEmpty()) {
-      if (sym[++idx] == key.takeFirst()) {
+      if (idx+1 < sym.size() && sym[++idx] == key.takeFirst()) {
 	scr += 1<<idx;
       } else {
 	scr = 0;
