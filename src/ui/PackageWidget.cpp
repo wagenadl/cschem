@@ -113,8 +113,7 @@ void PackageWidget::paintEvent(QPaintEvent *) {
     ptr.translate(s.width()/2, s.height()/2);
     //    QPoint p0((s.width() - r*bb.width())/2, (s.height() - r*bb.height())/2);
     ptr.scale(r, r);
-    ptr.translate(bb.topLeft() - bb.center());
-    ptr.drawPicture(QPointF(0,0), pic);
+    ptr.drawPicture(-bb.center(), pic);
   }
 }
 
