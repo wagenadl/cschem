@@ -32,8 +32,8 @@ public:
 PackagePanel::PackagePanel(QWidget *parent):
   QScrollArea(parent), d(new PackagePanelData) {
   d->lib = 0;
-  d->scale = 0.1;
-  d->freescale = true;
+  d->scale = 0.2;
+  d->freescale = false;
   setAutoFillBackground(true);
   d->layout = new QVBoxLayout;
   d->label1 = new QLabel("Current");
