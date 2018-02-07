@@ -4,6 +4,7 @@
 #include "PackageWidget.h"
 #include "circuit/Element.h"
 #include "svg/PackageLibrary.h"
+#include "ui/PackageBackground.h"
 
 #include <QLabel>
 #include <QDebug>
@@ -11,58 +12,58 @@
 #include <QPainter>
 
 
-class BackgroundWidget: public QWidget {
-public:
-  BackgroundWidget(QWidget *parent=0): QWidget(parent) {
-    scale = 0.3;
-    grid = 100; // mils
-    major = 5;
+PackageBackground::PackageBackground(QWidget *parent): QWidget(parent) {
+  scale_ = 0.3;
+  grid = 100; // mils
+  major = 5;
+}
+void PackageBackground::setScale(double pixpermil) {
+  scale_ = pixpermil;
+  update();
+}
+void PackageBackground::setGridSpacing(double mil, int majorival) {
+  grid = mil;
+  major = majorival;
+  update();
+}
+void PackageBackground::paintEvent(QPaintEvent *) override {
+  QPainter ptr;
+  ptr.begin(this);
+  int w = width();
+  int h = height();
+  ptr.fillRect(QRect(0,0,w,h), QColor(255, 255, 255));
+  int x0 = w/2;
+  int y0 = h/2;
+  ptr.setPen(QPen(QColor(192, 192, 192), 2));
+  ptr.drawLine(0, y0, w, y0);
+  for (double y = major*grid*scale_; y<y0; y += major*grid*scale_) {
+    ptr.drawLine(0, y0-y, w, y0-y);
+    ptr.drawLine(0, y0+y, w, y0+y);
   }
-  void setScale(double pixpermil) {
-    scale = pixpermil;
-    update();
+  ptr.drawLine(x0, 0, x0, h);
+  for (double x = major*grid*scale_; x<x0; x += major*grid*scale_) {
+    ptr.drawLine(x0+x, 0, x0+x, h);
   }
-  void setGridSpacing(double mil, int majorival) {
-    grid = mil;
-    major = majorival;
-    update();
+  ptr.setPen(QPen(QColor(220, 220, 220), 1));
+  for (double y = grid*scale_; y<y0; y += grid*scale_) {
+    ptr.drawLine(0, y0-y, w, y0-y);
+    ptr.drawLine(0, y0+y, w, y0+y);
   }
-protected:
-  void paintEvent(QPaintEvent *) override {
-    QPainter ptr;
-    ptr.begin(this);
-    int w = width();
-    int h = height();
-    ptr.fillRect(QRect(0,0,w,h), QColor(255, 255, 255));
-    int x0 = w/2;
-    int y0 = h/2;
-    ptr.setPen(QPen(QColor(192, 192, 192), 2));
-    ptr.drawLine(0, y0, w, y0);
-    for (double y = major*grid*scale; y<y0; y += major*grid*scale) {
-      ptr.drawLine(0, y0-y, w, y0-y);
-      ptr.drawLine(0, y0+y, w, y0+y);
-    }
-    ptr.drawLine(x0, 0, x0, h);
-    for (double x = major*grid*scale; x<x0; x += major*grid*scale) {
-      ptr.drawLine(x0+x, 0, x0+x, h);
-    }
-    ptr.setPen(QPen(QColor(220, 220, 220), 1));
-    for (double y = grid*scale; y<y0; y += grid*scale) {
-      ptr.drawLine(0, y0-y, w, y0-y);
-      ptr.drawLine(0, y0+y, w, y0+y);
-    }
-    ptr.drawLine(x0, 0, x0, h);
-    for (double x = grid*scale; x<x0; x += grid*scale) {
-      ptr.drawLine(x0-x, 0, x0-x, h);
-      ptr.drawLine(x0+x, 0, x0+x, h);
-    }
-    ptr.end();
+  ptr.drawLine(x0, 0, x0, h);
+  for (double x = grid*scale_; x<x0; x += grid*scale_) {
+    ptr.drawLine(x0-x, 0, x0-x, h);
+    ptr.drawLine(x0+x, 0, x0+x, h);
   }
-private:
-  double scale;
-  double grid;
-  int major;
-};
+  ptr.end();
+}
+
+QPoint PackageBackground::nearestGridIntersection(QPoint p) const {
+  double x = (p.x() - width()/2)/scale_;
+  double y = (p.y() - height()/2)/scale_;
+  x = round(x/grid)*grid;
+  y = round(y/grid)*grid;
+  return QPoint(x*scale_ + width()/2, y*scale_ + height()/2);
+} 
 
 class PackagePanelData {
 public:
@@ -81,7 +82,7 @@ public:
   QList<PackageWidget *> recommended;
   QLabel *label3;
   QList<PackageWidget *> compatible;
-  BackgroundWidget *bg;
+  PackageBackground *bg;
 };
 
 PackagePanel::PackagePanel(QWidget *parent):
@@ -92,7 +93,7 @@ PackagePanel::PackagePanel(QWidget *parent):
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-  d->bg = new BackgroundWidget();
+  d->bg = new PackageBackground();
   d->bg->setScale(0.3);
   setWidget(d->bg);
   setWidgetResizable(true);

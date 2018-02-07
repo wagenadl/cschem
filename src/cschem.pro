@@ -52,6 +52,6 @@ HEADERS += ui/PackageWidget.h   svg/PackageDrawing.h   circuit/Package.h
 SOURCES += ui/PackageWidget.cpp svg/PackageDrawing.cpp circuit/Package.cpp
 HEADERS += circuit/Packaging.h   circuit/PkgRule.h   svg/PackageLibrary.h
 SOURCES += circuit/Packaging.cpp circuit/PkgRule.cpp svg/PackageLibrary.cpp
-HEADERS += ui/PackagePanel.h
+HEADERS += ui/PackagePanel.h   ui/PackageBackground.h
 SOURCES += ui/PackagePanel.cpp
 RESOURCES += cschem.qrc

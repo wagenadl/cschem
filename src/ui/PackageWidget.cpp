@@ -3,6 +3,7 @@
 #include "PackageWidget.h"
 #include "svg/PackageLibrary.h"
 #include "svg/PackageDrawing.h"
+#include "PackageBackground.h"
 
 #include <QPainter>
 #include <QDebug>
@@ -77,11 +78,15 @@ PackageDrawing const &PackageWidgetData::drawing() {
   
 
 QSize PackageWidget::sizeHint() const {
+  PackageBackground *bg = dynamic_cast<PackageBackground *>(parent());
   PackageDrawing drw = d->drawing();
   if (drw.isValid()) {
     QPicture pic = drw.picture();
     QRect bb = pic.boundingRect();
-    return (QSizeF(bb.size()) * d->scale).toSize() + QSize(8, 8);
+    QSizeF bbs = QSizeF(bb.size());
+    double delta = bg ? bg->gridSpacing() : 100;
+    bbs += 2.2*QSizeF(delta, delta);
+    return (bbs * d->scale).toSize();
   } else {
     return QSize(10,10); // what can we do?
   }
@@ -111,6 +116,7 @@ void PackageWidget::leaveEvent(QEvent *e) {
 }
 
 void PackageWidget::paintEvent(QPaintEvent *) {
+  PackageBackground *bg = dynamic_cast<PackageBackground *>(parent());
   QPainter ptr(this);
 
   if (d->mousein) 
@@ -128,8 +134,8 @@ void PackageWidget::paintEvent(QPaintEvent *) {
     if (!d->freescale) 
       if (r > d->scale)
 	r = d->scale;
+    /* Instead of the following, we should align to background */
     ptr.translate(s.width()/2, s.height()/2);
-    //    QPoint p0((s.width() - r*bb.width())/2, (s.height() - r*bb.height())/2);
     ptr.scale(r, r);
     ptr.drawPicture(-bb.center(), pic);
   }
