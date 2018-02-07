@@ -14,39 +14,58 @@ class PackageWidgetData {
 public:
   PackageWidgetData() {
     lib = 0;
-    freescale = false;
     scale = 0.3;
+    grid = 100;
+    major = 5;
     mousein = false;
   }
   PackageDrawing const &drawing();
 public:
   PackageLibrary const *lib;
   QString name;
-  bool freescale;
   double scale;
+  double grid;
+  int major;
   bool mousein;
+};
+
+class PWGeom {
+public:
+  PWGeom(PackageDrawing const &drw, double grid) {
+    if (drw.isValid()) {
+      QPicture pic = drw.picture();
+      bb = pic.boundingRect();
+      p0 = drw.pins()[drw.topLeftPin()].position;
+      QPoint delta = p0 - bb.topLeft();
+      nx = ceil(delta.x() / grid);
+      ny = ceil(delta.y() / grid);
+      delta = bb.bottomRight() - p0;
+      mx = ceil(delta.x() / grid);
+      my = ceil(delta.y() / grid);
+    } else {
+      nx = ny = mx = my = 0;
+    }
+    if (nx<2)
+      nx = 2;
+    if (ny<1)
+      ny = 1;
+    if (mx<3)
+      mx = 3;
+    if (my<1)
+      my = 1;
+  }
+public:
+  QPoint p0; // position of topleft pin
+  int nx, ny, mx, my; // number of grid points left/above / right/below
+  QRect bb; // bounding box of pixture
 };
 
 PackageWidget::PackageWidget(QWidget *parent):
   QWidget(parent), d(new PackageWidgetData) {
-  setFreeScaling(false);
 }
 
 PackageWidget::~PackageWidget() {
   delete d;
-}
-
-void PackageWidget::setFreeScaling(bool fs) {
-  d->freescale = fs;
-  if (fs)
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  else
-    setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-  update();
-}
-
-bool PackageWidget::isFreeScaling() const {
-  return d->freescale;
 }
 
 void PackageWidget::setScale(double s) {
@@ -57,6 +76,21 @@ void PackageWidget::setScale(double s) {
 
 double PackageWidget::scale() const {
   return d->scale;
+}
+
+void PackageWidget::setGrid(double mil, int maj) {
+  d->grid = mil;
+  d->major = maj;
+  updateGeometry();
+  update();
+}
+
+double PackageWidget::gridSpacing() const {
+  return d->grid;
+}
+
+int PackageWidget::gridInterval() const {
+  return d->major;
 }
 
 void PackageWidget::setLibrary(class PackageLibrary const *lib) {
@@ -77,35 +111,11 @@ PackageDrawing const &PackageWidgetData::drawing() {
     return PackageLibrary::defaultPackages().drawing(name);
 }
 
-double PackageWidget::gridSpacing() const {
-  PackageBackground *bg = dynamic_cast<PackageBackground *>(parent());
-  if (bg)
-    return bg->gridSpacing();
-  else
-    return 100.;
-}
-
-int PackageWidget::margin() const {
-  return round(.5 * gridSpacing() * d->scale);
-}
-
-
 QSize PackageWidget::sizeHint() const {
   PackageDrawing drw = d->drawing();
-  if (drw.isValid()) {
-    QPicture pic = drw.picture();
-    QRect bb = pic.boundingRect();
-    QSizeF bbs = QSizeF(bb.size());
-    double grid = gridSpacing();
-    double delta = margin();
-    QSize hint = (bbs * d->scale).toSize() + 2*QSize(delta, delta);
-    int h0 = round(d->scale * grid * 2.6);
-    if (hint.height() < h0)
-      hint.setHeight(h0);
-    return hint;
-  } else {
-    return QSize(10,10); // what can we do?
-  }
+  PWGeom pwg(drw, gridSpacing());
+  double scl = d->scale * gridSpacing();
+  return (scl*QSizeF(pwg.nx + pwg.mx, pwg.ny + pwg.my)).toSize();
 }
 
 QSize PackageWidget::minimumSizeHint() const {
@@ -125,44 +135,47 @@ void PackageWidget::leaveEvent(QEvent *e) {
 }
 
 void PackageWidget::paintEvent(QPaintEvent *) {
-  QWidget *bg0 = parentWidget();
-  PackageBackground *bg = dynamic_cast<PackageBackground *>(parentWidget());
-  qDebug() << "PW: parent" << parent() << bg;
   QPainter ptr(this);
 
   PackageDrawing const &drw = d->drawing();
+  PWGeom pwg(drw, gridSpacing());
+
+  // draw background
+  ptr.fillRect(QRect(QPoint(0,0), size()), QColor(255,255,255));
+
+  // draw minor grid
+  ptr.setPen(QPen(QColor(220, 220, 220), 1));
+  int h = height();
+  int w = width();
+  double gridsp = d->grid * d->scale;
+  for (double x=0; x<w; x+=gridsp)
+    ptr.drawLine(x, 0, x, h);
+  for (double y=0; y<h; y+=gridsp)
+    ptr.drawLine(0, y, w, y);
+
+  // draw major grid
+  ptr.setPen(QPen(QColor(192, 192, 192), 2));
+  int x0 = pwg.nx;
+  while (x0>0)
+    x0 -= d->major;
+  x0 += d->major;
+  for (double x=x0*gridsp; x<w; x+=d->major*gridsp)
+    ptr.drawLine(x, 0, x, h);
+  int y0 = pwg.ny;
+  while (y0>0)
+    y0 -= d->major;
+  y0 += d->major;
+  for (double y=y0*gridsp; y<h; y+=d->major*gridsp)
+    ptr.drawLine(0, y, w, y);
 
   if (drw.isValid()) {
     QPicture pic = drw.picture();
-    QRect bb = pic.boundingRect();
-    QSize s = size();
-    int mrg = margin();
-    double xr = (s.width() - 2*mrg) * 1. / bb.width();
-    double yr = (s.height() - 2*mrg) * 1. / bb.height();
-    double r = xr < yr ? xr : yr;
-    if (!d->freescale) 
-      if (r > d->scale)
-	r = d->scale;
-    QTransform xf;
-    xf.translate(s.width()/2, s.height()/2);
-    xf.scale(r, r);
-    qDebug() << "scale" << r << bg << drw.pins().size();
-    xf.translate(-bb.center().x(), -bb.center().y());
-    // xf maps picture coords to widget coords s.t. center goes to center
-    if (bg && !drw.pins().isEmpty()) {
-      PackageDrawing::PinInfo pin1 = drw.pins().begin().value();
-      QPoint pos1 = pin1.position;
-      QPoint wpos1 = mapToParent(xf.map(pos1));
-      QPoint wgpos1 = bg->nearestGridIntersection(wpos1);
-      QPoint gpos1 = xf.inverted().map(mapFromParent(wgpos1));
-      QPoint delta = gpos1 -pos1;
-      qDebug() << pos1 << wpos1 << ">" << wgpos1 << gpos1 << " >" << delta << r;
-      xf.translate(delta.x(), delta.y()); // translate s.t. pin ends up on grid
-    }
-    ptr.setTransform(xf);      
+    ptr.translate(pwg.nx*gridsp, pwg.ny*gridsp); // target pin position
+    ptr.scale(d->scale, d->scale);
+    ptr.translate(-pwg.p0.x(), -pwg.p0.y());
     if (d->mousein) 
-      ptr.fillRect(bb.adjusted(-50, -50, 50, 50), QColor(0, 128, 255, 64));
-    ptr.drawPicture(QPoint(0,0), pic);
+      ptr.fillRect(pwg.bb.adjusted(-50, -50, 50, 50), QColor(0, 128, 255, 64));
+    ptr.drawPicture(QPoint(), pic);
   }
 }
 

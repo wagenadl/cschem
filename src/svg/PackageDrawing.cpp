@@ -237,7 +237,7 @@ PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
   holes.play(&ptr);
   ptr.end();
 
-  d->valid = true;
+  d->valid = !d->pins.isEmpty();
 }
 		  
 bool PackageDrawing::isValid() const {
@@ -260,3 +260,15 @@ QMap<int, PackageDrawing::PinInfo> const &PackageDrawing::pins() const {
   return d->pins;
 }
 
+int PackageDrawing::topLeftPin() const {
+  int besti = -1;
+  double best = 1e9;
+  for (PinInfo const &p: d->pins) {
+    double qual = p.position.x() + 1e-3*p.position.y();
+    if (qual<best) {
+      besti = p.number;
+      best = qual;
+    }
+  }
+  return besti;
+}

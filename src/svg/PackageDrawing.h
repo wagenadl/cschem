@@ -40,6 +40,7 @@ public:
 		   call this "value". */
   QString description() const; // e.g., "Axial polar component..."
   QMap<int, PinInfo> const &pins() const; // organized by number
+  int topLeftPin() const; // number of topmost leftmost pin (left takes priority)
   bool isValid() const;
 private:
   QSharedPointer<class FPPicData> d;

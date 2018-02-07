@@ -140,6 +140,7 @@ PackagePanel::~PackagePanel() {
 void PackagePanel::setScale(double s) {
   d->scale = s;
   d->current->setScale(s);
+  d->filler->setScale(s);
   for (auto *w: d->recommended)
     w->setScale(s);
   for (auto *w: d->compatible)
