@@ -36,6 +36,7 @@ public:
     unsaved(false),
     recursedepth(0) {
   }
+  void selectionToPackagePanel();
 public:
   QGraphicsView *view;
   Scene *scene;
@@ -52,7 +53,17 @@ public:
 };
 
 QString MWData::lastdir;
-    
+
+void MWData::selectionToPackagePanel() {
+  QSet<int> sel = scene->selectedElements();
+  if (sel.size()==1) {
+    Element const &elt(scene->circuit().elements[*sel.begin()]);
+    packagepanel->setElement(elt);
+  } else {
+    packagepanel->clear();
+  }
+}
+
 MainWindow::MainWindow(): d(new MWData()) {
   createView();
   createDocks();
@@ -62,7 +73,6 @@ MainWindow::MainWindow(): d(new MWData()) {
   create(Schem());
   int w0 = 10 * d->libview->width();
   int h0 = 3 * w0 / 4;
-  qDebug() << w0 << h0;
   int w = width();
   int h = height();
   if (w < w0)
@@ -91,12 +101,13 @@ void MainWindow::createDocks() {
   d->packagepanel = new PackagePanel(this);
   d->packagepaneldock = new QDockWidget("Package preview", this);
   d->packagepaneldock->setWidget(d->packagepanel);
+  connect(d->packagepanel, &PackagePanel::pressed,
+          d->partlistview, &PartListView::applyPackage);
   showPackagePanel();
 }
 
 void MainWindow::showLibrary() {
   bool vis = d->libviewdock->isVisible();
-  qDebug() << "lib vis" << vis;
   if (vis) {
     d->libviewdock->hide();
   } else {
@@ -107,7 +118,6 @@ void MainWindow::showLibrary() {
 
 void MainWindow::showPartsList() {
   bool vis = d->partlistviewdock->isVisible();
-  qDebug() << "partslist vis" << vis;
   if (vis) {
     d->partlistviewdock->hide();
   } else {
@@ -118,7 +128,6 @@ void MainWindow::showPartsList() {
 
 void MainWindow::showPackagePanel() {
   bool vis = d->packagepaneldock->isVisible();
-  qDebug() << "package preview vis" << vis;
   if (vis) {
     d->packagepaneldock->hide();
   } else {
@@ -226,24 +235,21 @@ void MainWindow::createActions() {
 
   act = new QAction(tr("Rotate &right"), this);
   act->setShortcuts(QList<QKeySequence>()
-                   << QKeySequence(Qt::SHIFT + Qt::Key_R)
-                   << QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+                    << QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
   act->setStatusTip(tr("Rotate clockwise"));
   connect(act, &QAction::triggered, this, &MainWindow::rotateCWAction);
   menu->addAction(act);
 
   act = new QAction(tr("Rotate &left"), this);
   act->setShortcuts(QList<QKeySequence>()
-                   << QKeySequence(Qt::Key_R)
-                   << QKeySequence(Qt::CTRL + Qt::Key_R));
+                    << QKeySequence(Qt::CTRL + Qt::Key_R));
   act->setStatusTip(tr("Rotate clockwise"));
   connect(act, &QAction::triggered, this, &MainWindow::rotateCCWAction);
   menu->addAction(act);
 
   act = new QAction(tr("Flip"), this);
   act->setShortcuts(QList<QKeySequence>()
-                   << QKeySequence(Qt::Key_F)
-                   << QKeySequence(Qt::CTRL + Qt::Key_F));
+                    << QKeySequence(Qt::CTRL + Qt::Key_F));
   act->setStatusTip(tr("Flip horizontally"));
   connect(act, &QAction::triggered, this, &MainWindow::flipAction);
   menu->addAction(act);
@@ -432,6 +438,7 @@ void MainWindow::markChanged() {
   if (fn.isEmpty())
     fn = "(Untitled)";
   setWindowTitle(fn + " *");
+  d->selectionToPackagePanel();
 }
 
 void MainWindow::zoomIn() {
@@ -635,29 +642,17 @@ void MainWindow::partListToClipboardAction() {
 
 void MainWindow::selectionToPartList() {
   d->recursedepth ++;
-  qDebug() << "selection to partlist";
-  QSet<int> sel = d->scene->selectedElements();
-  qDebug() << "selection: " << sel;
-  if (sel.size()==1) {
-    Element const &elt(d->scene->circuit().elements[*sel.begin()]);
-    d->packagepanel->setElement(elt);
-  } else {
-    d->packagepanel->clear();
-  }
+  d->selectionToPackagePanel();
   if (d->recursedepth == 1)
-    d->partlistview->selectElements(sel);
-  qDebug() << "end to partlist";
+    d->partlistview->selectElements(d->scene->selectedElements());
   d->recursedepth --;
 }
 
 void MainWindow::selectionFromPartList() {
   d->recursedepth ++;
-  qDebug() << "selection from partlist";
   QSet<int> sel = d->partlistview->selectedElements();
-  qDebug() << "selection: " << sel;
   if (d->recursedepth == 1)
     d->scene->selectElements(sel);
-  qDebug() << "end from partlist";
   d->recursedepth --;
 }
 

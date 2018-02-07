@@ -30,6 +30,7 @@ public:
                       int role=Qt::DisplayRole) const override;
   int columnCount(QModelIndex const &parent=QModelIndex()) const override;
   int rowCount(QModelIndex const &parent=QModelIndex()) const override;
+  int findElement(int id) const; // returns row number or -1
   void rebuild(); // regrab circuit from scene, update rows as needed.
   QList<QStringList> asTable() const;
 private:

@@ -17,7 +17,7 @@ public:
   void parseElementArc(QStringList args, QPainter &);
   void parsePin(QStringList args, QPainter &);
   void parseMark(QStringList args, QPainter &);
-  static QColor silkColor() { return QColor(0, 0, 255); }
+  static QColor silkColor() { return QColor(0, 128, 255); }
   static QColor holeColor() { return QColor(255, 255, 255); }
   static QColor padColor() { return QColor(0, 0, 0); }
 public:
@@ -36,6 +36,7 @@ public:
 };
 
 void FPPicData::parseElementLine(QStringList args, QPainter &p) {
+  // ElementLine[X1 Y1 X2 Y2 Thickness]
   if (args.size() != 5)
     return;
   p.setPen(QPen(silkColor(), args[4].toInt()));
@@ -43,9 +44,17 @@ void FPPicData::parseElementLine(QStringList args, QPainter &p) {
 	     QPoint(args[2].toInt(), args[3].toInt()));
 }
 
-void FPPicData::parseElementArc(QStringList, QPainter &) {
-  qDebug() << "FPPicData::parseElementArc: NYI";
-  // nyi
+void FPPicData::parseElementArc(QStringList args, QPainter &p) {
+  // ElementArc[X Y Width Height StartAngle DeltaAngle Thickness]
+  if (args.size() != 7)
+    return;
+  p.setPen(QPen(silkColor(), args[6].toInt()));
+  QPoint center(args[0].toInt(), args[1].toInt());
+  QSize size(args[2].toInt(), args[3].toInt());
+  int startangle = args[4].toInt();
+  int deltaangle = args[5].toInt();
+  p.drawArc(QRect(center - QPoint(size.width(), size.height())/2, size),
+            16*(180 + startangle), 16*deltaangle);
 }
 
 void FPPicData::parsePin(QStringList args, QPainter &p) {
@@ -171,8 +180,12 @@ PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
   if (!f.open(QFile::ReadOnly))
     return;
 
-  QPainter p;
-  p.begin(&d->picture);
+  QPicture silk;
+  QPicture holes;
+  QPainter silkP;
+  QPainter holeP;
+  silkP.begin(&silk);
+  holeP.begin(&holes);
   
   QTextStream ts(&f);
   while (!ts.atEnd()) {
@@ -198,13 +211,15 @@ PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
 	if (!d->parseElement(args))
 	  return; // this won't work
       } else if (kwd=="Pin") {
-	d->parsePin(args, p);
+	d->parsePin(args, holeP);
       } else if (kwd=="ElementLine") {
-	d->parseElementLine(args, p);
+	d->parseElementLine(args, silkP);
       } else if (kwd=="ElementArc") {
-	d->parseElementLine(args, p);
+	d->parseElementArc(args, silkP);
       } else if (kwd=="Mark") {
-	d->parseMark(args, p);
+	d->parseMark(args, silkP);
+      } else {
+        qDebug() << "Unknown kwd" << kwd;
       }
     } else if (line=="(") {
       // proceed into contents
@@ -212,7 +227,14 @@ PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
       break;
     }
   }
-  p.end();
+  silkP.end();
+  holeP.end();
+
+  QPainter ptr;
+  ptr.begin(&d->picture);
+  silk.play(&ptr);
+  holes.play(&ptr);
+  ptr.end();
 
   d->valid = true;
 }

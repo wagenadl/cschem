@@ -197,7 +197,6 @@ QPolygonF SceneConnectionData::path() const {
     pp << lib.scale()*p;
   if (!c.danglingEnd())
     pp << scene->pinPosition(c.to());
-  qDebug() << "Connection" << c.report() << pp;
   return pp;
  }
 

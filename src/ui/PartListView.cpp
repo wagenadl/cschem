@@ -76,3 +76,13 @@ void PartListView::selectElements(QSet<int> const &set) {
     selectionModel()->select(sel, QItemSelectionModel::Deselect);
   }
 }
+
+void PartListView::applyPackage(QString pkg) {
+  for (int elt: selectedElements()) {
+    int r = model()->findElement(elt);
+    if (r<0)
+      continue;
+    int c = int(PartList::Column::Package);
+    model()->setData(model()->index(r,c), pkg);
+  }
+}
