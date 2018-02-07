@@ -10,7 +10,7 @@
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QPainter>
-
+#include <math.h>
 
 PackageBackground::PackageBackground(QWidget *parent): QWidget(parent) {
   scale_ = 0.3;
@@ -26,18 +26,18 @@ void PackageBackground::setGridSpacing(double mil, int majorival) {
   major = majorival;
   update();
 }
-void PackageBackground::paintEvent(QPaintEvent *) override {
+void PackageBackground::paintEvent(QPaintEvent *) {
   QPainter ptr;
   ptr.begin(this);
   int w = width();
   int h = height();
   ptr.fillRect(QRect(0,0,w,h), QColor(255, 255, 255));
   int x0 = w/2;
-  int y0 = h/2;
+  int y0 = 0; // h/2;
+  int h0 = h;
   ptr.setPen(QPen(QColor(192, 192, 192), 2));
   ptr.drawLine(0, y0, w, y0);
-  for (double y = major*grid*scale_; y<y0; y += major*grid*scale_) {
-    ptr.drawLine(0, y0-y, w, y0-y);
+  for (double y = major*grid*scale_; y<h0; y += major*grid*scale_) {
     ptr.drawLine(0, y0+y, w, y0+y);
   }
   ptr.drawLine(x0, 0, x0, h);
@@ -45,8 +45,7 @@ void PackageBackground::paintEvent(QPaintEvent *) override {
     ptr.drawLine(x0+x, 0, x0+x, h);
   }
   ptr.setPen(QPen(QColor(220, 220, 220), 1));
-  for (double y = grid*scale_; y<y0; y += grid*scale_) {
-    ptr.drawLine(0, y0-y, w, y0-y);
+  for (double y = grid*scale_; y<h0; y += grid*scale_) {
     ptr.drawLine(0, y0+y, w, y0+y);
   }
   ptr.drawLine(x0, 0, x0, h);
@@ -59,10 +58,10 @@ void PackageBackground::paintEvent(QPaintEvent *) override {
 
 QPoint PackageBackground::nearestGridIntersection(QPoint p) const {
   double x = (p.x() - width()/2)/scale_;
-  double y = (p.y() - height()/2)/scale_;
+  double y = (p.y() - 0*height()/2)/scale_;
   x = round(x/grid)*grid;
   y = round(y/grid)*grid;
-  return QPoint(x*scale_ + width()/2, y*scale_ + height()/2);
+  return QPoint(x*scale_ + width()/2, y*scale_ + 0*height()/2);
 } 
 
 class PackagePanelData {
