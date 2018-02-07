@@ -59,14 +59,11 @@ void PartListView::selectElements(QSet<int> const &set) {
     if (set.contains(id))
       nw << id;
 
-  qDebug() << "plv::se" << set << id2row << old << nw;
-
   int C = model()->columnCount();
   for (int id: nw-old) {
     int row = id2row[id];
     QItemSelection sel(model()->index(row, 0),
 		       model()->index(row, C-1));
-    qDebug() << row << sel;
     selectionModel()->select(sel, QItemSelectionModel::Select);
   }
   for (int id: old-nw) {

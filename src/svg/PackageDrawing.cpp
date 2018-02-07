@@ -66,12 +66,10 @@ void FPPicData::parsePin(QStringList args, QPainter &p) {
   pin.position = QPoint(x, y);
   pin.padDiameter = args.takeFirst().toInt();
   QString flags = args.takeLast();
-  qDebug() << "parsepin" << args << ":" << flags;
   if (isQuoted(flags)) 
     pin.isSquare = unquote(flags).split(",").contains("square");
   else
     pin.isSquare = flags.toInt(0, 0) & 0x0100;
-  qDebug() << " => " << isQuoted(flags) << flags.toInt(0,0) << pin.isSquare;
   QString nn = unquote(args.takeLast());
   pin.number = nn.toInt();
   if (args.size()==4) {
