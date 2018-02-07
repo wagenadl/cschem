@@ -10,20 +10,24 @@
 
 class PackageWidgetData {
 public:
+  PackageWidgetData() {
+    lib = 0;
+    freescale = false;
+    scale = 0.3;
+    mousein = false;
+  }
   PackageDrawing const &drawing();
 public:
   PackageLibrary const *lib;
   QString name;
   bool freescale;
   double scale;
+  bool mousein;
 };
 
 PackageWidget::PackageWidget(QWidget *parent):
   QWidget(parent), d(new PackageWidgetData) {
-  d->lib = 0;
-  d->scale = 0.1;
-  setFreeScaling(true);
-  setAutoFillBackground(true);
+  setFreeScaling(false);
 }
 
 PackageWidget::~PackageWidget() {
@@ -59,7 +63,6 @@ void PackageWidget::setLibrary(class PackageLibrary const *lib) {
 }
   
 void PackageWidget::setPackage(QString name) {
-  qDebug() << "setpackage" << name;
   d->name = name;
   updateGeometry();
   update();
@@ -95,8 +98,23 @@ QSize PackageWidget::minimumSizeHint() const {
   }
 }
 
+void PackageWidget::enterEvent(QEvent *e) {
+  QWidget::enterEvent(e);
+  d->mousein = true;
+  update();
+}
+
+void PackageWidget::leaveEvent(QEvent *e) {
+  QWidget::leaveEvent(e);
+  d->mousein = false;
+  update();
+}
+
 void PackageWidget::paintEvent(QPaintEvent *) {
   QPainter ptr(this);
+
+  if (d->mousein) 
+    ptr.fillRect(QRect(QPoint(0,0), size()), QColor(0, 128, 255, 64));
   
   PackageDrawing const &drw = d->drawing();
 

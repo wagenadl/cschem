@@ -25,6 +25,8 @@ public slots:
 protected:
   void paintEvent(QPaintEvent *) override;
   void mousePressEvent(QMouseEvent *) override;
+  void enterEvent(QEvent *) override;
+  void leaveEvent(QEvent *) override;
 private:
   class PackageWidgetData *d;
 };

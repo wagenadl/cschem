@@ -17,6 +17,13 @@ public:
   QList<Element> elements; // list elements are rows of the model
 };
 
+int PartList::findElement(int id) const {
+  for (int r=0; r<d->elements.size(); r++)
+    if (d->elements[r].id == id)
+      return r;
+  return -1;
+}
+
 PartList::PartList(class Scene *scene):
   QAbstractTableModel(scene), // scene is our parent from a QObject perspective
   d(new PartListData(scene)) {
@@ -152,10 +159,7 @@ void PartList::rebuild() {
     if (newmap[n].type != Element::Type::Component)
       newmap.remove(n);
   
-  qDebug() << "newmap.size" << newmap.size();
-  
   int N = d->elements.size();
-  qDebug() << "old.size" << N;
   int n = 0;
   while (n<N) {
     Element const &elt = d->elements[n];
@@ -170,7 +174,6 @@ void PartList::rebuild() {
       N --;
     }
   }
-  qDebug() << "Deleted some => " << N;
 
   QMap<int, int> oldmap;
   N = d->elements.size();
@@ -184,7 +187,6 @@ void PartList::rebuild() {
       d->elements[n] = newmap[id];
       emit dataChanged(index(n, 0), index(n, int(Column::N)));
       newmap.remove(id);
-      qDebug() << "edited row" << n << id << d->elements[n].report();
     }
   }
 
@@ -194,7 +196,6 @@ void PartList::rebuild() {
   
   beginInsertRows(QModelIndex(), N, N+newmap.size()-1);
   for (auto const &elt: newmap) {
-    qDebug() << "adding" << elt.report();
     d->elements.append(elt);
   }
   endInsertRows();
@@ -214,3 +215,4 @@ QList<QStringList> PartList::asTable() const {
   }
   return map.values();
 }
+

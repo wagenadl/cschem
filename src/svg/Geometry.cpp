@@ -151,7 +151,6 @@ QRectF Geometry::svgBoundingRect(Element const &elt) const {
   QTransform xf = d->symbolToSceneElementTransformation(elt);
   Symbol const &sym(d->lib.symbol(elt.symbol()));
   QRectF bb = sym.shiftedBBox();
-  qDebug() << "svgboundingrect" << elt.symbol() << bb << xf.mapRect(bb);
   return xf.mapRect(bb);
 }
 
@@ -247,7 +246,6 @@ QPoint Geometry::centerOfPinMass(Element const &elt) const {
   int N = pins.size();
   for (QString p: pins)
     sum += pinPosition(elt, p);
-  qDebug() << "copm" << elt.report() << sum << N << (sum/N).toPoint();
   return (sum/N).toPoint();
 }
 

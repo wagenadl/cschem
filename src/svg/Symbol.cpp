@@ -119,7 +119,6 @@ void SymbolData::ensureBBox() {
   QString id = groupId;
   bbox = renderer.matrixForElement(id).mapRect(renderer.boundsOnElement(id))
     .toAlignedRect();
-  qDebug() << id << bbox;
   for (QString pin: pins.keys())
     pins[pin]
       = renderer.matrixForElement(id)
@@ -253,7 +252,6 @@ void Symbol::writeSvg(QXmlStreamWriter &sw) const {
 }
 
 void Symbol::forgetRenderer(Symbol const &p) {
-  qDebug() << "forgetrenderer" << p.name();
   symbolRenderers().remove(p.name());
 }
 

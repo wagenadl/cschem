@@ -118,11 +118,6 @@ void CM_Merge::considerPinCon() {
 
 void CM_Merge::considerConPin() {
   // Examine co-location of connections in BOTTOM with pins in TOP.
-  qDebug() << "CM_Merge Con Pin";
-  for (Connection const &c: bot.connections) 
-    qDebug() << "bottom con" << c.report();
-  for (Connection const &c: top.connections) 
-    qDebug() << "top con" << c.report();
   for (Element const &elttop: top.elements) {
     Symbol const &prt(d->lib.symbol(elttop.symbol()));
     if (!prt.isValid())
@@ -132,7 +127,6 @@ void CM_Merge::considerConPin() {
       PinID pidtop(elttop.id, p);
       QPoint pos = topgeom.pinPosition(elttop, p);
       int conbot = botgeom.connectionAt(pos);
-      qDebug() << "top pin" << elttop.report() << p << pos << conbot; 
       if (conbot>0) {
         // Let's just make sure the two aren't already connected:
         if (Net(d->circ, pidtop).connections().contains(conbot))
@@ -196,20 +190,12 @@ int CircuitModData::addInPlaceConnection(PinID pidbot, int conid, QPoint pos) {
   int jid = injectJunction(conid, pos);
   if (jid<0)
     return -1;
-  qDebug() << "injected junction" << jid
-	   << "into" << circ.connections[conid].report();
-  for (int c: circ.connectionsOn(PinID(jid))) 
-    qDebug() << "connections onto our junction" << circ.connections[c].report();
   Element const &eltbot(circ.elements[pidbot.element()]);
   if (eltbot.type!=Element::Type::Junction) {
     // rewire any connections to old pin to our new connection
-    for (int c: circ.connectionsOn(pidbot)) 
-      qDebug() << "will rewire" << circ.connections[c].report();
     rewire(circ.connectionsOn(pidbot), pidbot, PinID(jid));
   }
   insert(Connection(PinID(jid), pidbot));
-  for (int c: circ.connectionsOn(PinID(jid))) 
-    qDebug() << "connections onto our junction" << circ.connections[c].report();
   return jid;
 }
 

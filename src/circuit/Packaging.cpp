@@ -10,7 +10,11 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Packaging &c) {
     sr.readNext();
     if (sr.isStartElement()) {
       auto n = sr.name();
-      if (n=="rule") {
+      if (n=="cschem") {
+         // we'll recurse into this
+      } else if (n=="packaging") {
+        // we'll recurse into this
+      } else if (n=="rule") {
 	PkgRule rule;
 	sr >> rule;
 	c.rules[rule.symbol] = rule;
@@ -20,11 +24,13 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Packaging &c) {
 	c.packages[pkg.name] = pkg;
       } else {
 	qDebug() << "Unexpected element in packaging: " << sr.name();
+        sr.skipCurrentElement();
       }
     } else if (sr.isEndElement()) {
       break;
     } else if (sr.isCharacters() && sr.isWhitespace()) {
     } else if (sr.isComment()) {
+    } else if (sr.isStartDocument()) {
     } else {
       qDebug() << "Unexpected entity in packaging: " << sr.tokenType();
     }
@@ -91,10 +97,8 @@ QStringList Packaging::recommendedPackages(QString symbol) const {
   int score = 0;
   PkgRule rule;
   QStringList sym = symbol.split(":");
-  qDebug() << "recommendations for" << sym;
   for (PkgRule const &r: rules) {
     QStringList key = r.symbol.split(":");
-    qDebug() << "rule" << key;
     if (key.isEmpty())
       continue; // I don't think that can happen
     int idx = sym.indexOf(key.takeFirst());

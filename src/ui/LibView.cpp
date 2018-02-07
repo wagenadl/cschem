@@ -150,7 +150,6 @@ void LibView::rebuild() {
   QStringList symbols = d->lib->symbolNames();
   std::sort(symbols.begin(), symbols.end(),
 	    [](QString a, QString b) { return symbolLessThan(a,b); });
-  qDebug() << "symbolnames" << symbols;
   QString lastheader = "";
   for (QString s: symbols) {
     if (!(s.startsWith("port:") || s.startsWith("part:")))

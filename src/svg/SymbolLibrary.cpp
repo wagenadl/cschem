@@ -47,7 +47,6 @@ SymbolLibrary::~SymbolLibrary() {
 
 void SymbolLibrary::insert(Symbol const &p) {
   symbols_[p.name()] = p;
-  qDebug() << "Inserted symbol" << p.name() << "with pins" << p.pinNames();
 }  
 
 void SymbolLibrary::scanSymbols(XmlElement const &src) {

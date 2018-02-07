@@ -17,6 +17,7 @@ public:
   QSet<int> selectedElements() const;
   void selectElements(QSet<int> const &);
   void resetWidth();
+  void applyPackage(QString);
 };
 
 #endif

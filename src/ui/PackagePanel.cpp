@@ -8,6 +8,61 @@
 #include <QLabel>
 #include <QDebug>
 #include <QVBoxLayout>
+#include <QPainter>
+
+
+class BackgroundWidget: public QWidget {
+public:
+  BackgroundWidget(QWidget *parent=0): QWidget(parent) {
+    scale = 0.3;
+    grid = 100; // mils
+    major = 5;
+  }
+  void setScale(double pixpermil) {
+    scale = pixpermil;
+    update();
+  }
+  void setGridSpacing(double mil, int majorival) {
+    grid = mil;
+    major = majorival;
+    update();
+  }
+protected:
+  void paintEvent(QPaintEvent *) override {
+    QPainter ptr;
+    ptr.begin(this);
+    int w = width();
+    int h = height();
+    ptr.fillRect(QRect(0,0,w,h), QColor(255, 255, 255));
+    int x0 = w/2;
+    int y0 = h/2;
+    ptr.setPen(QPen(QColor(192, 192, 192), 2));
+    ptr.drawLine(0, y0, w, y0);
+    for (double y = major*grid*scale; y<y0; y += major*grid*scale) {
+      ptr.drawLine(0, y0-y, w, y0-y);
+      ptr.drawLine(0, y0+y, w, y0+y);
+    }
+    ptr.drawLine(x0, 0, x0, h);
+    for (double x = major*grid*scale; x<x0; x += major*grid*scale) {
+      ptr.drawLine(x0+x, 0, x0+x, h);
+    }
+    ptr.setPen(QPen(QColor(220, 220, 220), 1));
+    for (double y = grid*scale; y<y0; y += grid*scale) {
+      ptr.drawLine(0, y0-y, w, y0-y);
+      ptr.drawLine(0, y0+y, w, y0+y);
+    }
+    ptr.drawLine(x0, 0, x0, h);
+    for (double x = grid*scale; x<x0; x += grid*scale) {
+      ptr.drawLine(x0-x, 0, x0-x, h);
+      ptr.drawLine(x0+x, 0, x0+x, h);
+    }
+    ptr.end();
+  }
+private:
+  double scale;
+  double grid;
+  int major;
+};
 
 class PackagePanelData {
 public:
@@ -26,6 +81,7 @@ public:
   QList<PackageWidget *> recommended;
   QLabel *label3;
   QList<PackageWidget *> compatible;
+  BackgroundWidget *bg;
 };
 
 PackagePanel::PackagePanel(QWidget *parent):
@@ -33,11 +89,12 @@ PackagePanel::PackagePanel(QWidget *parent):
   d->lib = 0;
   d->scale = 0.3;
   setAutoFillBackground(true);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-  if (!widget()) {
-    setWidget(new QWidget);
-    widget()->show();
-  }
+  d->bg = new BackgroundWidget();
+  d->bg->setScale(0.3);
+  setWidget(d->bg);
   setWidgetResizable(true);
   
   d->layout = new QVBoxLayout;
@@ -58,8 +115,8 @@ PackagePanel::PackagePanel(QWidget *parent):
   d->label3 = new QLabel("Compatible");
   d->label3->setFont(f);
   d->layout->addWidget(d->label3);
+  d->layout->addStretch();
   widget()->setLayout(d->layout);
-  qDebug() << "size" << size() << widget()->size();
 }
 
 PackagePanel::~PackagePanel() {
@@ -105,7 +162,6 @@ void PackagePanel::clear() {
 void PackagePanel::setElement(Element const &elt) {
   QString sym = elt.symbol();
   QString pkg = elt.info.package;
-  qDebug() << "setelement" << sym << d->currentsym;
   if (d->currentsym==sym && d->currentpkg==pkg)
     return;
   d->currentsym = sym;
@@ -114,6 +170,9 @@ void PackagePanel::setElement(Element const &elt) {
   d->current->setPackage(pkg);
 
   QStringList rec = (d->lib) ? d->lib->recommendedPackages(sym) : QStringList();
+  int idx1 = rec.indexOf(pkg);
+  if (idx1>=0)
+    rec.removeAt(idx1);
   if (rec==d->currentrec)
     return;
 
@@ -146,8 +205,6 @@ void PackagePanel::setElement(Element const &elt) {
     d->recommended << w;
     d->layout->insertWidget(idx++, w);
   }
-
-  qDebug() << "size" << size() << widget()->size() << widget()->sizeHint();
 }
 
 void PackagePanel::press(QString s) {
