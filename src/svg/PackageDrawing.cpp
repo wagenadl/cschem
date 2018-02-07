@@ -53,7 +53,7 @@ void FPPicData::parseElementArc(QStringList args, QPainter &p) {
   QSize size(args[2].toInt(), args[3].toInt());
   int startangle = args[4].toInt();
   int deltaangle = args[5].toInt();
-  p.drawArc(QRect(center - QPoint(size.width(), size.height())/2, size),
+  p.drawArc(QRect(center - QPoint(size.width(), size.height()), size*2),
             16*(180 + startangle), 16*deltaangle);
 }
 
@@ -66,10 +66,12 @@ void FPPicData::parsePin(QStringList args, QPainter &p) {
   pin.position = QPoint(x, y);
   pin.padDiameter = args.takeFirst().toInt();
   QString flags = args.takeLast();
+  qDebug() << "parsepin" << args << ":" << flags;
   if (isQuoted(flags)) 
     pin.isSquare = unquote(flags).split(",").contains("square");
   else
-    pin.isSquare = flags.toInt() & 0x0100;
+    pin.isSquare = flags.toInt(0, 0) & 0x0100;
+  qDebug() << " => " << isQuoted(flags) << flags.toInt(0,0) << pin.isSquare;
   QString nn = unquote(args.takeLast());
   pin.number = nn.toInt();
   if (args.size()==4) {
@@ -99,7 +101,7 @@ void FPPicData::parsePin(QStringList args, QPainter &p) {
   p.setPen(Qt::NoPen);
   if (pin.isSquare)
     p.drawRect(QRect(pin.position, QSize(pin.padDiameter, pin.padDiameter))
-		    .translated(QPoint(pin.padDiameter/2, pin.padDiameter/2)));
+		    .translated(-QPoint(pin.padDiameter/2, pin.padDiameter/2)));
   else
     p.drawEllipse(pin.position, pin.padDiameter/2, pin.padDiameter/2);
 
