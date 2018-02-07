@@ -15,6 +15,8 @@ public:
   bool isFreeScaling() const; // true means: will expand to available space
   QSize sizeHint() const override;
   QSize minimumSizeHint() const override;
+  int margin() const; // ideally, determined by grid spacing
+  double gridSpacing() const;
 signals:
   void pressed(QString); // argument is name of package
 public slots:

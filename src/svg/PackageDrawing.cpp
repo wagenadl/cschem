@@ -94,6 +94,7 @@ void FPPicData::parsePin(QStringList args, QPainter &p) {
     return;
   }
   pin.clearanceDiameter += pin.padDiameter;
+  pins[pin.number] = pin;
 
   p.setBrush(QBrush(padColor()));
   p.setPen(Qt::NoPen);
