@@ -6,34 +6,39 @@
     <component id="3" x="-20" y="-11" type="diode" name="D1" namex="15" namey="-23" namevis="1"/>
     <component id="4" x="-4" y="-8" type="connector:2" name="J2" namex="48" namey="-2" namevis="1" flip="1"/>
     <junction id="5" x="-14" y="-3"/>
-    <connection id="6" from="3:A" to="2:2"/>
-    <connection id="7" from="4:2" to="3:K"/>
-    <connection id="8" from="5:" to="1:"/>
-    <connection id="9" from="5:" to="4:1" via="-5,-3 -5,-8"/>
-    <connection id="10" from="5:" to="2:1" via="-25,-3 -25,-8"/>
+    <component id="6" x="-7" y="24" type="passive:capacitor:polarized" name="C1" namex="0" namey="0" namevis="1" package="cp100"/>
+    <connection id="7" from="3:A" to="2:2"/>
+    <connection id="8" from="4:2" to="3:K"/>
+    <connection id="9" from="5:" to="1:"/>
+    <connection id="10" from="5:" to="4:1" via="-5,-3 -5,-8"/>
+    <connection id="11" from="5:" to="2:1" via="-25,-3 -25,-8"/>
   </circuit>
-  <svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"><g id="part:diode" inkscape:label="part:diode">
-    <circle inkscape:label="pin:A" r="7" cy="667" cx="826" id="pin:A" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
-    <circle inkscape:transform-center-y="2.3834746" inkscape:transform-center-x="65.942797" inkscape:label="pin:K" r="7" cy="667" cx="882" id="pin:K" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
-    <g transform="matrix(0.77778403,0,0,0.77815211,-192.1193,462.79993)" id="g1722-7" style="stroke-width:1.92809975;stroke-miterlimit:4;stroke-dasharray:none">
-      <g id="g1693-5" transform="translate(504)" style="stroke-width:1.92809975;stroke-miterlimit:4;stroke-dasharray:none">
-        <path style="display:inline;fill:none;stroke:#000000;stroke-width:1.92809975;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 805,262.41665 h 21" id="path1684-3" inkscape:connector-curvature="0"/>
-        <path style="display:inline;fill:none;stroke:#000000;stroke-width:1.92809975;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 854.00002,262.41665 h 22.99991" id="path1687-5" inkscape:connector-curvature="0" sodipodi:nodetypes="cc"/>
-        <path style="display:inline;fill:#000000;stroke:#000000;stroke-width:1.92809975;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 854,262.41665 -28,14 v -28 z" id="path1689-6" inkscape:connector-curvature="0"/>
-        <path style="display:inline;fill:none;stroke:#000000;stroke-width:1.92809975;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 854,248.41665 v 28" id="path1691-2" inkscape:connector-curvature="0"/>
-      </g>
-    </g>
-  </g><g id="g2507" inkscape:label="port:case">
-    <g transform="translate(-49,418.58335)" id="g1200">
-      <path style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 105,458.41665 v 14" id="path1189" inkscape:connector-curvature="0"/>
-      <path style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 105,472.41665 -7,14" id="path1191" inkscape:connector-curvature="0"/>
-      <path style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 112,486.41665 7,-14 H 91 l -7,14" id="path1195" inkscape:connector-curvature="0"/>
-    </g>
-    <circle style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" id="pin:A-8-67-4-3-2-5-3" cx="-877" cy="56" r="7" inkscape:label="pin" transform="rotate(-90)"/>
-  </g><g id="g7799" inkscape:label="junction">
-    <circle inkscape:label="pin" r="7" cy="1003" cx="91" id="pin:A-8-67-4-10" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
-    <circle style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" id="circle1050" cx="91" cy="1003" r="3.5" inkscape:transform-center-x="-0.60614223" inkscape:transform-center-y="0.80818963"/>
-  </g><g id="g4870" inkscape:label="part:connector:2">
+  <packaging>
+    <rule symbol="capacitor" packages="c100 c200"/>
+    <rule symbol="capacitor:polarized" packages="cp100 cp200"/>
+    <rule symbol="diode" packages="d300"/>
+    <rule symbol="diode:LED" packages="led5"/>
+    <rule symbol="resistor" packages="r300 r400 r500 r600 r700"/>
+    <package name="c100" pcb="RCY100"/>
+    <package name="c200" pcb="RCY200"/>
+    <package name="cp100" pcb="RCY100P" map="+=1 -=2"/>
+    <package name="cp200" pcb="RCY200P" map="+=1 -=2"/>
+    <package name="d300" pcb="ALF300" map="A=2 K=1"/>
+    <package name="dip14" pcb="DIP14"/>
+    <package name="dip16" pcb="DIP16"/>
+    <package name="dip6" pcb="DIP6"/>
+    <package name="dip8" pcb="DIP8"/>
+    <package name="led5" pcb="LED5" map="A=1 K=2"/>
+    <package name="opamp1" pcb="DIP8" map="+=3 -=2 Vdd=7 Vss=4 out=6"/>
+    <package name="opamp2" pcb="DIP8" map="A:+=3 A:-=2 A:out=1 B:+=5 B:-=6 B:out=5 Vdd=8 Vss=4"/>
+    <package name="r300" pcb="ACY300"/>
+    <package name="r400" pcb="ACY400"/>
+    <package name="r500" pcb="ACY500"/>
+    <package name="r600" pcb="ACY600"/>
+    <package name="r700" pcb="ACY700"/>
+    <package name="to220" pcb="TO220W"/>
+  </packaging>
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"><g id="g4870" inkscape:label="part:connector:2">
     <circle style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" id="pin:A-8-67-4-1-3-3" cx="679" cy="842" r="7" inkscape:label="pin:2"/>
     <circle style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" id="pin:A-8-67-4-1-6-77" cx="679" cy="863" r="7" inkscape:label="pin:1"/>
     <g id="g4859">
@@ -46,5 +51,37 @@
       <rect style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" id="rect4841" width="18.491714" height="41.570808" x="648.75415" y="831.7146" ry="4.8575492" rx="4.8575497"/>
       <path style="opacity:1;fill:#000000;fill-opacity:0.98881429;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 653.6117,831.7146 h 2.41213 l -7.26968,7.82013 v -2.96258 c 0,-2.69109 2.16647,-4.85755 4.85755,-4.85755 z" id="rect4841-0-0-9" inkscape:connector-curvature="0" sodipodi:nodetypes="sccss"/>
     </g>
+  </g><g id="g2507" inkscape:label="port:case">
+    <g transform="translate(-49,418.58335)" id="g1200">
+      <path style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 105,458.41665 v 14" id="path1189" inkscape:connector-curvature="0"/>
+      <path style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 105,472.41665 -7,14" id="path1191" inkscape:connector-curvature="0"/>
+      <path style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 112,486.41665 7,-14 H 91 l -7,14" id="path1195" inkscape:connector-curvature="0"/>
+    </g>
+    <circle style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" id="pin:A-8-67-4-3-2-5-3" cx="-877" cy="56" r="7" inkscape:label="pin" transform="rotate(-90)"/>
+  </g><g id="part:diode" inkscape:label="part:diode">
+    <circle inkscape:label="pin:A" r="7" cy="667" cx="826" id="pin:A" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
+    <circle inkscape:transform-center-y="2.3834746" inkscape:transform-center-x="65.942797" inkscape:label="pin:K" r="7" cy="667" cx="882" id="pin:K" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
+    <g transform="matrix(0.77778403,0,0,0.77815211,-192.1193,462.79993)" id="g1722-7" style="stroke-width:1.92809975;stroke-miterlimit:4;stroke-dasharray:none">
+      <g id="g1693-5" transform="translate(504)" style="stroke-width:1.92809975;stroke-miterlimit:4;stroke-dasharray:none">
+        <path style="display:inline;fill:none;stroke:#000000;stroke-width:1.92809975;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 805,262.41665 h 21" id="path1684-3" inkscape:connector-curvature="0"/>
+        <path style="display:inline;fill:none;stroke:#000000;stroke-width:1.92809975;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 854.00002,262.41665 h 22.99991" id="path1687-5" inkscape:connector-curvature="0" sodipodi:nodetypes="cc"/>
+        <path style="display:inline;fill:#000000;stroke:#000000;stroke-width:1.92809975;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" d="m 854,262.41665 -28,14 v -28 z" id="path1689-6" inkscape:connector-curvature="0"/>
+        <path style="display:inline;fill:none;stroke:#000000;stroke-width:1.92809975;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 854,248.41665 v 28" id="path1691-2" inkscape:connector-curvature="0"/>
+      </g>
+    </g>
+  </g><g id="g2548" inkscape:label="part:passive:capacitor:polarized">
+    <g transform="translate(35,432.58335)" id="g1566" style="stroke-width:1.5;stroke-miterlimit:4;stroke-dasharray:none">
+      <path style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 371,899.41665 v 14" id="path2742" inkscape:connector-curvature="0"/>
+      <path style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 371,920.41665 v 14" id="path2744" inkscape:connector-curvature="0"/>
+      <path style="display:inline;fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 384.99999,913.41665 h -28" id="path2746" inkscape:connector-curvature="0"/>
+      <path style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" d="M 388.5,902.91665 H 378" id="path2752" inkscape:connector-curvature="0"/>
+      <path style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" d="m 383.25,908.16665 v -10.5" id="path2754" inkscape:connector-curvature="0"/>
+      <path sodipodi:nodetypes="czc" inkscape:connector-curvature="0" id="path2506" d="m 357,922.97334 c 4.62594,-3.76897 9.69118,-3.99975 14,-3.99975 4.30882,0 9.47508,0.0287 14,3.99975" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#010101;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
+    </g>
+    <circle inkscape:label="pin:-" r="7" cy="1367" cx="406" id="pin:A-8-84-3" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
+    <circle inkscape:label="pin:+" r="7" cy="1330.9719" cx="406" id="pin:A-8-8-6" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
+  </g><g id="g7799" inkscape:label="junction">
+    <circle inkscape:label="pin" r="7" cy="1003" cx="91" id="pin:A-8-67-4-10" style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"/>
+    <circle style="opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" id="circle1050" cx="91" cy="1003" r="3.5" inkscape:transform-center-x="-0.60614223" inkscape:transform-center-y="0.80818963"/>
   </g></svg>
 </cschem>
