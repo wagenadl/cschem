@@ -22,6 +22,7 @@
 #include "LibView.h"
 #include "ui/SignalAccumulator.h"
 #include "svg/SvgExporter.h"
+#include "svg/GedaExporter.h"
 #include  <QClipboard>
 #include <QItemSelectionModel>
 
@@ -180,12 +181,17 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::exportCircuitAction);
   menu->addAction(act);
 
+  act = new QAction(tr("Export circuit as &gEDA…"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
+  connect(act, &QAction::triggered, this, &MainWindow::exportGEDAAction);
+  menu->addAction(act);
+
   act = new QAction(tr("Export &parts list as csv…"), this);
   connect(act, &QAction::triggered, this, &MainWindow::exportPartListAction);
   menu->addAction(act);
 
   act = new QAction(tr("Copy circuit &image to clipboard"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
   connect(act, &QAction::triggered, this, &MainWindow::circuitToClipboardAction);
   menu->addAction(act);
 
@@ -570,6 +576,36 @@ void MainWindow::exportCircuitAction() {
 
   SvgExporter xp(d->scene->schem());
   if (!xp.exportSvg(fn)) {
+    qDebug() << "Failed to export svg";
+  }
+}
+
+void MainWindow::exportGEDAAction() {
+  if (d->lastdir.isEmpty())
+    d->lastdir = QDir::home().absoluteFilePath("Desktop");
+  
+  QFileDialog dlg;
+  dlg.setWindowTitle(tr("Export schematic as gEDA…"));
+  dlg.setAcceptMode(QFileDialog::AcceptSave);
+  dlg.setDefaultSuffix("sch");
+  dlg.setDirectory(d->lastdir);
+  dlg.setNameFilter(tr("gEDA Circuit files (*.sch)"));
+  if (!d->filename.isEmpty()) {
+    QFileInfo fi(d->filename);
+    dlg.selectFile(fi.baseName() + ".sch");
+  }
+  if (!dlg.exec())
+    return;
+  QStringList fns = dlg.selectedFiles();
+  if (fns.isEmpty())
+    return;
+
+  d->lastdir = dlg.directory().absolutePath();
+
+  QString fn = fns.first();
+
+  GedaExporter xp(d->scene->schem());
+  if (!xp.exportGeda(fn)) {
     qDebug() << "Failed to export svg";
   }
 }
