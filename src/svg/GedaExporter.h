@@ -6,7 +6,7 @@
 
 class GedaExporter {
 public:
-  GedaExporter(class Circuit const &circ, class SymbolLibrary const *lib);
+  GedaExporter(class Schem const &);
   ~GedaExporter();
   GedaExporter(GedaExporter const &) = delete;
   GedaExporter &operator=(GedaExporter const &) = delete;
