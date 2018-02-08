@@ -29,7 +29,7 @@ bool Connection::danglingEnd() const {
 Connection::Connection() {
   id = IDFactory::instance().newId();
   fromId = toId = 0;
-  fromPin = toPin = "";
+  fromPin = toPin = PinID::NOPIN;
   via = QPolygon();
 }
 
@@ -112,7 +112,7 @@ void Connection::translate(QPoint delta) {
 
 Connection Connection::reversed() const {
   Connection con = *this;
-  QPolygon v;
+  con.via.clear();
   for (auto p: via)
     con.via.prepend(p);
   con.setFrom(to());
@@ -148,9 +148,15 @@ bool Connection::isEquivalentTo(Connection const &o) const {
 }
 
 QString Connection::report() const {
-  QString x = QString("%1 = %2:%3 - ").arg(id).arg(fromId).arg(fromPin);
+  QString x = QString("c#%1: [%2:%3 ; ").arg(id).arg(fromId).arg(fromPin);
   for (auto v: via)
     x += QString("%1,%2 ").arg(v.x()).arg(v.y());
-  x += QString("- %1:%2").arg(toId).arg(toPin);
+  x += QString("; %1:%2]").arg(toId).arg(toPin);
   return x;
+}
+
+
+QDebug &operator<<(QDebug &dbg, Connection const &con) {
+  dbg << con.report();
+  return dbg;
 }

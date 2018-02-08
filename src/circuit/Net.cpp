@@ -19,22 +19,17 @@ public:
 };
 
 void NetData::add(int c) {
-  qDebug() << "add" << c;
   if (connections.contains(c))
     return;
   connections << c;
-  qDebug() << "  added";
   Connection const &con = circ.connections[c];
   add(con.from());
   add(con.to());
 }
 
 void NetData::add(PinID const &pinid) {
-  qDebug() << "add" << pinid.element() << pinid.pin();
-  qDebug() << pins;
   if (pins.contains(pinid))
     return;
-  qDebug() << "  added";
   pins << pinid;
   QSet<int> cc = circ.connectionsOn(pinid.element(), pinid.pin());
   for (int c: cc)

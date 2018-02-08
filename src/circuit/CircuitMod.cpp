@@ -35,7 +35,9 @@ void CircuitModData::insert(Element const &elt) {
 }
 
 void CircuitModData::drop(Connection const &con) {
+  qDebug() << "drop connection" << con << circ.connections.size();
   circ.connections.remove(con.id);
+  qDebug() << "  => new size" << circ.connections.size();
   acons << con.id;
 }
 
@@ -105,7 +107,7 @@ bool CircuitMod::deleteElement(int id) {
   
   QSet<int> cc = d->circ.connectionsOn(id);
 
-  bool isjunc = d->circ.elements[id].type == Element::Type::Junction;
+  bool isjunc = d->circ.elements.value(id).type == Element::Type::Junction;
   if (isjunc && cc.size()==2)
     return removePointlessJunction(id);
   if  (isjunc && cc.size()==4)
@@ -213,23 +215,29 @@ void CircuitModData::makeDanglingAt(int id, QSet<int> cc) {
   for (int k: cc) {
     Connection c = circ.connections[k];
     if (c.fromId==id) {
-      c.setFrom(0); // make dangling
       c.via.prepend(geom.pinPosition(id, c.fromPin));
+      c.unsetFrom(); // make dangling
       insertOrDrop(c.isValid() && !geom.isZeroLength(c), c);
     }
     if (c.toId==id) {
-      c.setTo(0); // make dangling
       c.via.append(geom.pinPosition(id, c.toPin));
+      c.unsetTo(); // make dangling
       insertOrDrop(c.isValid() && !geom.isZeroLength(c), c);
     }
   }
 }
 
 bool CircuitModData::removePointlessJunction(int id) {
+  if (!circ.elements.contains(id))
+    return false;
   if (circ.elements[id].type != Element::Type::Junction)
     return false;
+
+  qDebug() << "removepointlessjunction" << id << " at " << circ.elements[id].position;
   
   QList<int> cc = circ.connectionsOn(id, "").toList();
+
+  qDebug() << "  affected connections" << cc;
   
   if (cc.size() > 2)
     return false;
@@ -238,18 +246,25 @@ bool CircuitModData::removePointlessJunction(int id) {
     // reconnect what would be dangling
     Connection con0(circ.connections[cc[0]]);
     Connection con1(circ.connections[cc[1]]);
+    qDebug() << "  con0" <<  con0;
+    qDebug() << "  con1" <<  con1;
 
     if (con0.fromId == id)
       con0.reverse();
     if (con1.toId == id)
       con1.reverse();
 
+    qDebug() << "  con0=>" <<  con0;
+    qDebug() << "  con1=>" <<  con1;
+    
     con0.setTo(con1.to());
     con0.via << circ.elements[id].position;
     con0.via += con1.via;
+    qDebug() << "  con0=>" << con0;
     Geometry geom(circ, lib);
     con0.via = geom.viaFromPath(con0,
 				geom.simplifiedPath(geom.connectionPath(con0)));
+    qDebug() << "  con0=>" << con0;
     insert(con0);
     dropCon(cc[1]);
   } else {
@@ -266,19 +281,24 @@ bool CircuitMod::removePointlessJunction(int id) {
 }
 
 bool CircuitMod::deleteConnection(int id) {
+  qDebug() << "deleteconnection" << id;
   if (!d->circ.connections.contains(id))
     return false;
 
+  qDebug() << "  contained";
   Connection con(d->circ.connections[id]);
+  qDebug() << "  equals" << con;
 
   d->drop(con);
   
   int from = con.fromId;
-  if (d->circ.elements[from].type == Element::Type::Junction)
+  if (d->circ.elements.contains(from)
+      && d->circ.elements[from].type == Element::Type::Junction)
     removePointlessJunction(from);
 
   int to = con.toId;
-  if (d->circ.elements[to].type == Element::Type::Junction) 
+  if (d->circ.elements.contains(to)
+      && d->circ.elements[to].type == Element::Type::Junction) 
     removePointlessJunction(to);
 
   return true;
@@ -342,6 +362,8 @@ bool CircuitMod::deleteConnectionSegment(int id, int seg) {
 }
 
 bool CircuitMod::removeConnectionsEquivalentTo(int id) {
+  if (!d->circ.connections.contains(id))
+    return false;
   Connection con(d->circ.connections[id]);
   PinID from = con.from();
   PinID to = con.to();
@@ -375,22 +397,28 @@ bool CircuitMod::removeIfDangling(int id) {
 
 bool CircuitMod::removeAllDanglingOrInvalid() {
   bool any = false;
+  qDebug() << "removealldanglingorinvalid" << d->circ;
   while (true) {
     /* This odd while loop is needed, because deleting a connection
        can effectively change IDs of other connections through
        deletion of a junction. */
     bool now = false;
-    for (auto const &c: d->circ.connections)
+    qDebug() << "  loop" << d->circ;
+    for (auto const &c: d->circ.connections) {
       if (!c.isValid() || c.isDangling()) {
+	qDebug() << "    deleting " << c << c.isValid() << c.isDangling();
         now = true;
         deleteConnection(c.id);
+	qDebug() << "  now" << d->circ;
         break;
       }
+    }
     if (now)
       any = true;
     else
       break;
   }
+  qDebug() << "  donelooping" << any << d->circ;
   return any;
 }
 
@@ -517,7 +545,11 @@ bool CircuitMod::simplifyConnection(int id) {
 }
 
 bool CircuitModData::removeOverlappingJunctions(int id) {
+  if (!circ.elements.contains(id))
+    return false;
+  qDebug() << "removeoverlap" << circ;
   Element junc(circ.elements[id]);
+  qDebug() << "  =>" << circ;
   if (junc.type != Element::Type::Junction)
     return false;
   
@@ -559,6 +591,10 @@ bool CircuitModData::removeOverlappingJunctions(int id) {
 
 void CircuitModData::removeOverlap(int ida, int idb, OverlapResult over) {
   if (!over)
+    return;
+  if (!circ.connections.contains(ida))
+    return;
+  if (!circ.connections.contains(idb))
     return;
   Connection a = circ.connections[ida];
   Connection b = circ.connections[idb];
@@ -653,8 +689,10 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
   bool keepgoing = true;
   while (keepgoing) {
     keepgoing = false;
+    qDebug() << "adjust overlapping" << id << d->circ;
+    if (!d->circ.connections.contains(id))
+      break;
     Connection a(d->circ.connections[id]);
-    
     for (auto const &b: d->circ.connections) {
       if (b.id==id)
 	continue;
@@ -803,8 +841,8 @@ bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
   int N = 0;
   QPoint p0;
   for (int id: eltids) {
-    Element elt = d->circ.elements[id];
-    if (elt.isValid()) {
+    if (d->circ.elements.contains(id)) {
+      Element elt = d->circ.elements[id];
       p0 += geom.centerOfPinMass(elt);
       N++;
     }
@@ -812,8 +850,8 @@ bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
   p0 /= N; // original CM
   
   for (int id: eltids) {
-    Element elt = d->circ.elements[id];
-    if (elt.isValid()) {
+    if (d->circ.elements.contains(id)) {
+      Element elt = d->circ.elements[id];
       elt.rotation += steps;
       for (int k=0; k<steps; k++) {
 	QPoint dp = elt.position - p0;
@@ -848,10 +886,9 @@ bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
 }
 
 bool CircuitMod::rotateElement(int eltid, int steps) {
-  steps &= 3;
-
   if (!d->circ.elements.contains(eltid))
     return false;
+  steps &= 3;
   Circuit c0 = d->circ;
   Geometry geom(d->circ, d->lib);
   Element elt = d->circ.elements[eltid];
@@ -879,19 +916,19 @@ bool CircuitMod::flipElements(QSet<int> eltids) {
   int N = 0;
   QPoint p0;
   for (int id: eltids) {
-    Element elt = d->circ.elements[id];
-    if (elt.isValid()) {
+    if (d->circ.elements.contains(id)) {
+      Element elt = d->circ.elements[id];
       p0 += geom.centerOfPinMass(elt);
       N++;
+      elt.namePosition.setX(-elt.namePosition.x());
+      elt.valuePosition.setX(-elt.valuePosition.x());
     }
-    elt.namePosition.setX(-elt.namePosition.x());
-    elt.valuePosition.setX(-elt.valuePosition.x());
   }
   p0 /= N; // original CMp
   
   for (int id: eltids) {
-    Element elt = d->circ.elements[id];
-    if (elt.isValid()) {
+    if (d->circ.elements.contains(id)) {
+      Element elt = d->circ.elements[id];
       elt.flipped = !elt.flipped;
       QPoint dp = elt.position - p0;
       elt.position = p0 + QPoint(-dp.x(), dp.y());

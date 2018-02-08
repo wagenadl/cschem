@@ -6,6 +6,7 @@
 
 #include <QPoint>
 #include <QXmlStreamReader>
+#include <QDebug>
 
 class Rotation {
 public:
@@ -33,11 +34,11 @@ public:
     QString notes;
   };
 public:
+  Element();
   static Element junction(QPoint);
   static Element component(QString type, QPoint);
   static Element port(QString type, QPoint);
 public:
-  Element();
   QString report() const;
 public:
   bool isValid() const;
@@ -66,6 +67,6 @@ public:
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Element const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Element &);
-
+QDebug &operator<<(QDebug &, Element const &);
 
 #endif

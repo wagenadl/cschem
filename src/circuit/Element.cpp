@@ -88,7 +88,6 @@ QString Element::symbol() const {
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Element &c) {
   c = Element();
-  
   QStringRef name = sr.name();
   if (name=="component")
     c.type = Element::Type::Component;
@@ -165,7 +164,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Element const &c) {
 };
 
 QString Element::report() const {
-  return QString("%1: %2 at %3,%4 (%5) - %6 %7")
+  return QString("e#%1: [%2 at %3,%4 (%5) - %6 %7]")
     .arg(id).arg(symbol())
     .arg(position.x()).arg(position.y()).arg(rotation)
     .arg(value).arg(name);
@@ -185,3 +184,9 @@ void Element::copyAnnotationsFrom(Element const &o) {
   valueVisible = o.valueVisible;
   nameVisible = o.nameVisible;
 }
+
+QDebug &operator<<(QDebug &dbg, Element const &elt) {
+  dbg << elt.report();
+  return dbg;
+}
+
