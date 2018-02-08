@@ -9,6 +9,7 @@
 #include "Connection.h"
 #include <QMap>
 #include <QPoint>
+#include "SafeMap.h"
 
 class Circuit {
 public:
@@ -59,19 +60,20 @@ public:
   int availableNumber(QString pfx) const; 
   /* Returns a number that is not yet in use in the circuit for a name starting
      with PFX. */
- QString autoName(QString sym) const;
+  QString autoName(QString sym) const;
   /* Creates an automatic name for an element with symbol SYM. */
   bool isEmpty() const;
   bool isValid() const;
   void invalidate();
 public:
-  QMap<int, Element> elements;
-  QMap<int, Connection> connections;
+  SafeMap<int, Element> elements;
+  SafeMap<int, Connection> connections;
 private:
   bool valid;
 };
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Circuit const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Circuit &);
+QDebug &operator<<(QDebug &, Circuit const &);
 
 #endif

@@ -1,0 +1,7 @@
+TEMPLATE = app
+TARGET = safemaptest
+INCLUDEPATH += .
+DEFINES += QT_DEPRECATED_WARNINGS
+HEADERS = SafeMap.h
+SOURCES = safemaptest.cpp
+	

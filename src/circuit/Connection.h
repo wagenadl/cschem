@@ -7,6 +7,7 @@
 #include <QXmlStreamReader>
 #include "PinID.h"
 #include <QPolygon>
+#include <QDebug>
 
 class Connection {
 public:
@@ -50,5 +51,6 @@ public:
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Connection const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Connection &);
+QDebug &operator<<(QDebug &, Connection const &);
 
 #endif

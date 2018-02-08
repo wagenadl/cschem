@@ -209,6 +209,13 @@ SceneConnection::SceneConnection(class Scene *parent, Connection const &c):
 }
 
 void SceneConnection::setPath(QPolygonF const &path) {
+  if (path.isEmpty()) {
+    for (auto *p: d->segments)
+      delete p;
+    d->segments.clear();
+    return;
+  }
+  
   while (d->segments.size() > path.size() - 1)
     delete d->segments.takeLast();
 

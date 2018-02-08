@@ -30,11 +30,11 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
       if (n=="component" || n=="port" || n=="junction") {
 	Element elt;
 	sr >> elt;
-	c.elements[elt.id] = elt;
+	c.elements.insert(elt.id, elt);
       } else if (n=="connection") {
 	Connection con;
 	sr >> con;
-	c.connections[con.id] = con;
+	c.connections.insert(con.id, con);
       } else {
 	qDebug() << "Unexpected element in circuit: " << sr.name();
 	c.invalidate();
@@ -63,18 +63,22 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
 }
 
 void Circuit::insert(Element const &e) {
-  elements[e.id] = e;
+  if (!e.isValid()) {
+    qDebug() << "Inserting invalid Element";
+  }
+  elements.insert(e.id, e);
 }
 
 void Circuit::insert(Connection const &c) {
   if (!c.isValid()) {
     qDebug() << "Inserting invalid connection";
   }
-  connections[c.id] = c;
+  connections.insert(c.id, c);
 }
 
 void Circuit::removeElementWithConnections(int id) {
   if (elements.contains(id)) {
+    qDebug() << "removingwithconnections" << id << elements[id];
     elements.remove(id);
     QList<int> cids;
     for (auto const &c: connections) 
@@ -85,6 +89,7 @@ void Circuit::removeElementWithConnections(int id) {
   } else {
     qDebug() << "Nothing to remove for " << id;
   }
+  qDebug() << "removedelementwithconnections" << *this;
 }
 
 QSet<int> Circuit::connectionsOn(PinID const &pid) const {
@@ -165,7 +170,7 @@ int Circuit::renumber(int start, QMap<int, int> *mapout) {
     int oldid = elt.id;
     elt.id = start;
     elements.remove(oldid);
-    elements[start] = elt;
+    elements.insert(start, elt);
     eltmap[oldid] = start;
     start ++;
   }
@@ -188,7 +193,7 @@ int Circuit::renumber(int start, QMap<int, int> *mapout) {
       qDebug() << "Circuit::renumber: Disconnecting from nonexistent element";
     }
     if (con.isValid()) {
-      connections[start] = con;
+      connections.insert(start, con);
       start++;
     }
   }
@@ -266,4 +271,14 @@ QString Circuit::autoName(QString sym) const {
   } else {
     return "";
   }
+}
+
+QDebug &operator<<(QDebug &dbg, Circuit const &circ) {
+  dbg << "Elements:\n";
+  for (auto const &e: circ.elements)
+    dbg << "  " << e << "\n";
+  dbg << "Connections:\n";
+  for (auto const &c: circ.connections)
+    dbg << "  " << c << "\n";
+  return dbg;
 }
