@@ -23,21 +23,21 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="3200"
-     inkscape:window-height="1756"
+     inkscape:window-width="3840"
+     inkscape:window-height="2116"
      id="namedview1501"
      showgrid="true"
      inkscape:snap-smooth-nodes="false"
      inkscape:snap-midpoints="false"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:zoom="4.9493334"
-     inkscape:cx="1253.4715"
-     inkscape:cy="1347.2831"
+     inkscape:zoom="2.4746667"
+     inkscape:cx="1139.9209"
+     inkscape:cy="1298.3876"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg8"
+     inkscape:current-layer="g4099"
      inkscape:snap-intersection-paths="true"
      inkscape:object-paths="true">
     <inkscape:grid
@@ -3264,6 +3264,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        d="m 1144.5,780.41665 -5.25,-7"
        id="path3303" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-36"
+       width="28"
+       height="7"
+       x="1197"
+       y="775.91663"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g3691"
@@ -6434,6 +6444,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="path2306-7"
        style="opacity:1;fill:#0014ff;fill-opacity:0.38341968;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="pin:2" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-1"
+       width="28"
+       height="7"
+       x="856"
+       y="331.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="part:diode"
@@ -6485,6 +6505,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
            inkscape:connector-curvature="0" />
       </g>
     </g>
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-3"
+       width="28"
+       height="7"
+       x="840"
+       y="683.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2509"
@@ -6558,6 +6588,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        inkscape:label="pin:A"
        inkscape:transform-center-x="65.942797"
        inkscape:transform-center-y="2.3834746" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-7"
+       width="28"
+       height="7"
+       x="1330"
+       y="684.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2535"
@@ -6631,6 +6671,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        inkscape:label="pin:A"
        inkscape:transform-center-x="65.942797"
        inkscape:transform-center-y="2.3834746" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-5"
+       width="28"
+       height="7"
+       x="1413"
+       y="683.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g7619"
@@ -6659,10 +6709,21 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cy="1178"
        r="7"
        inkscape:label="pin:2" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-626"
+       width="28"
+       height="7"
+       x="133"
+       y="1157"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g7646"
-     inkscape:label="part:passive:capacitor">
+     inkscape:label="part:passive:capacitor"
+     transform="translate(-28)">
     <g
        transform="translate(35,432.58335)"
        id="g1579">
@@ -6701,10 +6762,21 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cy="1367"
        r="7"
        inkscape:label="pin:2" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-20"
+       width="28"
+       height="7"
+       x="377"
+       y="1340.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g7670"
-     inkscape:label="">
+     inkscape:label=""
+     transform="translate(43.75,-1.75)">
     <g
        transform="translate(0,467.58335)"
        id="g1251">
@@ -6721,7 +6793,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
       <path
          id="path1515"
          d="M 469,892.41665 H 441"
-         style="display:inline;fill:none;stroke:#000000;stroke-width:2.4;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;stroke:#000000;stroke-width:2.4000001;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:connector-curvature="0" />
       <g
          transform="matrix(0,2,-2,0,638.25047,416.95999)"
@@ -6773,7 +6845,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
      inkscape:label="part:passive:resistor:pot"
      transform="translate(-2)">
     <g
-       transform="translate(35,432.58335)"
+       transform="rotate(90,-72.791675,1147.376)"
        id="g1299">
       <path
          id="path1222"
@@ -6794,24 +6866,37 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="pin:A-8-4"
-       cx="126"
-       cy="1360"
+       cx="1311.1677"
+       cy="-147.16771"
        r="7"
-       inkscape:label="pin:ccw" />
+       inkscape:label="pin:ccw"
+       transform="rotate(90)" />
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="pin:A-8-67"
-       cx="196"
-       cy="1360"
+       cx="1381.1677"
+       cy="-147.16771"
        r="7"
-       inkscape:label="pin:cw" />
+       inkscape:label="pin:cw"
+       transform="rotate(90)" />
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="pin:A-8-67-0"
-       cx="161"
-       cy="1332"
+       cx="1346.1677"
+       cy="-175.16771"
        r="7"
-       inkscape:label="pin:wiper" />
+       inkscape:label="pin:wiper"
+       transform="rotate(90)" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-79"
+       width="28"
+       height="7"
+       x="107"
+       y="1325"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g7720"
@@ -7115,10 +7200,21 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="1601"
        id="pin:K-6-74-6"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-94"
+       width="28"
+       height="7"
+       x="1544"
+       y="1106.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2374"
-     inkscape:label="part:connector:bnc:in">
+     inkscape:label="part:connector:bnc:in"
+     transform="translate(7,-28)">
     <g
        transform="translate(-7,460.58335)"
        id="g2053">
@@ -7127,7 +7223,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          id="g2041">
         <path
            style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           d="m 70,514.41665 -17.25,0"
+           d="M 70,514.41665 H 52.75"
            id="path2037"
            inkscape:connector-curvature="0"
            sodipodi:nodetypes="cc" />
@@ -7145,7 +7241,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          inkscape:connector-curvature="0" />
       <path
          style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-         d="m 623,326.41294 0,20.00371"
+         d="m 623,326.41294 v 20.00371"
          id="path2046"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="cc" />
@@ -7164,6 +7260,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cy="807"
        r="7"
        inkscape:label="pin:ground" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-2"
+       width="28"
+       height="7"
+       x="564"
+       y="768.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2609"
@@ -7209,6 +7315,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="924"
        id="pinK-6"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-6"
+       width="28"
+       height="7"
+       x="946"
+       y="653.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2428"
@@ -7269,6 +7385,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="819"
        cy="394"
        r="7" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-9"
+       width="28"
+       height="7"
+       x="857"
+       y="366.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2461"
@@ -7349,6 +7475,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="896"
        cy="464"
        r="7" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-62"
+       width="28"
+       height="7"
+       x="855"
+       y="414.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2482"
@@ -7392,6 +7528,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="532"
        cy="408"
        r="7" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-206"
+       width="28"
+       height="7"
+       x="494"
+       y="382.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2499"
@@ -7415,6 +7561,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="371"
        cy="1178"
        r="7" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-18"
+       width="28"
+       height="7"
+       x="301"
+       y="1146.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2529"
@@ -7472,6 +7628,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="1092"
        cy="1115"
        r="7" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-28"
+       width="28"
+       height="7"
+       x="1042"
+       y="1100.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2644"
@@ -7529,6 +7695,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="path2306-7-6-4"
        style="opacity:1;fill:#0014ff;fill-opacity:0.38341968;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="pin:E" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-97"
+       width="28"
+       height="7"
+       x="1044"
+       y="1193.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2725"
@@ -7578,6 +7754,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="path2306-7-9-1"
        style="opacity:1;fill:#0014ff;fill-opacity:0.38341968;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="pin:2" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-78"
+       width="28"
+       height="7"
+       x="54"
+       y="381.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2754"
@@ -7633,6 +7819,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="path2306-7-9-2"
        style="opacity:1;fill:#0014ff;fill-opacity:0.38341968;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="pin:out" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-4"
+       width="28"
+       height="7"
+       x="123"
+       y="381.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2782"
@@ -7682,6 +7878,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="path2306-7-9-5"
        style="opacity:1;fill:#0014ff;fill-opacity:0.38341968;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="pin:1" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-50"
+       width="28"
+       height="7"
+       x="205"
+       y="381.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2811"
@@ -7737,6 +7943,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="path2306-7-9-65"
        style="opacity:1;fill:#0014ff;fill-opacity:0.38341968;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="pin:2" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-361"
+       width="28"
+       height="7"
+       x="274"
+       y="381.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2456"
@@ -7786,6 +8002,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="1718.9766"
        id="pin:K-5"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-35"
+       width="28"
+       height="7"
+       x="1659"
+       y="723.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2548"
@@ -7840,10 +8066,21 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="406"
        id="pin:A-8-8-6"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-23"
+       width="28"
+       height="7"
+       x="430"
+       y="1341.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2586"
-     inkscape:label="part:power:battery">
+     inkscape:label="part:power:battery"
+     transform="translate(-35)">
     <g
        transform="translate(21,446.58335)"
        id="g1642">
@@ -7863,12 +8100,12 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:connector-curvature="0" />
       <path
-         style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+         style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="M 542.5,409.41665 H 532"
          id="path1568"
          inkscape:connector-curvature="0" />
       <path
-         style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+         style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m 537.25,414.66665 v -10.5"
          id="path1570"
          inkscape:connector-curvature="0" />
@@ -7902,6 +8139,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="539"
        id="pin:A-8-67-4-1-6-5"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-60"
+       width="28"
+       height="7"
+       x="565"
+       y="865.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2642"
@@ -7956,6 +8203,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="322"
        cy="415"
        r="7" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-0"
+       width="28"
+       height="7"
+       x="350"
+       y="381.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2690">
@@ -8017,6 +8274,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="path2306-7-9-4-3-1"
        style="opacity:1;fill:#0014ff;fill-opacity:0.38341968;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        inkscape:label="pin:out" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-63"
+       width="28"
+       height="7"
+       x="429.59592"
+       y="382.28775"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2544">
@@ -8213,6 +8480,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="1603"
        id="pin:K-6-74-6-7"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-931"
+       width="28"
+       height="7"
+       x="1546"
+       y="1187.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2712"
@@ -8276,6 +8553,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="1281"
        id="pin:K-6-74-36-6-2"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-92"
+       width="28"
+       height="7"
+       x="1226"
+       y="1096.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2770"
@@ -8338,6 +8625,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        inkscape:label="pin:D"
        inkscape:transform-center-x="65.942797"
        inkscape:transform-center-y="2.3834746" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-75"
+       width="28"
+       height="7"
+       x="1225"
+       y="1199.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2827"
@@ -8460,7 +8757,8 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g4870"
-     inkscape:label="part:connector:2">
+     inkscape:label="part:connector:2"
+     transform="translate(63)">
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="pin:A-8-67-4-1-3-3"
@@ -8520,6 +8818,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="sccss" />
     </g>
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-70"
+       width="28"
+       height="7"
+       x="647"
+       y="815.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g4972"
@@ -8599,6 +8907,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="sccss" />
     </g>
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-93"
+       width="28"
+       height="7"
+       x="591"
+       y="815.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      id="g2496"
@@ -8735,6 +9053,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        cx="1190"
        cy="1108"
        r="7" />
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-12"
+       width="28"
+       height="7"
+       x="1202"
+       y="1116.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
      transform="translate(14,7.000043)"
@@ -8910,9 +9238,19 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
            inkscape:connector-curvature="0" />
       </g>
     </g>
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-15"
+       width="28"
+       height="7"
+       x="1351"
+       y="12.499957"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
   <g
-     transform="translate(7,-7)"
+     transform="translate(14,35)"
      id="g4099"
      inkscape:label="part:container:opamp2">
     <circle
@@ -9086,5 +9424,15 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
            style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.49999988;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
       </g>
     </g>
+    <rect
+       style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2568-2-9-1-3-54"
+       width="28"
+       height="7"
+       x="1351"
+       y="117.5"
+       ry="3.5"
+       rx="3.5"
+       inkscape:label="annotation:name:left" />
   </g>
 </svg>
