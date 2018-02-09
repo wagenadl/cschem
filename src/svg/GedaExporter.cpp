@@ -13,13 +13,13 @@
 #include "ui/Style.h"
 #include <QTransform>
 #include "circuit/Schem.h"
-
-constexpr int OFFSET = 400;
+#include "svg/PackageLibrary.h"
 
 class GedaExporterData {
 public:
   GedaExporterData(Schem const &schem):
     circ(schem.circuit()), lib(schem.library()),
+    packaging(schem.packaging()),
     geom(circ, lib) {
   }
   void writeHeader(QTextStream &ts);
@@ -28,11 +28,17 @@ public:
 public:
   Circuit circ;
   SymbolLibrary lib;
+  Packaging packaging;
   Geometry geom;
 };
 
 void GedaExporterData::writeHeader(QTextStream &ts) {
   ts << "v 20130925 2\n";
+}
+
+static QString gedapoint(QPoint p) {
+  constexpr int OFFSET = 40000;
+  return QString("%1 %2").arg(OFFSET+100*p.x()).arg(OFFSET-100*p.y());
 }
 
 void GedaExporterData::writeElement(QTextStream &ts, Element const &elt) {
@@ -51,56 +57,72 @@ void GedaExporterData::writeElement(QTextStream &ts, Element const &elt) {
     pinpos << geom.pinPosition(elt, pn);
   QRect bb = pinpos.boundingRect();
   QPoint origin = bb.topLeft();
-  pinpos.translate(-origin);
-  bb.translate(OFFSET,OFFSET);
-  origin += QPoint(OFFSET,OFFSET);
-  pinpos.translate(OFFSET,OFFSET);
-  ts << QString("C %1 %2 1 0 0 EMBEDDED-%3.sym\n")
-    .arg(origin.x()*100).arg(origin.y()*100)
-    .arg(elt.name);
+  ts << QString("C %1 1 0 0 EMBEDDED-%2.sym\n")
+    .arg(gedapoint(origin)).arg(elt.name);
   ts << "[\n";
   for (int k=0; k<pinnames.size(); k++) {
-    ts << QString("P %1 %2 %3 %4 1 0 0\n")
-      .arg(pinpos[k].x()*100).arg(pinpos[k].y()*100)
-      .arg(pinpos[k].x()*100).arg(pinpos[k].y()*100);
+    ts << QString("P %1 %2 1 0 0\n")
+      .arg(gedapoint(pinpos[k]))
+      .arg(gedapoint((pinpos[k]+QPoint(1,0))));
     ts << "{\n";
-    ts << QString("T %1 %2 5 8 0 1 0 0 1\n")
-      .arg(pinpos[k].x()*100+25).arg(pinpos[k].y()*100+25);
+    ts << QString("T %1 5 8 0 1 0 0 1\n")
+      .arg(gedapoint(pinpos[k]+QPoint(1,-1)));
     ts << QString("pinseq=%1\n").arg(k+1); // this should be smarter
-    ts << QString("T %1 %2 5 8 0 1 0 0 1\n")
-      .arg(pinpos[k].x()*100+25).arg(pinpos[k].y()*100+25);
+    ts << QString("T %1 5 8 0 1 0 0 1\n")
+      .arg(gedapoint(pinpos[k]+QPoint(1,-2)));
     ts << QString("pinnumber=%1\n").arg(k+1); // this should be smarter
-    ts << QString("T %1 %2 5 8 0 1 0 0 1\n")
-      .arg(pinpos[k].x()*100+25).arg(pinpos[k].y()*100+25);
+    ts << QString("T %1 5 8 0 1 0 0 1\n")
+      .arg(gedapoint(pinpos[k]+QPoint(1,-3)));
     ts << QString("pinlabel=%1\n").arg(pinnames[k]); // this should be smarter
-    ts << QString("T %1 %2 5 8 0 1 0 0 1\n")
-      .arg(pinpos[k].x()*100+25).arg(pinpos[k].y()*100+25);
+    ts << QString("T %1 5 8 0 1 0 0 1\n")
+      .arg(gedapoint(pinpos[k]+QPoint(1,-4)));
     ts << QString("pintype=pas\n"); // this should be smarter
     ts << "}\n";
   }
-  ts << QString("T %1 %2 5 10 1 1 0 0 1\n")
-    .arg(origin.x()*100-25).arg(origin.y()*100-5);
-  ts << QString("device=DEVICE\n"); // this likely needs to be smarter
-  ts << QString("T %1 %2 5 10 1 1 0 0 1\n")
-    .arg(origin.x()*100-25).arg(origin.y()*100-25);
+  /*
+  ts << QString("T %1 5 10 1 1 0 0 1\n")
+    .arg(gedapoint(origin+QPoint(1,1)));
   ts << QString("refdes=%1\n").arg(elt.name);
-  ts << QString("T %1 %2 5 10 1 1 0 0 1\n")
-    .arg(origin.x()*100-25).arg(origin.y()*100-50);
-  ts << QString("value=%1\n").arg(elt.value);
-  ts << QString("T %1 %2 5 10 1 1 0 0 1\n")
-    .arg(origin.x()*100-25).arg(origin.y()*100-75);
-  ts << QString("footprint=ACY300\n"); // this obviously needs to be smarter
+
+  ts << QString("T %1 5 10 1 1 0 0 1\n")
+    .arg(gedapoint(origin+QPoint(1,2)));
+  ts << QString("device=%1\n").arg(elt.symbol());
+
+  ts << QString("T %1 5 10 1 1 0 0 1\n")
+    .arg(gedapoint(origin+QPoint(1,3)));
+  ts << QString("pins=%1\n").arg(pinnames.size());
+
+  ts << QString("T %1 5 10 1 1 0 0 1\n")
+    .arg(gedapoint(origin+QPoint(1,4)));
+  ts << QString("class=DISCRETE\n");
+  */
   ts << "]\n";
+  ts << "{\n";
+  ts << QString("T %1 5 10 1 1 0 0 1\n")
+    .arg(gedapoint(origin+QPoint(-1,1)));
+  ts << QString("refdes=%1\n").arg(elt.name);
+
+  if (!elt.value.isEmpty()) {
+    ts << QString("T %1 5 10 1 1 0 0 1\n")
+      .arg(gedapoint(origin+QPoint(-1,2)));
+    ts << QString("value=%1\n").arg(elt.value);
+  }
+  ts << QString("T %1 5 10 1 1 0 0 1\n")
+    .arg(gedapoint(origin+QPoint(-1,3)));
+  QString pkgname = elt.info.package;
+  QString pcb = packaging.packages.contains(pkgname)
+    ? packaging.packages[pkgname].pcb : "???";
+  ts << QString("footprint=%1\n").arg(pcb);
+
+  ts << "}\n";
 }
 
 void GedaExporterData::writeConnection(QTextStream &ts,
 				       Connection const &con) {
   QPolygon pp(geom.connectionPath(con));
-  pp.translate(OFFSET, OFFSET);
   for (int n=0; n<pp.length()-1; n++)
-    ts << QString("N %1 %2 %3 %4 4\n")
-      .arg(pp[n].x()*100).arg(pp[n].y()*100)
-      .arg(pp[n+1].x()*100).arg(pp[n+1].y()*100);
+    ts << QString("N %1 %2 4\n")
+      .arg(gedapoint(pp[n])).arg(gedapoint(pp[n+1]));
 }
 
 GedaExporter::GedaExporter(Schem const &schem):
