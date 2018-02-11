@@ -5,8 +5,10 @@
 #define HOVERMANAGER_H
 
 #include <QPointF>
+#include <QObject>
 
-class HoverManager {
+class HoverManager: public QObject {
+  Q_OBJECT;
 public:
   enum class Purpose {
     None, // to be used while dragging an element
@@ -36,7 +38,10 @@ public:
   void newDrag(class Symbol const &);
   QPoint updateDrag(QPoint p);
   void doneDragging();
+signals:
+  void hoverChanged(QString); // message
 private:
+  friend class HoverManagerData;
   class HoverManagerData *d;
 };
 

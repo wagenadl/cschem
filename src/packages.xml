@@ -58,6 +58,14 @@
     <package name="dip14" pcb="DIP14"/>
     <package name="dip16" pcb="DIP16"/>
 
+    <packages names="db9f db9m db15f db15m db25f db25m db37f db37m"/>
+    <packages names="to92"/>
+    <packages names="sip9"/>
+    <package name="h1x2" pcb="HEADER2_1"/>
+    <package name="h1x2a" pcb="HEADER2_2"/>
+    <package name="h2x2" pcb="HEADER4_1"/>
+    <package name="h2x1" pcb="JUMPER2"/>
+    
     <package name="opamp1" pcb="DIP8"
 	     map="+=3 -=2 out=6 Vdd=7 Vss=4"/>
     <package name="opamp2" pcb="DIP8"

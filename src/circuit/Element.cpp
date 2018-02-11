@@ -62,10 +62,6 @@ QString Element::tag() const {
     return "port";
   case Type::Junction:
     return "junction";
-  case Type::Via:
-    return "via";
-  case Type::Hole:
-    return "hole";
   }
   return "";
 }
@@ -80,8 +76,6 @@ QString Element::symbol() const {
     return "port:" + subtype;
   case Type::Junction:
     return "junction";
-  case Type::Via: case Type::Hole:
-    return "hole:" + subtype;
   }
   return "";
 }
@@ -95,10 +89,6 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Element &c) {
     c.type = Element::Type::Port;
   else if (name=="junction")
     c.type = Element::Type::Junction;
-  else if (name=="via")
-    c.type = Element::Type::Via;
-  else if (name=="hole")
-    c.type = Element::Type::Hole;
   else
     c.type = Element::Type::Invalid;
 

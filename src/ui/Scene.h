@@ -46,6 +46,7 @@ public:
   void unhover();
   void rehover();
   class PartList *partlist() const;
+  class HoverManager *hoverManager() const;
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;

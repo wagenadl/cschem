@@ -982,3 +982,8 @@ PartList *Scene::partlist() const {
 void Scene::emitCircuitChanged() {
   emit circuitChanged();
 }
+
+HoverManager *Scene::hoverManager() const {
+  return d->hovermanager;
+}
+
