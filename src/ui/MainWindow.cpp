@@ -25,6 +25,7 @@
 #include "svg/GedaExporter.h"
 #include  <QClipboard>
 #include <QItemSelectionModel>
+#include "HoverManager.h"
 
 class MWData {
 public:
@@ -387,6 +388,8 @@ void MainWindow::create(Schem const &schem) {
     delete d->scene;
   }
   d->scene = new Scene(schem);
+  connect(d->scene->hoverManager(), &HoverManager::hoverChanged,
+          this, &MainWindow::setStatusMessage);
   d->view->setScene(d->scene);
   setWindowTitle(Style::programName());
   d->filename = "";
@@ -411,6 +414,7 @@ void MainWindow::create(Schem const &schem) {
 	  this, &MainWindow::markChanged);
   connect(d->scene, &Scene::circuitChanged,
 	  this, &MainWindow::markChanged);
+  setStatusMessage("Created new circuit");
 }
 
 void MainWindow::load(QString fn) {
@@ -419,6 +423,7 @@ void MainWindow::load(QString fn) {
   d->libview->rebuild();
   setWindowTitle(fn);
   d->filename = fn;
+  setStatusMessage(tr("Loaded “%1”").arg(fn));
 }
 
 bool MainWindow::saveAs(QString fn) {
@@ -428,6 +433,7 @@ bool MainWindow::saveAs(QString fn) {
     setWindowTitle(fn);
     d->filename = fn;
     d->unsaved = false;
+    setStatusMessage(tr("Saved “%1”").arg(fn));
     return true;
   } else {
     QMessageBox::warning(this, Style::programName(),

@@ -22,10 +22,8 @@ public:
   enum class Type {
     Invalid,
     Component,
-    Port, // only in schem
+    Port,
     Junction,
-    Via, // only in board
-    Hole // only in board
   };
   struct Info {
     QString vendor;

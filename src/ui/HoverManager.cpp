@@ -8,6 +8,7 @@
 #include <QDebug>
 #include "Style.h"
 #include "svg/Geometry.h"
+#include <QWidget>
 
 class PinMarker: public QGraphicsEllipseItem {
 public:
@@ -28,7 +29,7 @@ struct PointInfo {
 
 class HoverManagerData {
 public:
-  HoverManagerData(Scene *scene): scene(scene) {
+  HoverManagerData(HoverManager *hm, Scene *scene): hm(hm), scene(scene) {
     elt = -1;
     pin = PinID::NOPIN;
     con = -1;
@@ -54,7 +55,10 @@ public:
   QList<QPoint> seeWhatSticks(QPoint delta);
   void showStickPoints(QList<QPoint> const &pts);
   QPoint tryNearby(QPoint del, QList<QPoint> &pts);
+  QString pointName(int elt, QString pin) const;
+  QString netName(int con) const;
 public:
+  HoverManager *hm;
   Scene *scene;
   QPointF pt;
   int elt;
@@ -213,6 +217,10 @@ void HoverManagerData::update() {
   //  auto const &lib = scene->library();
   auto const &circ = scene->circuit();
 
+  int oldelt = elt;
+  QString oldpin = pin;
+  int oldcon = con;
+
   // see if previous element is still current
   if (elt>0)
     if (!elts.contains(elt))
@@ -304,9 +312,55 @@ void HoverManagerData::update() {
   } else {
     unhover();
   }
+
+  if (elt!=oldelt || pin!=oldpin || con!=oldcon) {
+    if (elt>0)
+      hm->hoverChanged("on " + pointName(elt, pin));
+    else if (con>0)
+      hm->hoverChanged("on " + netName(con));
+    else
+      hm->hoverChanged("");
+  }
 }
 
-HoverManager::HoverManager(Scene *scene): d(new HoverManagerData(scene)) {
+QString HoverManagerData::pointName(int e, QString p) const {
+  Element const &elem = scene->circuit().elements[e];
+  QString en = elem.name;
+  switch (elem.type) {
+  case Element::Type::Invalid:
+    return "invalid object";
+  case Element::Type::Component: 
+    if (en.isEmpty())
+      en = "unnamed component";
+    if (p.isEmpty())
+      return "pin of " + en;
+    else if (p==PinID::NOPIN)
+      return en;
+    else if (p.toInt()>0)
+      return "pin " + p + " of " + en;
+    else
+      return QWidget::tr("pin “%1” of %2").arg(p).arg(en);
+    
+  case Element::Type::Port:
+    if (en.isEmpty())
+      en = QWidget::tr("port “%1”").arg(elem.symbol().split(":").last());
+    else
+      en = QWidget::tr("port “%1”").arg(en);
+    if (p==PinID::NOPIN)
+      return en;
+    else
+      return "pin of " + en;
+  case Element::Type::Junction:
+    return "junction";
+  }
+  return ""; // not executed
+}
+
+QString HoverManagerData::netName(int /*con*/) const {
+  return "connection"; // to be refined...
+}
+
+HoverManager::HoverManager(Scene *scene): d(new HoverManagerData(this, scene)) {
 }
 
 HoverManager::~HoverManager() {

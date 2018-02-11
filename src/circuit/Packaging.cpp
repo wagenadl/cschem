@@ -18,6 +18,15 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Packaging &c) {
 	PkgRule rule;
 	sr >> rule;
 	c.rules[rule.symbol] = rule;
+      } else if (n=="packages") {
+        auto const &a = sr.attributes();
+        QStringList names = a.value("names").toString().split(" ");
+        for (QString n: names) {
+          Package pkg;
+          pkg.name = n;
+          pkg.pcb = n.toUpper();
+          c.packages[pkg.name] = pkg;
+        }        
       } else if (n=="package") {
 	Package pkg;
 	sr >> pkg;
