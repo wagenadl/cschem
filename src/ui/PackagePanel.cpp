@@ -114,6 +114,7 @@ PackagePanel::PackagePanel(QWidget *parent):
   d->label1->setFont(f);
   d->layout->addWidget(d->label1);
   d->current = new PackageWidget;
+  d->current->setPinsVisible(true);
   connect(d->current, &PackageWidget::pressed,
           this, &PackagePanel::press);
   d->current->setScale(d->scale);

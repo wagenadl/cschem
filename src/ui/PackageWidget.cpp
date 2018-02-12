@@ -18,6 +18,7 @@ public:
     grid = 100;
     major = 5;
     mousein = false;
+    pinsvisible = false;
   }
   PackageDrawing const &drawing();
 public:
@@ -27,6 +28,7 @@ public:
   double grid;
   int major;
   bool mousein;
+  bool pinsvisible;
 };
 
 class PWGeom {
@@ -176,7 +178,42 @@ void PackageWidget::paintEvent(QPaintEvent *) {
     if (d->mousein) 
       ptr.fillRect(pwg.bb.adjusted(-50, -50, 50, 50), QColor(0, 128, 255, 64));
     ptr.drawPicture(QPoint(), pic);
+
+    if (d->pinsvisible) {
+      QMap<int, QString> map;
+      if (d->lib->packages.contains(d->name)) {
+        auto m = d->lib->packages[d->name].pinmap;
+        for (QString p: m.keys())
+          map[m[p]] = p;
+      }
+      ptr.setPen(QPen(QColor(192, 0, 0)));
+      QFont f = ptr.font();
+      f.setPointSize(f.pointSize() / d->scale);
+      ptr.setFont(f);
+      for (auto const &p: drw.pins()) {
+        QString pn = map.contains(p.number) ? map[p.number] : p.name;
+        if (pn=="-")
+          pn = tr("–");
+        if (p.position.x() < pwg.bb.center().x()) 
+          ptr.drawText(QRect(p.position + QPoint(-75, -50), QSize(500, 200))
+                       .translated(-500, 0), Qt::AlignRight,
+                       pn);
+        else
+          ptr.drawText(QRect(p.position + QPoint(75, -50), QSize(500, 200)),
+                       Qt::AlignLeft,
+                       pn);
+      }
+    }
   }
+}
+
+bool PackageWidget::arePinsVisible() const {
+  return d->pinsvisible;
+}
+
+void PackageWidget::setPinsVisible(bool b) {
+  d->pinsvisible = b;
+  update();
 }
 
 void PackageWidget::mousePressEvent(QMouseEvent *e) {
