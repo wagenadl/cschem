@@ -14,6 +14,7 @@ public:
   double scale() const; // returns scale in pixels per 0.001". Default is 0.1.
   double gridSpacing() const;
   int gridInterval() const;
+  bool arePinsVisible() const;
 public:
   QSize sizeHint() const override;
   QSize minimumSizeHint() const override;
@@ -24,6 +25,7 @@ public slots:
   void setLibrary(class PackageLibrary const *lib);
   void setScale(double pix_per_mil);
   void setGrid(double mil, int major=5);
+  void setPinsVisible(bool);
 protected:
   void paintEvent(QPaintEvent *) override;
   void mousePressEvent(QMouseEvent *) override;
