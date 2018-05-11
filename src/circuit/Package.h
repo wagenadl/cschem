@@ -7,6 +7,7 @@
 #include <QXmlStreamReader>
 #include <QString>
 #include <QMap>
+#include <QDebug>
 
 class Package {
 public:
@@ -20,5 +21,6 @@ public:
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Package const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Package &);
 
+QDebug &operator<<(QDebug &, Package const &);
 
 #endif

@@ -35,6 +35,13 @@
     <rule symbol="capacitor" packages="c100 c200"/>
     <rule symbol="diode:LED" packages="led5"/>
     <rule symbol="diode" packages="d300"/>
+    <rule symbol="transistor" packages="to92 to220"/>
+    <rule symbol="connector:2" packages="h1x2 h1x2a h2x1"/>
+    <rule symbol="connector:4" packages="h2x2"/>
+    <rule symbol="connector:9" packages="db9f db9m sip9"/>
+    <rule symbol="connector:15" packages="db15f db15m"/>
+    <rule symbol="connector:25" packages="db25f db25m"/>
+    <rule symbol="container:opamp1" packages="opamp1"/>
     
     <package name="r300" pcb="ACY300"/>
     <package name="r400" pcb="ACY400"/>

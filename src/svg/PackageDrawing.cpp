@@ -178,8 +178,11 @@ PackageDrawing::PackageDrawing(): d(new FPPicData) {
 
 PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
   QFile f(fn);
-  if (!f.open(QFile::ReadOnly))
+  qDebug() << "PackageDrawing" << fn;
+  if (!f.open(QFile::ReadOnly)) {
+    qDebug() << " .. not found";
     return;
+  }
 
   QPicture silk;
   QPicture holes;
@@ -238,6 +241,7 @@ PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
   ptr.end();
 
   d->valid = !d->pins.isEmpty();
+  qDebug() << " .. loaded. valid?" << d->valid;
 }
 		  
 bool PackageDrawing::isValid() const {

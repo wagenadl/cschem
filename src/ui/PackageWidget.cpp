@@ -218,5 +218,6 @@ void PackageWidget::setPinsVisible(bool b) {
 
 void PackageWidget::mousePressEvent(QMouseEvent *e) {
   e->accept();
+  qDebug() << "packagewidget" << d->name << "pressed";
   emit pressed(d->name);
 }
