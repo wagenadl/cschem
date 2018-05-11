@@ -1,0 +1,60 @@
+{ "typ": "page",
+  "cre": "2018-05-10T21:45:18",
+  "mod": "2018-05-10T21:49:24",
+  "cui": "cec78e636dd9c925",
+  "stampTime": 0,
+  "startPage": 27,
+  "unlocked": false,
+  "uuid": "d9685cbd",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-05-10T21:45:18",
+      "mod": "2018-05-10T21:45:18",
+      "uuid": "ebaac96e"
+    },
+    { "typ": "title",
+      "cre": "2018-05-10T21:45:18",
+      "mod": "2018-05-10T21:45:20",
+      "uuid": "070f15d5",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-10T21:45:18",
+          "mod": "2018-05-10T21:45:20",
+          "lines": [
+            0
+          ],
+          "text": "Containers",
+          "uuid": "33d2dd2f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-10T21:45:21",
+      "mod": "2018-05-10T21:49:24",
+      "h": 189.328,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9393fc83",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-10T21:45:21",
+          "mod": "2018-05-10T21:49:24",
+          "lines": [
+            0,
+            65,
+            122,
+            182,
+            246,
+            308,
+            370,
+            429
+          ],
+          "text": "Containers are still completely non-intuitive. If the user drags an opamp to the scene and an opamp container, how should they signal that those two objects belong together? I wrote earlier (p. 21) that container objects should have part numbers like “[U1]” rather than plain “U1” and that they would absorb other parts with numbers like “U1” or “U1.1”, etc. That makes some sense, but it is not currently implemented, nor is it intuitive to the user that “[]” should be typed.",
+          "uuid": "3562c94e"
+        }
+      ]
+    }
+  ]
+}
