@@ -398,6 +398,7 @@ void MainWindow::create(Schem const &schem) {
 
   d->libview->setLibrary(&d->scene->library());
   d->packagepanel->setLibrary(&d->scene->schem().packaging());
+  d->packagepanel->setSymbolLibrary(&d->scene->library());
   
   d->partlistview->setModel(d->scene->partlist());
   d->partlistviewdock->show();

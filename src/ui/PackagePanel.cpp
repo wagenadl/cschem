@@ -4,6 +4,7 @@
 #include "PackageWidget.h"
 #include "circuit/Element.h"
 #include "svg/PackageLibrary.h"
+#include "svg/SymbolLibrary.h"
 #include "ui/PackageBackground.h"
 
 #include <QLabel>
@@ -29,6 +30,7 @@ private:
 class PackagePanelData {
 public:
   PackageLibrary const *lib;
+  SymbolLibrary const *symlib;
   double scale;
   double grid;
   int major;
@@ -36,14 +38,14 @@ public:
   QString currentsym;
   QString currentpkg;
   QStringList currentrec;
-  int currentpincount;
+  QStringList currentcompat;
 public:
   QVBoxLayout *layout;
-  PackageLabel *label1;
+  PackageLabel *labelCurrent;
   PackageWidget *current;
-  PackageLabel *label2;
+  PackageLabel *labelRecommended;
   QList<PackageWidget *> recommended;
-  PackageLabel *label3;
+  PackageLabel *labelCompatible;
   QList<PackageWidget *> compatible;
   PackageWidget *filler;
 };
@@ -90,6 +92,7 @@ void PackageLabel::paintEvent(QPaintEvent *) {
 PackagePanel::PackagePanel(QWidget *parent):
   QScrollArea(parent), d(new PackagePanelData) {
   d->lib = 0;
+  d->symlib = 0;
   d->scale = 0.3;
   d->grid = 100;
   d->major = 5;
@@ -106,13 +109,13 @@ PackagePanel::PackagePanel(QWidget *parent):
   d->layout = new QVBoxLayout;
   d->layout->setSpacing(0);
   d->layout->setMargin(0);
-  d->label1 = new PackageLabel("Current", d, true);
-  //d->label1->setFrameStyle(QFrame::Panel | QFrame::Raised);
-  //d->label1->setLineWidth(4);
-  QFont f = d->label1->font();
+  d->labelCurrent = new PackageLabel("Current", d, true);
+  //d->labelCurrent->setFrameStyle(QFrame::Panel | QFrame::Raised);
+  //d->labelCurrent->setLineWidth(4);
+  QFont f = d->labelCurrent->font();
   f.setStyle(QFont::StyleItalic);
-  d->label1->setFont(f);
-  d->layout->addWidget(d->label1);
+  d->labelCurrent->setFont(f);
+  d->layout->addWidget(d->labelCurrent);
   d->current = new PackageWidget;
   d->current->setPinsVisible(true);
   connect(d->current, &PackageWidget::pressed,
@@ -120,12 +123,12 @@ PackagePanel::PackagePanel(QWidget *parent):
   d->current->setScale(d->scale);
   d->current->setGrid(d->grid, d->major);
   d->layout->addWidget(d->current);
-  d->label2 = new PackageLabel("Recommended", d);
-  d->label2->setFont(f);
-  d->layout->addWidget(d->label2);
-  d->label3 = new PackageLabel("Compatible", d);
-  d->label3->setFont(f);
-  d->layout->addWidget(d->label3);
+  d->labelRecommended = new PackageLabel("Recommended", d);
+  d->labelRecommended->setFont(f);
+  d->layout->addWidget(d->labelRecommended);
+  d->labelCompatible = new PackageLabel("Compatible", d);
+  d->labelCompatible->setFont(f);
+  d->layout->addWidget(d->labelCompatible);
   d->filler = new PackageWidget;
   d->filler->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   d->filler->setScale(d->scale);
@@ -153,6 +156,10 @@ double PackagePanel::scale() const {
   return d->scale;
 }
 
+void PackagePanel::setSymbolLibrary(class SymbolLibrary const *symlib) {
+  d->symlib = symlib;
+}
+  
 void PackagePanel::setLibrary(class PackageLibrary const *lib) {
   d->lib = lib;
   d->current->setLibrary(lib);
@@ -165,7 +172,6 @@ void PackagePanel::setLibrary(class PackageLibrary const *lib) {
 void PackagePanel::clear() {
   d->currentsym = "";
   d->currentrec = QStringList();
-  d->currentpincount = 0;
   d->current->setPackage("");
   for (auto *w: d->recommended)
     delete w;
@@ -189,37 +195,89 @@ void PackagePanel::setElement(Element const &elt) {
   int idx1 = rec.indexOf(pkg);
   if (idx1>=0)
     rec.removeAt(idx1);
-  if (rec==d->currentrec)
-    return;
+  
+  if (rec!=d->currentrec) { // change in recommendations
 
-  d->currentrec = rec;
+    // remove old recommendations
+    for (auto *w: d->recommended)
+      delete w;
+    d->recommended.clear();
 
-  for (auto *w: d->recommended)
-    delete w;
-  d->recommended.clear();
-
-  // find out where to insert in layout
-  int N = d->layout->count();
-  int idx = N;
-  for (int i=0; i<N; i++) {
-    auto *it = d->layout->itemAt(i);
-    if (it && it->widget() == d->label3) {
-      idx = i;
-      break;
+    // find out where to insert recommendations in layout
+    int N = d->layout->count();
+    int idx = N;
+    for (int i=0; i<N; i++) {
+      auto *it = d->layout->itemAt(i);
+      if (it && it->widget() == d->labelCompatible) {
+        idx = i; // place just before "Compatible"
+        break;
+      }
     }
+    qDebug() << "Inserting recommended before" << idx;
+
+    // insert recommendations in layout
+    for (QString s: rec) {
+      auto *w = new PackageWidget();
+      connect(w, &PackageWidget::pressed, this, &PackagePanel::press);
+      w->setLibrary(d->lib);
+      w->setScale(d->scale);
+      w->setGrid(d->grid, d->major);
+      w->setPackage(s);
+      d->recommended << w;
+      d->layout->insertWidget(idx++, w);
+    }
+
+    d->currentrec = rec;
   }
 
-  // insert in layout
-  for (QString s: rec) {
-    auto *w = new PackageWidget();
-    connect(w, &PackageWidget::pressed,
-            this, &PackagePanel::press);
-    w->setLibrary(d->lib);
-    w->setScale(d->scale);
-    w->setGrid(d->grid, d->major);
-    w->setPackage(s);
-    d->recommended << w;
-    d->layout->insertWidget(idx++, w);
+  QStringList compat;
+  if (d->lib && d->symlib && d->symlib->contains(sym)) {
+    Symbol const &symbol = d->symlib->symbol(sym);
+    QStringList compat = d->lib->compatiblePackages(symbol);
+
+    int idx1 = compat.indexOf(pkg);
+    if (idx1>=0)
+      compat.removeAt(idx1);
+    for (QString rec: d->currentrec) {
+      int idx1 = compat.indexOf(rec);
+      if (idx1>=0)
+        compat.removeAt(idx1);
+    }
+    
+    if (compat!=d->currentcompat) { // change in compatommendations
+
+      // remove old compatibles
+      for (auto *w: d->compatible)
+        delete w;
+      d->compatible.clear();
+      
+      // find out where to insert compatibles in layout
+      int N = d->layout->count();
+      int idx = N;
+      for (int i=0; i<N; i++) {
+        auto *it = d->layout->itemAt(i);
+        if (it && it->widget() == d->filler) {
+          idx = i; // place just before filler
+          break;
+        }
+      }
+      qDebug() << "Inserting compatibles before" << idx;
+
+      // insert compatibles in layout
+      for (QString s: compat) {
+        qDebug() << "Creating compatible" << s;
+        auto *w = new PackageWidget();
+        connect(w, &PackageWidget::pressed, this, &PackagePanel::press);
+        w->setLibrary(d->lib);
+        w->setScale(d->scale);
+        w->setGrid(d->grid, d->major);
+        w->setPackage(s);
+        d->compatible << w;
+        d->layout->insertWidget(idx++, w);
+      }
+      
+      d->currentcompat = compat;
+    }
   }
 }
 

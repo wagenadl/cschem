@@ -18,6 +18,7 @@ public slots:
   void setElement(class Element const &elt);
   void clear();
   void setLibrary(class PackageLibrary const *lib);
+  void setSymbolLibrary(class SymbolLibrary const *symlib);
   void setScale(double pix_per_mil);
 private slots:
   void press(QString);
