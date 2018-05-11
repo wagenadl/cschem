@@ -172,6 +172,7 @@ void PackagePanel::setLibrary(class PackageLibrary const *lib) {
 void PackagePanel::clear() {
   d->currentsym = "";
   d->currentrec = QStringList();
+  d->currentcompat = QStringList();
   d->current->setPackage("");
   for (auto *w: d->recommended)
     delete w;
@@ -231,53 +232,58 @@ void PackagePanel::setElement(Element const &elt) {
   }
 
   QStringList compat;
-  if (d->lib && d->symlib && d->symlib->contains(sym)) {
+  if (d->lib && d->symlib && d->symlib->contains(sym)
+      && sym.indexOf(":container:")<0) {
     Symbol const &symbol = d->symlib->symbol(sym);
-    QStringList compat = d->lib->compatiblePackages(symbol);
-
-    int idx1 = compat.indexOf(pkg);
+    compat = d->lib->compatiblePackages(symbol);
+  }
+  
+  qDebug() << "compat: " << compat;
+  idx1 = compat.indexOf(pkg);
+  if (idx1>=0)
+    compat.removeAt(idx1);
+  for (QString rec: d->currentrec) {
+    int idx1 = compat.indexOf(rec);
     if (idx1>=0)
       compat.removeAt(idx1);
-    for (QString rec: d->currentrec) {
-      int idx1 = compat.indexOf(rec);
-      if (idx1>=0)
-        compat.removeAt(idx1);
-    }
+  }
+  qDebug() << "rec:" << d->currentrec;
+  qDebug() << "-> compat:" << compat;
+  qDebug() << "current:" << d->currentcompat;
+  
+  if (compat!=d->currentcompat) { // change in compatibles
     
-    if (compat!=d->currentcompat) { // change in compatommendations
-
-      // remove old compatibles
-      for (auto *w: d->compatible)
-        delete w;
-      d->compatible.clear();
-      
-      // find out where to insert compatibles in layout
-      int N = d->layout->count();
-      int idx = N;
-      for (int i=0; i<N; i++) {
-        auto *it = d->layout->itemAt(i);
-        if (it && it->widget() == d->filler) {
-          idx = i; // place just before filler
-          break;
-        }
+    // remove old compatibles
+    for (auto *w: d->compatible)
+      delete w;
+    d->compatible.clear();
+    
+    // find out where to insert compatibles in layout
+    int N = d->layout->count();
+    int idx = N;
+    for (int i=0; i<N; i++) {
+      auto *it = d->layout->itemAt(i);
+      if (it && it->widget() == d->filler) {
+        idx = i; // place just before filler
+        break;
       }
-      qDebug() << "Inserting compatibles before" << idx;
-
-      // insert compatibles in layout
-      for (QString s: compat) {
-        qDebug() << "Creating compatible" << s;
-        auto *w = new PackageWidget();
-        connect(w, &PackageWidget::pressed, this, &PackagePanel::press);
-        w->setLibrary(d->lib);
-        w->setScale(d->scale);
-        w->setGrid(d->grid, d->major);
-        w->setPackage(s);
-        d->compatible << w;
-        d->layout->insertWidget(idx++, w);
-      }
-      
-      d->currentcompat = compat;
     }
+    qDebug() << "Inserting compatibles before" << idx;
+
+    // insert compatibles in layout
+    for (QString s: compat) {
+      qDebug() << "Creating compatible" << s;
+      auto *w = new PackageWidget();
+      connect(w, &PackageWidget::pressed, this, &PackagePanel::press);
+      w->setLibrary(d->lib);
+      w->setScale(d->scale);
+      w->setGrid(d->grid, d->major);
+      w->setPackage(s);
+      d->compatible << w;
+      d->layout->insertWidget(idx++, w);
+    }
+      
+    d->currentcompat = compat;
   }
 }
 
