@@ -84,7 +84,6 @@ MainWindow::MainWindow(): d(new MWData()) {
   //  QPoint p0 = d->view->mapFromScene(d->scene->sceneRect().bottomRight());
   resize(w, h);
   // resize(d->libview->width() + p0.x() + 100, p0.y() + 100);
-  d->partlistviewdock->hide();
 }
 
 void MainWindow::createDocks() {
