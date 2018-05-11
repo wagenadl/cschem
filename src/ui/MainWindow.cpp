@@ -120,6 +120,7 @@ void MainWindow::showLibrary() {
 
 void MainWindow::showPartsList() {
   bool vis = d->partlistviewdock->isVisible();
+  qDebug() << "showpartslist" << vis;
   if (vis) {
     d->partlistviewdock->hide();
   } else {
@@ -130,6 +131,7 @@ void MainWindow::showPartsList() {
 
 void MainWindow::showPackagePanel() {
   bool vis = d->packagepaneldock->isVisible();
+  qDebug() << "showpackagepanel" << vis;
   if (vis) {
     d->packagepaneldock->hide();
   } else {

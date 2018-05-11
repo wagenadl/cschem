@@ -61,3 +61,8 @@ QString Package::report() const {
     .arg(name).arg(pcb)
     .arg(pinmapAsString(pinmap));
 }
+
+QDebug &operator<<(QDebug &dbg, Package const &pkg) {
+  dbg << "Package(" << pkg.report() << ")";
+  return dbg;
+}
