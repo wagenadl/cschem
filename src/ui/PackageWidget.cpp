@@ -190,11 +190,27 @@ void PackageWidget::paintEvent(QPaintEvent *) {
       QFont f = ptr.font();
       f.setPointSize(f.pointSize() / d->scale);
       ptr.setFont(f);
+      bool labelBelow = false;
+      if (drw.pins().size()>2) {
+        // perhaps label below
+        labelBelow = true;
+        double y0 = drw.pins()[drw.topLeftPin()].position.y();
+        for (auto const &p: drw.pins()) {
+          if (p.position.y()!=y0) {
+            labelBelow = false;
+            break;
+          }
+        }
+      }
       for (auto const &p: drw.pins()) {
         QString pn = map.contains(p.number) ? map[p.number] : p.name;
         if (pn=="-")
           pn = tr("–");
-        if (p.position.x() < pwg.bb.center().x()) 
+        if (labelBelow)
+          ptr.drawText(QRect(p.position + QPoint(-250, 50), QSize(500, 200)),
+                       Qt::AlignHCenter,
+                       pn);
+        else if (p.position.x() < pwg.bb.center().x()) 
           ptr.drawText(QRect(p.position + QPoint(-75, -50), QSize(500, 200))
                        .translated(-500, 0), Qt::AlignRight,
                        pn);
