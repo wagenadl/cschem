@@ -104,12 +104,20 @@ QStringList Packaging::recommendedPackages(QString symbol) const {
      this file if they are simple, e.g., for the dip8 <package>. That
      means that cschem does not know how many pins a dip8 has without
      looking at the pcb files.
+
+     Containers are treated specially: part:container:XXX automatically
+     matches package XXX.
 */
 
+  QStringList sym = symbol.split(":");
+
+  if (sym.size()==3 && sym[1]=="container") {
+    qDebug() << "Recommendation for container" << sym[2];
+    return QStringList() << sym[2];
+  }
 
   int score = 0;
   PkgRule rule;
-  QStringList sym = symbol.split(":");
   for (PkgRule const &r: rules) {
     QStringList key = r.symbol.split(":");
     if (key.isEmpty())
