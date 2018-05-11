@@ -62,7 +62,16 @@ PackageDrawing const &PackageLibrary::drawing(QString name) const {
   return drawings()[fn];
 }
 
-QStringList PackageLibrary::compatiblePackages(Symbol const &) const {
-  qDebug() << "Compatible packages (based on pin count) NYI";
-  return QStringList();
+QStringList PackageLibrary::compatiblePackages(Symbol const &sym) const {
+  int nPins = sym.pinNames().size();
+  QString name = sym.name();
+  qDebug() << "Compatible packages (based on pin count)" << name << nPins;
+  QStringList res;
+  for (QString const &name: packages.keys()) {
+    PackageDrawing const &drw = drawing(name);
+    if (drw.pins().size()==nPins)
+      res << name;
+  }
+  qDebug() << "Package count:" << packages.size() << " res=" << res;
+  return res;
 }
