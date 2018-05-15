@@ -61,6 +61,13 @@ QString Style::versionName() {
 }
 
 QFont Style::annotationFont() {
-  return QFont("Lato", 8);
+  static bool ok = false;
+  static QFont lato("Lato");
+  if (!ok) {
+    lato.setPixelSize(21);
+    //lato.setPointSize(8);
+    ok = true;
+  }
+  return lato;
 }
 
