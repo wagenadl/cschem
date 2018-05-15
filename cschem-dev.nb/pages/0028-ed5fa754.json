@@ -1,0 +1,475 @@
+{ "typ": "page",
+  "cre": "2018-05-14T21:07:24",
+  "mod": "2018-05-14T21:38:50",
+  "cui": "3570328656372d4e",
+  "stampTime": 0,
+  "startPage": 28,
+  "unlocked": false,
+  "uuid": "ed5fa754",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-05-14T21:07:24",
+      "mod": "2018-05-14T21:07:24",
+      "uuid": "0355e5bf",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-05-14T21:07:24",
+          "mod": "2018-05-14T21:07:24",
+          "archive": "27_-aa6267f4",
+          "desc": "",
+          "preview": "27_-aa6267f4p.png",
+          "source": "page://0.0.0.27/d9685cbd/0",
+          "tag": "27",
+          "title": "",
+          "uuid": "aa6267f4"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2018-05-14T21:07:24",
+      "mod": "2018-05-14T21:07:24",
+      "uuid": "f33d2599",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:07:24",
+          "mod": "2018-05-14T21:07:24",
+          "lines": [
+            0
+          ],
+          "text": "Containers (cont’d)",
+          "uuid": "7f7427b5",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-05-14T21:07:24",
+              "mod": "2018-05-14T21:07:24",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "5ef880ef",
+              "x": -46.8281,
+              "y": 45.06,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-05-14T21:07:24",
+                  "mod": "2018-05-14T21:07:24",
+                  "lines": [
+                    0
+                  ],
+                  "text": "p. 27 >",
+                  "uuid": "0e636bfc",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2018-05-14T21:07:24",
+                      "mod": "2018-05-14T21:07:24",
+                      "end": 5,
+                      "res": [
+                        "27"
+                      ],
+                      "start": 3,
+                      "style": 4,
+                      "uuid": "a3b22847"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:07:25",
+      "mod": "2018-05-14T21:07:36",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b27bffcf",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:07:25",
+          "mod": "2018-05-14T21:07:36",
+          "lines": [
+            0
+          ],
+          "text": "I think containers need to be rethought considerably.",
+          "uuid": "de794d76"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:07:36",
+      "mod": "2018-05-14T21:33:37",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "501a1923",
+      "y0": 99.166,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:07:36",
+          "mod": "2018-05-14T21:33:37",
+          "lines": [
+            0,
+            51,
+            108,
+            118,
+            174,
+            237,
+            294
+          ],
+          "text": "Containers should be inserted by selecting “insert container” from the Edit menu when a containable item is selected.\n\nContainers should have a part ref. for the parts list.\nThat part ref. should not contain the list of contained items. Rather, those should be kept in a separate list inside a <container> item.",
+          "uuid": "1271ffd2",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-05-14T21:09:15",
+              "mod": "2018-05-14T21:09:15",
+              "end": 199,
+              "start": 196,
+              "style": 1,
+              "uuid": "9667a30a"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:09:45",
+      "mod": "2018-05-14T21:12:01",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "6b3da911",
+      "y0": 265.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:09:45",
+          "mod": "2018-05-14T21:12:01",
+          "lines": [
+            0
+          ],
+          "text": "<container id=”34” contains=”35 36 47”/>",
+          "uuid": "a3f088dc"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:10:57",
+      "mod": "2018-05-14T21:11:51",
+      "h": 27.166,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0d085930",
+      "y0": 284.475,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:10:57",
+          "mod": "2018-05-14T21:11:51",
+          "lines": [
+            0
+          ],
+          "text": "The “contains” tag refers to component ids. ",
+          "uuid": "6d8e6d2a"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:10:57",
+      "mod": "2018-05-14T21:13:00",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0d085930",
+      "y0": 311.641,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:10:57",
+          "mod": "2018-05-14T21:13:00",
+          "lines": [
+            0
+          ],
+          "text": "A container should also have a regular <component> item:",
+          "uuid": "6d8e6d2a",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-05-14T21:12:50",
+              "mod": "2018-05-14T21:12:50",
+              "end": 23,
+              "start": 19,
+              "style": 1,
+              "uuid": "c40ad064"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:13:01",
+      "mod": "2018-05-14T21:14:21",
+      "h": 36.967,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "81e11e79",
+      "y0": 338.807,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:13:01",
+          "mod": "2018-05-14T21:14:21",
+          "lines": [
+            0,
+            53
+          ],
+          "text": "<container id=”34” name=”U1” type=”container:opamp1” package=”opamp1”/>",
+          "uuid": "057ff22a"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:18:26",
+      "mod": "2018-05-14T21:28:12",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9b002f47",
+      "y0": 375.774,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:18:26",
+          "mod": "2018-05-14T21:28:12",
+          "lines": [
+            0,
+            59
+          ],
+          "text": "and all the contained objects should also have <component> items:",
+          "uuid": "9c758d1a"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:28:12",
+      "mod": "2018-05-14T21:29:32",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "6423256b",
+      "y0": 426.106,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:28:12",
+          "mod": "2018-05-14T21:29:32",
+          "lines": [
+            0
+          ],
+          "text": "<component id=\"35\" type=\"ic:virtual:opamp\" name=\"A1\"/>",
+          "uuid": "2e319189"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:29:12",
+      "mod": "2018-05-14T21:29:54",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ab0ec1db",
+      "y0": 445.253,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:29:12",
+          "mod": "2018-05-14T21:29:54",
+          "lines": [
+            0,
+            56
+          ],
+          "text": "The presence of a container item should cause contained components to vanish from the parts list.",
+          "uuid": "e9add6d1",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-05-14T21:29:36",
+              "mod": "2018-05-14T21:29:36",
+              "end": 27,
+              "start": 18,
+              "style": 1,
+              "uuid": "2749032e"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:30:13",
+      "mod": "2018-05-14T21:30:52",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "4d8cb786",
+      "y0": 495.585,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:30:13",
+          "mod": "2018-05-14T21:30:52",
+          "lines": [
+            0,
+            50,
+            109
+          ],
+          "text": "Containers that have space for multiple contained components are normally filled from the beginning. But the contains tag can force skips:",
+          "uuid": "1407d9f7",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-05-14T21:30:46",
+              "mod": "2018-05-14T21:30:46",
+              "end": 117,
+              "start": 109,
+              "style": 1,
+              "uuid": "c18a3fb7"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:30:52",
+      "mod": "2018-05-14T21:30:59",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7b4662a7",
+      "y0": 569.083,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:30:52",
+          "mod": "2018-05-14T21:30:59",
+          "lines": [
+            0
+          ],
+          "text": "contains=”35 . 36 47”",
+          "uuid": "5ed33638"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:31:00",
+      "mod": "2018-05-14T21:32:38",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "52a95d6f",
+      "y0": 588.23,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:31:00",
+          "mod": "2018-05-14T21:32:38",
+          "lines": [
+            0,
+            65
+          ],
+          "text": "means that positions A, C, D are filled. Note that positions are counted with capital letters, as in:",
+          "uuid": "b53006a1"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:32:03",
+      "mod": "2018-05-14T21:32:11",
+      "h": 36.967,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0cc21785",
+      "y0": 638.562,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:32:03",
+          "mod": "2018-05-14T21:32:11",
+          "lines": [
+            0,
+            55
+          ],
+          "text": "    <package name=\"opamp2\" pcb=\"DIP8\" map=\"A:+=3 A:-=2 A:out=1 B:+=5 B:-=6 B:out=5 Vdd=8 Vss=4\"/>",
+          "uuid": "6647f56c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:32:12",
+      "mod": "2018-05-14T21:38:50",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 0,
+      "split": [
+        23.166
+      ],
+      "uuid": "68b10b27",
+      "y0": 675.529,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:32:12",
+          "mod": "2018-05-14T21:38:50",
+          "lines": [
+            0,
+            50,
+            110,
+            172,
+            227
+          ],
+          "text": "On the canvas, it makes sense to somehow list the contained objects by name in the vicinity of the container. Perhaps the part ref. could be shown as “U1 [A1]”. That would also allow for a convenient way of editing containment relationships, at least for experienced users.",
+          "uuid": "27373409",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-05-14T21:33:43",
+              "mod": "2018-05-14T21:33:43",
+              "end": 146,
+              "start": 141,
+              "style": 1,
+              "uuid": "3e1fb237"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:34:46",
+      "mod": "2018-05-14T21:38:36",
+      "h": 235.66,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "4f57ab99",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:34:46",
+          "mod": "2018-05-14T21:38:36",
+          "lines": [
+            0,
+            60,
+            119,
+            169,
+            221,
+            282,
+            329,
+            390,
+            446,
+            507
+          ],
+          "text": "Perhaps the graphical bits of a container that pertain to a particular subcomponent should be organized in a named svg group. That way, subcomponents can be highlighted individually upon hover, and could be selected with control+click. Selecting a subcomponent would also highlight the contained component on the canvas. While a subcomponent is selected, control+clicking on a component on the canvas would make that component be contained. That would be more discoverable than having to type the part ref. of the component between the square brackets.",
+          "uuid": "210b5140"
+        }
+      ]
+    }
+  ]
+}
