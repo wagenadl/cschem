@@ -1,0 +1,261 @@
+{ "typ": "page",
+  "cre": "2018-05-14T21:39:44",
+  "mod": "2018-05-14T21:58:32",
+  "cui": "3570328656372d4e",
+  "stampTime": 0,
+  "startPage": 30,
+  "unlocked": false,
+  "uuid": "7a9f742a",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-05-14T21:39:44",
+      "mod": "2018-05-14T21:39:44",
+      "uuid": "99ebe10a"
+    },
+    { "typ": "title",
+      "cre": "2018-05-14T21:39:44",
+      "mod": "2018-05-14T21:39:55",
+      "uuid": "15d0ef18",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:39:44",
+          "mod": "2018-05-14T21:39:55",
+          "lines": [
+            0
+          ],
+          "text": "Future improvements",
+          "uuid": "c453e05a"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:39:56",
+      "mod": "2018-05-14T21:42:08",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ca27d15e",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:39:56",
+          "mod": "2018-05-14T21:42:08",
+          "lines": [
+            0,
+            61,
+            114,
+            175,
+            236,
+            304
+          ],
+          "text": "The .schem file’s <packaging> section currently contains the entire collection of <rule>s and <package>s from the packages.xml file. This is not needed. Only those <package>s that are actually in use in the <circuit> need to be stored. <rule>s might not be needed at all, or, if they are, only rules for <component> types that are in use need to be stored.",
+          "uuid": "f4a84f7c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:42:24",
+      "mod": "2018-05-14T21:43:04",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "1f8a3cbf",
+      "y0": 214.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:42:24",
+          "mod": "2018-05-14T21:43:04",
+          "lines": [
+            0,
+            55,
+            116
+          ],
+          "text": "Note that we do not store .fp data in the .schem file. Perhaps that is a mistake. It certainly makes packaging data incomplete and potentially unportable.",
+          "uuid": "3d2d6314"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:43:07",
+      "mod": "2018-05-14T21:45:17",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7a17fbb6",
+      "y0": 288.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:43:07",
+          "mod": "2018-05-14T21:45:17",
+          "lines": [
+            0,
+            56
+          ],
+          "text": "The Package Preview should show package information for hovered objects.",
+          "uuid": "14459b54"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:45:48",
+      "mod": "2018-05-14T21:47:42",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "8bf2c3e2",
+      "y0": 338.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:45:48",
+          "mod": "2018-05-14T21:47:42",
+          "lines": [
+            0,
+            62,
+            125,
+            191,
+            254,
+            310,
+            368
+          ],
+          "text": "Multiple selection is currently done with control+click. This is not intuitive. The reason is probably that shift+drag drags out a line from the middle of another line. (That is, it forces a location to be considered as a pin rather than a component.) I think this should be reversed, since inkscape and other programs use shift+click to extend a selection. Likewise, shift+drag should extend selection.",
+          "uuid": "b5ec3c6e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:47:45",
+      "mod": "2018-05-14T21:53:55",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "e1292c22",
+      "y0": 504.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:47:45",
+          "mod": "2018-05-14T21:53:55",
+          "lines": [
+            0,
+            40,
+            94,
+            155
+          ],
+          "text": "Font size for annotations is wrong when QT_AUTO_SCREEN_SCALE_FACTOR=1. The solution is to use setPixelSize instead of setPointSize. That is what eln does. [Fixed.]",
+          "uuid": "0a6db797"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:54:38",
+      "mod": "2018-05-14T21:54:45",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0d902288",
+      "y0": 601.652,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:54:38",
+          "mod": "2018-05-14T21:54:45",
+          "lines": [
+            0
+          ],
+          "text": "There should be a Zoom=100% action.",
+          "uuid": "1bef30a9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:55:53",
+      "mod": "2018-05-14T21:57:32",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "4c40c42a",
+      "y0": 628.818,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:55:53",
+          "mod": "2018-05-14T21:57:32",
+          "lines": [
+            0,
+            57
+          ],
+          "text": "There is a serious bug in where a junction is displayed. [Fixed. It was due to a",
+          "uuid": "73badae3"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:55:53",
+      "mod": "2018-05-14T21:57:32",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "4c40c42a",
+      "y0": 679.15,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:55:53",
+          "mod": "2018-05-14T21:57:32",
+          "lines": [
+            0
+          ],
+          "text": "transform=\"translate(21)\"",
+          "uuid": "73badae3"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:57:33",
+      "mod": "2018-05-14T21:57:53",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "707880ae",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:57:33",
+          "mod": "2018-05-14T21:57:53",
+          "lines": [
+            0
+          ],
+          "text": "in the <g> tag of the junction.]",
+          "uuid": "84a0af34"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-14T21:57:57",
+      "mod": "2018-05-14T21:58:32",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "1189bba4",
+      "y0": 99.166,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-14T21:57:57",
+          "mod": "2018-05-14T21:58:32",
+          "lines": [
+            0,
+            59
+          ],
+          "text": "This misbehavior when there are transforms in the toplevel <g> needs to be fixed with some urgency.",
+          "uuid": "f164d5dc"
+        }
+      ]
+    }
+  ]
+}
