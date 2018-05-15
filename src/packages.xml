@@ -76,6 +76,6 @@
     <package name="opamp1" pcb="DIP8"
 	     map="+=3 -=2 out=6 Vdd=7 Vss=4"/>
     <package name="opamp2" pcb="DIP8"
-	     map="A:+=3 A:-=2 A:out=1 B:+=5 B:-=6 B:out=5 Vdd=8 Vss=4"/>
+	     map="A:+=3 A:-=2 A:out=1 B:+=5 B:-=6 B:out=7 Vdd=8 Vss=4"/>
   </packaging>
 </cschem>
