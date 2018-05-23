@@ -85,8 +85,10 @@ void SceneElementData::nameTextToCircuit() {
     txt = "";
   if (txt.isEmpty())
     txt = scene->circuit().autoName(elt.symbol());
-  elt.name = txt;
-  scene->modifyElementAnnotations(elt);
+  if (txt != elt.name) { // prevent recursion
+    elt.name = txt;
+    scene->modifyElementAnnotations(elt);
+  }
 }
 
 void SceneElementData::valueTextToWidget() {
@@ -110,8 +112,10 @@ void SceneElementData::valueTextToCircuit() {
   if (txt == "value")
     txt = "";
   txt = PartNumbering::prettyValue(txt, elt.name);
-  elt.value = txt;
-  scene->modifyElementAnnotations(elt);
+  if (txt != elt.value) { // prevent recursion
+    elt.value = txt;
+    scene->modifyElementAnnotations(elt);
+  }
 }
 
 SceneElement::SceneElement(class Scene *parent, Element const &elt):
