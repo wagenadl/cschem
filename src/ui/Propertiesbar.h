@@ -4,7 +4,9 @@
 
 #define PROPERTIESBAR_H
 
-class Propertiesbar: public QToolbar {
+#include <QToolBar>
+
+class Propertiesbar: public QToolBar {
 public:
   Propertiesbar(QWidget *parent=0);
 private:

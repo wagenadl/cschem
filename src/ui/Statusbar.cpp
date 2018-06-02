@@ -29,7 +29,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
     auto *w = new QToolButton;
     layerui[l] = w;
     w->setIcon(QIcon(":icons/" + name + ".svg"));
-    w->setToolTip(name);
+    w->setToolTip(name + " layer visible");
     w->setCheckable(true);
     w->setChecked(true);
     connect(w, &QToolButton::triggered,
