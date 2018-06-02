@@ -5,7 +5,8 @@
 
 Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   auto addAct = [this](Mode m, QString lbl) {
-    actions[m] = addAction(lbl, [this, m]() { setMode(m); });
+    actions[m] = addAction(QIcon(":/icons/"+lbl), lbl,
+			   [this, m]() { setMode(m); });
     actions[m]->setCheckable(true);
   };
   m = Mode::Invalid;

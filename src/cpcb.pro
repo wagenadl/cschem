@@ -13,11 +13,12 @@ MAKEFILE = Makefile-cpcb
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
-HEADERS += ui/MainWindow.h ui/Mode.h ui/Modebar.h
-SOURCES += main.cpp ui/MainWindow.cpp ui/Modebar.cpp
+HEADERS += ui/MainWindow.h ui/Mode.h ui/Modebar.h  ui/Statusbar.h
+SOURCES += main.cpp ui/MainWindow.cpp ui/Modebar.cpp ui/Statusbar.cpp
 HEADERS += data/Dim.h   data/Layer.h   data/Point.h   data/Orient.h
 SOURCES +=              data/Layer.cpp data/Point.cpp data/Orient.cpp
 HEADERS += data/Hole.h   data/Trace.h   data/Pad.h   data/Text.h
 SOURCES += data/Hole.cpp data/Trace.cpp data/Pad.cpp data/Text.cpp
 HEADERS += data/Group.h  data/Object.h
 SOURCES += data/Group.cpp data/Object.cpp
+RESOURCES += ui/ui.qrc
