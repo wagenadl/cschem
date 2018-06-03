@@ -41,15 +41,14 @@ public:
   QToolButton *circle; // for hole
   QToolButton *square; // for hole
 
+  QWidget *refg;
+  QLineEdit *ref;
+  QToolButton *component; // popup for replacing component
+  
   QWidget *textg;
   QDoubleSpinBox *fs; // for text
   QLineEdit *text;
 
-  QWidget *refg;
-  QLineEdit *ref;
-  
-  QWidget *componentg;
-  QToolButton *component; // popup for replacing component
 
   QWidget *layerg;
   QWidget *layerc;
@@ -57,6 +56,13 @@ public:
   QToolButton *top;
   QToolButton *bottom;
 
+  QWidget *orientg;
+  QToolButton *left;
+  QToolButton *up;
+  QToolButton *right;
+  QToolButton *down;
+  QToolButton *flip;
+  
   bool metric;
 public:
   void switchToMetric();
@@ -202,6 +208,15 @@ void PBData::setupUI() {
   square = makeTextTool(squarec, "□");
   square->setToolTip("Square");
 
+  orientg = makeGroup();
+  auto *c3 = makeContainer(orientg);
+  auto *c4 = makeContainer(c3);
+  up = makeIconTool(c4, "Up");
+  right = makeIconTool(c4, "Right");
+  down = makeIconTool(c4, "Down");
+  left = makeIconTool(c4, "Left");
+  flip = makeIconTool(c3, "Flip");
+
   layerg = makeGroup();
   layerc = makeContainer(layerg);
   makeLabel(layerc, "Layer");
@@ -209,6 +224,14 @@ void PBData::setupUI() {
   top = makeIconTool(layerc, "Top");
   bottom = makeIconTool(layerc, "Bottom");
 
+  refg = makeGroup();
+  auto *c5 = makeContainer(refg);
+  makeLabel(c5, "Ref.");
+  ref = makeEdit(c5);
+  component = makeIconTool(c5, "EditComponent");
+  component->setToolTip("Choose package");
+  component->setCheckable(false);
+  
   textg = makeGroup();
   auto *c1 = makeContainer(textg);
   makeLabel(c1, "Aa")->setToolTip("Text");

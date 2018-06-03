@@ -20,7 +20,6 @@ Group::Group(): d(new GData) {
 }
 
 Group::~Group() {
-  qDebug() << "~Group";
 }
 
 Group::Group(Group const &o) {
@@ -77,7 +76,6 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
       Object o;
       s >> o;
       t.insert(o);
-      qDebug() << "inserted" << o;
     } else if (s.isEndElement()) {
       break;
     } else if (s.isCharacters() && s.isWhitespace()) {
@@ -91,6 +89,5 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 }
 
 QDebug operator<<(QDebug d, Group const &t) {
-  d << "Group(" << t.d << ")";
   return d;
 }

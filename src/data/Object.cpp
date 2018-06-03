@@ -46,7 +46,6 @@ Object::Object(Trace const &t): Object() {
 Object::Object(Text const &t): Object() {
   d->text = new Text(t);
   d->typ = Type::Text;
-  qDebug() << "Object from text" << *this;
 }
 
 Object::Object(Group const &t): Object() {

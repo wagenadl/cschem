@@ -37,7 +37,6 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Text &t) {
   else
     t.layer = Layer::Invalid;
   s.skipCurrentElement();
-  qDebug() << "got text" << t << ok;
   return s;
 }
 
