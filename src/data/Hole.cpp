@@ -16,21 +16,16 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
 }
   
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
+  t = Hole();
   bool ok;
   auto a = s.attributes();
   t.p = Point::fromString(a.value("p").toString(), &ok);
   if (ok)
     t.square = a.value("sq").toInt(&ok);
-  else
-    t.square = false;
   if (ok)
     t.id = Dim::fromString(a.value("id").toString(), &ok);
-  else
-    t.id = Dim();
   if (ok)
     t.od = Dim::fromString(a.value("od").toString(), &ok);
-  else
-    t.od = Dim();
   s.skipCurrentElement();
   return s;
 }

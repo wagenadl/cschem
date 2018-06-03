@@ -19,9 +19,11 @@ HEADERS += data/Dim.h   data/Layer.h   data/Point.h   data/Orient.h
 SOURCES +=              data/Layer.cpp data/Point.cpp data/Orient.cpp
 HEADERS += data/Hole.h   data/Trace.h   data/Pad.h   data/Text.h
 SOURCES += data/Hole.cpp data/Trace.cpp data/Pad.cpp data/Text.cpp
-HEADERS += data/Group.h  data/Object.h
-SOURCES += data/Group.cpp data/Object.cpp
-HEADERS += ui/Propertiesbar.h
-SOURCES += ui/Propertiesbar.cpp
+HEADERS += data/Group.h  data/Object.h    data/Board.h   data/Layout.h
+SOURCES += data/Group.cpp data/Object.cpp data/Board.cpp data/Layout.cpp
+HEADERS += data/FileIO.h
+SOURCES += data/FileIO.cpp
+HEADERS += ui/Propertiesbar.h   ui/Editor.h
+SOURCES += ui/Propertiesbar.cpp ui/Editor.cpp
 
 RESOURCES += ui/ui.qrc

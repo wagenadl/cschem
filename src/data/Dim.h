@@ -18,11 +18,21 @@ public:
   Dim(): d(0) { }
   Dim &operator+=(Dim const &x) { d+=x.d; return *this; }
   Dim &operator-=(Dim const &x) { d+=x.d; return *this; }
+  Dim operator+(Dim const &x) { return Dim(d+x.d); }
+  Dim operator-(Dim const &x) { return Dim(d-x.d); }
+  bool operator==(Dim const &x) { return d==x.d; }
+  bool operator<(Dim const &x) { return d<x.d; }
+  bool operator>(Dim const &x) { return d>x.d; }
+  bool operator<=(Dim const &x) { return d<=x.d; }
+  bool operator>=(Dim const &x) { return d>=x.d; }
+  bool operator!=(Dim const &x) { return d!=x.d; }
   double toMM() const { return d*1.0/PerMM; }
   double toMils() const { return d*1.0/PerMil; }
   double toInch() const { return d*1.0/PerInch; }
   QString toString() const { return QString::number(d); }
   bool isNull() const { return d==0; }
+  bool isMetric() const { return !isInch(); }
+  bool isInch() const { return toMils()==round(toMils()); } // heuristic
 public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }
   static Dim fromMils(float x) { return Dim(int(std::round(PerMil*x))); }

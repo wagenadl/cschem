@@ -17,7 +17,7 @@ public:
     text = 0;
     trace = 0;
     group = 0;
-    typ = Object::Type::Invalid;
+    typ = Object::Type::Null;
   }
   ~OData() {
     delete hole;
@@ -54,7 +54,7 @@ Object::Object(Group const &t): Object() {
 }
 
 Object::Object(): d(new OData) {
-  d->typ = Type::Invalid;
+  d->typ = Type::Null;
 }
 
 Object::~Object() {
@@ -67,6 +67,10 @@ Object::Object(Object const &o) {
 Object &Object::operator=(Object const &o) {
   d = o.d;
   return *this;
+}
+
+bool Object::isNull() const {
+  return d->typ != Type::Null;
 }
 
 bool Object::isHole() const {
@@ -126,8 +130,8 @@ QDebug operator<<(QDebug d, Object const &o) {
   case Object::Type::Group:
     d << o.toGroup();
     break;
-  case Object::Type::Invalid:
-    d << "Object(Invalid)";
+  case Object::Type::Null:
+    d << "Object(Null)";
     break;
   }
   return d;
@@ -150,7 +154,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Object const &o) {
   case Object::Type::Group:
     s << o.toGroup();
     break;
-  case Object::Type::Invalid:
+  case Object::Type::Null:
     s.writeStartElement("object");
     s.writeEndElement();
     break;

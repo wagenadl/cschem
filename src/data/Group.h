@@ -21,6 +21,7 @@ public:
   bool contains(int) const;
   Object const &object(int) const;
   QList<int> keys() const;
+  bool isEmpty() const;
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

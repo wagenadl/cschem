@@ -31,6 +31,10 @@ Group &Group::operator=(Group const &o) {
   return *this;
 }
 
+bool Group::isEmpty() const {
+  return d->obj.isEmpty();
+}
+
 int Group::insert(Object const &o) {
   d->obj[++d->lastid] = new Object(o);
   return d->lastid;
@@ -89,5 +93,9 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 }
 
 QDebug operator<<(QDebug d, Group const &t) {
+  d << "Group(";
+  for (Object const *o: t.d->obj)
+    d << *o;
+  d << ")";
   return d;
 }

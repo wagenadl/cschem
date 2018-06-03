@@ -16,7 +16,7 @@
 class Object {
 public:
   enum class Type {
-    Invalid,
+    Null,
     Hole,
     Pad,
     Text,
@@ -33,6 +33,7 @@ public:
   ~Object();
   Object(Object const &);
   Object &operator=(Object const &);
+  bool isNull() const;
   bool isHole() const;
   bool isPad() const;
   bool isTrace() const;
