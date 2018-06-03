@@ -5,6 +5,7 @@
 #define BOARD_H
 
 #include "Dim.h"
+#include "Layer.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 
@@ -16,6 +17,8 @@ public:
   Dim height;
   bool metric;
   Dim grid;
+  QMap<Layer, bool> layervisible;
+  bool planesvisible;
 };
 
 QDebug operator<<(QDebug, Board const &);

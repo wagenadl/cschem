@@ -75,6 +75,12 @@ void MWData::makeConnections() {
 		   statusbar, &Statusbar::setCursorXY);
   QObject::connect(editor, &Editor::leaving,
 		   statusbar, &Statusbar::hideCursorXY);
+  QObject::connect(statusbar, &Statusbar::gridEdited,
+		   editor, &Editor::setGrid);
+  QObject::connect(statusbar, &Statusbar::layerVisibilityEdited,
+		   editor, &Editor::setLayerVisibility);
+  QObject::connect(statusbar, &Statusbar::planesVisibilityEdited,
+		   editor, &Editor::setPlanesVisibility);
 }
 
 void MWData::fillBars() {

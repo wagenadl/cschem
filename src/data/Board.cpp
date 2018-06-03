@@ -7,6 +7,10 @@ Board::Board() {
   width = Dim::fromInch(3.8);
   height = Dim::fromInch(2.5);
   grid = Dim::fromInch(0.050);
+  layervisible[Layer::Silk] = true;
+  layervisible[Layer::Top] = true;
+  layervisible[Layer::Bottom] = true;
+  planesvisible = true;
 }
 
 
@@ -16,6 +20,10 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Board const &t) {
   s.writeAttribute("h", t.height.toString());
   s.writeAttribute("grid", t.grid.toString());
   s.writeAttribute("metric", t.metric ? "1" : "0");
+  s.writeAttribute("planesvis", t.planesvisible ? "1" : "0");
+  for (Layer l: t.layervisible.keys())
+    s.writeAttribute(QString("layer%1vis").arg(int(l)),
+		     t.layervisible[l] ? "1" : "0");
   s.writeEndElement();
   return s;
 }
@@ -31,6 +39,11 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Board &t) {
     t.grid = Dim::fromString(a.value("grid").toString(), &ok);
   if (ok)
     t.metric = a.value("metric").toInt(&ok);
+  if (ok)
+    t.planesvisible = a.value("planesvis").toInt(&ok);
+  for (Layer l: t.layervisible.keys())
+    if (ok)
+      t.layervisible[l] = a.value(QString("layer%1vis").arg(int(l))).toInt(&ok);
   s.skipCurrentElement();
   return s;
 }
@@ -41,6 +54,8 @@ QDebug operator<<(QDebug d, Board const &t) {
     << t.height
     << t.grid
     << (t.metric ? "metric" : "inch")
+    << t.layervisible
+    << t.planesvisible
     << ")";
   return d;
 }

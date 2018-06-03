@@ -161,3 +161,28 @@ void Editor::paintEvent(QPaintEvent *) {
   d->drawGrid(p);
 }
 
+void Editor::setGrid(Dim g) {
+  qDebug()<<"SetGrid" << g;
+  if (g != d->layout.board().grid) {
+    d->layout.board().grid = g;
+    update();
+    emit boardChanged();
+  }
+}
+
+void Editor::setLayerVisibility(Layer l, bool b) {
+  if (b != d->layout.board().layervisible[l]) {
+    d->layout.board().layervisible[l] = b;
+    update();
+    emit boardChanged();
+  }
+}
+
+void Editor::setPlanesVisibility(bool b) {
+  if (b != d->layout.board().planesvisible) {
+    d->layout.board().planesvisible = b;
+    update();
+    emit boardChanged();
+  }
+}
+

@@ -14,10 +14,15 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
 
   auto *w1 = new QLabel;
   w1->setPixmap(QIcon(":icons/Grid.svg").pixmap(cursorui->height()));
-  w1->setTooltip("Grid spacing");
+  w1->setToolTip("Grid spacing");
   addWidget(w1);
   gridui = new QComboBox;
   gridui->setToolTip("Grid spacing");
+  connect(gridui, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+	  [this]() {
+	    board.grid = Dim::fromString(gridui->currentData().toString());
+	    emit gridEdited(board.grid);
+	  });
   resetGridChoices();
   addWidget(gridui);
 
@@ -70,6 +75,7 @@ void Statusbar::setBoard(Board const &b) {
 }
 
 void Statusbar::resetGridChoices() {
+  Dim g = board.grid;
   gridui->clear();
   gridui->addItem("Off", QVariant(Dim().toString()));
   gridui->addItem("0.025”", QVariant(Dim::fromMils(25).toString()));
@@ -78,7 +84,10 @@ void Statusbar::resetGridChoices() {
   gridui->addItem("0.5 mm", QVariant(Dim::fromMM(.5).toString()));  
   gridui->addItem("1.0 mm", QVariant(Dim::fromMM(1).toString()));  
   gridui->addItem("2.0 mm", QVariant(Dim::fromMM(2).toString()));
-}  
+  int idx = gridui->findData(QVariant(g.toString()));
+  if (idx>=0)
+    gridui->setCurrentIndex(idx);
+}
 
 void Statusbar::setGrid(Dim g) {
   int idx = gridui->findData(QVariant(g.toString()));
@@ -95,16 +104,26 @@ void Statusbar::setGrid(Dim g) {
   }
 }
 
-void Statusbar::hideLayer(Layer) {
+void Statusbar::hideLayer(Layer l) {
+  board.layervisible[l] = false;
+  if (layerui.contains(l))
+    layerui[l]->setChecked(false);
 }
 
-void Statusbar::showLayer(Layer) {
+void Statusbar::showLayer(Layer l) {
+  board.layervisible[l] = true;
+  if (layerui.contains(l))
+    layerui[l]->setChecked(true);
 }
 
 void Statusbar::hidePlanes() {
+  board.planesvisible = false;
+  planesui->setChecked(false);
 }
 
 void Statusbar::showPlanes() {
+  board.planesvisible = true;
+  planesui->setChecked(true);
 }
 
 void Statusbar::setCursorXY(Point p) {

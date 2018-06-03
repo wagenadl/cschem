@@ -17,10 +17,14 @@ public:
   bool save(QString) const; 
   Layout const &pcbLayout() const;
 public slots:
+  void setGrid(Dim);
+  void setLayerVisibility(Layer, bool);
+  void setPlanesVisibility(bool);
   void scaleToFit();
   void zoomIn();
   void zoomOut();
 signals:
+  void boardChanged();
   void hovering(Point);
   void leaving();
 protected:
