@@ -23,7 +23,7 @@ HEADERS += data/Group.h  data/Object.h    data/Board.h   data/Layout.h
 SOURCES += data/Group.cpp data/Object.cpp data/Board.cpp data/Layout.cpp
 HEADERS += data/FileIO.h
 SOURCES += data/FileIO.cpp
-HEADERS += ui/Propertiesbar.h   ui/Editor.h
-SOURCES += ui/Propertiesbar.cpp ui/Editor.cpp
+HEADERS += ui/Propertiesbar.h   ui/Editor.h   ui/DimSpinner.h
+SOURCES += ui/Propertiesbar.cpp ui/Editor.cpp ui/DimSpinner.cpp
 
 RESOURCES += ui/ui.qrc

@@ -12,6 +12,7 @@
 class Board {
 public:
   Board();
+  bool isEffectivelyMetric() const;
 public:
   Dim width;
   Dim height;

@@ -26,7 +26,6 @@ Modebar::~Modebar() {
 
 
 void Modebar::setMode(Mode m1) {
-  qDebug() << "setMode" << int(m1);
   if (m1 != m) {
     m = m1;
     for (Mode q: actions.keys()) 

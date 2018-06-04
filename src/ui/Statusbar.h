@@ -40,6 +40,7 @@ private:
   QToolButton *planesui;
   class QComboBox *gridui;
   Board board;
+  bool noemit;
 };
 
 #endif

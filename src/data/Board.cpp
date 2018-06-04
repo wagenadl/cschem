@@ -60,3 +60,6 @@ QDebug operator<<(QDebug d, Board const &t) {
   return d;
 }
 
+bool Board::isEffectivelyMetric() const {
+  return grid.isNull() ? metric : grid.isMetric();
+}

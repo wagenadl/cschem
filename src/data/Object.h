@@ -39,11 +39,18 @@ public:
   bool isTrace() const;
   bool isText() const;
   bool isGroup() const;  
-  Hole toHole() const;
-  Pad toPad() const;
-  Trace toTrace() const;
-  Text toText() const;
-  Group toGroup() const;
+  Hole const &asHole() const;
+  Hole &asHole();
+  // Both const and nonconst versions ASSERT correct type.
+  // Use isXXX first to check!
+  Pad const &asPad() const;
+  Pad &asPad();
+  Trace const &asTrace() const;
+  Trace &asTrace();
+  Text const &asText() const;
+  Text &asText();
+  Group const &asGroup() const;
+  Group &asGroup();
   Type type() const;
 private:
   QSharedDataPointer<class OData> d;

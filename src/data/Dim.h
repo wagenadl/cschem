@@ -18,14 +18,14 @@ public:
   Dim(): d(0) { }
   Dim &operator+=(Dim const &x) { d+=x.d; return *this; }
   Dim &operator-=(Dim const &x) { d+=x.d; return *this; }
-  Dim operator+(Dim const &x) { return Dim(d+x.d); }
-  Dim operator-(Dim const &x) { return Dim(d-x.d); }
-  bool operator==(Dim const &x) { return d==x.d; }
-  bool operator<(Dim const &x) { return d<x.d; }
-  bool operator>(Dim const &x) { return d>x.d; }
-  bool operator<=(Dim const &x) { return d<=x.d; }
-  bool operator>=(Dim const &x) { return d>=x.d; }
-  bool operator!=(Dim const &x) { return d!=x.d; }
+  Dim operator+(Dim const &x) const { return Dim(d+x.d); }
+  Dim operator-(Dim const &x) const { return Dim(d-x.d); }
+  bool operator==(Dim const &x) const { return d==x.d; }
+  bool operator<(Dim const &x) const { return d<x.d; }
+  bool operator>(Dim const &x) const { return d>x.d; }
+  bool operator<=(Dim const &x) const { return d<=x.d; }
+  bool operator>=(Dim const &x) const { return d>=x.d; }
+  bool operator!=(Dim const &x) const { return d!=x.d; }
   double toMM() const { return d*1.0/PerMM; }
   double toMils() const { return d*1.0/PerMil; }
   double toInch() const { return d*1.0/PerInch; }
@@ -41,11 +41,14 @@ public:
 private:
   Dim(qint64 d): d(d) { }
   friend QDebug operator<<(QDebug d, Dim const &x);
+  friend uint qHash(Dim const &d);
 };
 
 inline QDebug operator<<(QDebug d, Dim const &x) {
   d << x.toInch();
   return d;
 }
+
+inline uint qHash(Dim const &d) { return qHash(d.d); }
 
 #endif

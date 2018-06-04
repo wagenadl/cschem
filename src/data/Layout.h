@@ -17,10 +17,14 @@ public:
   Layout(Layout const &);
   Layout &operator=(Layout const &);
 public:
-  Board const &board() const;
   Group const &root() const;
-  Board &board();
   Group &root();
+  Board const &board() const;
+  Board &board();
+  Group const &group(QList<int> const &path) const; // following breadcrumbs
+  // GROUP returns an empty group if breadcrumbs don't lead to a group.
+  Group &group(QList<int> const &path);
+  // Caution: Do NOT change the empty group that may be returned.
 private:
   QSharedDataPointer<class LData> d;
 };

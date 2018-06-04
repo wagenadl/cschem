@@ -5,10 +5,18 @@
 #define PROPERTIESBAR_H
 
 #include <QToolBar>
+#include "Mode.h"
+#include "data/Group.h"
 
 class Propertiesbar: public QToolBar {
+  Q_OBJECT;
 public:
-  Propertiesbar(QWidget *parent=0);
+  Propertiesbar(class Editor *editor, QWidget *parent=0);
+public slots:
+  void reflectMode(Mode);
+  void reflectSelection();
+  void reflectBoard(class Board const &);
+  void forwardAllProperties();
 private:
   class PBData *d;
 };

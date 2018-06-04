@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
+#include "data/Object.h"
 
 class EData {
 public:
@@ -21,6 +22,14 @@ public:
   QTransform mils2widget;
   QTransform widget2mils;
   bool autofit;
+  QList<int> crumbs;
+  QSet<int> selection;
+  QSet<Point> selpts;
+  struct Props {
+    Dim lw;
+    Layer layer;
+  } props;
+    
 };
 
 void EData::drawBoard(QPainter &p) {
@@ -162,27 +171,166 @@ void Editor::paintEvent(QPaintEvent *) {
 }
 
 void Editor::setGrid(Dim g) {
+  Board &brd = d->layout.board();  
   qDebug()<<"SetGrid" << g;
-  if (g != d->layout.board().grid) {
-    d->layout.board().grid = g;
+  if (g != brd.grid) {
+    brd.grid = g;
     update();
-    emit boardChanged();
+    emit boardChanged(brd);
   }
 }
 
 void Editor::setLayerVisibility(Layer l, bool b) {
-  if (b != d->layout.board().layervisible[l]) {
-    d->layout.board().layervisible[l] = b;
+  Board &brd = d->layout.board();  
+  if (b != brd.layervisible[l]) {
+    brd.layervisible[l] = b;
     update();
-    emit boardChanged();
+    emit boardChanged(brd);
   }
 }
 
 void Editor::setPlanesVisibility(bool b) {
-  if (b != d->layout.board().planesvisible) {
-    d->layout.board().planesvisible = b;
+  Board &brd = d->layout.board();  
+  if (b != brd.planesvisible) {
+    brd.planesvisible = b;
     update();
-    emit boardChanged();
+    emit boardChanged(brd);
   }
 }
 
+bool Editor::enterGroup(int sub) {
+  clearSelection();
+  Group &here(d->layout.group(d->crumbs));
+  if (here.isEmpty())
+    return leaveAllGroups();
+  d->crumbs << sub;
+  update();
+  return true;
+}
+
+bool Editor::leaveGroup() {
+  clearSelection();
+  if (d->crumbs.isEmpty())
+    return false;
+  d->crumbs.takeLast();
+  update();
+  return true;
+}
+
+bool Editor::leaveAllGroups() {
+  clearSelection();
+  if (d->crumbs.isEmpty())
+    return false;
+  d->crumbs.clear();
+  update();
+  return true;
+}
+
+void Editor::select(int id, bool add) {
+  Group &here(d->layout.group(d->crumbs));
+  if (!add) {
+    d->selection.clear();
+    d->selpts.clear();
+  }
+  if (here.contains(id)) {
+    d->selection.insert(id);
+    selectPointsOf(id);
+  }
+  update();
+  emit selectionChanged();
+}
+
+void Editor::selectPoint(Point p, bool add) {
+  if (!add) {
+    d->selection.clear();
+    d->selpts.clear();
+  }
+  d->selpts.insert(p);
+  update();
+  emit selectionChanged();
+}
+
+void Editor::deselect(int id) {
+  if (d->selection.contains(id)) {
+    d->selection.remove(id);
+    update();
+    emit selectionChanged();
+  }
+}
+
+void Editor::deselectPoint(Point p) {
+  if (d->selpts.contains(p)) {
+    d->selpts.remove(p);
+    update();
+    emit selectionChanged();
+  }
+}
+
+void Editor::selectAll() {
+  Group const &here(d->layout.group(d->crumbs));
+  d->selection = QSet<int>::fromList(here.keys());
+  for (int id: d->selection)
+    selectPointsOf(here.object(id));
+  update();
+  emit selectionChanged();
+}
+
+void Editor::clearSelection() {
+  d->selection.clear();
+  d->selpts.clear();
+  update();
+  emit selectionChanged();
+}
+
+void Editor::selectArea(QRectF, bool) {
+  qDebug() << "selectArea NYI";
+}
+
+void Editor::selectPointsOf(int id) {
+  Group const &here(d->layout.group(d->crumbs));
+  if (here.contains(id))
+    selectPointsOf(here.object(id));
+}
+
+void Editor::selectPointsOf(Object const &obj) {
+  switch (obj.type()) {
+  case Object::Type::Null:
+    break;
+  case Object::Type::Hole:
+    d->selpts << obj.asHole().p;
+    break;
+  case Object::Type::Pad:
+    d->selpts << obj.asPad().p;
+    break;
+  case Object::Type::Text:
+    break;
+  case Object::Type::Trace:
+    d->selpts << obj.asTrace().p1 << obj.asTrace().p2;
+    break;
+  case Object::Type::Group:
+    selectPointsOfComponent(obj.asGroup());
+    break;
+  }
+}
+
+void Editor::selectPointsOfComponent(Group const &g) {
+  for (int id: g.keys()) {
+    Object const &obj = g.object(id);
+    switch (obj.type()) {
+    case Object::Type::Hole:
+      d->selpts << obj.asHole().p;
+      break;
+    case Object::Type::Pad:
+      d->selpts << obj.asPad().p;
+      break;
+    default:
+      break;
+    }
+  }
+}
+
+void Editor::setWidth(Dim) {
+}
+
+void Editor::setLayer(Layer) {
+}

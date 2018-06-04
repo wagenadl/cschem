@@ -19,9 +19,13 @@ public:
   static Point fromMils(QPointF const &p) {
     return Point(Dim::fromMils(p.x()), Dim::fromMils(p.y()));
   }
+  bool operator==(Point const &o) const { return x==o.x && y==o.y; }
 };
 
 QDebug operator<<(QDebug, Point const &);
+inline uint qHash(Point const &p) {
+  return qHash(QPair<double,double>(p.x.toMils(),p.y.toMils()));
+}
 
 
 #endif

@@ -46,7 +46,7 @@ void MWData::makeToolbars() {
   mw->addToolBar(Qt::LeftToolBarArea,
 		 modebar = new Modebar(mw));
   mw->addToolBar(Qt::RightToolBarArea,
-		 propbar = new Propertiesbar(mw));
+		 propbar = new Propertiesbar(editor, mw));
   statusbar = new Statusbar(mw);
   mw->setStatusBar(statusbar);
 }
@@ -71,27 +71,43 @@ void MWData::makeEditor() {
 }
 
 void MWData::makeConnections() {
+  // Editor to status bar and v.v.
   QObject::connect(editor, &Editor::hovering,
 		   statusbar, &Statusbar::setCursorXY);
   QObject::connect(editor, &Editor::leaving,
 		   statusbar, &Statusbar::hideCursorXY);
+  QObject::connect(editor, &Editor::boardChanged,
+		   statusbar, &Statusbar::setBoard);
   QObject::connect(statusbar, &Statusbar::gridEdited,
 		   editor, &Editor::setGrid);
   QObject::connect(statusbar, &Statusbar::layerVisibilityEdited,
 		   editor, &Editor::setLayerVisibility);
   QObject::connect(statusbar, &Statusbar::planesVisibilityEdited,
 		   editor, &Editor::setPlanesVisibility);
+
+  // Editor to properties bar
+  QObject::connect(editor, &Editor::selectionChanged,
+		   propbar, &Propertiesbar::reflectSelection);
+  QObject::connect(editor, &Editor::boardChanged,
+		   propbar, &Propertiesbar::reflectBoard);
+
+  // Mode bar to properties bar
+  QObject::connect(modebar, &Modebar::modeChanged,
+		   propbar, &Propertiesbar::reflectMode);
 }
 
 void MWData::fillBars() {
   statusbar->setBoard(editor->pcbLayout().board());
+  propbar->reflectBoard(editor->pcbLayout().board());
+  propbar->reflectMode(modebar->mode());
+  propbar->reflectSelection();
 }
 
 MainWindow::MainWindow(): QMainWindow() {
   d = new MWData(this);
+  d->makeEditor();
   d->makeToolbars();
   d->makeMenus();
-  d->makeEditor();
   d->makeConnections();
   d->fillBars();
 }

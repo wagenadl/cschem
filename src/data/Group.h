@@ -11,6 +11,9 @@
 #include <QSharedData>
 
 class Group {
+  /* Invariant: A group may not be empty when placed inside a Layout.
+     Empty groups are used to reflect "invalid" status.
+  */
 public:
   Group();
   ~Group();
@@ -20,8 +23,12 @@ public:
   void remove(int);
   bool contains(int) const;
   Object const &object(int) const;
+  Object &object(int);
   QList<int> keys() const;
   bool isEmpty() const;
+  Group const &subgroup(QList<int> path) const; // follows breadcrumbs
+  Group &subgroup(QList<int> path);
+  // Caution: Do NOT change the empty group that may be returned.
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

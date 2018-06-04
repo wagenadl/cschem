@@ -81,3 +81,12 @@ Group &Layout::root() {
   d.detach();
   return d->root;
 }
+
+Group const &Layout::group(QList<int> const &path) const {
+  return root().subgroup(path);
+}
+
+Group &Layout::group(QList<int> const &path) {
+  return root().subgroup(path);
+}
+

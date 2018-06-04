@@ -7,7 +7,7 @@
 #include <QToolButton>
 
 Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
-
+  noemit = true;
   cursorui = new QLabel();
   hideCursorXY();
   addWidget(cursorui);
@@ -20,8 +20,12 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   gridui->setToolTip("Grid spacing");
   connect(gridui, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
 	  [this]() {
-	    board.grid = Dim::fromString(gridui->currentData().toString());
-	    emit gridEdited(board.grid);
+	    Dim g = Dim::fromString(gridui->currentData().toString());
+	    if (g != board.grid) {
+	      board.grid = g;
+	      if  (!noemit)
+		emit gridEdited(board.grid);
+	    }
 	  });
   resetGridChoices();
   addWidget(gridui);
@@ -50,7 +54,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   connect(w, &QToolButton::triggered,
 	  [this]() { planesVisibilityEdited(planesui->isChecked()); });
   addWidget(w);
-  
+  noemit = false;
 }
 
 Statusbar::~Statusbar() {
@@ -70,8 +74,10 @@ bool Statusbar::arePlanesVisible() const {
 
 void Statusbar::setBoard(Board const &b) {
   board = b;
+  noemit = true;
   resetGridChoices();
   setGrid(b.grid);
+  noemit = false;
 }
 
 void Statusbar::resetGridChoices() {
@@ -128,7 +134,7 @@ void Statusbar::showPlanes() {
 
 void Statusbar::setCursorXY(Point p) {
   if (p.x>=Dim() && p.y>=Dim() && p.x<=board.width && p.y<=board.height) {
-    bool metric = board.grid.isNull() ? board.metric : board.grid.isMetric();
+    bool metric = board.isEffectivelyMetric();
     if (metric) 
       cursorui->setText(QString("X:%1 Y:%2")
 			.arg(p.x.toInch(),5,'f',2, QChar(0x2007))
@@ -143,7 +149,7 @@ void Statusbar::setCursorXY(Point p) {
 }
 
 void Statusbar::hideCursorXY() {
-  bool metric = board.grid.isNull() ? board.metric : board.grid.isMetric();
+  bool metric = board.isEffectivelyMetric();
   if (metric) 
     cursorui->setText("X:‒‒.‒‒ Y:‒‒.‒‒");
   else

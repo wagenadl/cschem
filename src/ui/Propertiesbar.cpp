@@ -2,7 +2,8 @@
 
 #include "Propertiesbar.h"
 #include "data/Dim.h"
-#include <QDoubleSpinBox>
+#include "ui/Editor.h"
+#include "DimSpinner.h"
 #include <QVBoxLayout>
 #include <QToolButton>
 #include <QLabel>
@@ -19,44 +20,50 @@ public:
 class PBData {
 public:
   Propertiesbar *parent;
+  Editor *editor;
+  Mode mode;
   
   QWidget *xyg; // group for xy
+  QAction *xya; // group for xy
   QWidget *xc; // container for x
-  QDoubleSpinBox *x;
+  DimSpinner *x;
   QWidget *yc;
-  QDoubleSpinBox *y;
+  DimSpinner *y;
   
   QWidget *dimg; // group for other dimensions
+  QAction *dima; // group for other dimensions
   QWidget *linewidthc;
-  QDoubleSpinBox *linewidth; // for trace, hole
+  DimSpinner *linewidth; // for trace, hole
   QWidget *wc; 
-  QDoubleSpinBox *w; // for pad
+  DimSpinner *w; // for pad
   QWidget *hc;
-  QDoubleSpinBox *h; // for pad
+  DimSpinner *h; // for pad
   QWidget *idc;
-  QDoubleSpinBox *id; // for hole
+  DimSpinner *id; // for hole
   QWidget *odc;
-  QDoubleSpinBox *od; // for hole
+  DimSpinner *od; // for hole
   QWidget *squarec;
   QToolButton *circle; // for hole
   QToolButton *square; // for hole
 
   QWidget *refg;
+  QAction *refa;
   QLineEdit *ref;
   QToolButton *component; // popup for replacing component
   
   QWidget *textg;
-  QDoubleSpinBox *fs; // for text
+  QAction *texta;
+  DimSpinner *fs; // for text
   QLineEdit *text;
 
-
   QWidget *layerg;
-  QWidget *layerc;
+  QAction *layera;
   QToolButton *silk;
   QToolButton *top;
   QToolButton *bottom;
 
   QWidget *orientg;
+  QAction *orienta;
   QToolButton *left;
   QToolButton *up;
   QToolButton *right;
@@ -67,27 +74,96 @@ public:
 public:
   void switchToMetric();
   void switchToInch();
-  Dim getDim(QDoubleSpinBox *);
-  void setDim(QDoubleSpinBox *, Dim const &);
+  Dim getDim(DimSpinner *);
+  void setDim(DimSpinner *, Dim const &);
   void setupUI();
+  void getProperties(); // from editor
+  void hideAndShow(); // hide and show as appropriate
+  void hsEdit();
 };
 
+void PBData::getProperties() {
+}
+
+void PBData::hideAndShow() {
+  qDebug() << "hideandshow";
+  xya->setEnabled(false);
+  dima->setEnabled(false);
+  refa->setEnabled(false);
+  texta->setEnabled(false);
+  layera->setEnabled(false);
+  orienta->setEnabled(false);
+
+  xc->setEnabled(false);
+  yc->setEnabled(false);
+  linewidthc->setEnabled(false);
+  wc->setEnabled(false);
+  hc->setEnabled(false);
+  idc->setEnabled(false);
+  odc->setEnabled(false);
+  squarec->setEnabled(false);
+
+  switch (mode) {
+  case Mode::Invalid:
+    break;
+  case Mode::Edit:
+    hsEdit();
+    break;
+  case Mode::PlaceTrace:
+    dima->setEnabled(true);
+    linewidthc->setEnabled(true);
+    layera->setEnabled(true);
+    break;
+  case Mode::PlaceComponent:
+    layera->setEnabled(true);
+    refa->setEnabled(true);
+    orienta->setEnabled(true);
+    break;
+  case Mode::PlaceHole:
+    dima->setEnabled(true);
+    idc->setEnabled(true);
+    odc->setEnabled(true);
+    squarec->setEnabled(true);
+    break;
+  case Mode::PlacePad:
+    dima->setEnabled(true);
+    wc->setEnabled(true);
+    hc->setEnabled(true);
+    layera->setEnabled(true);
+    break;
+  case Mode::PlaceText:
+    texta->setEnabled(true);
+    layera->setEnabled(true);
+    orienta->setEnabled(true);
+    break;
+  case Mode::PlacePlane:
+    layera->setEnabled(true);
+    break;
+  case Mode::PickupTrace:
+    break;
+  }
+}
+
+void PBData::hsEdit() {
+}
+
 void PBData::setupUI() {
-    
-  auto makeGroup = [this]() {
+  auto makeGroup = [this](QAction **a) {
     Q_ASSERT(parent);
+    Q_ASSERT(a);
     QWidget *group = new QWidget;
     auto *lay = new QVBoxLayout;
     lay->setSpacing(8);
     lay->setContentsMargins(0, 0, 0, 12);
     group->setLayout(lay);
-    parent->addWidget(group);
+    *a = parent->addWidget(group);
     return group;
   };
+  
   auto makeContainer = [](QWidget *group) {
     Q_ASSERT(group);
     Q_ASSERT(group->layout());
-    QWidget *container = new QWidget;
+    QWidget *container = new QWidget(group);
     auto *lay = new QHBoxLayout;
     lay->setSpacing(4);
     lay->setContentsMargins(0, 0, 0, 0);
@@ -96,15 +172,12 @@ void PBData::setupUI() {
     return container;
   };
 
-  
   auto makeDimSpinner = [](QWidget *container,
-			       double step=.005) {
+			   Dim step=Dim::fromInch(.005)) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
-    QDoubleSpinBox *s = new QDoubleSpinBox;
-    s->setDecimals(3);
-    s->setSuffix("”");
-    s->setSingleStep(step);
+    DimSpinner *s = new DimSpinner(container);
+    s->setStep(step);
     container->layout()->addWidget(s);
     return s;
   };
@@ -136,6 +209,7 @@ void PBData::setupUI() {
     return s;
   };
 
+  /*
   auto makeRadio = [](QWidget *container, QString text) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
@@ -143,6 +217,7 @@ void PBData::setupUI() {
     container->layout()->addWidget(s);
     return s;
   };
+  */
 
   auto makeTextTool = [](QWidget *container, QString text) {
     Q_ASSERT(container);
@@ -167,6 +242,7 @@ void PBData::setupUI() {
     return s;
   };
 
+  /*
   auto makeCheckBox = [](QWidget *container, QString text) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
@@ -174,32 +250,32 @@ void PBData::setupUI() {
     container->layout()->addWidget(s);
     return s;
   };
+  */
     
-  
-  xyg = makeGroup();
+  xyg = makeGroup(&xya);
   xc = makeContainer(xyg);
   makeLabel(xc, "X");
-  x = makeDimSpinner(xc, .050);
+  x = makeDimSpinner(xc, Dim::fromInch(.050));
   yc = makeContainer(xyg);
   makeLabel(yc, "Y");
-  y = makeDimSpinner(yc, .050);
+  y = makeDimSpinner(yc, Dim::fromInch(.050));
 
-  dimg = makeGroup();
+  dimg = makeGroup(&dima);
   linewidthc = makeContainer(dimg);
   makeIcon(linewidthc, "Width")->setToolTip("Line width");
-  linewidth = makeDimSpinner(linewidthc, .005);
+  linewidth = makeDimSpinner(linewidthc);
   idc = makeContainer(dimg);
   makeLabel(idc, "ID")->setToolTip("Hole diameter");
-  id = makeDimSpinner(idc, .005);
+  id = makeDimSpinner(idc);
   odc = makeContainer(dimg);
   makeLabel(odc, "OD")->setToolTip("Pad diameter");
-  od = makeDimSpinner(odc, .005);
+  od = makeDimSpinner(odc);
   wc = makeContainer(dimg);
   makeLabel(wc, "W");
-  w = makeDimSpinner(wc, .005);
+  w = makeDimSpinner(wc);
   hc = makeContainer(dimg);
   makeLabel(hc, "H");
-  h = makeDimSpinner(hc, .005);
+  h = makeDimSpinner(hc);
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
   circle = makeTextTool(squarec, "○");
@@ -208,7 +284,23 @@ void PBData::setupUI() {
   square = makeTextTool(squarec, "□");
   square->setToolTip("Square");
 
-  orientg = makeGroup();
+  refg = makeGroup(&refa);
+  auto *c5 = makeContainer(refg);
+  makeLabel(c5, "Ref.");
+  ref = makeEdit(c5);
+  component = makeIconTool(c5, "EditComponent");
+  component->setToolTip("Choose package");
+  component->setCheckable(false);
+  
+  textg = makeGroup(&texta);
+  auto *c1 = makeContainer(textg);
+  makeLabel(c1, "Aa")->setToolTip("Text");
+  auto *c2 = makeContainer(textg);
+  text = makeEdit(c2);
+  fs = makeDimSpinner(c1);
+  fs->setToolTip("Font size");
+
+  orientg = makeGroup(&orienta);
   auto *c3 = makeContainer(orientg);
   auto *c4 = makeContainer(c3);
   up = makeIconTool(c4, "Up");
@@ -217,33 +309,48 @@ void PBData::setupUI() {
   left = makeIconTool(c4, "Left");
   flip = makeIconTool(c3, "Flip");
 
-  layerg = makeGroup();
-  layerc = makeContainer(layerg);
-  makeLabel(layerc, "Layer");
-  silk = makeIconTool(layerc, "Silk");
-  top = makeIconTool(layerc, "Top");
-  bottom = makeIconTool(layerc, "Bottom");
-
-  refg = makeGroup();
-  auto *c5 = makeContainer(refg);
-  makeLabel(c5, "Ref.");
-  ref = makeEdit(c5);
-  component = makeIconTool(c5, "EditComponent");
-  component->setToolTip("Choose package");
-  component->setCheckable(false);
-  
-  textg = makeGroup();
-  auto *c1 = makeContainer(textg);
-  makeLabel(c1, "Aa")->setToolTip("Text");
-  auto *c2 = makeContainer(textg);
-  text = makeEdit(c2);
-  fs = makeDimSpinner(c1);
-  fs->setToolTip("Font size");
+  layerg = makeGroup(&layera);
+  auto *lc = makeContainer(layerg);
+  makeLabel(lc, "Layer");
+  silk = makeIconTool(lc, "Silk");
+  top = makeIconTool(lc, "Top");
+  bottom = makeIconTool(lc, "Bottom");
 }  
 
-Propertiesbar::Propertiesbar(QWidget *parent): QToolBar(parent) {
+Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) {
   d = new PBData;
   d->parent = this;
+  d->editor = editor;
   d->metric = false;
+  d->mode = Mode::Edit;
   d->setupUI();
+}
+
+void Propertiesbar::reflectMode(Mode m) {
+  d->mode = m;
+  d->hideAndShow();
+}
+
+void Propertiesbar::reflectSelection() {
+  d->getProperties();
+  d->hideAndShow();
+}
+
+void Propertiesbar::reflectBoard(class Board const &b) {
+  bool m = b.isEffectivelyMetric();
+  d->metric = m;
+  d->x->setMetric(m);
+  d->y->setMetric(m);
+  d->w->setMetric(m);
+  d->h->setMetric(m);
+  d->id->setMetric(m);
+  d->od->setMetric(m);
+  d->linewidth->setMetric(m);
+  d->fs->setMetric(m);
+}
+
+void Propertiesbar::forwardAllProperties() {
+  if (!d->editor)
+    return;
+  d->editor->setWidth(Dim());
 }

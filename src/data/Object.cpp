@@ -1,6 +1,7 @@
 // Object.cpp
 
 #include "Object.h"
+#include "Const.h"
 
 class OData: public QSharedData {
 public:
@@ -93,42 +94,72 @@ bool Object::isGroup() const {
   return d->typ==Type::Group;
 }
 
-Hole Object::toHole() const {
-  return isHole() ? *d->hole : Hole();
+Hole const &Object::asHole() const {
+  Q_ASSERT(isHole());
+  return *d->hole;
 }
 
-Pad Object::toPad() const {
-  return isPad() ? *d->pad : Pad();
+Pad const &Object::asPad() const {
+  Q_ASSERT(isPad());
+  return *d->pad;
 }
 
-Trace Object::toTrace() const {
-  return isTrace() ? *d->trace : Trace();
+Trace const &Object::asTrace() const {
+  Q_ASSERT(isTrace());
+  return *d->trace;
 }
 
-Text Object::toText() const {
-  return isText() ? *d->text : Text();
+Text const &Object::asText() const {
+  Q_ASSERT(isText());
+  return *d->text;
 }
 
-Group Object::toGroup() const {
-  return isGroup() ? *d->group : Group();
+Group const &Object::asGroup() const {
+  Q_ASSERT(isGroup());
+  return *d->group;
+}
+
+Hole &Object::asHole() {
+  d.detach();
+  return as_nonconst(as_const(*this).asHole());
+}
+
+Pad &Object::asPad() {
+  d.detach();
+  return as_nonconst(as_const(*this).asPad());
+}
+
+Trace &Object::asTrace() {
+  d.detach();
+  return as_nonconst(as_const(*this).asTrace());
+}
+
+Text &Object::asText() {
+  d.detach();
+  return as_nonconst(as_const(*this).asText());
+}
+
+Group &Object::asGroup() {
+  d.detach();
+  return as_nonconst(as_const(*this).asGroup());
 }
 
 QDebug operator<<(QDebug d, Object const &o) {
   switch (o.type()) {
   case Object::Type::Hole:
-    d << o.toHole();
+    d << o.asHole();
     break;
   case Object::Type::Pad:
-    d << o.toPad();
+    d << o.asPad();
     break;
   case Object::Type::Text:
-    d << o.toText();
+    d << o.asText();
     break;
   case Object::Type::Trace:
-    d << o.toTrace();
+    d << o.asTrace();
     break;
   case Object::Type::Group:
-    d << o.toGroup();
+    d << o.asGroup();
     break;
   case Object::Type::Null:
     d << "Object(Null)";
@@ -140,19 +171,19 @@ QDebug operator<<(QDebug d, Object const &o) {
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Object const &o) {
   switch (o.type()) {
   case Object::Type::Hole:
-    s << o.toHole();
+    s << o.asHole();
     break;
   case Object::Type::Pad:
-    s << o.toPad();
+    s << o.asPad();
     break;
   case Object::Type::Text:
-    s << o.toText();
+    s << o.asText();
     break;
   case Object::Type::Trace:
-    s << o.toTrace();
+    s << o.asTrace();
     break;
   case Object::Type::Group:
-    s << o.toGroup();
+    s << o.asGroup();
     break;
   case Object::Type::Null:
     s.writeStartElement("object");
