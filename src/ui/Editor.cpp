@@ -29,7 +29,8 @@ public:
     Dim lw;
     Layer layer;
   } props;
-    
+  Point traceStart;
+  bool tracing;
 };
 
 void EData::drawBoard(QPainter &p) {
@@ -89,6 +90,7 @@ void EData::drawGrid(QPainter &p) {
 }
 
 Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
+  tracing = false;
   setMouseTracking(true);
   scaleToFit();
 }

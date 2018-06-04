@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
-   sodipodi:docname="Flip2.svg">
+   sodipodi:docname="Flip3.svg">
   <defs
      id="defs2">
     <marker
@@ -83,7 +83,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.953125"
-     inkscape:cx="-24.219608"
+     inkscape:cx="-17.359477"
      inkscape:cy="32"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -116,21 +116,21 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-280.06665)">
-    <g
-       id="g3555"
-       transform="matrix(1.3181817,0,0,1.2325586,-2.6939387,-65.765683)">
-      <path
-         sodipodi:nodetypes="cccc"
-         inkscape:connector-curvature="0"
-         id="path971"
-         d="m 7.9375001,281.65414 10e-8,11.37709 H 2.645833 Z"
-         style="fill:#b1b1b1;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.5291667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1" />
-      <path
-         sodipodi:nodetypes="cccc"
-         inkscape:connector-curvature="0"
-         id="path971-9"
-         d="m 8.9958334,281.65414 v 11.37709 h 5.2916676 z"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.5291667;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:8;stroke-dasharray:none;stroke-opacity:1" />
-    </g>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.69756668;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:"
+       d="M 14.022914,288.53328 H 2.9104167"
+       id="path950-2"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29250789px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 0.52916668,288.53332 5.82083342,-3.175 v 6.35 z"
+       id="path1555"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.29250789px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 16.404167,288.53332 -5.820834,-3.175 v 6.35 z"
+       id="path1555-4"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

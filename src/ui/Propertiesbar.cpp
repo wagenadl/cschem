@@ -64,11 +64,16 @@ public:
 
   QWidget *orientg;
   QAction *orienta;
+  QWidget *orientc;
+  QWidget *rotatec;
+  QToolButton *ccw;
+  QToolButton *cw;
   QToolButton *left;
   QToolButton *up;
   QToolButton *right;
   QToolButton *down;
   QToolButton *flip;
+  QToolButton *flip2;
   
   bool metric;
 public:
@@ -77,12 +82,24 @@ public:
   Dim getDim(DimSpinner *);
   void setDim(DimSpinner *, Dim const &);
   void setupUI();
-  void getProperties(); // from editor
+  void getPropertiesFromEditor(); // from editor
   void hideAndShow(); // hide and show as appropriate
   void hsEdit();
+  Layer layer() const;
 };
 
-void PBData::getProperties() {
+void PBData::getPropertiesFromEditor() {
+}
+
+Layer PBData::layer() const {
+  if (silk->isChecked())
+    return Layer::Silk;
+  else if (top->isChecked())
+    return Layer::Top;
+  else if (bottom->isChecked())
+    return Layer::Bottom;
+  else
+    return Layer::Invalid;
 }
 
 void PBData::hideAndShow() {
@@ -102,6 +119,9 @@ void PBData::hideAndShow() {
   idc->setEnabled(false);
   odc->setEnabled(false);
   squarec->setEnabled(false);
+  orientc->setVisible(true);
+  flip->setVisible(true);
+  rotatec->setVisible(false);
 
   switch (mode) {
   case Mode::Invalid:
@@ -145,6 +165,10 @@ void PBData::hideAndShow() {
 }
 
 void PBData::hsEdit() {
+  orienta->setEnabled(true);
+  orientc->setVisible(false);
+  flip->setVisible(false);
+  rotatec->setVisible(true);
 }
 
 void PBData::setupUI() {
@@ -264,18 +288,23 @@ void PBData::setupUI() {
   linewidthc = makeContainer(dimg);
   makeIcon(linewidthc, "Width")->setToolTip("Line width");
   linewidth = makeDimSpinner(linewidthc);
+  linewidth->setValue(Dim::fromInch(.010));
   idc = makeContainer(dimg);
   makeLabel(idc, "ID")->setToolTip("Hole diameter");
   id = makeDimSpinner(idc);
+  id->setValue(Dim::fromInch(.040));
   odc = makeContainer(dimg);
   makeLabel(odc, "OD")->setToolTip("Pad diameter");
   od = makeDimSpinner(odc);
+  od->setValue(Dim::fromInch(.065));
   wc = makeContainer(dimg);
   makeLabel(wc, "W");
   w = makeDimSpinner(wc);
+  w->setValue(Dim::fromInch(.020));
   hc = makeContainer(dimg);
   makeLabel(hc, "H");
   h = makeDimSpinner(hc);
+  h->setValue(Dim::fromInch(.040));
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
   circle = makeTextTool(squarec, "○");
@@ -298,16 +327,24 @@ void PBData::setupUI() {
   auto *c2 = makeContainer(textg);
   text = makeEdit(c2);
   fs = makeDimSpinner(c1);
+  fs->setValue(Dim::fromInch(.050));
   fs->setToolTip("Font size");
 
   orientg = makeGroup(&orienta);
   auto *c3 = makeContainer(orientg);
-  auto *c4 = makeContainer(c3);
-  up = makeIconTool(c4, "Up");
-  right = makeIconTool(c4, "Right");
-  down = makeIconTool(c4, "Down");
-  left = makeIconTool(c4, "Left");
-  flip = makeIconTool(c3, "Flip");
+  orientc = makeContainer(c3);
+  rotatec = makeContainer(c3);
+  up = makeIconTool(orientc, "Up");
+  right = makeIconTool(orientc, "Right");
+  down = makeIconTool(orientc, "Down");
+  left = makeIconTool(orientc, "Left");
+  ccw = makeIconTool(rotatec, "CCW");
+  ccw->setCheckable(false);
+  cw = makeIconTool(rotatec, "CW");
+  cw->setCheckable(false);
+  flip2 = makeIconTool(rotatec, "Flip3");
+  flip2->setCheckable(false);
+  flip = makeIconTool(c3, "Flip2");
 
   layerg = makeGroup(&layera);
   auto *lc = makeContainer(layerg);
@@ -315,6 +352,7 @@ void PBData::setupUI() {
   silk = makeIconTool(lc, "Silk");
   top = makeIconTool(lc, "Top");
   bottom = makeIconTool(lc, "Bottom");
+  top->setChecked(true);
 }  
 
 Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) {
@@ -332,7 +370,7 @@ void Propertiesbar::reflectMode(Mode m) {
 }
 
 void Propertiesbar::reflectSelection() {
-  d->getProperties();
+  d->getPropertiesFromEditor();
   d->hideAndShow();
 }
 
@@ -352,5 +390,6 @@ void Propertiesbar::reflectBoard(class Board const &b) {
 void Propertiesbar::forwardAllProperties() {
   if (!d->editor)
     return;
-  d->editor->setWidth(Dim());
+  d->editor->setWidth(d->linewidth->value());
+  d->editor->setLayer(d->layer());
 }
