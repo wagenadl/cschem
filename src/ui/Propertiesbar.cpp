@@ -58,22 +58,16 @@ public:
 
   QWidget *layerg;
   QAction *layera;
-  QToolButton *silk;
-  QToolButton *top;
-  QToolButton *bottom;
+  QToolButton *silk, *top, *bottom;
 
   QWidget *orientg;
   QAction *orienta;
   QWidget *orientc;
   QWidget *rotatec;
-  QToolButton *ccw;
-  QToolButton *cw;
-  QToolButton *left;
-  QToolButton *up;
-  QToolButton *right;
-  QToolButton *down;
-  QToolButton *flip;
-  QToolButton *flip2;
+  QToolButton *ccw, *cw;
+  QToolButton *left, *up, *right, *down;
+  QToolButton *flipped;
+  QToolButton *fliph, *flipv;
   
   bool metric;
 public:
@@ -120,7 +114,7 @@ void PBData::hideAndShow() {
   odc->setEnabled(false);
   squarec->setEnabled(false);
   orientc->setVisible(true);
-  flip->setVisible(true);
+  flipped->setVisible(true);
   rotatec->setVisible(false);
 
   switch (mode) {
@@ -167,7 +161,7 @@ void PBData::hideAndShow() {
 void PBData::hsEdit() {
   orienta->setEnabled(true);
   orientc->setVisible(false);
-  flip->setVisible(false);
+  flipped->setVisible(false);
   rotatec->setVisible(true);
 }
 
@@ -289,6 +283,8 @@ void PBData::setupUI() {
   makeIcon(linewidthc, "Width")->setToolTip("Line width");
   linewidth = makeDimSpinner(linewidthc);
   linewidth->setValue(Dim::fromInch(.010));
+  QObject::connect(linewidth, &DimSpinner::valueChanged,
+		   [this](Dim d) { editor->setLineWidth(d); });
   idc = makeContainer(dimg);
   makeLabel(idc, "ID")->setToolTip("Hole diameter");
   id = makeDimSpinner(idc);
@@ -339,19 +335,31 @@ void PBData::setupUI() {
   down = makeIconTool(orientc, "Down");
   left = makeIconTool(orientc, "Left");
   ccw = makeIconTool(rotatec, "CCW");
+  ccw->setToolTip("Rotate left");
   ccw->setCheckable(false);
   cw = makeIconTool(rotatec, "CW");
+  ccw->setToolTip("Rotate right");
   cw->setCheckable(false);
-  flip2 = makeIconTool(rotatec, "Flip3");
-  flip2->setCheckable(false);
-  flip = makeIconTool(c3, "Flip2");
+  fliph = makeIconTool(rotatec, "FlipH");
+  ccw->setToolTip("Flip left to right");
+  fliph->setCheckable(false);
+  ccw->setToolTip("Flip top to bottom");
+  flipv = makeIconTool(rotatec, "FlipV");
+  flipv->setCheckable(false);
+  flipped = makeIconTool(c3, "Flipped");
 
   layerg = makeGroup(&layera);
   auto *lc = makeContainer(layerg);
   makeLabel(lc, "Layer");
   silk = makeIconTool(lc, "Silk");
+  QObject::connect(silk, &QToolButton::clicked,
+		   [this]() { editor->setLayer(Layer::Silk); });
   top = makeIconTool(lc, "Top");
+  QObject::connect(top, &QToolButton::clicked,
+		   [this]() { editor->setLayer(Layer::Top); });
   bottom = makeIconTool(lc, "Bottom");
+  QObject::connect(bottom, &QToolButton::clicked,
+		   [this]() { editor->setLayer(Layer::Bottom); });
   top->setChecked(true);
 }  
 
@@ -390,6 +398,6 @@ void Propertiesbar::reflectBoard(class Board const &b) {
 void Propertiesbar::forwardAllProperties() {
   if (!d->editor)
     return;
-  d->editor->setWidth(d->linewidth->value());
+  d->editor->setLineWidth(d->linewidth->value());
   d->editor->setLayer(d->layer());
 }

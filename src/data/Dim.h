@@ -17,9 +17,14 @@ struct Dim {
 public:
   Dim(): d(0) { }
   Dim &operator+=(Dim const &x) { d+=x.d; return *this; }
-  Dim &operator-=(Dim const &x) { d+=x.d; return *this; }
+  Dim &operator-=(Dim const &x) { d-=x.d; return *this; }
+  Dim &operator*=(double x) { d*=x; return *this; }
+  Dim &operator/=(double x) { d/=x; return *this; }
   Dim operator+(Dim const &x) const { return Dim(d+x.d); }
   Dim operator-(Dim const &x) const { return Dim(d-x.d); }
+  Dim operator*(double x) const { return Dim(d*x); }
+  Dim operator/(double x) const { return Dim(d/x); }
+  Dim operator-() const { return Dim (-d); }
   bool operator==(Dim const &x) const { return d==x.d; }
   bool operator<(Dim const &x) const { return d<x.d; }
   bool operator>(Dim const &x) const { return d>x.d; }
@@ -33,11 +38,18 @@ public:
   bool isNull() const { return d==0; }
   bool isMetric() const { return !isInch(); }
   bool isInch() const { return toMils()==round(toMils()); } // heuristic
+  bool isNegative() const { return d<0; }
+  bool isPositive() const { return d>0; }
+  Dim roundedTo(Dim o) const {
+    return o.isNull() ? *this : Dim(round(d/o.d)*o.d);
+  }
 public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }
   static Dim fromMils(float x) { return Dim(int(std::round(PerMil*x))); }
   static Dim fromInch(float x) { return Dim(int(std::round(PerInch*x))); }
   static Dim fromString(QString x, bool *ok=0) { return Dim(x.toInt(ok)); }
+  static Dim quadrature(Dim const &a, Dim const &b) {
+    return sqrt(a.d*a.d + b.d*b.d); }
 private:
   Dim(qint64 d): d(d) { }
   friend QDebug operator<<(QDebug d, Dim const &x);

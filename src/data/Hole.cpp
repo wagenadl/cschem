@@ -5,6 +5,11 @@
 Hole::Hole() {
 }
 
+Rect Hole::boundingRect() const {
+  Dim r = od/2;
+  return Rect(p - Point(r, r), p + Point(r, r));
+}
+
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
   s.writeStartElement("hole");
   s.writeAttribute("p", t.p.toString());

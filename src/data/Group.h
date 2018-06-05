@@ -4,6 +4,7 @@
 
 #define GROUP_H
 
+#include "Rect.h"
 #include <QList>
 #include <QMap>
 #include <QDebug>
@@ -14,6 +15,9 @@ class Group {
   /* Invariant: A group may not be empty when placed inside a Layout.
      Empty groups are used to reflect "invalid" status.
   */
+public:
+  Point origin; // to be added to all contained coordinates;
+  // relative to parent's origin
 public:
   Group();
   ~Group();
@@ -29,6 +33,11 @@ public:
   Group const &subgroup(QList<int> path) const; // follows breadcrumbs
   Group &subgroup(QList<int> path);
   // Caution: Do NOT change the empty group that may be returned.
+  Rect boundingRect() const; // relative to parent
+  bool touches(Point p, Dim mrg=Dim()) const;
+  Point originOf(QList<int> path) const; // relative to parent
+  QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
+  // only direct children are returned
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

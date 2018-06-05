@@ -91,9 +91,11 @@ void MWData::makeConnections() {
   QObject::connect(editor, &Editor::boardChanged,
 		   propbar, &Propertiesbar::reflectBoard);
 
-  // Mode bar to properties bar
+  // Mode bar to others
   QObject::connect(modebar, &Modebar::modeChanged,
 		   propbar, &Propertiesbar::reflectMode);
+  QObject::connect(modebar, &Modebar::modeChanged,
+		   editor, &Editor::setMode);
 }
 
 void MWData::fillBars() {
@@ -101,6 +103,7 @@ void MWData::fillBars() {
   propbar->reflectBoard(editor->pcbLayout().board());
   propbar->reflectMode(modebar->mode());
   propbar->reflectSelection();
+  propbar->forwardAllProperties();
 }
 
 MainWindow::MainWindow(): QMainWindow() {

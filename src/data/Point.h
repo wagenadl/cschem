@@ -19,6 +19,13 @@ public:
   static Point fromMils(QPointF const &p) {
     return Point(Dim::fromMils(p.x()), Dim::fromMils(p.y()));
   }
+  Point roundedTo(Dim o) const { return Point(x.roundedTo(o),
+					      y.roundedTo(o)); }
+  Dim distance(Point const &o) const { return Dim::quadrature(o.x-x, o.y-y); }
+  Point operator+(Point const &o) const { return Point(x+o.x, y+o.y); }
+  Point operator-(Point const &o) const { return Point(x-o.x, y-o.y); }
+  Point &operator+=(Point const &o) { x+=o.x; y+=o.y; return *this; }
+  Point &operator-=(Point const &o) { x-=o.x; y-=o.y; return *this; }
   bool operator==(Point const &o) const { return x==o.x && y==o.y; }
 };
 

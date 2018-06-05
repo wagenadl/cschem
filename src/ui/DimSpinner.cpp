@@ -5,6 +5,12 @@
 DimSpinner::DimSpinner(QWidget *parent): QDoubleSpinBox(parent) {
   step = Dim::fromInch(.005);
   setInch();
+  connect(this,
+    static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
+	  [this](double v) {
+	    valueChanged(metric_ ? Dim::fromMM(v) : Dim::fromInch(v));
+	  });
+	  
 }
 
 Dim DimSpinner::value() const {

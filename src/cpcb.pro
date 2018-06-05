@@ -21,8 +21,8 @@ HEADERS += data/Hole.h   data/Trace.h   data/Pad.h   data/Text.h
 SOURCES += data/Hole.cpp data/Trace.cpp data/Pad.cpp data/Text.cpp
 HEADERS += data/Group.h  data/Object.h    data/Board.h   data/Layout.h
 SOURCES += data/Group.cpp data/Object.cpp data/Board.cpp data/Layout.cpp
-HEADERS += data/FileIO.h
-SOURCES += data/FileIO.cpp
+HEADERS += data/FileIO.h   data/Rect.h
+SOURCES += data/FileIO.cpp data/Rect.cpp
 HEADERS += ui/Propertiesbar.h   ui/Editor.h   ui/DimSpinner.h
 SOURCES += ui/Propertiesbar.cpp ui/Editor.cpp ui/DimSpinner.cpp
 

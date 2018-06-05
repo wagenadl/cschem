@@ -52,6 +52,9 @@ public:
   Group const &asGroup() const;
   Group &asGroup();
   Type type() const;
+  bool touches(Point p, Dim mrg=Dim()) const;
+  Rect boundingRect() const;
+  Layer layer() const;
 private:
   QSharedDataPointer<class OData> d;
 };

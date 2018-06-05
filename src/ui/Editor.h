@@ -7,6 +7,7 @@
 #include <QWidget>
 #include "data/Layout.h"
 #include "data/Point.h"
+#include "Mode.h"
 
 class Editor: public QWidget {
   Q_OBJECT;
@@ -35,9 +36,10 @@ public slots:
   void deselect(int); // ditto
   void selectAll();
   void clearSelection();
-  void selectArea(QRectF, bool add=false); // widget coordinates
-  void setWidth(Dim);
+  void selectArea(Rect, bool add=false);
+  void setLineWidth(Dim);
   void setLayer(Layer);
+  void setMode(Mode);
 signals:
   void boardChanged(Board const &);
   void hovering(Point);

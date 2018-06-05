@@ -225,3 +225,48 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Object &o) {
 Object::Type Object::type() const {
   return d->typ;
 }
+
+bool Object::touches(Point p, Dim mrg) const {
+  switch (d->typ) {
+  case Type::Null:
+    return false;
+  case Type::Group:
+    return asGroup().touches(p, mrg);
+  case Type::Trace:
+    return asTrace().onSegment(p, mrg);
+  default:
+    return boundingRect().grow(mrg/2).contains(p);
+  }
+}
+
+Rect Object::boundingRect() const {
+  switch (d->typ) {
+  case Type::Null:
+    return Rect();
+  case Type::Hole:
+    return asHole().boundingRect();
+  case Type::Pad:
+    return asPad().boundingRect();
+  case Type::Text:
+    return Rect(); // NYI
+  case Type::Trace:
+    return asTrace().boundingRect();
+  case Type::Group:
+    return asGroup().boundingRect();
+  }
+  return Rect();
+}
+
+Layer Object::layer() const {
+  switch (d->typ) {
+  case Type::Pad:
+    return asPad().layer;
+  case Type::Text:
+    return asText().layer;
+  case Type::Trace:
+    return asTrace().layer;
+  default:
+    return Layer::Invalid;
+  }
+}
+  

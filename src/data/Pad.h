@@ -4,7 +4,7 @@
 
 #define PAD_H
 
-#include "Point.h"
+#include "Rect.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 #include "Layer.h"
@@ -18,6 +18,7 @@ public:
 public:
   Pad();
   bool isValid() const { return layer!=Layer::Invalid; }
+  Rect boundingRect() const;
 };
 
 QDebug operator<<(QDebug, Pad const &);

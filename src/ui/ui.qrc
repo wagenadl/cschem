@@ -10,8 +10,9 @@
 <file>icons/EditFontSize.svg</file>
 <file>icons/EditGrid.svg</file>
 <file>icons/Edit.svg</file>
-<file>icons/Flip3.svg</file>
-<file>icons/Flip2.svg</file>
+<file>icons/FlipH.svg</file>
+<file>icons/FlipV.svg</file>
+<file>icons/Flipped.svg</file>
 <file>icons/Grid.svg</file>
 <file>icons/Hole.svg</file>
 <file>icons/Left.svg</file>

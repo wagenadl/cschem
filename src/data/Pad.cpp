@@ -43,3 +43,7 @@ QDebug operator<<(QDebug d, Pad const &t) {
     << ")";
   return d;
 }
+
+Rect Pad::boundingRect() const {
+  return Rect(p - Point(width/2, height/2), p + Point(width/2, height/2));
+}

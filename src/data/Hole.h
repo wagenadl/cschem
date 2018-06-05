@@ -4,7 +4,7 @@
 
 #define HOLE_H
 
-#include "Point.h"
+#include "Rect.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 
@@ -17,6 +17,7 @@ public:
 public:
   Hole();
   bool isValid() const { return !od.isNull(); }
+  Rect boundingRect() const;
 };
 
 QDebug operator<<(QDebug, Hole const &);

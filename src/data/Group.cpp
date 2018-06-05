@@ -15,6 +15,8 @@ public:
     for (Object *o: obj) 
     delete o;
   }
+  mutable bool hasbbox;
+  mutable Rect bbox;
 };
 
 Group::Group(): d(new GData) {
@@ -37,12 +39,16 @@ bool Group::isEmpty() const {
 }
 
 int Group::insert(Object const &o) {
+  d.detach();
+  d->hasbbox = false;
   d->obj[++d->lastid] = new Object(o);
   return d->lastid;
 }
 
 void Group::remove(int key) {
   if (d->obj.contains(key)) {
+    d.detach();
+    d->hasbbox = false;
     delete d->obj[key];
     d->obj.remove(key);
   }
@@ -62,11 +68,22 @@ Object const &Group::object(int key) const {
 
 Object &Group::object(int key) {
   d.detach();
+  d->hasbbox = false;
   return as_nonconst(as_const(*this).object(key));
 }
 
 QList<int> Group::keys() const {
   return d->obj.keys();
+}
+
+Point Group::originOf(QList<int> path) const {
+  if (path.isEmpty())
+    return origin;
+  Object const &obj = object(path.takeFirst());
+  if (obj.isGroup())
+    return origin + obj.asGroup().originOf(path);
+  else
+    return origin;
 }
 
 Group const &Group::subgroup(QList<int> path) const {
@@ -81,11 +98,11 @@ Group const &Group::subgroup(QList<int> path) const {
 }
   
 Group &Group::subgroup(QList<int> path) {
-  // not using as_const/as_nonconst here, because I think we should
-  // detach the deepest group.
-  // (We're actually detaching all groups, but that doesn't matter.)
+  // Not using as_const/as_nonconst here, because at every level we must
+  // detach *and* stop thinking we know our bbox.
   static Group nil;
   d.detach();
+  d->hasbbox = false;
   if (path.isEmpty())
     return *this;
   Object &obj = object(path.takeFirst());
@@ -95,12 +112,43 @@ Group &Group::subgroup(QList<int> path) {
     return nil;
 }
 
+Rect Group::boundingRect() const {
+  if (d->hasbbox)
+    return d->bbox;
+  Rect r;
+  for (Object *o: d->obj)
+    r |= o->boundingRect();
+  d->bbox = r;
+  d->hasbbox = true;
+  return r.translated(origin);
+}
+
+bool Group::touches(Point p, Dim mrg) const {
+  if (!boundingRect().grow(mrg/2).contains(p))
+    return false;
+  QList<int> ids;
+  for (int id: d->obj.keys()) 
+    if (d->obj[id]->touches(p, mrg))
+      return true;
+  return false;
+}
+
+QList<int> Group::objectsAt(Point p, Dim mrg) const {
+  p -= origin;
+  QList<int> ids;
+  for (int id: d->obj.keys()) 
+    if (d->obj[id]->touches(p, mrg))
+      ids << id;
+  return ids;
+}
+
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   if (t.isEmpty()) {
     qDebug() << "Unexpectedly empty group; not writing to xml";
     return s;
   }
   s.writeStartElement("group");
+  s.writeAttribute("o", t.origin.toString());
   for (Object const *o: t.d->obj)
     s << *o;
   s.writeEndElement();
@@ -109,7 +157,13 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   t = Group();
-  
+  bool ok;
+  auto a = s.attributes();
+  t.origin = Point::fromString(a.value("o").toString(), &ok);
+  if (!ok) {
+    s.skipCurrentElement();
+    return s;
+  }  
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
@@ -125,7 +179,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
     }
   }
   if (t.isEmpty())
-    qDebug() << "Unexpectedly empty group read from xml";
+    qDebug() << "Empty group read from xml";
   // now at end of group element
   return s;
 }

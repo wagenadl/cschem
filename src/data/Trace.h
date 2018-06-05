@@ -4,7 +4,7 @@
 
 #define TRACE_H
 
-#include "Point.h"
+#include "Rect.h"
 #include "Layer.h"
 #include <QXmlStreamReader>
 #include <QDebug>
@@ -17,6 +17,15 @@ public:
 public:
   Trace();
   bool isValid() const { return layer!=Layer::Invalid; }
+  Rect boundingRect() const;
+  bool onP1(Point p, Dim mrg=Dim()) const;
+  // ONP1(p, mrg) returns true if P is close enough to P1.
+  // Close enough means within a distance .5*WIDTH + MRG.
+  bool onP2(Point p, Dim mrg=Dim()) const;
+  bool onSegment(Point p, Dim mrg=Dim()) const;
+  // ONSEGMENT(p, mrg) returns true if P is close enough to the line segment.
+  // Close enough means within a distance .5*WIDTH + MRG.
+  // ONSEGMENT returns true even if ONP1 or ONP2 would return true as well,
 };
 
 QDebug operator<<(QDebug, Trace const &);
