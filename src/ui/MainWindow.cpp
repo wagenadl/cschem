@@ -54,14 +54,14 @@ void MWData::makeToolbars() {
 void MWData::makeMenus() {
   auto *mb = mw->menuBar();
 
-  auto *file = mb->addMenu("File");
+  auto *file = mb->addMenu("&File");
   file->addAction("&Quit", []() { QApplication::quit(); });
 
-  auto *view = mb->addMenu("View");
+  auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },
-		  QKeySequence(Qt::Key_F5));
+		  QKeySequence(Qt::CTRL + Qt::Key_0));
   
-  auto *help = mb->addMenu("Help");
+  auto *help = mb->addMenu("&Help");
   help->addAction("&About", [this]() { about(); });
 }
 

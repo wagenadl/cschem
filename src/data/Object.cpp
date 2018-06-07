@@ -270,3 +270,25 @@ Layer Object::layer() const {
   }
 }
   
+void Object::translate(Point const &p) {
+  switch (d->typ) {
+  case Type::Hole:
+    d->hole->p += p;
+    break;
+  case Type::Pad:
+    d->pad->p += p;
+    break;
+  case Type::Text:
+    d->text->p += p;
+    break;
+  case Type::Trace:
+    d->trace->p1 += p;
+    d->trace->p2 += p;
+    break;
+  case Type::Group:
+    d->group->origin += p;
+    break;
+  default:
+    break;
+  }
+}

@@ -55,6 +55,7 @@ public:
   bool touches(Point p, Dim mrg=Dim()) const;
   Rect boundingRect() const;
   Layer layer() const;
+  void translate(Point const &);
 private:
   QSharedDataPointer<class OData> d;
 };

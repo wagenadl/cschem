@@ -26,6 +26,7 @@ public:
   Point operator-(Point const &o) const { return Point(x-o.x, y-o.y); }
   Point &operator+=(Point const &o) { x+=o.x; y+=o.y; return *this; }
   Point &operator-=(Point const &o) { x-=o.x; y-=o.y; return *this; }
+  Point &operator-() { x=-x; y=-y; return *this; }
   bool operator==(Point const &o) const { return x==o.x && y==o.y; }
 };
 

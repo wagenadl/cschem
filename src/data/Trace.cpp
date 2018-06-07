@@ -47,7 +47,6 @@ QDebug operator<<(QDebug d, Trace const &t) {
 
 Rect Trace::boundingRect() const {
   Rect r = Rect(p1, p2).grow(width);
-  qDebug() << "br" << p1 << ":" << p2 << "*" << width << "⇒" << r;
   return r;
 }
 

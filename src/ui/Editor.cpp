@@ -8,6 +8,7 @@
 #include <QBrush>
 #include <QPen>
 #include "data/Object.h"
+#include <QRubberBand>
 
 class EData {
 public:
@@ -15,20 +16,33 @@ public:
     autofit = false;
     mode = Mode::Edit;
     tracing = false;
+    moving = false;
+    rubberband = 0;
   }
   void drawBoard(QPainter &) const;
   void drawGrid(QPainter &) const;
   void drawSelectedPoints(QPainter &) const;
   void drawObjects(QPainter &) const;
   void drawObject(Object const &o, Layer l, Point const &origin,
-		  QPainter &p, bool selected) const;
+		  QPainter &p, bool selected, bool toplevel=false) const;
   // only draw parts of object that are part of given layer
   void drawPlanes(Layer l, QPainter &p) const;
   void drawTracing(QPainter &) const;
   void pressEdit(Point, Qt::KeyboardModifiers);
+  int visibleObjectAt(Point p, Dim mrg=Dim()) const;
   void pressTracing(Point);
   void moveTracing(Point);
   void abortTracing();
+  void moveBanding(Point);
+  void moveMoving(Point);
+  void releaseBanding(Point);
+  void releaseMoving(Point);
+  void dropFromSelection(int id, Point p, Dim mrg);
+  void startMoveSelection();
+  void newSelectionUnless(int id, Point p, Dim mrg, bool add);
+  void selectPointsOf(int id);
+  void selectPointsOf(Object const &obj);
+  void selectPointsOfComponent(Group const &g);
 public:
   Editor *ed;
   Layout layout;
@@ -38,8 +52,8 @@ public:
   bool autofit;
   QList<int> crumbs;
   QSet<int> selection;
-  QSet<Point> selpts;
-  QSet<Point> purepts; // selected points not part of any object
+  QSet<Point> selpts; // selected points that *are* part of a selected object
+  QSet<Point> purepts; // selected points that are *not* part of any sel. object
   struct Props {
     Dim linewidth;
     Layer layer;
@@ -47,9 +61,56 @@ public:
   Point tracestart;
   Point tracecurrent;
   Point presspoint;
+  Point movingstart;
   bool tracing;
+  bool moving;
+  Point movingdelta;
   Mode mode;
+  QRubberBand *rubberband = 0;
 };
+
+void EData::selectPointsOf(int id) {
+  Group const &here(layout.root().subgroup(crumbs));
+  if (here.contains(id))
+    selectPointsOf(here.object(id));
+}
+
+void EData::selectPointsOf(Object const &obj) {
+  switch (obj.type()) {
+  case Object::Type::Null:
+    break;
+  case Object::Type::Hole:
+    selpts << obj.asHole().p;
+    break;
+  case Object::Type::Pad:
+    selpts << obj.asPad().p;
+    break;
+  case Object::Type::Text:
+    break;
+  case Object::Type::Trace:
+    selpts << obj.asTrace().p1 << obj.asTrace().p2;
+    break;
+  case Object::Type::Group:
+    selectPointsOfComponent(obj.asGroup());
+    break;
+  }
+}
+
+void EData::selectPointsOfComponent(Group const &g) {
+  for (int id: g.keys()) {
+    Object const &obj = g.object(id);
+    switch (obj.type()) {
+    case Object::Type::Hole:
+      selpts << obj.asHole().p;
+      break;
+    case Object::Type::Pad:
+      selpts << obj.asPad().p;
+      break;
+    default:
+      break;
+    }
+  }
+}
 
 void EData::drawBoard(QPainter &p) const {
   p.setBrush(QBrush(QColor(0,0,0)));
@@ -135,7 +196,7 @@ void EData::drawObjects(QPainter &p) const {
   Point origin = layout.root().originOf(crumbs);
   auto onelayer = [&](Layer l) {
     for (int id: here.keys())
-      drawObject(here.object(id), l, origin, p, selection.contains(id));
+      drawObject(here.object(id), l, origin, p, selection.contains(id), true);
   };
   Board const &brd = layout.board();
   if (brd.layervisible[Layer::Bottom]) {
@@ -154,19 +215,38 @@ void EData::drawObjects(QPainter &p) const {
 
 void EData::drawObject(Object const &o, Layer l,
 		       Point const &origin, QPainter &p,
-		       bool selected) const {
+		       bool selected, bool toplevel) const {
+  /* In toplevel *only*, and only during moves, selected objects are
+     translated by the movingdelta and nonselected traces with
+     selected endpoints have those endpoints translated.
+   */
   switch (o.type()) {
   case Object::Type::Trace: {
     Trace const &t = o.asTrace();
     if (t.layer==l) {
       p.setPen(QPen(layerColor(t.layer, selected), t.width.toMils()*mils2px));
-      p.drawLine(mils2widget.map((origin+t.p1).toMils()),
-		 mils2widget.map((origin+t.p2).toMils()));
+      Point p1 = origin + t.p1;
+      Point p2 = origin + t.p2;
+      if (moving && toplevel) {
+	if (selected) {
+	  p1 += movingdelta;
+	  p2 += movingdelta;
+	} else {
+	  if (selpts.contains(t.p1) || purepts.contains(t.p1))
+	    p1 += movingdelta;
+	  if (selpts.contains(t.p2) || purepts.contains(t.p2))
+	    p2 += movingdelta;
+	}
+      }
+      p.drawLine(mils2widget.map(p1.toMils()),
+		 mils2widget.map(p2.toMils()));
     }
   } break;
   case Object::Type::Group: {
     Group const &g = o.asGroup();
     Point ori = origin + g.origin;
+    if (selected && toplevel && moving)
+      ori += movingdelta;
     for (int id: g.keys())
       drawObject(g.object(id), l, ori, p, selected);
   } break;
@@ -182,6 +262,8 @@ void EData::drawSelectedPoints(QPainter &p) const {
   p.setBrush(QColor(200, 200, 200));
   double r = mils2px * 25;
   for (Point pt: purepts) {
+    if (moving)
+      pt += movingdelta;
     QPointF c = mils2widget.map(pt.toMils());
     p.drawEllipse(c, r, r);
   }
@@ -215,6 +297,11 @@ void EData::pressTracing(Point p) {
   ed->update();
 }
 
+void EData::moveMoving(Point p) {
+  movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+  ed->update();
+}
+
 void EData::moveTracing(Point p) {
   tracecurrent = p.roundedTo(layout.board().grid);
   qDebug() << "movetracing to" << tracecurrent;
@@ -232,8 +319,7 @@ enum class Prio {
   Silk
 };
 
-void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
-  Dim mrg = Dim::fromMils(4/mils2px);
+int EData::visibleObjectAt(Point p, Dim mrg) const {
   QList<int> ids = layout.root().objectsAt(p, mrg);
   qDebug() << ids;
   /* Now, we want to select one item that P is on.
@@ -286,28 +372,137 @@ void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
       fave = id;
     }
   }
+  return fave;
+}
+
+void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
+  qDebug() << "pressedit";
+  Dim mrg = Dim::fromMils(4/mils2px);
+  int fave = visibleObjectAt(p, mrg);
+  bool add = m & Qt::ShiftModifier;
   if (fave < 0) {
     // not on anything -> start rectangle select
-    qDebug() << "start rectangle selection";
+    if (!add)
+      ed->clearSelection();
+    if (!rubberband)
+      rubberband = new QRubberBand(QRubberBand::Rectangle, ed);
+    rubberband->show();
+    rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
+			    .toRect());
   } else {
     qDebug() << "fave" << fave;
-    Object const &obj(layout.root().object(fave));
-    bool add = m & Qt::ShiftModifier;
-    if (obj.isTrace()) {
-      Trace const &t(obj.asTrace());
-      if (t.onP1(p, mrg)) {
-	ed->selectPoint(t.p1, add);
-      } else if (t.onP2(p, mrg)) {
-	ed->selectPoint(t.p2, add);
+    if (selection.contains(fave)) {
+      if (add) {
+	dropFromSelection(fave, p, mrg);
       } else {
-	ed->select(fave, add);
+	startMoveSelection();
       }
     } else {
-      ed->select(fave, add);
+      newSelectionUnless(fave, p, mrg, add);
+      startMoveSelection();
     }
   }
 }
 
+void EData::dropFromSelection(int id, Point p, Dim mrg) {
+  // throw ID out of selection, then recollect SELPTS.
+  selection.remove(id);
+  selpts.clear();
+
+  Object const &obj(layout.root().object(id));
+  if (obj.isTrace()) {
+    Trace const &t(obj.asTrace());
+    if (t.onP1(p, mrg)) 
+      purepts.remove(t.p1);
+    if (t.onP2(p, mrg)) 
+      purepts.remove(t.p2);
+  }
+  
+  for (int k: selection)
+    selectPointsOf(k);
+  ed->update();
+  ed->selectionChanged();
+}
+
+void EData::startMoveSelection() {
+  moving = true;
+  movingstart = presspoint.roundedTo(layout.board().grid);
+  // If presspoint is on a hole or point, movingstart should actually be
+  // shifted by distance of that point to the nearest grid intersection.
+  movingdelta = Point();
+}
+
+void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
+  // does not clear purepts if on a purept
+  Object const &obj(layout.root().object(id));
+  if (obj.isTrace()) {
+    Trace const &t(obj.asTrace());
+    if (t.onP1(p, mrg)) {
+      if (purepts.contains(t.p1)) {
+	if (add)
+	  ed->deselectPoint(t.p1);
+      } else {
+	ed->selectPoint(t.p1, add);
+      }
+    } else if (t.onP2(p, mrg)) {
+      if (purepts.contains(t.p2)) {
+	if (add)
+	  ed->deselectPoint(t.p2);
+      } else {
+	ed->selectPoint(t.p2, add);
+      }
+    } else {
+      ed->select(id, add);
+    }
+  } else {
+    ed->select(id, add);
+  }
+}
+
+
+void EData::moveBanding(Point p) {
+  if (!rubberband)
+    return;
+  rubberband->setGeometry(QRectF(mils2widget.map(presspoint.toMils()),
+				 mils2widget.map(p.toMils())).normalized()
+			  .toRect());
+}
+
+void EData::releaseMoving(Point p) {
+  movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+  Group &here(layout.root().subgroup(crumbs));
+  for (int id: here.keys()) {
+    Object &obj(here.object(id));
+    if (selection.contains(id)) {
+      obj.translate(movingdelta);
+    } else if (obj.isTrace()) {
+      Trace &t = obj.asTrace();
+      if (selpts.contains(t.p1) || purepts.contains(t.p1))
+	t.p1 += movingdelta;
+      if (selpts.contains(t.p2) || purepts.contains(t.p2))
+	t.p2 += movingdelta;
+    }
+  }
+
+  QSet<Point> newsel;
+  for (Point const &pt: selpts)
+    newsel << pt + movingdelta;
+  selpts = newsel;
+  QSet<Point> newpure;
+  for (Point const &pt: purepts)
+    newpure << pt + movingdelta;
+  purepts = newpure;
+  
+  moving = false;
+  ed->update();
+}
+
+void EData::releaseBanding(Point p) {
+  delete rubberband;
+  rubberband = 0;
+  Rect r(presspoint, p);
+  ed->selectArea(r, true);
+}
 
 Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   setMouseTracking(true);
@@ -390,10 +585,19 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
   Point p = Point::fromMils(d->widget2mils.map(e->pos()));
   if (d->tracing)
     d->moveTracing(p);
+  else if (d->rubberband)
+    d->moveBanding(p);
+  else if (d->moving)
+    d->moveMoving(p);
   emit hovering(p);
 }
 
-void Editor::mouseReleaseEvent(QMouseEvent *) {
+void Editor::mouseReleaseEvent(QMouseEvent *e) {
+  Point p = Point::fromMils(d->widget2mils.map(e->pos()));
+  if (d->rubberband)
+    d->releaseBanding(p);
+  else if (d->moving)
+    d->releaseMoving(p);
 }
 
 void Editor::keyPressEvent(QKeyEvent *e) {
@@ -494,7 +698,7 @@ void Editor::select(int id, bool add) {
   }
   if (here.contains(id)) {
     d->selection.insert(id);
-    selectPointsOf(id);
+    d->selectPointsOf(id);
   }
   update();
   emit selectionChanged();
@@ -506,8 +710,8 @@ void Editor::selectPoint(Point p, bool add) {
     d->selpts.clear();
     d->purepts.clear();
   }
-  d->selpts.insert(p);
-  d->purepts.insert(p);
+  if (!d->selpts.contains(p))
+    d->purepts.insert(p);
   update();
   emit selectionChanged();
 }
@@ -521,21 +725,20 @@ void Editor::deselect(int id) {
 }
 
 void Editor::deselectPoint(Point p) {
-  if (d->selpts.contains(p)) {
+  if (d->selpts.contains(p) || d->purepts.contains(p)) {
     d->selpts.remove(p);
-    emit selectionChanged();
-  }
-  if (d->purepts.contains(p)) {
     d->purepts.remove(p);
     update();
+    emit selectionChanged();
   }
 }
 
 void Editor::selectAll() {
   Group const &here(d->layout.root().subgroup(d->crumbs));
   d->selection = QSet<int>::fromList(here.keys());
+  d->purepts.clear();
   for (int id: d->selection)
-    selectPointsOf(here.object(id));
+    d->selectPointsOf(here.object(id));
   update();
   emit selectionChanged();
 }
@@ -555,72 +758,29 @@ void Editor::selectArea(Rect r, bool add) {
     d->purepts.clear();
   }    
   Group const &here(d->layout.root().subgroup(d->crumbs));
+  Point origin(d->layout.root().originOf(d->crumbs));
+  r = r.translated(-origin);
   for (int id: here.keys()) {
     Object const &obj(here.object(id));
     if (!d->selection.contains(id)) {
       if (r.contains(obj.boundingRect())) {
 	d->selection << id;
-	selectPointsOf(obj);
+	d->selectPointsOf(obj);
       }
-    } else {
-      if (obj.type()==Object::Type::Trace) {
-	Trace const &t(obj.asTrace());
-	if (r.contains(t.p1)) {
-	  d->selpts << t.p1;
-	  d->purepts << t.p1;
-	}
-	if (r.contains(t.p2)) {
-	  d->selpts << t.p2;
-	  d->purepts << t.p2;
-	}
-      }
+    }
+  }
+  for (int id: here.keys()) {
+    Object const &obj(here.object(id));
+    if (obj.type()==Object::Type::Trace) {
+      Trace const &t(obj.asTrace());
+      if (r.contains(t.p1) && !d->selpts.contains(t.p1))
+	d->purepts << t.p1;
+      if (r.contains(t.p2) && !d->selpts.contains(t.p2)) 
+	d->purepts << t.p2;
     }
   }
   update();
   emit selectionChanged();
-}
-
-void Editor::selectPointsOf(int id) {
-  Group const &here(d->layout.root().subgroup(d->crumbs));
-  if (here.contains(id))
-    selectPointsOf(here.object(id));
-}
-
-void Editor::selectPointsOf(Object const &obj) {
-  switch (obj.type()) {
-  case Object::Type::Null:
-    break;
-  case Object::Type::Hole:
-    d->selpts << obj.asHole().p;
-    break;
-  case Object::Type::Pad:
-    d->selpts << obj.asPad().p;
-    break;
-  case Object::Type::Text:
-    break;
-  case Object::Type::Trace:
-    d->selpts << obj.asTrace().p1 << obj.asTrace().p2;
-    break;
-  case Object::Type::Group:
-    selectPointsOfComponent(obj.asGroup());
-    break;
-  }
-}
-
-void Editor::selectPointsOfComponent(Group const &g) {
-  for (int id: g.keys()) {
-    Object const &obj = g.object(id);
-    switch (obj.type()) {
-    case Object::Type::Hole:
-      d->selpts << obj.asHole().p;
-      break;
-    case Object::Type::Pad:
-      d->selpts << obj.asPad().p;
-      break;
-    default:
-      break;
-    }
-  }
 }
 
 void Editor::setLineWidth(Dim l) {

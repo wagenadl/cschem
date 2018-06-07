@@ -97,7 +97,6 @@ Layer PBData::layer() const {
 }
 
 void PBData::hideAndShow() {
-  qDebug() << "hideandshow";
   xya->setEnabled(false);
   dima->setEnabled(false);
   refa->setEnabled(false);
