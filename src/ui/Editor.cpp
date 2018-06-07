@@ -174,11 +174,6 @@ void EData::drawGrid(QPainter &p) const {
 void EData::drawTracing(QPainter &p) const {
   if (!tracing)
     return;
-  qDebug() << "props" << int(props.layer) << props.linewidth;
-  qDebug() << "drawtracing" << layerColor(props.layer)
-	   << props.linewidth.toMils()*mils2px
-	   << mils2widget.map(tracestart.toMils())
-	   << mils2widget.map(tracecurrent.toMils());
   p.setPen(QPen(layerColor(props.layer), props.linewidth.toMils()*mils2px));
   p.drawLine(mils2widget.map(tracestart.toMils()),
 	     mils2widget.map(tracecurrent.toMils()));
@@ -214,6 +209,7 @@ void EData::drawObjects(QPainter &p) const {
   }
   if (brd.layervisible[Layer::Silk])
     onelayer(Layer::Silk);
+  onelayer(Layer::Invalid); // magic to punch holes
 }
 
 void EData::drawObject(Object const &o, Layer l,
@@ -246,23 +242,25 @@ void EData::drawObject(Object const &o, Layer l,
     }
   } break;
   case Object::Type::Hole:
-    if (l==Layer::Bottom || l==Layer::Top) {
+    if (l==Layer::Bottom || l==Layer::Top || l==Layer::Invalid) {
       Hole const &t = o.asHole();
       Point p1 = origin + t.p;
       if (selected && moving) 
 	p1 += movingdelta;
-      double id = mils2px*t.id.toMils();
-      double od = mils2px*t.od.toMils();
-      QPainterPath path;
-      if (t.square)
-	path.addRect(QRectF(mils2widget.map(p1.toMils()) - QPointF(od/2, od/2),
-			    QSizeF(od, od)));
-      else 
-	path.addEllipse(mils2widget.map(p1.toMils()), od/2, od/2);
-      path.addEllipse(mils2widget.map(p1.toMils()), id/2, id/2);
       p.setPen(QPen(Qt::NoPen));
-      p.setBrush(layerColor(l, selected));
-      p.drawPath(path);
+      if (l==Layer::Invalid) {
+	double id = mils2px*t.id.toMils();
+	p.setBrush(QColor(0,0,0));
+	p.drawEllipse(mils2widget.map(p1.toMils()), id/2, id/2);
+      } else {
+	double od = mils2px*t.od.toMils();
+	p.setBrush(layerColor(l, selected));
+	if (t.square)
+	  p.drawRect(QRectF(mils2widget.map(p1.toMils()) - QPointF(od/2, od/2),
+			    QSizeF(od, od)));
+	else 
+	  p.drawEllipse(mils2widget.map(p1.toMils()), od/2, od/2);
+      }
     }
     break;
   case Object::Type::Group: {
@@ -316,7 +314,6 @@ void EData::pressTracing(Point p) {
     abortTracing();
     return;
   }
-  qDebug() << "tracing from" << p;
   if (tracing) {
     Group &here(layout.root().subgroup(crumbs));
     Trace t;
@@ -340,7 +337,6 @@ void EData::moveMoving(Point p) {
 
 void EData::moveTracing(Point p) {
   tracecurrent = p.roundedTo(layout.board().grid);
-  qDebug() << "movetracing to" << tracecurrent;
   ed->update();
 }
 
@@ -357,7 +353,6 @@ enum class Prio {
 
 int EData::visibleObjectAt(Point p, Dim mrg) const {
   QList<int> ids = layout.root().objectsAt(p, mrg);
-  qDebug() << ids;
   /* Now, we want to select one item that P is on.
      We prioritize higher layers over lower layers, ignore pads, text, traces
      on hidden layers, prioritize holes, pads, groups [components], text over
@@ -412,7 +407,6 @@ int EData::visibleObjectAt(Point p, Dim mrg) const {
 }
 
 void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
-  qDebug() << "pressedit";
   Dim mrg = Dim::fromMils(4/mils2px);
   int fave = visibleObjectAt(p, mrg);
   bool add = m & Qt::ShiftModifier;
@@ -426,7 +420,6 @@ void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
     rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
 			    .toRect());
   } else {
-    qDebug() << "fave" << fave;
     if (selection.contains(fave)) {
       if (add) {
 	dropFromSelection(fave, p, mrg);
@@ -675,7 +668,6 @@ void Editor::paintEvent(QPaintEvent *) {
 
 void Editor::setGrid(Dim g) {
   Board &brd = d->layout.board();  
-  qDebug()<<"SetGrid" << g;
   if (g != brd.grid) {
     brd.grid = g;
     update();
