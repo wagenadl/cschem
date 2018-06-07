@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QApplication>
+#include <QFileDialog>
 
 class MWData {
 public:
@@ -21,13 +22,75 @@ public:
   void makeEditor();
   void makeConnections();
   void fillBars();
+  void openDialog();
+  void saveAsDialog();
+  void saveImmediately();
 public:
   MainWindow *mw;
   Modebar *modebar;
   Propertiesbar *propbar;
   Statusbar *statusbar;
   Editor *editor;
+  QString pwd;
+  QString filename;
 };
+
+void MWData::openDialog() {
+  if (pwd.isEmpty())
+    pwd = QDir::home().absoluteFilePath("Desktop");
+  
+  QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
+					    pwd,
+					    "PCB layouts (*.cpcb)");
+  if (!fn.isEmpty()) {
+    auto *w = editor->pcbLayout().root().isEmpty() ? mw : new MainWindow();
+    w->d->filename = fn;
+    w->d->pwd = QFileInfo(fn).dir().absolutePath();
+    w->setWindowTitle(fn);
+    w->d->editor->load(fn);
+    w->show();
+  }
+}
+
+void MainWindow::open(QString fn) {
+  d->filename = fn;
+  d->pwd = QFileInfo(fn).dir().absolutePath();
+  setWindowTitle(fn);
+  d->editor->load(fn);
+}  
+
+void MWData::saveImmediately() {
+  if (filename.isEmpty()) {
+    saveAsDialog();
+  } else {
+    if (!editor->save(filename))
+      QMessageBox::warning(mw, "cpcb",
+			   "Could not save pcb as “"
+			   + filename + "”",
+			   QMessageBox::Ok);
+  }
+}
+
+void MWData::saveAsDialog() {
+  if (pwd.isEmpty())
+    pwd = QDir::home().absoluteFilePath("Desktop");
+  
+  QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
+					    pwd,
+					    "PCB layouts (*.cpcb)");
+  if (!fn.isEmpty()) {
+    if (!fn.endsWith(".cpcb"))
+      fn += ".cpcb";
+    filename = fn;
+    pwd = QFileInfo(fn).dir().absolutePath();
+    mw->setWindowTitle(fn);
+    if (!editor->save(fn))
+      QMessageBox::warning(mw, "cpcb",
+			   "Could not save pcb as “"
+			   + fn + "”",
+			   QMessageBox::Ok);
+  }
+}  
 
 void MWData::about() {
   QString me = "<b>cpcb</b>";
@@ -55,6 +118,12 @@ void MWData::makeMenus() {
   auto *mb = mw->menuBar();
 
   auto *file = mb->addMenu("&File");
+  file->addAction("&Open…", [this]() { openDialog(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_O));
+  file->addAction("&Save", [this]() { saveImmediately(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_S));		  
+  file->addAction("Save &as…", [this]() { saveAsDialog(); },
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
   file->addAction("&Quit", []() { QApplication::quit(); });
 
   auto *view = mb->addMenu("&View");

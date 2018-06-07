@@ -29,7 +29,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Trace &t) {
   else
     t.width = Dim();
   if (ok)
-    t.layer = Layer(a.value("layer").toInt());
+    t.layer = Layer(a.value("l").toInt());
   else
     t.layer = Layer::Invalid;
   s.skipCurrentElement();

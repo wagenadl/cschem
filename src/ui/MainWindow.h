@@ -10,8 +10,10 @@ class MainWindow: public QMainWindow {
 public:
   MainWindow();
   virtual ~MainWindow();
+  void open(QString);
 private:
   class MWData *d;
+  friend class MWData;
 };
 
 #endif

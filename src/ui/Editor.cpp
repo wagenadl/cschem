@@ -521,6 +521,7 @@ void Editor::setMode(Mode m) {
 bool Editor::load(QString fn) {
   d->layout = FileIO::loadLayout(fn);
   scaleToFit();
+  update();
   return !d->layout.root().isEmpty();
 }
 
