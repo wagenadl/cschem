@@ -19,7 +19,10 @@ public:
   Layout const &pcbLayout() const;
   QList<int> breadcrumbs() const; // to currently entered group
   QSet<int> selectedObjects() const; // within currently entered group
-  QSet<Point> selectedPoints() const; // not including in subgroups
+  QSet<Point> selectedPoints() const; // not including those in subgroups
+  // in absolute board coordinates
+  Group const &currentGroup() const;
+  Point groupOffset() const;
 public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);

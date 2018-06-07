@@ -43,7 +43,7 @@ public:
   void newSelectionUnless(int id, Point p, Dim mrg, bool add);
   void selectPointsOf(int id);
   void selectPointsOf(Object const &obj);
-  void selectPointsOfComponent(Group const &g);
+  void selectPointsOfComponent(Group const &g, Point const &ori);
 public:
   Editor *ed;
   Layout layout;
@@ -79,35 +79,36 @@ void EData::selectPointsOf(int id) {
 }
 
 void EData::selectPointsOf(Object const &obj) {
+  Point ori = layout.root().originOf(crumbs);
   switch (obj.type()) {
   case Object::Type::Null:
     break;
   case Object::Type::Hole:
-    selpts << obj.asHole().p;
+    selpts << obj.asHole().p + ori;
     break;
   case Object::Type::Pad:
-    selpts << obj.asPad().p;
+    selpts << obj.asPad().p + ori;
     break;
   case Object::Type::Text:
     break;
   case Object::Type::Trace:
-    selpts << obj.asTrace().p1 << obj.asTrace().p2;
+    selpts << obj.asTrace().p1 + ori << obj.asTrace().p2 + ori;
     break;
   case Object::Type::Group:
-    selectPointsOfComponent(obj.asGroup());
+    selectPointsOfComponent(obj.asGroup(), ori);
     break;
   }
 }
 
-void EData::selectPointsOfComponent(Group const &g) {
+void EData::selectPointsOfComponent(Group const &g, Point const &ori) {
   for (int id: g.keys()) {
     Object const &obj = g.object(id);
     switch (obj.type()) {
     case Object::Type::Hole:
-      selpts << obj.asHole().p;
+      selpts << obj.asHole().p + ori;
       break;
     case Object::Type::Pad:
-      selpts << obj.asPad().p;
+      selpts << obj.asPad().p + ori;
       break;
     default:
       break;
@@ -316,9 +317,10 @@ void EData::pressTracing(Point p) {
   }
   if (tracing) {
     Group &here(layout.root().subgroup(crumbs));
+    Point ori(layout.root().originOf(crumbs));
     Trace t;
-    t.p1 = tracestart;
-    t.p2 = p;
+    t.p1 = tracestart - ori;
+    t.p2 = p - ori;
     t.width = props.linewidth;
     t.layer = props.layer;
     here.insert(Object(t));
@@ -352,7 +354,10 @@ enum class Prio {
 };
 
 int EData::visibleObjectAt(Point p, Dim mrg) const {
-  QList<int> ids = layout.root().objectsAt(p, mrg);
+  Group const &group(layout.root().subgroup(crumbs));
+  Point ori(layout.root().originOf(crumbs));
+  p -= ori;
+  QList<int> ids = group.objectsAt(p, mrg);
   /* Now, we want to select one item that P is on.
      We prioritize higher layers over lower layers, ignore pads, text, traces
      on hidden layers, prioritize holes, pads, groups [components], text over
@@ -438,8 +443,9 @@ void EData::dropFromSelection(int id, Point p, Dim mrg) {
   selection.remove(id);
   selpts.clear();
 
-  Object const &obj(layout.root().object(id));
+  Object const &obj(layout.root().subgroup(crumbs).object(id));
   if (obj.isTrace()) {
+    p -= layout.root().originOf(crumbs);
     Trace const &t(obj.asTrace());
     if (t.onP1(p, mrg)) 
       purepts.remove(t.p1);
@@ -463,22 +469,23 @@ void EData::startMoveSelection() {
 
 void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
   // does not clear purepts if on a purept
-  Object const &obj(layout.root().object(id));
+  Object const &obj(layout.root().subgroup(crumbs).object(id));
   if (obj.isTrace()) {
+    Point ori = layout.root().originOf(crumbs);
     Trace const &t(obj.asTrace());
-    if (t.onP1(p, mrg)) {
-      if (purepts.contains(t.p1)) {
+    if (t.onP1(p - ori, mrg)) {
+      if (purepts.contains(t.p1 + ori)) {
 	if (add)
-	  ed->deselectPoint(t.p1);
+	  ed->deselectPoint(t.p1 + ori);
       } else {
-	ed->selectPoint(t.p1, add);
+	ed->selectPoint(t.p1 + ori, add);
       }
-    } else if (t.onP2(p, mrg)) {
-      if (purepts.contains(t.p2)) {
+    } else if (t.onP2(p - ori, mrg)) {
+      if (purepts.contains(t.p2 + ori)) {
 	if (add)
-	  ed->deselectPoint(t.p2);
+	  ed->deselectPoint(t.p2 + ori);
       } else {
-	ed->selectPoint(t.p2, add);
+	ed->selectPoint(t.p2 + ori, add);
       }
     } else {
       ed->select(id, add);
@@ -500,15 +507,16 @@ void EData::moveBanding(Point p) {
 void EData::releaseMoving(Point p) {
   movingdelta = p.roundedTo(layout.board().grid) - movingstart;
   Group &here(layout.root().subgroup(crumbs));
+  Point ori(layout.root().originOf(crumbs));
   for (int id: here.keys()) {
     Object &obj(here.object(id));
     if (selection.contains(id)) {
       obj.translate(movingdelta);
     } else if (obj.isTrace()) {
       Trace &t = obj.asTrace();
-      if (selpts.contains(t.p1) || purepts.contains(t.p1))
+      if (selpts.contains(t.p1 + ori) || purepts.contains(t.p1 + ori))
 	t.p1 += movingdelta;
-      if (selpts.contains(t.p2) || purepts.contains(t.p2))
+      if (selpts.contains(t.p2 + ori) || purepts.contains(t.p2 + ori))
 	t.p2 += movingdelta;
     }
   }
@@ -875,3 +883,22 @@ void Editor::setSquare(bool b) {
   update();
 }
 
+QList<int> Editor::breadcrumbs() const {
+  return d->crumbs;
+}
+
+QSet<int> Editor::selectedObjects() const {
+  return d->selection;
+}
+
+QSet<Point> Editor::selectedPoints() const {
+  return d->purepts | d->selpts;
+}
+
+Group const &Editor::currentGroup() const {
+  return d->layout.root().subgroup(d->crumbs);
+}
+
+Point Editor::groupOffset() const {
+  return d->layout.root().originOf(d->crumbs);
+}
