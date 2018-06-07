@@ -288,10 +288,14 @@ void PBData::setupUI() {
   makeLabel(idc, "ID")->setToolTip("Hole diameter");
   id = makeDimSpinner(idc);
   id->setValue(Dim::fromInch(.040));
+  QObject::connect(id, &DimSpinner::valueChanged,
+		   [this](Dim d) { editor->setID(d); });
   odc = makeContainer(dimg);
   makeLabel(odc, "OD")->setToolTip("Pad diameter");
   od = makeDimSpinner(odc);
   od->setValue(Dim::fromInch(.065));
+  QObject::connect(od, &DimSpinner::valueChanged,
+		   [this](Dim d) { editor->setOD(d); });
   wc = makeContainer(dimg);
   makeLabel(wc, "W");
   w = makeDimSpinner(wc);
@@ -307,6 +311,8 @@ void PBData::setupUI() {
   circle->setChecked(true);
   square = makeTextTool(squarec, "□");
   square->setToolTip("Square");
+  QObject::connect(square, &QToolButton::toggled,
+		   [this](bool b) { editor->setSquare(b); });
 
   refg = makeGroup(&refa);
   auto *c5 = makeContainer(refg);
@@ -399,4 +405,7 @@ void Propertiesbar::forwardAllProperties() {
     return;
   d->editor->setLineWidth(d->linewidth->value());
   d->editor->setLayer(d->layer());
+  d->editor->setID(d->id->value());
+  d->editor->setOD(d->od->value());
+  d->editor->setSquare(d->square->isChecked());
 }

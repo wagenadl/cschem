@@ -30,6 +30,7 @@ public:
   void drawTracing(QPainter &) const;
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
+  void pressHole(Point);
   void pressTracing(Point);
   void moveTracing(Point);
   void abortTracing();
@@ -57,6 +58,8 @@ public:
   struct Props {
     Dim linewidth;
     Layer layer;
+    Dim od, id;
+    bool square;
   } props;
   Point tracestart;
   Point tracecurrent;
@@ -242,6 +245,26 @@ void EData::drawObject(Object const &o, Layer l,
 		 mils2widget.map(p2.toMils()));
     }
   } break;
+  case Object::Type::Hole:
+    if (l==Layer::Bottom || l==Layer::Top) {
+      Hole const &t = o.asHole();
+      Point p1 = origin + t.p;
+      if (selected && moving) 
+	p1 += movingdelta;
+      double id = mils2px*t.id.toMils();
+      double od = mils2px*t.od.toMils();
+      QPainterPath path;
+      if (t.square)
+	path.addRect(QRectF(mils2widget.map(p1.toMils()) - QPointF(od/2, od/2),
+			    QSizeF(od, od)));
+      else 
+	path.addEllipse(mils2widget.map(p1.toMils()), od/2, od/2);
+      path.addEllipse(mils2widget.map(p1.toMils()), id/2, id/2);
+      p.setPen(QPen(Qt::NoPen));
+      p.setBrush(layerColor(l, selected));
+      p.drawPath(path);
+    }
+    break;
   case Object::Type::Group: {
     Group const &g = o.asGroup();
     Point ori = origin + g.origin;
@@ -271,6 +294,19 @@ void EData::drawSelectedPoints(QPainter &p) const {
 
 void EData::abortTracing() {
   tracing = false;
+  ed->update();
+}
+
+void EData::pressHole(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  Group &here(layout.root().subgroup(crumbs));
+  p -= layout.root().originOf(crumbs);
+  Hole t;
+  t.p = p;
+  t.od = props.od;
+  t.id = props.id;
+  t.square = props.square;
+  here.insert(Object(t));
   ed->update();
 }
 
@@ -575,6 +611,9 @@ void Editor::mousePressEvent(QMouseEvent *e) {
     case Mode::PlaceTrace:
       d->pressTracing(p);
       break;
+    case Mode::PlaceHole:
+      d->pressHole(p);
+      break;
     default:
       break;
     }
@@ -786,10 +825,61 @@ void Editor::selectArea(Rect r, bool add) {
 
 void Editor::setLineWidth(Dim l) {
   d->props.linewidth = l;
-  // also affect current selection!
+
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Trace)
+      obj.asTrace().width = l;
+  }
+  update();
 }
 
 void Editor::setLayer(Layer l) {
   d->props.layer = l;
-  // also affect current selection!
+
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Trace)
+      obj.asTrace().layer = l;
+  }
+  update();
 }
+
+void Editor::setID(Dim x) {
+  d->props.id = x;
+
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Hole)
+      obj.asHole().id = x;
+  }
+  update();
+}
+
+void Editor::setOD(Dim x) {
+  d->props.od = x;
+
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Hole)
+      obj.asHole().od = x;
+  }
+  update();
+}
+
+void Editor::setSquare(bool b) {
+  d->props.square = b;
+
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Hole)
+      obj.asHole().square = b;
+  }
+  update();
+}
+

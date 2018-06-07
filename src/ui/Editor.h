@@ -39,6 +39,9 @@ public slots:
   void selectArea(Rect, bool add=false);
   void setLineWidth(Dim);
   void setLayer(Layer);
+  void setID(Dim);
+  void setOD(Dim);
+  void setSquare(bool);
   void setMode(Mode);
 signals:
   void boardChanged(Board const &);
