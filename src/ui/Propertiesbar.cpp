@@ -287,23 +287,34 @@ void PBData::setupUI() {
   idc = makeContainer(dimg);
   makeLabel(idc, "ID")->setToolTip("Hole diameter");
   id = makeDimSpinner(idc);
+  id->setMinimumValue(Dim::fromInch(0.005));
   id->setValue(Dim::fromInch(.040));
   QObject::connect(id, &DimSpinner::valueChanged,
-		   [this](Dim d) { editor->setID(d); });
+		   [this](Dim d) {
+		     if (od->value() < d + Dim::fromInch(0.015))
+		       od->setValue(d + Dim::fromInch(0.015));
+		     editor->setID(d); });
   odc = makeContainer(dimg);
   makeLabel(odc, "OD")->setToolTip("Pad diameter");
   od = makeDimSpinner(odc);
+  od->setMinimumValue(Dim::fromInch(0.020));
   od->setValue(Dim::fromInch(.065));
   QObject::connect(od, &DimSpinner::valueChanged,
-		   [this](Dim d) { editor->setOD(d); });
+		   [this](Dim d) {
+		     if (id->value() > d - Dim::fromInch(0.015))
+		       id->setValue(d - Dim::fromInch(0.015));
+		     editor->setOD(d);
+		   });
   wc = makeContainer(dimg);
   makeLabel(wc, "W");
   w = makeDimSpinner(wc);
   w->setValue(Dim::fromInch(.020));
+  w->setMinimumValue(Dim::fromInch(0.005));
   hc = makeContainer(dimg);
   makeLabel(hc, "H");
   h = makeDimSpinner(hc);
   h->setValue(Dim::fromInch(.040));
+  h->setMinimumValue(Dim::fromInch(0.005));
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
   circle = makeTextTool(squarec, "○");
