@@ -38,7 +38,7 @@ bool Group::isEmpty() const {
   return d->obj.isEmpty();
 }
 
-int Group::constructSubgroup(QSet<int> const &ids) {
+int Group::formSubgroup(QSet<int> const &ids) {
   d.detach();
   Group g;
   for (int id: ids)
@@ -51,11 +51,11 @@ int Group::constructSubgroup(QSet<int> const &ids) {
 }
 
 void Group::dissolveSubgroup(int gid) {
-  d.detach();
   if (!d->obj.contains(gid))
     return; // error
   if (!d->obj[gid]->isGroup())
     return; // error
+  d.detach();
   Group const *g(&d->obj[gid]->asGroup());
   Point p = g->origin;
   for (Object const *obj: g->d->obj) {
@@ -173,7 +173,7 @@ Group &Group::subgroup(QList<int> path) {
 
 Rect Group::boundingRect() const {
   if (d->hasbbox)
-    return d->bbox;
+    return d->bbox.translated(origin);
   Rect r;
   for (Object *o: d->obj)
     r |= o->boundingRect();
@@ -186,6 +186,7 @@ bool Group::touches(Point p, Dim mrg) const {
   if (!boundingRect().grow(mrg/2).contains(p))
     return false;
   QList<int> ids;
+  p -= origin;
   for (int id: d->obj.keys()) 
     if (d->obj[id]->touches(p, mrg))
       return true;
@@ -248,7 +249,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 QDebug operator<<(QDebug d, Group const &t) {
   d << "Group(" << t.ref << " at " << t.origin;
   for (Object const *o: t.d->obj)
-    d << *o;
+    d << "    " << *o << "\n";
   d << ")";
   return d;
 }

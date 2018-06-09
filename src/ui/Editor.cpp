@@ -281,7 +281,7 @@ void EData::drawObject(Object const &o, Layer l,
     if (l==Layer::Bottom || l==Layer::Top || l==Layer::Invalid) {
       Hole const &t = o.asHole();
       Point p1 = origin + t.p;
-      if (selected && moving) 
+      if (selected && moving && toplevel) 
 	p1 += movingdelta;
       p.setPen(QPen(Qt::NoPen));
       if (l==Layer::Invalid) {
@@ -446,6 +446,7 @@ void EData::pressArc(Point p) {
   t.center = p;
   t.radius = props.id / 2;
   t.linewidth = props.linewidth;
+  t.extent = props.ext;
   here.insert(Object(t));
   ed->update();
 }
@@ -1257,4 +1258,26 @@ void Editor::flipV() {
 
 EProps &Editor::properties() {
   return d->props;
+}
+
+void Editor::formGroup() {
+  if (d->selection.isEmpty())
+    return;
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  here.formSubgroup(d->selection);
+  clearSelection();
+  update();
+}
+
+void Editor::dissolveGroup() {
+  if (d->selection.isEmpty())
+    return;
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  qDebug() << "pre" << here;
+  for (int id: d->selection) 
+    if (here.object(id).isGroup())
+      here.dissolveSubgroup(id);
+  qDebug() << "post" << here;
+  clearSelection();
+  update();
 }

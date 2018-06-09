@@ -22,6 +22,51 @@ public:
     group = 0;
     typ = Object::Type::Null;
   }
+  OData(OData const &o): OData() {
+    if (o.hole)
+      hole = new Hole(*o.hole);
+    if (o.pad)
+      pad = new Pad(*o.pad);
+    if (o.arc)
+      arc = new Arc(*o.arc);
+    if (o.text)
+      text = new Text(*o.text);
+    if (o.trace)
+      trace = new Trace(*o.trace);
+    if (o.group)
+      group = new Group(*o.group);
+    typ = o.typ;
+  }
+  OData &operator=(OData const &o) {
+    delete hole;
+    delete pad;
+    delete arc;
+    delete text;
+    delete trace;
+    delete group;
+    hole = 0;
+    pad = 0;
+    arc = 0;
+    text = 0;
+    trace = 0;
+    group = 0;
+    if (&o == this)
+      return *this;
+    if (o.hole)
+      hole = new Hole(*o.hole);
+    if (o.pad)
+      pad = new Pad(*o.pad);
+    if (o.arc)
+      arc = new Arc(*o.arc);
+    if (o.text)
+      text = new Text(*o.text);
+    if (o.trace)
+      trace = new Trace(*o.trace);
+    if (o.group)
+      group = new Group(*o.group);
+    typ = o.typ;
+    return *this;
+  }
   ~OData() {
     delete hole;
     delete pad;

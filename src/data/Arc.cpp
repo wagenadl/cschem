@@ -27,7 +27,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Arc &t) {
   if (ok)
     t.radius  = Dim::fromString(a.value("r").toString(), &ok);
   if (ok)
-    t.linewidth = Dim::fromString(a.value("r").toString(), &ok);
+    t.linewidth = Dim::fromString(a.value("lw").toString(), &ok);
   if (ok)
     t.extent = Arc::Extent(a.value("ext").toInt(&ok));
   if (ok)

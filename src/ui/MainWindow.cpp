@@ -75,7 +75,7 @@ void MWData::saveAsDialog() {
   if (pwd.isEmpty())
     pwd = QDir::home().absoluteFilePath("Desktop");
   
-  QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
+  QString fn = QFileDialog::getSaveFileName(0, "Save as…",
 					    pwd,
 					    "PCB layouts (*.cpcb)");
   if (!fn.isEmpty()) {
@@ -125,6 +125,12 @@ void MWData::makeMenus() {
   file->addAction("Save &as…", [this]() { saveAsDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
   file->addAction("&Quit", []() { QApplication::quit(); });
+
+  auto *edit = mb->addMenu("&Edit");
+  edit->addAction("&Group", [this]() { editor->formGroup(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_G));
+  edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
 
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },

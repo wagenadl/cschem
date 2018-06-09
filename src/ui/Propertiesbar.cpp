@@ -215,7 +215,7 @@ void PBData::getPropertiesFromSelection() {
   if (id->hasValue())
     editor->properties().id = id->value();
   if (od->hasValue())
-    editor->properties().id = od->value();
+    editor->properties().od = od->value();
   if (square->isChecked())
     editor->properties().square = true;
   if (circle->isChecked())

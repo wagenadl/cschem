@@ -61,6 +61,8 @@ public slots:
   void setRotation(int); // this is not the way to rotate or flip things
   void setFlipped(bool); // this is not the way to rotate or flip things
   void setMode(Mode);
+  void formGroup();
+  void dissolveGroup();
 signals:
   void boardChanged(Board const &);
   void hovering(Point);
