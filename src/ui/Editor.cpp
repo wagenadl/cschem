@@ -175,7 +175,8 @@ void EData::drawGrid(QPainter &p) const {
 void EData::drawTracing(QPainter &p) const {
   if (!tracing)
     return;
-  p.setPen(QPen(layerColor(props.layer), props.linewidth.toMils()*mils2px));
+  p.setPen(QPen(layerColor(props.layer), props.linewidth.toMils()*mils2px,
+		Qt::SolidLine, Qt::RoundCap));
   p.drawLine(mils2widget.map(tracestart.toMils()),
 	     mils2widget.map(tracecurrent.toMils()));
 }
@@ -224,7 +225,10 @@ void EData::drawObject(Object const &o, Layer l,
   case Object::Type::Trace: {
     Trace const &t = o.asTrace();
     if (t.layer==l) {
-      p.setPen(QPen(layerColor(t.layer, selected), t.width.toMils()*mils2px));
+      p.setPen(QPen(layerColor(t.layer, selected),
+		    t.width.toMils()*mils2px,
+		    Qt::SolidLine,
+		    Qt::RoundCap));
       Point p1 = origin + t.p1;
       Point p2 = origin + t.p2;
       if (moving && toplevel) {

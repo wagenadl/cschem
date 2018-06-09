@@ -168,7 +168,24 @@ void PBData::getPropertiesFromSelection() {
       }
     }
   }
-  // more: text, ref
+
+  got = false;
+  // set ref if we have precisely one hole or group, otherwise clear it
+  ref->setText("");
+  for (int k: objects) {
+    if (here.object(k).isHole() || here.object(k).isGroup()) {
+      if (got) {
+	ref->setText("");
+      } else {
+	ref->setText(here.object(k).isHole()
+		     ? here.object(k).asHole().ref
+		     : here.object(k).asGroup().ref);
+	got = true;
+      }
+    }
+  }
+  
+  // more: text
 }
 
 Layer PBData::layer() const {
