@@ -25,6 +25,8 @@ private:
   QSharedDataPointer<class LData> d;
 };
 
+Layout formComponent(Group const &);
+
 QDebug operator<<(QDebug, Layout const &);
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Layout const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Layout &);
