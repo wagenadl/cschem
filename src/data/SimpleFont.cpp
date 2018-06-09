@@ -32,3 +32,24 @@ SimpleFont const &SimpleFont::instance() {
   return font;
 }
 
+double SimpleFont::baseSize() const {
+  return 20;
+}
+
+double SimpleFont::dx() const {
+  return 20;
+}
+
+double SimpleFont::width(QString s) const {
+  return dx()*s.size();
+}
+
+double SimpleFont::ascent() const {
+  return 20;
+}
+
+double SimpleFont::descent() const {
+  return 9;
+}
+
+

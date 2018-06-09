@@ -46,8 +46,15 @@ public slots:
   void setOD(Dim);
   void setSquare(bool);
   void setRef(QString);
+  void setFontSize(Dim);
   void setText(QString);
+  void rotateCW();
+  void rotateCCW();
+  void flipH();
+  void flipV();
   void setMode(Mode);
+  void setRotation(int); // this is not the way to rotate or flip things
+  void setFlipped(bool); // this is not the way to rotate or flip things
 signals:
   void boardChanged(Board const &);
   void hovering(Point);

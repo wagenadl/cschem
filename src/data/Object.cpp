@@ -247,12 +247,12 @@ Rect Object::boundingRect() const {
     return asHole().boundingRect();
   case Type::Pad:
     return asPad().boundingRect();
-  case Type::Text:
-    return Rect(); // NYI
   case Type::Trace:
     return asTrace().boundingRect();
   case Type::Group:
     return asGroup().boundingRect();
+  case Type::Text:
+    return asText().boundingRect();
   }
   return Rect();
 }

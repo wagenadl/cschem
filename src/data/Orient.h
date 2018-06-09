@@ -9,7 +9,7 @@
 
 
 struct Orient {
-  int rot; // 0..3; 1 turns +ve x into +ve y, i.e., CW.
+  int rot; // 0=up, 1=right, 2=down, 3=left
   bool flip;
 public:
   explicit Orient(int rot=0, bool flip=false): rot(rot&3), flip(flip) { }

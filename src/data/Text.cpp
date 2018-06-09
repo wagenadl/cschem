@@ -1,8 +1,28 @@
 // Text.cpp
 
 #include "Text.h"
+#include "SimpleFont.h"
 
 Text::Text() {
+}
+
+Rect Text::boundingRect() const {
+  qDebug() << "Text::boundingRect - not yet correct";
+  // must take orientation into account
+  SimpleFont const &sf(SimpleFont::instance());
+  Dim w(fontsize*sf.width(text)/sf.baseSize());
+  Dim asc(fontsize*sf.ascent()/sf.baseSize());
+  Dim desc(fontsize*sf.descent()/sf.baseSize());
+  bool efflip = orient.flip ^ layer==Layer::Bottom;
+  if (efflip)
+    w = -w;
+  switch (orient.rot & 3) {
+  case 0: return Rect(p + Point(Dim(), desc), p + Point(w, -asc));
+  case 1: return Rect(p + Point(asc, Dim()), p + Point(desc, w));
+  case 2: return Rect(p + Point(Dim(), -desc), p + Point(-w, asc));
+  case 3: return Rect(p + Point(-asc, Dim()), p + Point(-desc, -w));
+  }
+  return Rect(); // not executed 
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Text const &t) {
@@ -33,7 +53,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Text &t) {
   else
     t.text = "";
   if (ok)
-    t.layer = Layer(a.value("layer").toInt());
+    t.layer = Layer(a.value("l").toInt());
   else
     t.layer = Layer::Invalid;
   s.skipCurrentElement();

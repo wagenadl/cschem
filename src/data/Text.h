@@ -7,12 +7,13 @@
 #include "Point.h"
 #include "Layer.h"
 #include "Orient.h"
+#include "Rect.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 
 class Text {
 public:
-  Point p;
+  Point p; // left, baseline of text
   Dim fontsize;
   Layer layer;
   Orient orient;
@@ -20,6 +21,7 @@ public:
 public:
   Text();
   bool isValid() const { return layer!=Layer::Invalid; }
+  Rect boundingRect() const;
 };
 
 QDebug operator<<(QDebug, Text const &);

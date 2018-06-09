@@ -3,12 +3,15 @@
 #include "Editor.h"
 #include "data/FileIO.h"
 #include "data/Layout.h"
+#include "data/SimpleFont.h"
+#include "data/Orient.h"
 #include <QTransform>
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
 #include "data/Object.h"
 #include <QRubberBand>
+#include <QInputDialog>
 
 class EData {
 public:
@@ -26,11 +29,14 @@ public:
   void drawObject(Object const &o, Layer l, Point const &origin,
 		  QPainter &p, bool selected, bool toplevel=false) const;
   // only draw parts of object that are part of given layer
+  void drawText(Text const &t, QPainter &p, bool selected,
+		Point const &origin) const;
   void drawPlanes(Layer l, QPainter &p) const;
   void drawTracing(QPainter &) const;
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
   void pressHole(Point);
+  void pressText(Point);
   void pressTracing(Point);
   void moveTracing(Point);
   void abortTracing();
@@ -60,6 +66,9 @@ public:
     Layer layer;
     Dim od, id;
     bool square;
+    QString text;
+    Orient orient;
+    Dim fs;
   } props;
   Point tracestart;
   Point tracecurrent;
@@ -246,6 +255,12 @@ void EData::drawObject(Object const &o, Layer l,
 		 mils2widget.map(p2.toMils()));
     }
   } break;
+  case Object::Type::Text: {
+    Text const &t = o.asText();
+    if (t.layer==l)
+      drawText(t, p, selected,
+	       (moving && toplevel && selected) ? origin + movingdelta : origin);
+  } break;
   case Object::Type::Hole:
     if (l==Layer::Bottom || l==Layer::Top || l==Layer::Invalid) {
       Hole const &t = o.asHole();
@@ -281,6 +296,29 @@ void EData::drawObject(Object const &o, Layer l,
   }
 }
 
+void EData::drawText(Text const &t, QPainter &p, bool selected,
+		     Point const &origin) const {
+  SimpleFont const &sf(SimpleFont::instance());
+  Point pt = origin + t.p;
+  p.save();
+  p.setPen(QPen(QColor(255,255,255), 4));
+  p.translate(mils2widget.map(pt.toMils()));
+  p.rotate(90*t.orient.rot);
+  int xflip = ((t.layer==Layer::Bottom) ^ t.orient.flip) ? -1 : 1;
+  p.scale(xflip*mils2px*t.fontsize.toMils()/sf.baseSize(),
+	  -mils2px*t.fontsize.toMils()/sf.baseSize());
+  p.setPen(QPen(layerColor(t.layer, selected), 2));
+  qDebug() << p.pen();
+  for (int k=0; k<t.text.size(); k++) {
+    QVector<QPolygonF> const &glyph = sf.character(t.text[k].unicode());
+    for (auto const &pp: glyph)
+      p.drawPolyline(pp);
+    p.translate(sf.dx(),0);
+  }
+  p.restore();
+    
+}
+
 void EData::drawSelectedPoints(QPainter &p) const {
   if (purepts.isEmpty())
     return;
@@ -299,6 +337,25 @@ void EData::abortTracing() {
   tracing = false;
   ed->update();
 }
+
+void EData::pressText(Point p) {
+  if (props.text.isEmpty())
+    props.text = QInputDialog::getText(ed, "Place text", "Text:");
+  if (props.text.isEmpty())
+    return;
+
+  p = p.roundedTo(layout.board().grid);
+  Group &here(layout.root().subgroup(crumbs));
+  p -= layout.root().originOf(crumbs);
+  Text t;
+  t.p = p;
+  t.fontsize = props.fs;
+  t.orient = props.orient;
+  t.text = props.text;
+  t.layer = props.layer;
+  here.insert(Object(t));
+  ed->update();
+} 
 
 void EData::pressHole(Point p) {
   p = p.roundedTo(layout.board().grid);
@@ -557,6 +614,7 @@ Editor::~Editor() {
 
 void Editor::setMode(Mode m) {
   d->mode = m;
+  clearSelection();
 }
 
 bool Editor::load(QString fn) {
@@ -618,6 +676,9 @@ void Editor::mousePressEvent(QMouseEvent *e) {
       break;
     case Mode::PlaceHole:
       d->pressHole(p);
+      break;
+    case Mode::PlaceText:
+      d->pressText(p);
       break;
     default:
       break;
@@ -840,13 +901,25 @@ void Editor::setLineWidth(Dim l) {
 }
 
 void Editor::setLayer(Layer l) {
+  qDebug() << "setLayer" << l;
   d->props.layer = l;
 
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.type()==Object::Type::Trace)
+    switch (obj.type()) {
+    case Object::Type::Trace:
       obj.asTrace().layer = l;
+      break;
+    case Object::Type::Text:
+      obj.asText().layer = l;
+      break;
+    case Object::Type::Pad:
+      obj.asPad().layer = l;
+      break;
+    default:
+      break;
+    }
   }
   update();
 }
@@ -910,6 +983,7 @@ void Editor::setRef(QString t) {
 }
 
 void Editor::setText(QString t) {
+  d->props.text = t;
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
@@ -919,6 +993,24 @@ void Editor::setText(QString t) {
   update();
 }
 
+void Editor::setRotation(int rot) {
+  d->props.orient.rot = rot;
+}
+
+void Editor::setFlipped(bool f) {
+  d->props.orient.flip = f;
+}
+
+void Editor::setFontSize(Dim fs) {
+  d->props.fs = fs;
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.isText())
+      obj.asText().fontsize = fs;
+  }
+  update();
+}
 
 QList<int> Editor::breadcrumbs() const {
   return d->crumbs;
@@ -939,3 +1031,20 @@ Group const &Editor::currentGroup() const {
 Point Editor::groupOffset() const {
   return d->layout.root().originOf(d->crumbs);
 }
+
+void Editor::rotateCW() {
+  qDebug() << "Rotate CW NYI";
+}
+
+void Editor::rotateCCW() {
+  qDebug() << "Rotate CCW NYI";
+}
+
+void Editor::flipH() {
+  qDebug() << "Flip H NYI";
+}
+
+void Editor::flipV() {
+  qDebug() << "Flip V NYI";
+}
+

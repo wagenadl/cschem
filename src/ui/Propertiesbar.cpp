@@ -176,6 +176,7 @@ void PBData::getPropertiesFromSelection() {
     if (here.object(k).isHole() || here.object(k).isGroup()) {
       if (got) {
 	ref->setText("");
+	break;
       } else {
 	ref->setText(here.object(k).isHole()
 		     ? here.object(k).asHole().ref
@@ -184,8 +185,69 @@ void PBData::getPropertiesFromSelection() {
       }
     }
   }
-  
-  // more: text
+
+  Layer l = Layer::Invalid;
+  got = false;
+  // set layer if all are same
+  for (int k: objects) {
+    Object const &obj(here.object(k));
+    switch (obj.type()) {
+    case Object::Type::Pad:
+      if (got) {
+	if (obj.asPad().layer != l) {
+	  l = Layer::Invalid;
+	  break;
+	}
+      } else {
+	l = obj.asPad().layer;
+	got = true;
+      }
+      break;
+    case Object::Type::Trace:
+      if (got) {
+	if (obj.asTrace().layer != l) {
+	  l = Layer::Invalid;
+	  break;
+	}
+      } else {
+	l = obj.asTrace().layer;
+	got = true;
+      }
+      break;
+    case Object::Type::Text:
+      if (got) {
+	if (obj.asText().layer != l) {
+	  l = Layer::Invalid;
+	  break;
+	}
+      } else {
+	l = obj.asText().layer;
+	got = true;
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  silk->setChecked(l==Layer::Silk);
+  top->setChecked(l==Layer::Top);
+  bottom->setChecked(l==Layer::Bottom);
+
+
+  got = false;
+  // set text if we have precisely one text object, otherwise clear it
+  text->setText("");
+  for (int k: objects) {
+    if (here.object(k).isText()) {
+      if (got) {
+	text->setText("");
+	break;
+      }
+    } else  {
+      text->setText(here.object(k).asText().text);
+      got = true;
+    }
+  }
 }
 
 Layer PBData::layer() const {
@@ -246,11 +308,18 @@ void PBData::hideAndShow() {
     wc->setEnabled(true);
     hc->setEnabled(true);
     layera->setEnabled(true);
+    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked())
+      top->setChecked(true);
     break;
   case Mode::PlaceText:
     texta->setEnabled(true);
     layera->setEnabled(true);
     orienta->setEnabled(true);
+    if (!up->isChecked() && !right->isChecked()
+	&& !down->isChecked() && !left->isChecked())
+      up->setChecked(true);
+    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked())
+      silk->setChecked(true);
     break;
   case Mode::PlacePlane:
     layera->setEnabled(true);
@@ -320,6 +389,15 @@ void PBData::hsEdit() {
     if (here.object(k).isText()) {
       texta->setEnabled(true);
       text->setEnabled(objects.size()==1);
+      break;
+    }
+  }
+
+  // Show layer if we have at least one trace, pad, or text
+  for (int k: objects) {
+    if (here.object(k).isText() || here.object(k).isPad()
+	|| here.object(k).isTrace()) {
+      layera->setEnabled(true);
       break;
     }
   }
@@ -397,25 +475,25 @@ void PBData::setupUI() {
   };
   */
 
-  auto makeTextTool = [](QWidget *container, QString text, bool excl=true) {
+  auto makeTextTool = [](QWidget *container, QString text) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QToolButton *s = new QToolButton;
     s->setText(text);
     s->setCheckable(true);
-    s->setAutoExclusive(excl);
     container->layout()->addWidget(s);
     return s;
   };
 
-  auto makeIconTool = [](QWidget *container, QString icon) {
+  auto makeIconTool = [](QWidget *container, QString icon,
+			 bool chkb=false, bool ae=false) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QToolButton *s = new QToolButton;
     s->setIcon(QIcon(":icons/" + icon + ".svg"));
     s->setToolTip(icon);
-    s->setCheckable(true);
-    s->setAutoExclusive(true);
+    s->setCheckable(chkb);
+    s->setAutoExclusive(ae);
     container->layout()->addWidget(s);
     return s;
   };
@@ -480,10 +558,10 @@ void PBData::setupUI() {
   h->setMinimumValue(Dim::fromInch(0.005));
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
-  circle = makeTextTool(squarec, "○", false);
+  circle = makeTextTool(squarec, "○");
   circle->setToolTip("Round");
   circle->setChecked(true);
-  square = makeTextTool(squarec, "□", false);
+  square = makeTextTool(squarec, "□");
   square->setToolTip("Square");
   QObject::connect(square, &QToolButton::clicked,
 		   [this](bool b) {
@@ -515,46 +593,92 @@ void PBData::setupUI() {
   makeLabel(c1, "Aa")->setToolTip("Text");
   auto *c2 = makeContainer(textg);
   text = makeEdit(c2);
-  QObject::connect(ref, &QLineEdit::textEdited,
+  QObject::connect(text, &QLineEdit::textEdited,
 		   [this](QString txt) { editor->setText(txt); });
   fs = makeDimSpinner(c1);
   fs->setValue(Dim::fromInch(.050));
   fs->setToolTip("Font size");
+  QObject::connect(fs, &DimSpinner::valueEdited,
+		   [this](Dim d) { editor->setFontSize(d); });
 
   orientg = makeGroup(&orienta);
   auto *c3 = makeContainer(orientg);
   orientc = makeContainer(c3);
   rotatec = makeContainer(c3);
-  up = makeIconTool(orientc, "Up");
-  right = makeIconTool(orientc, "Right");
-  down = makeIconTool(orientc, "Down");
-  left = makeIconTool(orientc, "Left");
+  up = makeIconTool(orientc, "Up", true, true);
+  QObject::connect(up, &QToolButton::clicked,
+		   [this](bool b) {
+		     if (b) 
+		       editor->setRotation(0);
+		     });
+  right = makeIconTool(orientc, "Right", true, true);
+  QObject::connect(right, &QToolButton::clicked,
+		   [this](bool b) {
+		     if (b) 
+		       editor->setRotation(1);
+		     });
+  down = makeIconTool(orientc, "Down", true, true);
+  QObject::connect(down, &QToolButton::clicked,
+		   [this](bool b) {
+		     if (b) 
+		       editor->setRotation(2);
+		     });
+  left = makeIconTool(orientc, "Left", true, true);
+  QObject::connect(left, &QToolButton::clicked,
+		   [this](bool b) {
+		     if (b)
+		       editor->setRotation(3);
+		     });
+  flipped = makeIconTool(c3, "Flipped", true);
+  QObject::connect(flipped, &QToolButton::clicked,
+		   [this](bool b) {
+		     editor->setFlipped(b);
+		   });
+
   ccw = makeIconTool(rotatec, "CCW");
   ccw->setToolTip("Rotate left");
-  ccw->setCheckable(false);
+  QObject::connect(ccw, &QToolButton::clicked,
+		   [this]() { editor->rotateCCW(); });
   cw = makeIconTool(rotatec, "CW");
   ccw->setToolTip("Rotate right");
-  cw->setCheckable(false);
+  QObject::connect(ccw, &QToolButton::clicked,
+		   [this]() { editor->rotateCW(); });
   fliph = makeIconTool(rotatec, "FlipH");
-  ccw->setToolTip("Flip left to right");
-  fliph->setCheckable(false);
-  ccw->setToolTip("Flip top to bottom");
+  fliph->setToolTip("Flip left to right");
+  QObject::connect(fliph, &QToolButton::clicked,
+		   [this]() { editor->flipH(); });
   flipv = makeIconTool(rotatec, "FlipV");
-  flipv->setCheckable(false);
-  flipped = makeIconTool(c3, "Flipped");
+  flipv->setToolTip("Flip top to bottom");
+  QObject::connect(flipv, &QToolButton::clicked,
+		   [this]() { editor->flipV(); });
 
   layerg = makeGroup(&layera);
   auto *lc = makeContainer(layerg);
   makeLabel(lc, "Layer");
-  silk = makeIconTool(lc, "Silk");
+  silk = makeIconTool(lc, "Silk", true);
   QObject::connect(silk, &QToolButton::clicked,
-		   [this]() { editor->setLayer(Layer::Silk); });
-  top = makeIconTool(lc, "Top");
+		   [this](bool b) {
+		     if (b) {
+		       top->setChecked(false);
+		       bottom->setChecked(false);
+		       editor->setLayer(Layer::Silk);
+		     }});
+  top = makeIconTool(lc, "Top", true);
   QObject::connect(top, &QToolButton::clicked,
-		   [this]() { editor->setLayer(Layer::Top); });
-  bottom = makeIconTool(lc, "Bottom");
+		   [this](bool b) {
+		     if (b) {
+		       silk->setChecked(false);
+		       bottom->setChecked(false);
+		       editor->setLayer(Layer::Top);
+		     }});
+  bottom = makeIconTool(lc, "Bottom", true);
   QObject::connect(bottom, &QToolButton::clicked,
-		   [this]() { editor->setLayer(Layer::Bottom); });
+		   [this](bool b) {
+		     if (b) {
+		       silk->setChecked(false);
+		       top->setChecked(false);
+		       editor->setLayer(Layer::Bottom);
+		     }});
   top->setChecked(true);
 }  
 
@@ -605,4 +729,11 @@ void Propertiesbar::forwardAllProperties() {
   d->editor->setID(d->id->value());
   d->editor->setOD(d->od->value());
   d->editor->setSquare(d->square->isChecked());
+  d->editor->setFontSize(d->fs->value());
+  d->editor->setText(d->text->text());
+  d->editor->setRotation(d->right->isChecked() ? 1
+			 : d->down->isChecked() ? 2
+			 : d->left->isChecked() ? 3
+			 : 0);
+  d->editor->setFlipped(d->flipped->isChecked());
 }
