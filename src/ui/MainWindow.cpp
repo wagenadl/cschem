@@ -131,6 +131,8 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::CTRL + Qt::Key_G));
   edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
+  edit->addAction("&Delete selected", [this]() { editor->deleteSelected(); },
+		  QKeySequence(Qt::Key_Delete));
 
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },

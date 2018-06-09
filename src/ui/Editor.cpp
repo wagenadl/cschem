@@ -1273,11 +1273,20 @@ void Editor::dissolveGroup() {
   if (d->selection.isEmpty())
     return;
   Group &here(d->layout.root().subgroup(d->crumbs));
-  qDebug() << "pre" << here;
   for (int id: d->selection) 
     if (here.object(id).isGroup())
       here.dissolveSubgroup(id);
-  qDebug() << "post" << here;
   clearSelection();
   update();
 }
+
+void Editor::deleteSelected() {
+  if (d->selection.isEmpty())
+    return;
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) 
+    here.remove(id);
+  clearSelection();
+  update();
+}
+  

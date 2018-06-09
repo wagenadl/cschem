@@ -63,6 +63,7 @@ public slots:
   void setMode(Mode);
   void formGroup();
   void dissolveGroup();
+  void deleteSelected();
 signals:
   void boardChanged(Board const &);
   void hovering(Point);
