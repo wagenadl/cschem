@@ -322,7 +322,12 @@ void PBData::hideAndShow() {
       silk->setChecked(true);
     break;
   case Mode::PlaceArc:
-    qDebug() << "Propertiesbar: placearc nyi";
+    dima->setEnabled(true);
+    linewidthc->setEnabled(true);
+    idc->setEnabled(true);
+    layera->setEnabled(true);
+    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked())
+      silk->setChecked(true);
     break;
   case Mode::PlacePlane:
     layera->setEnabled(true);
@@ -527,7 +532,7 @@ void PBData::setupUI() {
   QObject::connect(linewidth, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setLineWidth(d); });
   idc = makeContainer(dimg);
-  makeLabel(idc, "ID")->setToolTip("Hole diameter");
+  makeLabel(idc, "⌀")->setToolTip("Hole diameter");
   id = makeDimSpinner(idc);
   id->setMinimumValue(Dim::fromInch(0.005));
   id->setValue(Dim::fromInch(.040));
@@ -604,6 +609,10 @@ void PBData::setupUI() {
   QObject::connect(fs, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setFontSize(d); });
 
+  QWidget *x = new QWidget;
+  x->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+  parent->addWidget(x);
+  
   orientg = makeGroup(&orienta);
   auto *c3 = makeContainer(orientg);
   orientc = makeContainer(c3);

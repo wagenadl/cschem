@@ -319,6 +319,28 @@ void EData::drawObject(Object const &o, Layer l,
       p.drawRect(QRectF(p0 - QPointF(w/2,h/2), p0 + QPointF(w/2,h/2)));
     }
   } break;
+  case Object::Type:: Arc: {
+    Arc const &t = o.asArc();
+    if (t.layer == l) {
+      p.setPen(QPen(layerColor(l, selected), mils2px*t.linewidth.toMils(),
+		    Qt::SolidLine, Qt::RoundCap));
+      p.setBrush(Qt::NoBrush);
+      QPointF c(mils2widget.map((origin+t.center).toMils()));
+      double r = mils2px*t.radius.toMils();
+      QRectF rect(c - QPointF(r,r), c + QPointF(r,r));
+      switch (t.extent) {
+      case Arc::Extent::Full: p.drawArc(rect, 0, 16*360);break;
+      case Arc::Extent::LeftHalf: p.drawArc(rect, 16*90, 16*180); break;
+      case Arc::Extent::RightHalf: p.drawArc(rect, 16*-90, 16*180); break;;
+      case Arc::Extent::TopHalf: p.drawArc(rect, 0, 16*180); break;
+      case Arc::Extent::BottomHalf: p.drawArc(rect, -16*180, 16*180); break;
+      case Arc::Extent::TLQuadrant: p.drawArc(rect, 16*90, 16*90); break;
+      case Arc::Extent::TRQuadrant: p.drawArc(rect, 0, 16*90); break;
+      case Arc::Extent::BRQuadrant: p.drawArc(rect, -16*90, 16*90); break;
+      case Arc::Extent::BLQuadrant: p.drawArc(rect, 16*180, 16*90); break;
+      }
+    }
+  } break;
   case Object::Type::Group: {
     Group const &g = o.asGroup();
     Point ori = origin + g.origin;
@@ -424,7 +446,7 @@ void EData::pressArc(Point p) {
   p -= layout.root().originOf(crumbs);
   Arc t;
   t.center = p;
-  t.radius = (props.id + props.od) / 2;
+  t.radius = props.id / 2;
   t.linewidth = props.linewidth;
   here.insert(Object(t));
   ed->update();
@@ -960,8 +982,10 @@ void Editor::setLineWidth(Dim l) {
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.type()==Object::Type::Trace)
+    if (obj.isTrace())
       obj.asTrace().width = l;
+    else if (obj.isArc())
+      obj.asArc().linewidth = l;
   }
   update();
 }
@@ -982,6 +1006,9 @@ void Editor::setLayer(Layer l) {
     case Object::Type::Pad:
       obj.asPad().layer = l;
       break;
+    case Object::Type::Arc:
+      obj.asArc().layer = l;
+      break;
     default:
       break;
     }
@@ -997,10 +1024,12 @@ void Editor::setID(Dim x) {
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.type()==Object::Type::Hole) {
+    if (obj.isHole()) {
       obj.asHole().id = x;
       if (obj.asHole().od < x + Dim::fromInch(.015))
 	obj.asHole().od = x + Dim::fromInch(.015);
+    } else if (obj.isArc()) {
+      obj.asArc().radius = x/2;
     }
   }
   update();

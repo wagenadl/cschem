@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource>
+<file>icons/Arc.svg</file>
 <file>icons/Bottom.svg</file>
 <file>icons/CCW.svg</file>
 <file>icons/Component.svg</file>

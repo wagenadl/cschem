@@ -17,8 +17,9 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   addAct(Mode::PlaceHole, "Hole", Qt::Key_F4);
   addAct(Mode::PlacePad, "Pad", Qt::Key_F5);
   addAct(Mode::PlaceText, "Text", Qt::Key_F6);
-  addAct(Mode::PlacePlane, "Plane", Qt::Key_F7);
-  addAct(Mode::PickupTrace, "Disconnect", Qt::Key_F8);
+  addAct(Mode::PlaceArc, "Arc", Qt::Key_F7);
+  addAct(Mode::PlacePlane, "Plane", Qt::Key_F8);
+  addAct(Mode::PickupTrace, "Disconnect", Qt::Key_F9);
   setMode(Mode::Edit);
 }
 
