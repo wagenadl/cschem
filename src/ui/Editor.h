@@ -9,6 +9,7 @@
 #include "data/Point.h"
 #include "data/Arc.h"
 #include "Mode.h"
+#include "EProps.h"
 
 class Editor: public QWidget {
   Q_OBJECT;
@@ -24,6 +25,7 @@ public:
   // in absolute board coordinates
   Group const &currentGroup() const;
   Point groupOffset() const;
+  EProps &properties(); // for Propertiesbar to directly affect
 public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);

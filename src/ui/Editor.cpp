@@ -64,17 +64,7 @@ public:
   QSet<int> selection;
   QSet<Point> selpts; // selected points that *are* part of a selected object
   QSet<Point> purepts; // selected points that are *not* part of any sel. object
-  struct Props {
-    Dim linewidth;
-    Layer layer;
-    Dim od, id;
-    Dim w, h;
-    bool square;
-    QString text;
-    Orient orient;
-    Dim fs;
-    Arc::Extent ext;
-  } props;
+  EProps props;
   Point tracestart;
   Point tracecurrent;
   Point presspoint;
@@ -995,7 +985,6 @@ void Editor::setExtent(Arc::Extent ext) {
 
 void Editor::setLineWidth(Dim l) {
   d->props.linewidth = l;
-
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
@@ -1266,3 +1255,6 @@ void Editor::flipV() {
   rotateCCW();
 }
 
+EProps &Editor::properties() {
+  return d->props;
+}

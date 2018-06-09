@@ -125,6 +125,8 @@ void PBData::getPropertiesFromSelection() {
       }
     } 
   }
+  if (linewidth->hasValue())
+    editor->properties().linewidth = linewidth->value();
     
   got = false;
   // Set w (h) if we have at least one pad and their widths (heights) are
@@ -146,6 +148,10 @@ void PBData::getPropertiesFromSelection() {
       }
     }
   }
+  if (w->hasValue())
+    editor->properties().w = w->value();
+  if (h->hasValue())
+    editor->properties().h = h->value();
 
   got = false;
   // Set id (od, square) if we have at least one hole and their id (etc)
@@ -206,6 +212,14 @@ void PBData::getPropertiesFromSelection() {
       }
     }
   }
+  if (id->hasValue())
+    editor->properties().id = id->value();
+  if (od->hasValue())
+    editor->properties().id = od->value();
+  if (square->isChecked())
+    editor->properties().square = true;
+  if (circle->isChecked())
+    editor->properties().square = false;
   
   got = false;
   // set ref if we have precisely one hole or group, otherwise clear it
@@ -250,8 +264,10 @@ void PBData::getPropertiesFromSelection() {
   arctl->setChecked(ext == Arc::Extent::TLQuadrant);    
   arctr->setChecked(ext == Arc::Extent::TRQuadrant);    
   arcbr->setChecked(ext == Arc::Extent::BRQuadrant);    
-  arcbl->setChecked(ext == Arc::Extent::BLQuadrant);    
-    
+  arcbl->setChecked(ext == Arc::Extent::BLQuadrant);
+  if (ext != Arc::Extent::Invalid)
+    editor->properties().ext = ext;
+
   Layer l = Layer::Invalid;
   got = false;
   // set layer if all are same
@@ -298,6 +314,9 @@ void PBData::getPropertiesFromSelection() {
   silk->setChecked(l==Layer::Silk);
   top->setChecked(l==Layer::Top);
   bottom->setChecked(l==Layer::Bottom);
+  if (l != Layer::Invalid)
+    editor->properties().layer = l;
+
 
   got = false;
   // set text if we have precisely one text object, otherwise clear it
@@ -314,6 +333,27 @@ void PBData::getPropertiesFromSelection() {
       }
     }
   }
+  if (text->text() != "")
+    editor->properties().text = text->text();
+
+  got = false;
+  // set fs if we have text, and all are same
+  text->setText("");
+  for (int k: objects) {
+    Object const &obj(here.object(k));
+    if (obj.isText()) {
+      if (got) {
+	if (obj.asText().fontsize != fs->value())
+	  fs->setNoValue();
+	break;
+      } else  {
+	fs->setValue(obj.asText().fontsize);
+	got = true;
+      }
+    }
+  }
+  if (fs->hasValue())
+    editor->properties().fs = fs->value();  
 }
 
 Layer PBData::layer() const {
