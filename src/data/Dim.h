@@ -41,7 +41,10 @@ public:
   bool isNegative() const { return d<0; }
   bool isPositive() const { return d>0; }
   Dim roundedTo(Dim o) const {
-    return o.isNull() ? *this : Dim(round(d/o.d)*o.d);
+    if (o.isNull())
+      return *this;
+    else
+      return Dim(((2*(d%o.d) >= o.d) ? (d/o.d+1) : (d/o.d)) * o.d);
   }
 public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }

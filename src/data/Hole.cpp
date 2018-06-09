@@ -16,6 +16,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
   s.writeAttribute("id", t.id.toString());
   s.writeAttribute("od", t.od.toString());
   s.writeAttribute("sq", t.square ? "1" : "0");
+  s.writeAttribute("ref", t.ref);
   s.writeEndElement();
   return s;
 }
@@ -24,6 +25,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
   t = Hole();
   bool ok;
   auto a = s.attributes();
+  t.ref = a.value("ref").toString();
   t.p = Point::fromString(a.value("p").toString(), &ok);
   if (ok)
     t.square = a.value("sq").toInt(&ok);
@@ -36,7 +38,9 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
 }
 
 QDebug operator<<(QDebug d, Hole const &t) {
-  d << "Hole(" << t.p
+  d << "Hole("
+    << t.ref
+    << t.p
     << t.id
     << t.od
     << (t.square ? "square" : "circ")

@@ -45,6 +45,8 @@ public slots:
   void setID(Dim);
   void setOD(Dim);
   void setSquare(bool);
+  void setRef(QString);
+  void setText(QString);
   void setMode(Mode);
 signals:
   void boardChanged(Board const &);

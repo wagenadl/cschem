@@ -149,6 +149,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   }
   s.writeStartElement("group");
   s.writeAttribute("o", t.origin.toString());
+  s.writeAttribute("ref", t.ref);
   for (Object const *o: t.d->obj)
     s << *o;
   s.writeEndElement();
@@ -159,6 +160,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   t = Group();
   bool ok;
   auto a = s.attributes();
+  t.ref = a.value("ref").toString();
   t.origin = Point::fromString(a.value("o").toString(), &ok);
   if (!ok) {
     s.skipCurrentElement();
@@ -185,7 +187,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 }
 
 QDebug operator<<(QDebug d, Group const &t) {
-  d << "Group(";
+  d << "Group(" << t.ref << " at " << t.origin;
   for (Object const *o: t.d->obj)
     d << *o;
   d << ")";

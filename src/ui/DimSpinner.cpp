@@ -2,9 +2,25 @@
 
 #include "DimSpinner.h"
 
+class SupSig {
+public:
+  SupSig(DimSpinner *ds, bool fake=false): ds(ds), fake(fake) {
+    if (!fake)
+      ds->suppress_signals++;
+  }
+  ~SupSig() {
+    if (!fake)
+      ds->suppress_signals--;
+  }
+private:
+  DimSpinner *ds;
+  bool fake;
+};
+
 DimSpinner::DimSpinner(QWidget *parent): QDoubleSpinBox(parent) {
   metric_ = false;
   hasvalue_ = true;
+  suppress_signals = 0;
   minv = Dim::fromInch(0.);
   maxv = Dim::fromInch(100.);
   step = Dim::fromInch(.005);
@@ -17,7 +33,8 @@ DimSpinner::DimSpinner(QWidget *parent): QDoubleSpinBox(parent) {
 	      hasvalue_ = true;
 	      setMinimumValue(minv);
 	    }
-	    valueChanged(metric_ ? Dim::fromMM(v) : Dim::fromInch(v));
+	    if (suppress_signals==0)
+	      valueEdited(metric_ ? Dim::fromMM(v) : Dim::fromInch(v));
 	  });
 }
 
@@ -40,6 +57,7 @@ bool DimSpinner::isInch() const {
 }
 
 void DimSpinner::setNoValue() {
+  SupSig ss(this);
   hasvalue_ = false;
   setMinimumValue(minv);
   QDoubleSpinBox::setSpecialValueText("---");
@@ -50,7 +68,8 @@ bool DimSpinner::hasValue() const  {
   return hasvalue_ ? true : value() > minv - step/2;
 }
 
-void DimSpinner::setValue(Dim d) {
+void DimSpinner::setValue(Dim d, bool doemit) {
+  SupSig ss(this, doemit);
   if (!hasvalue_) {
     hasvalue_ = true;
     QDoubleSpinBox::setSpecialValueText(QString());
@@ -63,11 +82,13 @@ void DimSpinner::setValue(Dim d) {
 }
 
 void DimSpinner::setStep(Dim d) {
+  SupSig ss(this);
   step = d;
   QDoubleSpinBox::setSingleStep(metric_ ? d.toMM() : d.toInch());
 }
 
 void DimSpinner::setMinimumValue(Dim d) {
+  SupSig ss(this);
   minv = d;
   double mv = metric_ ? minv.toMM() : minv.toInch();
   if (hasvalue_) 
@@ -77,12 +98,14 @@ void DimSpinner::setMinimumValue(Dim d) {
 }
 
 void DimSpinner::setMaximumValue(Dim d) {
+  SupSig ss(this);
   maxv = d;
   double mv = metric_ ? maxv.toMM() : maxv.toInch();
   QDoubleSpinBox::setMaximum(mv);
 }
 
 void DimSpinner::setMetric(bool b) {
+  SupSig ss(this);
   if (b) {
     bool ok = hasValue();
     Dim d = value();
@@ -100,6 +123,7 @@ void DimSpinner::setMetric(bool b) {
 }
 
 void DimSpinner::setInch() {
+  SupSig ss(this);
   Dim d = value();
   bool ok = hasValue();
   metric_ = false;

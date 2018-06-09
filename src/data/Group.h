@@ -18,6 +18,7 @@ class Group {
 public:
   Point origin; // to be added to all contained coordinates;
   // relative to parent's origin
+  QString ref;
 public:
   Group();
   ~Group();

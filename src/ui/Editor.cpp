@@ -848,25 +848,35 @@ void Editor::setLayer(Layer l) {
 }
 
 void Editor::setID(Dim x) {
+  if (x < Dim::fromInch(.005))
+    x = Dim::fromInch(.005);
   d->props.id = x;
 
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.type()==Object::Type::Hole)
+    if (obj.type()==Object::Type::Hole) {
       obj.asHole().id = x;
+      if (obj.asHole().od < x + Dim::fromInch(.015))
+	obj.asHole().od = x + Dim::fromInch(.015);
+    }
   }
   update();
 }
 
 void Editor::setOD(Dim x) {
+  if (x < Dim::fromInch(.02))
+    x = Dim::fromInch(.02);
   d->props.od = x;
 
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.type()==Object::Type::Hole)
+    if (obj.type()==Object::Type::Hole) {
       obj.asHole().od = x;
+      if (obj.asHole().id > x - Dim::fromInch(.015))
+	obj.asHole().id = x - Dim::fromInch(.015);
+    }      
   }
   update();
 }
@@ -882,6 +892,29 @@ void Editor::setSquare(bool b) {
   }
   update();
 }
+
+void Editor::setRef(QString t) {
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.isHole())
+      obj.asHole().ref = t;
+    else if (obj.isGroup())
+      obj.asGroup().ref = t;
+  }
+  update();
+}
+
+void Editor::setText(QString t) {
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.isText())
+      obj.asText().text = t;
+  }
+  update();
+}
+
 
 QList<int> Editor::breadcrumbs() const {
   return d->crumbs;

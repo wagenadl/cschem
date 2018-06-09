@@ -14,6 +14,7 @@ public:
   Dim id;
   Dim od;
   bool square;
+  QString ref;
 public:
   Hole();
   bool isValid() const { return !od.isNull(); }

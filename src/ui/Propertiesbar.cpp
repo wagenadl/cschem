@@ -11,6 +11,7 @@
 #include <QRadioButton>
 #include <QToolButton>
 #include <QLineEdit>
+#include "data/Object.h"
 
 class NarrowEditor: public QLineEdit {
 public:
@@ -70,19 +71,104 @@ public:
   QToolButton *fliph, *flipv;
   
   bool metric;
+  
+  Dim x0, y0;
 public:
   void switchToMetric();
   void switchToInch();
   Dim getDim(DimSpinner *);
   void setDim(DimSpinner *, Dim const &);
   void setupUI();
-  void getPropertiesFromEditor(); // from editor
+  void getPropertiesFromSelection(); // from editor
   void hideAndShow(); // hide and show as appropriate
   void hsEdit();
   Layer layer() const;
 };
 
-void PBData::getPropertiesFromEditor() {
+void PBData::getPropertiesFromSelection() {
+  QSet<int> objects(editor->selectedObjects());
+  QSet<Point> points(editor->selectedPoints());
+  Group const &here(editor->currentGroup());
+
+  if (!points.isEmpty()) {
+    x0 = Dim::fromInch(1000);
+    y0 = Dim::fromInch(1000);
+    for (Point const &p: points) {
+      if (p.x<x0)
+	x0 = p.x;
+      if (p.y<y0)
+	y0 = p.y;
+    }
+    x->setValue(x0);
+    y->setValue(y0);
+  }
+
+  bool got = false;
+  // Set linewidth if we have at least one trace and their widths are all same
+  for (int k: objects) {
+    if (here.object(k).isTrace()) {
+      Dim lw = here.object(k).asTrace().width;
+      if (got) {
+	if (lw != linewidth->value())
+	  linewidth->setNoValue();
+      } else {
+	linewidth->setValue(lw);
+	got = true;
+      }
+    }
+  }
+    
+  got = false;
+  // Set w (h) if we have at least one pad and their widths (heights) are
+  // all same
+  for (int k: objects) {
+    if (here.object(k).isPad()) {
+      Dim w1 = here.object(k).asPad().width;
+      Dim h1 = here.object(k).asPad().height;
+      if (got) {
+	if (w1 != w->value())
+	  w->setNoValue();
+	if (h1 != h->value())
+	  h->setNoValue();
+      } else {
+	w->setValue(w1);
+	h->setValue(h1);
+	got = true;
+      }
+    }
+  }
+
+  got = false;
+  // Set id (od, square) if we have at least one hole and their id (etc)
+  // etc all same
+  square->setChecked(false);
+  circle->setChecked(false);
+  for (int k: objects) {
+    if (here.object(k).isHole()) {
+      Dim id1 = here.object(k).asHole().id;
+      Dim od1 = here.object(k).asHole().od;
+      bool sq = here.object(k).asHole().square;
+      if (got) {
+	if (id1 != id->value())
+	  id->setNoValue();
+	if (od1 != od->value())
+	  od->setNoValue();
+	if (sq && circle->isChecked())
+	  circle->setChecked(false);
+	else if (!sq && square->isChecked())
+	  square->setChecked(false);
+      } else {
+	id->setValue(id1);
+	od->setValue(od1);
+	if (sq)
+	  square->setChecked(true);
+	else
+	  circle->setChecked(true);
+	got = true;
+      }
+    }
+  }
+  // more: text, ref
 }
 
 Layer PBData::layer() const {
@@ -97,6 +183,8 @@ Layer PBData::layer() const {
 }
 
 void PBData::hideAndShow() {
+  qDebug() << "hs" << int(mode);
+  
   xya->setEnabled(false);
   dima->setEnabled(false);
   refa->setEnabled(false);
@@ -104,8 +192,6 @@ void PBData::hideAndShow() {
   layera->setEnabled(false);
   orienta->setEnabled(false);
 
-  xc->setEnabled(false);
-  yc->setEnabled(false);
   linewidthc->setEnabled(false);
   wc->setEnabled(false);
   hc->setEnabled(false);
@@ -162,6 +248,64 @@ void PBData::hsEdit() {
   orientc->setVisible(false);
   flipped->setVisible(false);
   rotatec->setVisible(true);
+  
+  QSet<int> objects(editor->selectedObjects());
+  QSet<Point> points(editor->selectedPoints());
+  Group const &here(editor->currentGroup());
+
+  // Now, what do we enable?
+  // Show X,Y if anything at all selected
+  xya->setEnabled(!objects.isEmpty() || !points.isEmpty());
+
+  // Show linewidth if we have at least one trace
+  for (int k: objects) {
+    if (here.object(k).isTrace()) {
+      dima->setEnabled(true);
+      linewidthc->setEnabled(true);
+      break;
+    }
+  }
+
+  // Show width, height if we have at least one pad
+  for (int k: objects) {
+    if (here.object(k).isPad()) {
+      dima->setEnabled(true);
+      wc->setEnabled(true);
+      hc->setEnabled(true);
+      break;
+    }
+  }
+
+  // Show id, od, sq. if we have at least one hole
+  for (int k: objects) {
+    if (here.object(k).isHole()) {
+      dima->setEnabled(true);
+      idc->setEnabled(true);
+      odc->setEnabled(true);
+      squarec->setEnabled(true);
+      break;
+    }
+  }
+
+  // Show ref if we have exactly one hole or exactly one group
+  if (objects.size()==1) {
+    for (int k: objects) { // loop of 1, but each to write this way
+      if (here.object(k).isGroup()
+	  || here.object(k).isHole()
+	  || here.object(k).isPad())
+	refa->setEnabled(true);
+    }
+  }
+
+  // Show text if we have exactly one text; font size if we have at
+  // least one text
+  for (int k: objects) {
+    if (here.object(k).isText()) {
+      texta->setEnabled(true);
+      text->setEnabled(objects.size()==1);
+      break;
+    }
+  }
 }
 
 void PBData::setupUI() {
@@ -236,13 +380,13 @@ void PBData::setupUI() {
   };
   */
 
-  auto makeTextTool = [](QWidget *container, QString text) {
+  auto makeTextTool = [](QWidget *container, QString text, bool excl=true) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QToolButton *s = new QToolButton;
     s->setText(text);
     s->setCheckable(true);
-    s->setAutoExclusive(true);
+    s->setAutoExclusive(excl);
     container->layout()->addWidget(s);
     return s;
   };
@@ -282,27 +426,29 @@ void PBData::setupUI() {
   makeIcon(linewidthc, "Width")->setToolTip("Line width");
   linewidth = makeDimSpinner(linewidthc);
   linewidth->setValue(Dim::fromInch(.010));
-  QObject::connect(linewidth, &DimSpinner::valueChanged,
+  QObject::connect(linewidth, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setLineWidth(d); });
   idc = makeContainer(dimg);
   makeLabel(idc, "ID")->setToolTip("Hole diameter");
   id = makeDimSpinner(idc);
   id->setMinimumValue(Dim::fromInch(0.005));
   id->setValue(Dim::fromInch(.040));
-  QObject::connect(id, &DimSpinner::valueChanged,
+  QObject::connect(id, &DimSpinner::valueEdited,
 		   [this](Dim d) {
-		     if (od->value() < d + Dim::fromInch(0.015))
-		       od->setValue(d + Dim::fromInch(0.015));
+		     if (od->hasValue()
+			 && (od->value() < d + Dim::fromInch(0.015)))
+		       od->setValue(d + Dim::fromInch(0.015), true);
 		     editor->setID(d); });
   odc = makeContainer(dimg);
   makeLabel(odc, "OD")->setToolTip("Pad diameter");
   od = makeDimSpinner(odc);
   od->setMinimumValue(Dim::fromInch(0.020));
   od->setValue(Dim::fromInch(.065));
-  QObject::connect(od, &DimSpinner::valueChanged,
+  QObject::connect(od, &DimSpinner::valueEdited,
 		   [this](Dim d) {
-		     if (id->value() > d - Dim::fromInch(0.015))
-		       id->setValue(d - Dim::fromInch(0.015));
+		     if (id->hasValue()
+			 && (id->value() > d - Dim::fromInch(0.015)))
+		       id->setValue(d - Dim::fromInch(0.015), true);
 		     editor->setOD(d);
 		   });
   wc = makeContainer(dimg);
@@ -317,18 +463,32 @@ void PBData::setupUI() {
   h->setMinimumValue(Dim::fromInch(0.005));
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
-  circle = makeTextTool(squarec, "○");
+  circle = makeTextTool(squarec, "○", false);
   circle->setToolTip("Round");
   circle->setChecked(true);
-  square = makeTextTool(squarec, "□");
+  square = makeTextTool(squarec, "□", false);
   square->setToolTip("Square");
-  QObject::connect(square, &QToolButton::toggled,
-		   [this](bool b) { editor->setSquare(b); });
+  QObject::connect(square, &QToolButton::clicked,
+		   [this](bool b) {
+		     if (b) {
+		       circle->setChecked(false);
+		       editor->setSquare(true);
+		     }
+		   });
+  QObject::connect(circle, &QToolButton::clicked,
+		   [this](bool b) {
+		     if (b) {
+		       square->setChecked(false);
+		       editor->setSquare(false);
+		     }
+		   });
 
   refg = makeGroup(&refa);
   auto *c5 = makeContainer(refg);
   makeLabel(c5, "Ref.");
   ref = makeEdit(c5);
+  QObject::connect(ref, &QLineEdit::textEdited,
+		   [this](QString txt) { editor->setRef(txt); });
   component = makeIconTool(c5, "EditComponent");
   component->setToolTip("Choose package");
   component->setCheckable(false);
@@ -338,6 +498,8 @@ void PBData::setupUI() {
   makeLabel(c1, "Aa")->setToolTip("Text");
   auto *c2 = makeContainer(textg);
   text = makeEdit(c2);
+  QObject::connect(ref, &QLineEdit::textEdited,
+		   [this](QString txt) { editor->setText(txt); });
   fs = makeDimSpinner(c1);
   fs->setValue(Dim::fromInch(.050));
   fs->setToolTip("Font size");
@@ -386,15 +548,22 @@ Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) 
   d->metric = false;
   d->mode = Mode::Edit;
   d->setupUI();
+  connect(editor, &Editor::selectionChanged,
+	  this, &Propertiesbar::reflectSelection);
 }
 
 void Propertiesbar::reflectMode(Mode m) {
   d->mode = m;
+  if (m==Mode::PlaceHole) {
+    if (!d->square->isChecked())
+      d->circle->setChecked(true);
+  }
   d->hideAndShow();
 }
 
 void Propertiesbar::reflectSelection() {
-  d->getPropertiesFromEditor();
+  qDebug() << "reflectselection";
+  d->getPropertiesFromSelection();
   d->hideAndShow();
 }
 

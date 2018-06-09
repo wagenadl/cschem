@@ -20,22 +20,24 @@ public:
   Dim maximumValue() const;
 public slots:
   void setNoValue();
-  void setValue(Dim);
+  void setValue(Dim, bool forceemit=false);
   void setMinimumValue(Dim);
   void setMaximumValue(Dim);
   void setMetric(bool b=true);
   void setInch();
   void setStep(Dim);
 signals:
-  void valueChanged(Dim);
+  void valueEdited(Dim); // by user interaction (mouse or keyboard)
 private:
   double valueFromText(QString const &) const override;
   QString textFromValue(double) const override;
 private:
   bool hasvalue_;
   bool metric_;
+  int suppress_signals; 
   Dim minv, maxv;
   Dim step;
+  friend class SupSig;
 };
 
 #endif
