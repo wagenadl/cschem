@@ -11,14 +11,16 @@
 
 class Pad {
 public:
-  Point p;
+  Point p; // center
   Dim width;
   Dim height;
   Layer layer;
+  bool elliptic;
 public:
   Pad();
   bool isValid() const { return layer!=Layer::Invalid; }
   Rect boundingRect() const;
+  void rotate();
 };
 
 QDebug operator<<(QDebug, Pad const &);

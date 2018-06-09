@@ -4,6 +4,7 @@
 #include "SimpleFont.h"
 
 Text::Text() {
+  isref = false;
 }
 
 Rect Text::boundingRect() const {
@@ -13,7 +14,7 @@ Rect Text::boundingRect() const {
   Dim w(fontsize*sf.width(text)/sf.baseSize());
   Dim asc(fontsize*sf.ascent()/sf.baseSize());
   Dim desc(fontsize*sf.descent()/sf.baseSize());
-  bool efflip = orient.flip ^ layer==Layer::Bottom;
+  bool efflip = orient.flip ^ (layer==Layer::Bottom);
   if (efflip)
     w = -w;
   switch (orient.rot & 3) {
@@ -25,6 +26,34 @@ Rect Text::boundingRect() const {
   return Rect(); // not executed 
 }
 
+void Text::flip() {
+  Point c0 = boundingRect().center();
+  orient.flip = !orient.flip;
+  Point c1 = boundingRect().center();
+  p += c0 - c1; // shift it back so center is maintained
+}
+
+void Text::rotateCW() {
+  Point c0 = boundingRect().center();
+  orient.rot = (orient.rot + 1) & 3;
+  Point c1 = boundingRect().center();
+  p += c0 - c1; // shift it back so center is maintained
+}
+
+void Text::rotateCCW() {
+  Point c0 = boundingRect().center();
+  orient.rot = (orient.rot - 1) & 3;
+  Point c1 = boundingRect().center();
+  p += c0 - c1; // shift it back so center is maintained
+}
+
+void Text::setLayer(Layer l1) {
+  Point c0 = boundingRect().center();
+  layer = l1;
+  Point c1 = boundingRect().center();
+  p += c0 - c1; // shift it back so center is maintained
+}
+
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Text const &t) {
   s.writeStartElement("text");
   s.writeAttribute("p", t.p.toString());
@@ -32,6 +61,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Text const &t) {
   s.writeAttribute("l", QString::number(int(t.layer)));
   s.writeAttribute("ori", t.orient.toString());
   s.writeAttribute("text", t.text);
+  if (t.isref)
+    s.writeAttribute("isref", "1");
   s.writeEndElement();
   return s;
 }
@@ -56,6 +87,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Text &t) {
     t.layer = Layer(a.value("l").toInt());
   else
     t.layer = Layer::Invalid;
+  t.isref = a.value("isref").toInt() != 0; // ok if not present
   s.skipCurrentElement();
   return s;
 }
@@ -66,6 +98,7 @@ QDebug operator<<(QDebug d, Text const &t) {
     << t.text
     << t.orient
     << t.fontsize
+    << (t.isref ? "REF" : "")
     << ")";
   return d;
 }

@@ -29,6 +29,7 @@ public:
   bool contains(Rect const &o) const;
   bool contains(Point const &p) const;
   Rect translated(Point const &dxy) const;
+  Point center() const;
 };
 
 QDebug operator<<(QDebug, Rect const &);

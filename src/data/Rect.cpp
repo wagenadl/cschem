@@ -10,6 +10,10 @@ Rect::Rect(Point tl, Point br) {
   normalize();
 }
 
+Point Rect::center() const {
+  return Point(left + width/2, top + height/2);
+}
+
 QString Rect::toString() const {
   return left.toString() + " " + top.toString()
      + " " + width.toString() + " " + height.toString();

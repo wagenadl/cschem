@@ -912,7 +912,7 @@ void Editor::setLayer(Layer l) {
       obj.asTrace().layer = l;
       break;
     case Object::Type::Text:
-      obj.asText().layer = l;
+      obj.asText().setLayer(l);
       break;
     case Object::Type::Pad:
       obj.asPad().layer = l;

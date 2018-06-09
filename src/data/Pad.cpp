@@ -5,12 +5,20 @@
 Pad::Pad() {
 }
 
+void Pad::rotate() {
+  Dim x = w;
+  w = h;
+  h = x;
+}
+
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Pad const &t) {
   s.writeStartElement("pad");
   s.writeAttribute("p", t.p.toString());
   s.writeAttribute("w", t.width.toString());
   s.writeAttribute("h", t.height.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
+  if (t.elliptic)
+    s.writeAttribute("ell", "1");
   s.writeEndElement();
   return s;
 }
@@ -31,6 +39,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
     t.layer = Layer(a.value("layer").toInt());
   else
     t.layer = Layer::Invalid;
+  t.ell = a.value("ell").toInt() != 0;
   s.skipCurrentElement();
   return s;
 }
@@ -40,6 +49,7 @@ QDebug operator<<(QDebug d, Pad const &t) {
     << t.width
     << t.height
     << t.layer
+    << t.ell ? "ell" : ""
     << ")";
   return d;
 }

@@ -18,20 +18,15 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Trace const &t) {
   
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Trace &t) {
   bool ok;
+  t = Trace();
   auto a = s.attributes();
   t.p1 = Point::fromString(a.value("p1").toString(), &ok);
   if (ok)
     t.p2 = Point::fromString(a.value("p2").toString(), &ok);
-  else
-    t.p2 = Point();
   if (ok)
     t.width = Dim::fromString(a.value("w").toString(), &ok);
-  else
-    t.width = Dim();
   if (ok)
     t.layer = Layer(a.value("l").toInt());
-  else
-    t.layer = Layer::Invalid;
   s.skipCurrentElement();
   return s;
 }
