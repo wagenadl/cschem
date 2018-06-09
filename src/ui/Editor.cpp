@@ -73,6 +73,7 @@ public:
     QString text;
     Orient orient;
     Dim fs;
+    Arc::Extent ext;
   } props;
   Point tracestart;
   Point tracecurrent;
@@ -319,17 +320,20 @@ void EData::drawObject(Object const &o, Layer l,
       p.drawRect(QRectF(p0 - QPointF(w/2,h/2), p0 + QPointF(w/2,h/2)));
     }
   } break;
-  case Object::Type:: Arc: {
+  case Object::Type::Arc: {
     Arc const &t = o.asArc();
     if (t.layer == l) {
+      Point o((moving && toplevel && selected) ? origin + movingdelta : origin);
+
       p.setPen(QPen(layerColor(l, selected), mils2px*t.linewidth.toMils(),
 		    Qt::SolidLine, Qt::RoundCap));
       p.setBrush(Qt::NoBrush);
-      QPointF c(mils2widget.map((origin+t.center).toMils()));
+      QPointF c(mils2widget.map((o+t.center).toMils()));
       double r = mils2px*t.radius.toMils();
       QRectF rect(c - QPointF(r,r), c + QPointF(r,r));
       switch (t.extent) {
-      case Arc::Extent::Full: p.drawArc(rect, 0, 16*360);break;
+      case Arc::Extent::Invalid: break;
+      case Arc::Extent::Full: p.drawArc(rect, 0, 16*360); break;
       case Arc::Extent::LeftHalf: p.drawArc(rect, 16*90, 16*180); break;
       case Arc::Extent::RightHalf: p.drawArc(rect, 16*-90, 16*180); break;;
       case Arc::Extent::TopHalf: p.drawArc(rect, 0, 16*180); break;
@@ -365,11 +369,15 @@ void EData::drawText(Text const &t, QPainter &p, bool selected,
   int xflip = ((t.layer==Layer::Bottom) ^ t.orient.flip) ? -1 : 1;
   p.scale(xflip*mils2px*t.fontsize.toMils()/sf.baseSize(),
 	  -mils2px*t.fontsize.toMils()/sf.baseSize());
-  p.setPen(QPen(layerColor(t.layer, selected), 2));
+  p.setPen(QPen(layerColor(t.layer, selected), 2,
+		Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
   for (int k=0; k<t.text.size(); k++) {
     QVector<QPolygonF> const &glyph = sf.character(t.text[k].unicode());
-    for (auto const &pp: glyph)
-      p.drawPolyline(pp);
+    for (auto const &pp: glyph) 
+      if (pp.size()==1)
+	p.drawPoint(pp[0]);
+      else
+	p.drawPolyline(pp);
     p.translate(sf.dx(),0);
   }
   p.restore();
@@ -516,19 +524,17 @@ int EData::visibleObjectAt(Point p, Dim mrg) const {
     Object const &obj = layout.root().object(id);
     Layer l = obj.layer();
     switch (obj.type()) {
-      /* Planes NYI
     case Object::Type::Plane:
-      if (layervisible[l])
+      if (brd.layervisible[l])
 	p1 = l==Layer::Bottom ? Prio::BottomPlane : Prio::TopPlane;
     break;
-      */
     case Object::Type::Trace:
       if (brd.layervisible[l])
 	p1 = l==Layer::Bottom ? Prio::BottomTrace
 	  : l==Layer::Top ? Prio::TopTrace
 	  : Prio::Silk;
       break;
-    case Object::Type::Text: case Object::Type::Pad:
+    case Object::Type::Text: case Object::Type::Pad: case Object::Type::Arc:
       if (brd.layervisible[l])
 	p1 = l==Layer::Bottom ? Prio::BottomObject
 	  : l==Layer::Top ? Prio::TopObject
@@ -974,6 +980,17 @@ void Editor::selectArea(Rect r, bool add) {
   }
   update();
   emit selectionChanged();
+}
+
+void Editor::setExtent(Arc::Extent ext) {
+  d->props.ext = ext;
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.isArc())
+      obj.asArc().extent = ext;
+  }
+  update();
 }
 
 void Editor::setLineWidth(Dim l) {

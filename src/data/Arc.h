@@ -12,6 +12,7 @@
 class Arc {
 public:
   enum class Extent {
+    Invalid,
     Full,
     LeftHalf,
     RightHalf,

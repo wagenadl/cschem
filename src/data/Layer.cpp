@@ -13,7 +13,7 @@ QColor const &layerColor(Layer l, bool sel) {
   static QColor top(255, 0, 0);
   static QColor bottom(0, 180, 0);
   static QColor invalid(0, 0, 0);
-  static QColor selsilk = makesel(silk);
+  static QColor selsilk = makesel(makesel(silk));
   static QColor seltop = makesel(top);
   static QColor selbottom = makesel(makesel(bottom));
   switch (l) {

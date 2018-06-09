@@ -37,7 +37,7 @@ double SimpleFont::baseSize() const {
 }
 
 double SimpleFont::dx() const {
-  return 20;
+  return 18;
 }
 
 double SimpleFont::width(QString s) const {

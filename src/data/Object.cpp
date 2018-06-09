@@ -242,6 +242,10 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Object &o) {
     Pad t;
     s >> t;
     o = Object(t);
+  } else if (name=="arc") {
+    Arc t;
+    s >> t;
+    o = Object(t);
   } else if (name=="text") {
     Text t;
     s >> t;
@@ -273,6 +277,8 @@ bool Object::touches(Point p, Dim mrg) const {
     return asGroup().touches(p, mrg);
   case Type::Trace:
     return asTrace().onSegment(p, mrg);
+  case Type::Arc:
+    return asArc().onEdge(p, mrg);
   default:
     return boundingRect().grow(mrg/2).contains(p);
   }
@@ -309,6 +315,8 @@ Layer Object::layer() const {
     return asText().layer;
   case Type::Trace:
     return asTrace().layer;
+  case Type::Arc:
+    return asArc().layer;
   default:
     return Layer::Invalid;
   }
@@ -332,6 +340,8 @@ void Object::translate(Point const &p) {
   case Type::Group:
     d->group->origin += p;
     break;
+  case Type::Arc:
+    d->arc->center += p;
   default:
     break;
   }

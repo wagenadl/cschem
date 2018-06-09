@@ -7,6 +7,7 @@
 #include <QWidget>
 #include "data/Layout.h"
 #include "data/Point.h"
+#include "data/Arc.h"
 #include "Mode.h"
 
 class Editor: public QWidget {
@@ -50,13 +51,14 @@ public slots:
   void setRef(QString);
   void setFontSize(Dim);
   void setText(QString);
+  void setExtent(Arc::Extent);
   void rotateCW();
   void rotateCCW();
   void flipH();
   void flipV();
-  void setMode(Mode);
   void setRotation(int); // this is not the way to rotate or flip things
   void setFlipped(bool); // this is not the way to rotate or flip things
+  void setMode(Mode);
 signals:
   void boardChanged(Board const &);
   void hovering(Point);

@@ -57,6 +57,12 @@ public:
   DimSpinner *fs; // for text
   QLineEdit *text;
 
+  QWidget *arcg;
+  QAction *arca;
+  QWidget *arcc;
+  QToolButton *arcfull, *arctop, *arcbot, *arcleft, *arcright;
+  QToolButton *arctl, *arctr, *arcbl, *arcbr;
+  
   QWidget *layerg;
   QAction *layera;
   QToolButton *silk, *top, *bottom;
@@ -104,10 +110,12 @@ void PBData::getPropertiesFromSelection() {
   }
 
   bool got = false;
-  // Set linewidth if we have at least one trace and their widths are all same
+  // Set linewidth if we have at least one trace/arc and their widths
+  // are all same
   for (int k: objects) {
-    if (here.object(k).isTrace()) {
-      Dim lw = here.object(k).asTrace().width;
+    Object const &obj(here.object(k));
+    if (obj.isTrace() || obj.isArc()) {
+      Dim lw = obj.isArc() ? obj.asArc().linewidth : obj.asTrace().width;
       if (got) {
 	if (lw != linewidth->value())
 	  linewidth->setNoValue();
@@ -115,16 +123,17 @@ void PBData::getPropertiesFromSelection() {
 	linewidth->setValue(lw);
 	got = true;
       }
-    }
+    } 
   }
     
   got = false;
   // Set w (h) if we have at least one pad and their widths (heights) are
   // all same
   for (int k: objects) {
-    if (here.object(k).isPad()) {
-      Dim w1 = here.object(k).asPad().width;
-      Dim h1 = here.object(k).asPad().height;
+    Object const &obj(here.object(k));
+    if (obj.isPad()) {
+      Dim w1 = obj.asPad().width;
+      Dim h1 = obj.asPad().height;
       if (got) {
 	if (w1 != w->value())
 	  w->setNoValue();
@@ -144,10 +153,11 @@ void PBData::getPropertiesFromSelection() {
   square->setChecked(false);
   circle->setChecked(false);
   for (int k: objects) {
-    if (here.object(k).isHole()) {
-      Dim id1 = here.object(k).asHole().id;
-      Dim od1 = here.object(k).asHole().od;
-      bool sq = here.object(k).asHole().square;
+    Object const &obj(here.object(k));
+    if (obj.isHole()) {
+      Dim id1 = obj.asHole().id;
+      Dim od1 = obj.asHole().od;
+      bool sq = obj.asHole().square;
       if (got) {
 	if (id1 != id->value())
 	  id->setNoValue();
@@ -168,24 +178,80 @@ void PBData::getPropertiesFromSelection() {
       }
     }
   }
-
+  if (got) {
+    // unset ID if we have an arc that doesn't match
+    for (int k: objects) {
+      Object const &obj(here.object(k));
+      if (obj.isArc()) {
+	if (obj.asArc().radius != id->value()/2) {
+	  id->setNoValue();
+	  break;
+	}
+      }
+    }
+  } else {
+    // set ID if we have arcs and they are all same size
+    for (int k: objects) {
+      Object const &obj(here.object(k));
+      if (obj.isArc()) {
+	if (got) {
+	  if (obj.asArc().radius != id->value()/2) {
+	    id->setNoValue();
+	    break;
+	  }
+	} else {
+	  id->setValue(obj.asArc().radius*2);
+	  got = true;
+	}
+      }
+    }
+  }
+  
   got = false;
   // set ref if we have precisely one hole or group, otherwise clear it
   ref->setText("");
   for (int k: objects) {
-    if (here.object(k).isHole() || here.object(k).isGroup()) {
+    Object const &obj(here.object(k));
+    if (obj.isHole() || obj.isGroup()) {
       if (got) {
 	ref->setText("");
 	break;
       } else {
-	ref->setText(here.object(k).isHole()
-		     ? here.object(k).asHole().ref
-		     : here.object(k).asGroup().ref);
+	ref->setText(obj.isHole()
+		     ? obj.asHole().ref
+		     : obj.asGroup().ref);
 	got = true;
       }
     }
   }
 
+  Arc::Extent ext = Arc::Extent::Invalid;
+  got = false;
+  // set extent if all are same
+  for (int k: objects) {
+    Object const &obj(here.object(k));
+    if (obj.isArc()) {
+      if (got) {
+	if (obj.asArc().extent != ext) {
+	  ext = Arc::Extent::Invalid;
+	  break;
+	}
+      } else {
+	ext = obj.asArc().extent;
+	got = true;
+      }
+    }
+  }
+  arcfull->setChecked(ext == Arc::Extent::Full);
+  arcleft->setChecked(ext == Arc::Extent::LeftHalf);  
+  arctop->setChecked(ext == Arc::Extent::TopHalf);  
+  arcbot->setChecked(ext == Arc::Extent::BottomHalf);  
+  arcright->setChecked(ext == Arc::Extent::RightHalf);
+  arctl->setChecked(ext == Arc::Extent::TLQuadrant);    
+  arctr->setChecked(ext == Arc::Extent::TRQuadrant);    
+  arcbr->setChecked(ext == Arc::Extent::BRQuadrant);    
+  arcbl->setChecked(ext == Arc::Extent::BLQuadrant);    
+    
   Layer l = Layer::Invalid;
   got = false;
   // set layer if all are same
@@ -233,17 +299,17 @@ void PBData::getPropertiesFromSelection() {
   top->setChecked(l==Layer::Top);
   bottom->setChecked(l==Layer::Bottom);
 
-
   got = false;
   // set text if we have precisely one text object, otherwise clear it
   text->setText("");
   for (int k: objects) {
-    if (here.object(k).isText()) {
+    Object const &obj(here.object(k));
+    if (obj.isText()) {
       if (got) {
 	text->setText("");
 	break;
       } else  {
-	text->setText(here.object(k).asText().text);
+	text->setText(obj.asText().text);
 	got = true;
       }
     }
@@ -268,6 +334,7 @@ void PBData::hideAndShow() {
   dima->setEnabled(false);
   refa->setEnabled(false);
   texta->setEnabled(false);
+  arca->setEnabled(false);
   layera->setEnabled(false);
   orienta->setEnabled(false);
 
@@ -325,6 +392,7 @@ void PBData::hideAndShow() {
     dima->setEnabled(true);
     linewidthc->setEnabled(true);
     idc->setEnabled(true);
+    arca->setEnabled(true);
     layera->setEnabled(true);
     if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked())
       silk->setChecked(true);
@@ -381,12 +449,24 @@ void PBData::hsEdit() {
     }
   }
 
+  // Show linewidth, id, arc if we have at least one arc
+  for (int k: objects) {
+    if (here.object(k).isArc()) {
+      dima->setEnabled(true);
+      linewidthc->setEnabled(true);
+      idc->setEnabled(true);
+      arca->setEnabled(true);
+      break;
+    }
+  }
+  
   // Show ref if we have exactly one hole or exactly one group
   if (objects.size()==1) {
     for (int k: objects) { // loop of 1, but each to write this way
-      if (here.object(k).isGroup()
-	  || here.object(k).isHole()
-	  || here.object(k).isPad())
+      Object const &obj(here.object(k));
+      if (obj.isGroup()
+	  || obj.isHole()
+	  || obj.isPad())
 	refa->setEnabled(true);
     }
   }
@@ -403,8 +483,8 @@ void PBData::hsEdit() {
 
   // Show layer if we have at least one trace, pad, or text
   for (int k: objects) {
-    if (here.object(k).isText() || here.object(k).isPad()
-	|| here.object(k).isTrace()) {
+    Object const &obj(here.object(k));
+    if (obj.isText() || obj.isPad() || obj.isTrace()) {
       layera->setEnabled(true);
       break;
     }
@@ -436,6 +516,20 @@ void PBData::setupUI() {
     return container;
   };
 
+  auto makeContainerGrid = [](QWidget *group, QGridLayout **layp) {
+    Q_ASSERT(group);
+    Q_ASSERT(group->layout());
+    QWidget *container = new QWidget(group);
+    auto *lay = new QGridLayout;
+    lay->setSpacing(4);
+    lay->setContentsMargins(0, 0, 0, 0);
+    container->setLayout(lay);
+    group->layout()->addWidget(container);
+    if (layp)
+      *layp = lay;
+    return container;
+  };
+  
   auto makeDimSpinner = [](QWidget *container,
 			   Dim step=Dim::fromInch(.005)) {
     Q_ASSERT(container);
@@ -506,6 +600,18 @@ void PBData::setupUI() {
     return s;
   };
 
+  auto makeIconToolGrid = [](QGridLayout *container, QString icon, int r, int c,
+			     bool chkb=true, bool ae=true) {
+    Q_ASSERT(container);
+    QToolButton *s = new QToolButton;
+    s->setIcon(QIcon(":icons/" + icon + ".svg"));
+    s->setToolTip(icon);
+    s->setCheckable(chkb);
+    s->setAutoExclusive(ae);
+    container->addWidget(s, r, c);
+    return s;
+  };
+  
   /*
   auto makeCheckBox = [](QWidget *container, QString text) {
     Q_ASSERT(container);
@@ -609,6 +715,39 @@ void PBData::setupUI() {
   QObject::connect(fs, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setFontSize(d); });
 
+
+  arcg = makeGroup(&arca);
+  QGridLayout *lay;
+  arcc = makeContainerGrid(arcg, &lay);
+  arcfull = makeIconToolGrid(lay, "ArcFull", 0, 0);
+  arcfull->setChecked(true);
+  arcleft = makeIconToolGrid(lay, "ArcLeftHalf", 0, 1);
+  arctop = makeIconToolGrid(lay, "ArcTopHalf", 0, 2);
+  arcright = makeIconToolGrid(lay, "ArcRightHalf", 0, 3);
+  arcbot = makeIconToolGrid(lay, "ArcBottomHalf", 0, 4);
+  arctl = makeIconToolGrid(lay, "ArcLTQuadrant", 1, 1);
+  arctr = makeIconToolGrid(lay, "ArcRTQuadrant", 1, 2);
+  arcbr = makeIconToolGrid(lay, "ArcRBQuadrant", 1, 3);
+  arcbl = makeIconToolGrid(lay, "ArcLBQuadrant", 1, 4);
+  QObject::connect(arcfull, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::Full); });
+  QObject::connect(arcleft, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::LeftHalf); });
+  QObject::connect(arcright, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::RightHalf); });
+  QObject::connect(arctop, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::TopHalf); });
+  QObject::connect(arcbot, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::BottomHalf); });
+  QObject::connect(arctl, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::TLQuadrant); });
+  QObject::connect(arctr, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::TRQuadrant); });
+  QObject::connect(arcbl, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::BLQuadrant); });
+  QObject::connect(arcbr, &QToolButton::clicked,
+		   [this]() { editor->setExtent(Arc::Extent::BRQuadrant); });
+  
   QWidget *x = new QWidget;
   x->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
   parent->addWidget(x);

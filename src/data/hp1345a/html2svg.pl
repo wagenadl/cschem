@@ -16,9 +16,12 @@ sub oneChar {
       /points="\s*(.*)\s*"/ or next;
       my @pts = split(/ +/, $1);
       print COUT "    chars[$num].append({ ";
+      my $x0 = -1e5;
+      my $y0 = -1e5;
       for (@pts) {
 	my ($x, $y) = split(/,/, $_);
-	print COUT "$x,$y, ";
+	print COUT "$x,$y, " unless $x==$x0 && $y==$y0;
+	$x0 = $x; $y0 = $y;
       }
       print COUT "});\n";
     }

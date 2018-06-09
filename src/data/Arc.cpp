@@ -52,6 +52,8 @@ Rect Arc::boundingRect() const {
   Point p1(center);
   Dim zero;
   switch (extent) {
+  case Extent::Invalid:
+    break;
   case Extent::Full:
     p0 += Point(-radius, -radius);
     p1 += Point(radius, radius);
@@ -85,17 +87,24 @@ Rect Arc::boundingRect() const {
     p0 += Point(radius, radius);
     break;
   }
-  return Rect(p0, p1).grow(linewidth);
+  Rect rect(p0, p1);
+  rect.grow(linewidth);
+  qDebug() << "arc bbox" << center << p0 << p1 << rect;
+  return rect;
 }
 
 bool Arc::onEdge(Point p, Dim mrg) const {
   Rect br(boundingRect());
   br.grow(mrg/2);
+  qDebug() << "arc on edge" << br << p << mrg;
   if (!br.contains(p))
     return false;
   Dim rmrg = (linewidth + mrg) / 2;
   Dim dist = center.distance(p);
-  return dist > radius - rmrg && dist < radius + rmrg;
+  qDebug() << "  on edge" << p << center << dist << radius << rmrg;
+  bool ok = dist > radius - rmrg && dist < radius + rmrg;
+  qDebug() << "  ok " << ok;
+  return ok;
 }
 
 void Arc::flipUpDown() {
