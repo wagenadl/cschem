@@ -72,11 +72,45 @@ QDebug operator<<(QDebug d, Rect const &r) {
   return d;
 };
 
+bool Rect::isEmpty() const {
+  return height.isNull() || width.isNull();
+}
+
+Rect &Rect::operator|=(Point const &p) {
+  if (isEmpty()) {
+    // create a tiny rectangle around p
+    left = p.x - Dim::fromMM(.001);
+    width = Dim::fromMM(.002);
+    top = p.y - Dim::fromMM(.001);
+    height = Dim::fromMM(.002);
+  } else {
+    Dim dx = p.x - left;
+    if (dx.isNegative()) {
+      width -= dx;
+      left += dx;
+    }
+    dx = p.x - right();
+    if (dx.isPositive())
+      width += dx;
+    
+    Dim dy = p.y - top;
+    if (dy.isNegative()) {
+      height -= dy;
+      top += dy;
+    }
+    dy = p.y - bottom();
+    if (dy.isPositive())
+      height += dy;
+  }
+
+  return *this;
+}
+
 Rect &Rect::operator|=(Rect const &o) {
-  if (width.isNull() || height.isNull()) {
-    *this = o;
+  if (o.isEmpty())
     return *this;
-  } else if (o.width.isNull() || o.height.isNull()) {
+  if (isEmpty()) {
+    *this = o;
     return *this;
   }
   Dim right = left + width;

@@ -64,6 +64,10 @@ public:
   Rect boundingRect() const;
   Layer layer() const;
   void translate(Point const &);
+  void rotateCCW(Point const &);
+  void rotateCW(Point const &);
+  void flipLeftRight(Dim x);
+  void flipUpDown(Dim y);
 private:
   QSharedDataPointer<class OData> d;
 };

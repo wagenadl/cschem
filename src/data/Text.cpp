@@ -8,8 +8,6 @@ Text::Text() {
 }
 
 Rect Text::boundingRect() const {
-  qDebug() << "Text::boundingRect - not yet correct";
-  // must take orientation into account
   SimpleFont const &sf(SimpleFont::instance());
   Dim w(fontsize*sf.width(text)/sf.baseSize());
   Dim asc(fontsize*sf.ascent()/sf.baseSize());
@@ -26,26 +24,59 @@ Rect Text::boundingRect() const {
   return Rect(); // not executed 
 }
 
-void Text::flip() {
-  Point c0 = boundingRect().center();
-  orient.flip = !orient.flip;
-  Point c1 = boundingRect().center();
-  p += c0 - c1; // shift it back so center is maintained
+void Text::flipLeftRight() {
+  flipLeftRight(boundingRect().center().x);
 }
 
-void Text::rotateCW() {
-  Point c0 = boundingRect().center();
-  orient.rot = (orient.rot + 1) & 3;
+void Text::flipLeftRight(Dim x0) {
+  Point ctarget = boundingRect().center().flippedLeftRight(x0);
+  qDebug() << "text:flipleftright x0=" << x0 << "p=" << p
+	   << "br=" << boundingRect()
+	   << "center=" << boundingRect().center()
+	   << "target=" << ctarget;
+  orient.flip = !orient.flip;
+  if (orient.rot&1)
+    orient.rot ^= 2;
   Point c1 = boundingRect().center();
-  p += c0 - c1; // shift it back so center is maintained
+  qDebug() << "new center" << c1;
+  p += ctarget - c1; // shift it back so center is maintained
+  qDebug() << "new p" << p;
+}
+void Text::flipUpDown() {
+  flipUpDown(boundingRect().center().y);
+}
+
+void Text::flipUpDown(Dim y0) {
+  Point ctarget = boundingRect().center().flippedUpDown(y0);
+  orient.flip = !orient.flip;
+  if ((orient.rot&1) == 0)
+    orient.rot ^= 2;
+  Point c1 = boundingRect().center();
+  p += ctarget - c1; // shift it back so center is maintained
 }
 
 void Text::rotateCCW() {
-  Point c0 = boundingRect().center();
-  orient.rot = (orient.rot - 1) & 3;
-  Point c1 = boundingRect().center();
-  p += c0 - c1; // shift it back so center is maintained
+  rotateCCW(boundingRect().center());
 }
+
+void Text::rotateCCW(Point const &p0) {
+  Point ctarget = boundingRect().center().rotatedCCW(p0);
+  orient.rot = (orient.rot + 1) & 3;
+  Point c1 = boundingRect().center();
+  p += ctarget - c1; // shift it back so center is maintained
+}
+
+void Text::rotateCW() {
+  rotateCW(boundingRect().center());
+}
+
+void Text::rotateCW(Point const &p0) {
+  Point ctarget = boundingRect().center().rotatedCW(p0);
+  orient.rot = (orient.rot + 1) & 3;
+  Point c1 = boundingRect().center();
+  p += ctarget - c1; // shift it back so center is maintained
+}
+
 
 void Text::setLayer(Layer l1) {
   Point c0 = boundingRect().center();

@@ -28,6 +28,14 @@ public:
   Point &operator-=(Point const &o) { x-=o.x; y-=o.y; return *this; }
   Point &operator-() { x=-x; y=-y; return *this; }
   bool operator==(Point const &o) const { return x==o.x && y==o.y; }
+  Point flippedLeftRight(Dim x=Dim()) const;
+  Point flippedUpDown(Dim y=Dim()) const;
+  Point rotatedCW(Point const &p=Point()) const;
+  Point rotatedCCW(Point const &p=Point()) const;
+  Point &flipLeftRight(Dim x=Dim());
+  Point &flipUpDown(Dim y=Dim());
+  Point &rotateCW(Point const &p=Point());
+  Point &rotateCCW(Point const &p=Point());
 };
 
 QDebug operator<<(QDebug, Point const &);

@@ -32,7 +32,8 @@ public:
   Arc();
   void rotateCW();
   void rotateCCW();
-  void flip();
+  void flipLeftRight();
+  void flipUpDown();
   void setLayer(Layer);
   Rect boundingRect() const;
   bool onEdge(Point p, Dim mrg) const;

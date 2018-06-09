@@ -55,9 +55,14 @@ public:
     return sqrt(a.d*a.d + b.d*b.d); }
 private:
   Dim(qint64 d): d(d) { }
+  friend Dim operator*(double, Dim const &);
   friend QDebug operator<<(QDebug d, Dim const &x);
   friend uint qHash(Dim const &d);
 };
+
+inline Dim operator*(double a, Dim const &x) {
+  return Dim(a*x.d);
+}
 
 inline QDebug operator<<(QDebug d, Dim const &x) {
   d << x.toInch();

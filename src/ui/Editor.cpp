@@ -52,6 +52,7 @@ public:
   void selectPointsOf(int id);
   void selectPointsOf(Object const &obj);
   void selectPointsOfComponent(Group const &g, Point const &ori);
+  Rect selectionBounds() const; // board coordinates
 public:
   Editor *ed;
   Layout layout;
@@ -84,6 +85,22 @@ public:
   QRubberBand *rubberband = 0;
 };
 
+Rect EData::selectionBounds() const {
+  Group const &here(layout.root().subgroup(crumbs));
+  Point ori = layout.root().originOf(crumbs);
+  
+  Rect r;
+  for (int id: selection)
+    r |= here.object(id).boundingRect();
+  r = r.translated(ori);
+
+  for (Point p: purepts)
+    r |= p;
+
+  return r;
+}
+  
+
 void EData::selectPointsOf(int id) {
   Group const &here(layout.root().subgroup(crumbs));
   if (here.contains(id))
@@ -101,6 +118,9 @@ void EData::selectPointsOf(Object const &obj) {
   case Object::Type::Pad:
     selpts << obj.asPad().p + ori;
     break;
+  case Object::Type::Arc:
+    selpts << obj.asArc().center + ori;
+    break;
   case Object::Type::Text:
     break;
   case Object::Type::Trace:
@@ -108,6 +128,8 @@ void EData::selectPointsOf(Object const &obj) {
     break;
   case Object::Type::Group:
     selectPointsOfComponent(obj.asGroup(), ori);
+    break;
+  case Object::Type::Plane:
     break;
   }
 }
@@ -322,7 +344,6 @@ void EData::drawText(Text const &t, QPainter &p, bool selected,
   p.scale(xflip*mils2px*t.fontsize.toMils()/sf.baseSize(),
 	  -mils2px*t.fontsize.toMils()/sf.baseSize());
   p.setPen(QPen(layerColor(t.layer, selected), 2));
-  qDebug() << p.pen();
   for (int k=0; k<t.text.size(); k++) {
     QVector<QPolygonF> const &glyph = sf.character(t.text[k].unicode());
     for (auto const &pp: glyph)
@@ -946,7 +967,6 @@ void Editor::setLineWidth(Dim l) {
 }
 
 void Editor::setLayer(Layer l) {
-  qDebug() << "setLayer" << l;
   d->props.layer = l;
 
   Group &here(d->layout.root().subgroup(d->crumbs));
@@ -1106,18 +1126,97 @@ Point Editor::groupOffset() const {
 }
 
 void Editor::rotateCW() {
-  qDebug() << "Rotate CW NYI";
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  Point origin(d->layout.root().originOf(d->crumbs));
+  Rect box(d->selectionBounds());
+  if (box.isEmpty())
+    return;
+  Point center = box.center(); //.roundedTo(d->layout.board().grid);
+  center -= origin;
+  
+  for (int id: d->selection)
+    here.object(id).rotateCW(center);
+
+  Dim mrg = Dim::fromMils(4/d->mils2px);
+  for (Point p: d->purepts | d->selpts) {
+    // Rotate end points of traces if those end points are in purepts,
+    // but the trace itself is not in selection.
+    for (int id: here.keys()) {
+      if (!d->selection.contains(id)) {
+	Object &obj(here.object(id));
+	if (obj.isTrace()) {
+	  Trace &t(obj.asTrace());
+	  if (t.onP1(p - origin, mrg))
+	    t.p1.rotateCW(center);
+	  if (t.onP2(p - origin, mrg))
+	    t.p2.rotateCW(center);
+	}
+      }
+    }
+  }
+
+  QSet<Point> newpts;
+  for (Point const &p: d->purepts)
+    newpts << p.rotatedCW(center);
+  d->purepts = newpts;
+  newpts.clear();
+  for (Point const &p: d->selpts)
+    newpts << p.rotatedCW(center);
+  d->selpts = newpts;
+  
+  update();
 }
 
 void Editor::rotateCCW() {
-  qDebug() << "Rotate CCW NYI";
+  rotateCW();
+  rotateCW();
+  rotateCW();
 }
 
 void Editor::flipH() {
-  qDebug() << "Flip H NYI";
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  Point origin(d->layout.root().originOf(d->crumbs));
+  Rect box(d->selectionBounds());
+  if (box.isEmpty())
+    return;
+  Dim center = box.center().x; //.roundedTo(d->layout.board().grid).x;
+  center -= origin.x;
+  
+  for (int id: d->selection)
+    here.object(id).flipLeftRight(center);
+
+  Dim mrg = Dim::fromMils(4/d->mils2px);
+  for (Point p: d->purepts | d->selpts) {
+    // Rotate end points of traces if those end points are in purepts,
+    // but the trace itself is not in selection.
+    for (int id: here.keys()) {
+      if (!d->selection.contains(id)) {
+	Object &obj(here.object(id));
+	if (obj.isTrace()) {
+	  Trace &t(obj.asTrace());
+	  if (t.onP1(p - origin, mrg))
+	    t.p1.flipLeftRight(center);
+	  if (t.onP2(p - origin, mrg))
+	    t.p2.flipLeftRight(center);
+	}
+      }
+    }
+  }
+  QSet<Point> newpts;
+  for (Point const &p: d->purepts)
+    newpts << p.flippedLeftRight(center);
+  d->purepts = newpts;
+  newpts.clear();
+  for (Point const &p: d->selpts)
+    newpts << p.flippedLeftRight(center);
+  d->selpts = newpts;
+
+  update();
 }
 
 void Editor::flipV() {
-  qDebug() << "Flip V NYI";
+  rotateCW();
+  flipH();
+  rotateCCW();
 }
 

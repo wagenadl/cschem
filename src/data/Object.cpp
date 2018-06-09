@@ -336,3 +336,95 @@ void Object::translate(Point const &p) {
     break;
   }
 }
+
+void Object::rotateCCW(Point const &p0) {
+  rotateCW(p0);
+  rotateCW(p0);
+  rotateCW(p0);
+}
+
+void Object::rotateCW(Point const &p0) {
+  switch (type()) {
+  case Type::Null:
+    break;
+  case Type::Hole:
+    asHole().p.rotateCW(p0);
+    break;
+  case Type::Pad:
+    asPad().p.rotateCW(p0);
+    asPad().rotate();
+    break;
+  case Type::Arc:
+    asArc().center.rotateCW(p0);
+    asArc().rotateCW();
+    break;
+  case Type::Text:
+    asText().rotateCW(p0);
+    break;
+  case Type::Trace:
+    asTrace().p1.rotateCW(p0);
+    asTrace().p2.rotateCW(p0);
+    break;
+  case Type::Plane:
+    break;
+  case Type::Group:
+    asGroup().rotateCW(p0);
+    break;
+  }
+}
+
+void Object::flipLeftRight(Dim x0) {
+  switch (type()) {
+  case Type::Null:
+    break;
+  case Type::Hole:
+    break;
+  case Type::Pad:
+    asPad().p.flipLeftRight(x0);
+    break;
+  case Type::Arc:
+    asArc().center.flipLeftRight(x0);
+    asArc().flipLeftRight();
+    break;
+  case Type::Text:
+    asText().flipLeftRight(x0);
+    break;
+  case Type::Trace:
+    asTrace().p1.flipLeftRight(x0);
+    asTrace().p2.flipLeftRight(x0);
+    break;
+  case Type::Plane:
+    break;
+  case Type::Group:
+    asGroup().flipLeftRight(x0);
+    break;
+  }
+}
+
+void Object::flipUpDown(Dim y0) {
+  switch (type()) {
+  case Type::Null:
+    break;
+  case Type::Hole:
+    break;
+  case Type::Pad:
+    asPad().p.flipUpDown(y0);
+    break;
+  case Type::Arc:
+    asArc().center.flipUpDown(y0);
+    asArc().flipUpDown();
+    break;
+  case Type::Text:
+    asText().flipUpDown(y0);
+    break;
+  case Type::Trace:
+    asTrace().p1.flipUpDown(y0);
+    asTrace().p2.flipUpDown(y0);
+    break;
+  case Type::Plane:
+    break;
+  case Type::Group:
+    asGroup().flipUpDown(y0);
+    break;
+  }
+}

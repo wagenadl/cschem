@@ -98,7 +98,13 @@ bool Arc::onEdge(Point p, Dim mrg) const {
   return dist > radius - rmrg && dist < radius + rmrg;
 }
 
-void Arc::flip() {
+void Arc::flipUpDown() {
+  rotateCW();
+  flipLeftRight();
+  rotateCW();
+}
+
+void Arc::flipLeftRight() {
   switch (extent) {
   case Extent::LeftHalf: extent = Extent::RightHalf; break;
   case Extent::RightHalf: extent = Extent::LeftHalf; break;
@@ -132,6 +138,6 @@ void Arc::rotateCCW() {
 
 void Arc::setLayer(Layer l) {
   if ((l==Layer::Bottom) != (layer==Layer::Bottom))
-    flip();
+    flipLeftRight();
   layer = l;
 }

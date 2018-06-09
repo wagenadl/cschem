@@ -23,9 +23,14 @@ public:
   Text();
   bool isValid() const { return layer!=Layer::Invalid; }
   Rect boundingRect() const;
-  void flip();
-  void rotateCW();
+  void flipLeftRight(); // around our center
+  void flipUpDown();
+  void flipLeftRight(Dim x0); // around another point
+  void flipUpDown(Dim y0);
+  void rotateCW(); // around our center
   void rotateCCW();
+  void rotateCW(Point const &); // around another point
+  void rotateCCW(Point const &); // around another point
   void setLayer(Layer l);
 };
 

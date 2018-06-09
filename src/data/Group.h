@@ -39,6 +39,12 @@ public:
   Point originOf(QList<int> path) const; // relative to parent
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
   // only direct children are returned
+  int constructSubgroup(QSet<int> const &);
+  void dissolveSubgroup(int);
+  void rotateCCW(Point p); // p is relative to parent
+  void rotateCW(Point p); // p is relative to parent
+  void flipLeftRight(Dim x); // x is relative to parent
+  void flipUpDown(Dim y); // y is relative to parent
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

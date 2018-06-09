@@ -38,6 +38,65 @@ bool Group::isEmpty() const {
   return d->obj.isEmpty();
 }
 
+int Group::constructSubgroup(QSet<int> const &ids) {
+  d.detach();
+  Group g;
+  for (int id: ids)
+    if (d->obj.contains(id)) 
+      g.insert(*d->obj[id]);
+  for (int id: ids)
+    if (d->obj.contains(id)) 
+      remove(id);
+  return insert(Object(g));
+}
+
+void Group::dissolveSubgroup(int gid) {
+  d.detach();
+  if (!d->obj.contains(gid))
+    return; // error
+  if (!d->obj[gid]->isGroup())
+    return; // error
+  Group const *g(&d->obj[gid]->asGroup());
+  Point p = g->origin;
+  for (Object const *obj: g->d->obj) {
+    int id = insert(*obj);
+    d->obj[id]->translate(p);
+  }
+  remove(gid);
+}
+
+void Group::rotateCCW(Point p) {
+  d.detach();
+  d->hasbbox = false;
+  p -= origin;
+  for (Object *o: d->obj)
+    o->rotateCCW(p);
+}
+
+void Group::rotateCW(Point p) {
+  d.detach();
+  d->hasbbox = false;
+  p -= origin;
+  for (Object *o: d->obj)
+    o->rotateCW(p);
+}
+
+void Group::flipLeftRight(Dim x) {
+  d.detach();
+  d->hasbbox = false;
+  x -= origin.x;
+  for (Object *o: d->obj)
+    o->flipLeftRight(x);
+}
+
+void Group::flipUpDown(Dim y) {
+  d.detach();
+  d->hasbbox = false;
+  y -= origin.y;
+  for (Object *o: d->obj)
+    o->flipUpDown(y);
+}
+
 int Group::insert(Object const &o) {
   d.detach();
   d->hasbbox = false;

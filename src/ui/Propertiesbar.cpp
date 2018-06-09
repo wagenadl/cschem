@@ -242,10 +242,10 @@ void PBData::getPropertiesFromSelection() {
       if (got) {
 	text->setText("");
 	break;
+      } else  {
+	text->setText(here.object(k).asText().text);
+	got = true;
       }
-    } else  {
-      text->setText(here.object(k).asText().text);
-      got = true;
     }
   }
 }
@@ -643,8 +643,8 @@ void PBData::setupUI() {
   QObject::connect(ccw, &QToolButton::clicked,
 		   [this]() { editor->rotateCCW(); });
   cw = makeIconTool(rotatec, "CW");
-  ccw->setToolTip("Rotate right");
-  QObject::connect(ccw, &QToolButton::clicked,
+  cw->setToolTip("Rotate right");
+  QObject::connect(cw, &QToolButton::clicked,
 		   [this]() { editor->rotateCW(); });
   fliph = makeIconTool(rotatec, "FlipH");
   fliph->setToolTip("Flip left to right");

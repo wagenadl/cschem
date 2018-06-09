@@ -25,11 +25,13 @@ public:
   Rect &normalize();
   Rect &grow(Dim const &d); // grows by d/2 in all directions
   Rect &operator|=(Rect const &o);
+  Rect &operator|=(Point const &p);
   bool intersects(Rect const &o) const;
   bool contains(Rect const &o) const;
   bool contains(Point const &p) const;
   Rect translated(Point const &dxy) const;
   Point center() const;
+  bool isEmpty() const;
 };
 
 QDebug operator<<(QDebug, Rect const &);

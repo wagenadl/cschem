@@ -17,6 +17,51 @@ Point Point::fromString(QString s, bool *ok) {
   return p;
 }
 
+Point Point::flippedLeftRight(Dim x0) const {
+  return Point(2*x0 - x, y);
+}
+  
+Point Point::flippedUpDown(Dim y0) const {
+  return Point(x, 2*y0 - y);
+}
+
+Point Point::rotatedCW(Point const &p0) const {
+  Point p = *this - p0;
+  Point q(-p.y, p.x);
+  return q + p0;
+}
+
+Point Point::rotatedCCW(Point const &p0) const {
+  Point p = *this - p0;
+  Point q(p.y, -p.x);
+  return q + p0;
+}
+
+Point &Point::flipLeftRight(Dim x0) {
+  x = 2*x0 - x;
+  return *this;
+}
+  
+Point &Point::flipUpDown(Dim y0) {
+  y = 2*y0 - y;
+  return *this;
+}
+
+Point &Point::rotateCW(Point const &p0) {
+  Point p = *this - p0;
+  Point q(-p.y, p.x);
+  *this = q + p0;
+  return *this;
+}
+
+Point &Point::rotateCCW(Point const &p0) {
+  Point p = *this - p0;
+  Point q(p.y, -p.x);
+  *this = q + p0;
+  return *this;
+}
+
+
 QDebug operator<<(QDebug dbg, Point const &p) {
   dbg << "(" << p.x << "," << p.y << ")";
   return dbg;
