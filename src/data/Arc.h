@@ -4,7 +4,11 @@
 
 #define ARC_H
 
-#include "Point.h"
+#include "Rect.h"
+#include "Layer.h"
+#include <QXmlStreamReader>
+#include <QDebug>
+
 class Arc {
 public:
   enum class Extent {

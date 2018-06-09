@@ -44,6 +44,8 @@ public slots:
   void setLayer(Layer);
   void setID(Dim);
   void setOD(Dim);
+  void setWidth(Dim);
+  void setHeight(Dim);
   void setSquare(bool);
   void setRef(QString);
   void setFontSize(Dim);

@@ -321,6 +321,9 @@ void PBData::hideAndShow() {
     if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked())
       silk->setChecked(true);
     break;
+  case Mode::PlaceArc:
+    qDebug() << "Propertiesbar: placearc nyi";
+    break;
   case Mode::PlacePlane:
     layera->setEnabled(true);
     break;

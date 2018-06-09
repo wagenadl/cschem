@@ -12,6 +12,7 @@ enum class Mode {
   PlaceHole,
   PlacePad,
   PlaceText,
+  PlaceArc,
   PlacePlane,
   PickupTrace,
 };

@@ -35,6 +35,8 @@ public:
   void drawTracing(QPainter &) const;
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
+  void pressPad(Point);
+  void pressArc(Point);
   void pressHole(Point);
   void pressText(Point);
   void pressTracing(Point);
@@ -65,6 +67,7 @@ public:
     Dim linewidth;
     Layer layer;
     Dim od, id;
+    Dim w, h;
     bool square;
     QString text;
     Orient orient;
@@ -283,6 +286,17 @@ void EData::drawObject(Object const &o, Layer l,
       }
     }
     break;
+  case Object::Type::Pad: {
+    Pad const &t = o.asPad();
+    if (t.layer == l) {
+      p.setPen(Qt::NoPen);
+      p.setBrush(layerColor(l, selected));
+      QPointF p0 = mils2widget.map(t.p.toMils());
+      double w = mils2px * t.width.toMils();
+      double h = mils2px * t.height.toMils();
+      p.drawRect(QRectF(p0 - QPointF(w/2,h/2), p0 + QPointF(w/2,h/2)));
+    }
+  } break;
   case Object::Type::Group: {
     Group const &g = o.asGroup();
     Point ori = origin + g.origin;
@@ -366,6 +380,31 @@ void EData::pressHole(Point p) {
   t.od = props.od;
   t.id = props.id;
   t.square = props.square;
+  here.insert(Object(t));
+  ed->update();
+}
+
+
+void EData::pressPad(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  Group &here(layout.root().subgroup(crumbs));
+  p -= layout.root().originOf(crumbs);
+  Pad t;
+  t.p = p;
+  t.width = props.w;
+  t.height = props.h;
+  here.insert(Object(t));
+  ed->update();
+}
+
+void EData::pressArc(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  Group &here(layout.root().subgroup(crumbs));
+  p -= layout.root().originOf(crumbs);
+  Arc t;
+  t.center = p;
+  t.radius = (props.id + props.od) / 2;
+  t.linewidth = props.linewidth;
   here.insert(Object(t));
   ed->update();
 }
@@ -680,6 +719,12 @@ void Editor::mousePressEvent(QMouseEvent *e) {
     case Mode::PlaceText:
       d->pressText(p);
       break;
+    case Mode::PlacePad:
+      d->pressPad(p);
+      break;
+    case Mode::PlaceArc:
+      d->pressArc(p);
+      break;
     default:
       break;
     }
@@ -954,6 +999,34 @@ void Editor::setOD(Dim x) {
       if (obj.asHole().id > x - Dim::fromInch(.015))
 	obj.asHole().id = x - Dim::fromInch(.015);
     }      
+  }
+  update();
+}
+
+void Editor::setWidth(Dim x) {
+  if (x < Dim::fromInch(.01))
+    x = Dim::fromInch(.01);
+  d->props.w = x;
+
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Pad)
+      obj.asPad().width = x;
+  }
+  update();
+}
+
+void Editor::setHeight(Dim x) {
+  if (x < Dim::fromInch(.01))
+    x = Dim::fromInch(.01);
+  d->props.h = x;
+
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Pad)
+      obj.asPad().height = x;
   }
   update();
 }

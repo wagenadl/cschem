@@ -6,9 +6,9 @@ Pad::Pad() {
 }
 
 void Pad::rotate() {
-  Dim x = w;
-  w = h;
-  h = x;
+  Dim x = width;
+  width = height;
+  height = x;
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Pad const &t) {
@@ -39,7 +39,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
     t.layer = Layer(a.value("layer").toInt());
   else
     t.layer = Layer::Invalid;
-  t.ell = a.value("ell").toInt() != 0;
+  t.elliptic = a.value("ell").toInt() != 0;
   s.skipCurrentElement();
   return s;
 }
@@ -49,7 +49,7 @@ QDebug operator<<(QDebug d, Pad const &t) {
     << t.width
     << t.height
     << t.layer
-    << t.ell ? "ell" : ""
+    << (t.elliptic ? "ell" : "")
     << ")";
   return d;
 }

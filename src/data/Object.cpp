@@ -8,6 +8,7 @@ public:
   Object::Type typ;
   Hole *hole;
   Pad *pad;
+  Arc *arc;
   Text *text;
   Trace *trace;
   Group *group;
@@ -15,6 +16,7 @@ public:
   OData() {
     hole = 0;
     pad = 0;
+    arc = 0;
     text = 0;
     trace = 0;
     group = 0;
@@ -23,6 +25,7 @@ public:
   ~OData() {
     delete hole;
     delete pad;
+    delete arc;
     delete text;
     delete trace;
     delete group;
@@ -37,6 +40,11 @@ Object::Object(Hole const &t): Object() {
 Object::Object(Pad const &t): Object() {
   d->pad = new Pad(t);
   d->typ = Type::Pad;
+}
+
+Object::Object(Arc const &t): Object() {
+  d->arc = new Arc(t);
+  d->typ = Type::Arc;
 }
 
 Object::Object(Trace const &t): Object() {
@@ -82,6 +90,14 @@ bool Object::isPad() const {
   return d->typ==Type::Pad;
 }
 
+bool Object::isArc() const {
+  return d->typ==Type::Arc;
+}
+
+bool Object::isPlane() const {
+  return d->typ==Type::Plane;
+}
+
 bool Object::isTrace() const {
   return d->typ==Type::Trace;
 }
@@ -102,6 +118,11 @@ Hole const &Object::asHole() const {
 Pad const &Object::asPad() const {
   Q_ASSERT(isPad());
   return *d->pad;
+}
+
+Arc const &Object::asArc() const {
+  Q_ASSERT(isArc());
+  return *d->arc;
 }
 
 Trace const &Object::asTrace() const {
@@ -129,6 +150,11 @@ Pad &Object::asPad() {
   return as_nonconst(as_const(*this).asPad());
 }
 
+Arc &Object::asArc() {
+  d.detach();
+  return as_nonconst(as_const(*this).asArc());
+}
+
 Trace &Object::asTrace() {
   d.detach();
   return as_nonconst(as_const(*this).asTrace());
@@ -149,6 +175,9 @@ QDebug operator<<(QDebug d, Object const &o) {
   case Object::Type::Hole:
     d << o.asHole();
     break;
+  case Object::Type::Arc:
+    d << o.asArc();
+    break;
   case Object::Type::Pad:
     d << o.asPad();
     break;
@@ -160,6 +189,9 @@ QDebug operator<<(QDebug d, Object const &o) {
     break;
   case Object::Type::Group:
     d << o.asGroup();
+    break;
+  case Object::Type::Plane:
+    d << "Object(Plane)";
     break;
   case Object::Type::Null:
     d << "Object(Null)";
@@ -176,6 +208,9 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Object const &o) {
   case Object::Type::Pad:
     s << o.asPad();
     break;
+  case Object::Type::Arc:
+    s << o.asArc();
+    break;
   case Object::Type::Text:
     s << o.asText();
     break;
@@ -184,6 +219,10 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Object const &o) {
     break;
   case Object::Type::Group:
     s << o.asGroup();
+    break;
+  case Object::Type::Plane:
+    s.writeStartElement("plane");
+    s.writeEndElement();
     break;
   case Object::Type::Null:
     s.writeStartElement("object");
@@ -247,12 +286,17 @@ Rect Object::boundingRect() const {
     return asHole().boundingRect();
   case Type::Pad:
     return asPad().boundingRect();
+  case Type::Arc:
+    return asArc().boundingRect();
   case Type::Trace:
     return asTrace().boundingRect();
   case Type::Group:
     return asGroup().boundingRect();
   case Type::Text:
     return asText().boundingRect();
+  case Type::Plane:
+    qDebug() << "Object::boundingRect: plane nyi";
+    return Rect();
   }
   return Rect();
 }
