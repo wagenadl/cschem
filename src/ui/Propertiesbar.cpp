@@ -89,6 +89,7 @@ public:
   void hideAndShow(); // hide and show as appropriate
   void hsEdit();
   Layer layer() const;
+  Arc::Extent extent() const;
 };
 
 void PBData::getPropertiesFromSelection() {
@@ -317,7 +318,6 @@ void PBData::getPropertiesFromSelection() {
   if (l != Layer::Invalid)
     editor->properties().layer = l;
 
-
   got = false;
   // set text if we have precisely one text object, otherwise clear it
   text->setText("");
@@ -354,6 +354,28 @@ void PBData::getPropertiesFromSelection() {
   }
   if (fs->hasValue())
     editor->properties().fs = fs->value();  
+}
+
+Arc::Extent PBData::extent() const {
+  if (arcfull->isChecked())
+    return Arc::Extent::Full;
+  else if (arcleft->isChecked())
+    return Arc::Extent::LeftHalf; 
+ else if (arctop->isChecked())
+   return Arc::Extent::TopHalf; 
+ else if (arcbot->isChecked())
+   return Arc::Extent::BottomHalf; 
+ else if (arcright->isChecked())
+   return Arc::Extent::RightHalf;
+ else if (arctl->isChecked())
+   return Arc::Extent::TLQuadrant;
+ else if (arctr->isChecked())
+   return Arc::Extent::TRQuadrant;   
+ else if (arcbr->isChecked())
+   return Arc::Extent::BRQuadrant;   
+ else if (arcbl->isChecked())
+   return Arc::Extent::BLQuadrant;
+ else return Arc::Extent::Invalid;
 }
 
 Layer PBData::layer() const {
@@ -890,6 +912,13 @@ void Propertiesbar::reflectMode(Mode m) {
     if (!d->square->isChecked())
       d->circle->setChecked(true);
   }
+  if (m==Mode::PlaceArc || m==Mode::PlaceTrace
+      || m==Mode::PlaceText || m==Mode::PlacePad)
+    if (d->layer()==Layer::Invalid)
+      d->top->setChecked(true);
+  if (m==Mode::PlaceArc)
+    if (d->extent()==Arc::Extent::Invalid)
+      d->arcfull->setChecked(true);
   d->hideAndShow();
 }
 
