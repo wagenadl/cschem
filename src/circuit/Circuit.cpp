@@ -244,9 +244,9 @@ int Circuit::maxId() const {
 
 void Circuit::merge(Circuit const &o) {
   for (auto elt: o.elements)
-    elements[elt.id] = elt;
+    elements.insert(elt.id, elt);
   for (auto con: o.connections)
-    connections[con.id] = con;
+    connections.insert(con.id, con);
 }
   
 int Circuit::availableNumber(QString pfx) const {
