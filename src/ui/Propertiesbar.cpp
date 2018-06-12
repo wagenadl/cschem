@@ -531,6 +531,17 @@ void PBData::hsEdit() {
 	  || obj.isPad())
 	refa->setEnabled(true);
     }
+  } else if (objects.size()==2) {
+    for (int k: objects) { 
+      Object const &obj(here.object(k));
+      if (obj.isGroup()) {
+        int tid = obj.asGroup().refTextId();
+        if (objects.contains(tid)) {
+          // got group and its ref text
+          refa->setEnabled(true);
+        }
+      }
+    }
   }
 
   // Show text if we have exactly one text; font size if we have at

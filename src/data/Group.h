@@ -45,6 +45,9 @@ public:
   void rotateCW(Point p); // p is relative to parent
   void flipLeftRight(Dim x); // x is relative to parent
   void flipUpDown(Dim y); // y is relative to parent
+  int refTextId() const; // ID (in parent group) of the text object
+  // that represents our Ref., or 0 if none.
+  void setRefTextId(int);
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

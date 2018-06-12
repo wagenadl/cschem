@@ -10,11 +10,13 @@ public:
   int lastid;
   GData() {
     lastid = 0;
+    reftextid = 0;
   }
   ~GData() {
     for (Object *o: obj) 
-    delete o;
+      delete o;
   }
+  int reftextid;
   mutable bool hasbbox;
   mutable Rect bbox;
 };
@@ -27,10 +29,14 @@ Group::~Group() {
 
 Group::Group(Group const &o) {
   d = o.d;
+  ref = o.ref;
+  origin = o.origin;
 }
 
 Group &Group::operator=(Group const &o) {
   d = o.d;
+  ref = o.ref;
+  origin = o.origin;
   return *this;
 }
 
@@ -38,16 +44,50 @@ bool Group::isEmpty() const {
   return d->obj.isEmpty();
 }
 
+int Group::refTextId() const {
+  return d->reftextid;
+}
+
+void Group::setRefTextId(int id) {
+  d.detach();
+  d->reftextid = id;
+}
+
 int Group::formSubgroup(QSet<int> const &ids) {
   d.detach();
   Group g;
-  for (int id: ids)
-    if (d->obj.contains(id)) 
-      g.insert(*d->obj[id]);
+  Text reftext;
+  reftext.layer = Layer::Silk;
+  reftext.fontsize = Dim::fromInch(.05);
+  reftext.orient.rot = 0;
+  reftext.orient.flip = false;
+  reftext.text = "X?";
+  auto reftextmatch = [this](QString txt) {
+    return txt == ref || QRegExp("[A-Z]([0-9]+|\\?)").exactMatch(txt);
+  };
+  for (int id: ids) {
+    if (d->obj.contains(id)) {
+      if (d->obj[id]->isText() && reftextmatch(d->obj[id]->asText().text))
+        reftext = d->obj[id]->asText();
+      else
+        g.insert(*d->obj[id]);
+    }
+  }
   for (int id: ids)
     if (d->obj.contains(id)) 
       remove(id);
-  return insert(Object(g));
+  Rect bb = g.boundingRect();
+  reftext.p = Point(bb.left, bb.top - Dim::fromInch(0.05));
+  int tid = insert(Object(reftext));
+  g.ref = reftext.text;
+  qDebug() << "ref" << g.ref;
+  g.setRefTextId(tid); // this works, but for reasons I do not understand,
+  // it does not work if I insert it first and /then/ change the reftextid.
+  // Perhaps I do not actually understand all the way how detach() works?
+  int gid = insert(Object(g));
+  d->obj[tid]->asText().setGroupAffiliation(gid);
+  qDebug() << "..." << d->obj[gid]->asGroup().ref;
+  return gid;
 }
 
 void Group::dissolveSubgroup(int gid) {
@@ -210,10 +250,58 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   s.writeStartElement("group");
   s.writeAttribute("o", t.origin.toString());
   s.writeAttribute("ref", t.ref);
-  for (Object const *o: t.d->obj)
-    s << *o;
+  for (Object const *o: t.d->obj) {
+    if (o->isGroup()) {
+      s.writeStartElement("gr");
+      int id = o->asGroup().refTextId();
+      if (id>0 && t.d->obj.contains(id)) 
+        s << *t.d->obj[id];
+      s << *o;
+      s.writeEndElement();
+    } else if (o->isText() && o->asText().groupAffiliation()>0) {
+      // let the group handle this item
+    } else {
+      s << *o;
+    }
+  }
   s.writeEndElement();
   return s;
+}
+
+static void readGroupAndRef(QXmlStreamReader &s, Group &t) {
+  int gid = 0;
+  int tid = 0;
+  while (!s.atEnd()) {
+    s.readNext();
+    if (s.isStartElement()) {
+      if (s.name()=="group") {
+        Object o;
+        s >> o;
+        gid = t.insert(o);
+      } else if (s.name()=="text") {
+        Object o;
+        s >> o;
+        tid = t.insert(o);
+      } else {
+        qDebug() << "Unexpected element in gr: " << s.name();
+      }
+    } else if (s.isEndElement()) {
+      break;
+    } else if (s.isCharacters() && s.isWhitespace()) {
+    } else if (s.isComment()) {
+    } else {
+      qDebug() << "Unexpected entity in gr: " << s.tokenType();
+    }
+  }
+  if (gid>0 && tid>0) {
+    t.object(tid).asText().setGroupAffiliation(gid);
+    t.object(gid).asGroup().setRefTextId(tid);
+  } else {
+    if (gid<=0)
+      qDebug() << "Missing group in gr";
+    if (tid<=0)
+      qDebug() << "Missing ref text in gr";
+  }
 }
   
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
@@ -229,9 +317,13 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
-      Object o;
-      s >> o;
-      t.insert(o);
+      if (s.name()=="gr") {
+        readGroupAndRef(s, t);
+      } else {
+        Object o;
+        s >> o;
+        t.insert(o);
+      }
     } else if (s.isEndElement()) {
       break;
     } else if (s.isCharacters() && s.isWhitespace()) {

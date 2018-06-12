@@ -609,7 +609,8 @@ void EData::startMoveSelection() {
 
 void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
   // does not clear purepts if on a purept
-  Object const &obj(layout.root().subgroup(crumbs).object(id));
+  Group const &here(layout.root().subgroup(crumbs));
+  Object const &obj(here.object(id));
   if (obj.isTrace()) {
     Point ori = layout.root().originOf(crumbs);
     Trace const &t(obj.asTrace());
@@ -632,6 +633,8 @@ void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
     }
   } else {
     ed->select(id, add);
+    if (obj.isGroup())
+      ed->select(obj.asGroup().refTextId(), true);
   }
 }
 
@@ -1103,10 +1106,15 @@ void Editor::setRef(QString t) {
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.isHole())
+    if (obj.isHole()) {
       obj.asHole().ref = t;
-    else if (obj.isGroup())
-      obj.asGroup().ref = t;
+    } else if (obj.isGroup()) {
+      Group &g(obj.asGroup());
+      g.ref = t;
+      int tid = g.refTextId();
+      if (tid>0 && here.contains(tid))
+        here.object(tid).asText().text = t;
+    }
   }
   update();
 }
@@ -1116,8 +1124,13 @@ void Editor::setText(QString t) {
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.isText())
-      obj.asText().text = t;
+    if (obj.isText()) {
+      Text &txt(obj.asText());
+      txt.text = t;
+      int gid = txt.groupAffiliation();
+      if (gid>0 && here.contains(gid))
+        here.object(gid).asGroup().ref = t;
+    }
   }
   update();
 }

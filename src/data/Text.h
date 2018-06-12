@@ -18,7 +18,6 @@ public:
   Layer layer;
   Orient orient;
   QString text;
-  bool isref; // this text object represents the "Ref." of the containing group
 public:
   Text();
   bool isValid() const { return layer!=Layer::Invalid; }
@@ -32,6 +31,11 @@ public:
   void rotateCW(Point const &); // around another point
   void rotateCCW(Point const &); // around another point
   void setLayer(Layer l);
+  void setGroupAffiliation(int);
+  int groupAffiliation() const;
+private:
+  int groupaffiliation; // this text object represents the "Ref." of the
+  // ID'd group. ID is in terms of the containing group
 };
 
 QDebug operator<<(QDebug, Text const &);

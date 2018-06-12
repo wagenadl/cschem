@@ -4,7 +4,15 @@
 #include "SimpleFont.h"
 
 Text::Text() {
-  isref = false;
+  groupaffiliation = 0;
+}
+
+void Text::setGroupAffiliation(int id) {
+  groupaffiliation = id;
+}
+
+int Text::groupAffiliation() const {
+  return groupaffiliation;
 }
 
 Rect Text::boundingRect() const {
@@ -92,8 +100,6 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Text const &t) {
   s.writeAttribute("l", QString::number(int(t.layer)));
   s.writeAttribute("ori", t.orient.toString());
   s.writeAttribute("text", t.text);
-  if (t.isref)
-    s.writeAttribute("isref", "1");
   s.writeEndElement();
   return s;
 }
@@ -118,7 +124,6 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Text &t) {
     t.layer = Layer(a.value("l").toInt());
   else
     t.layer = Layer::Invalid;
-  t.isref = a.value("isref").toInt() != 0; // ok if not present
   s.skipCurrentElement();
   return s;
 }
@@ -129,7 +134,7 @@ QDebug operator<<(QDebug d, Text const &t) {
     << t.text
     << t.orient
     << t.fontsize
-    << (t.isref ? "REF" : "")
+    << t.groupAffiliation()
     << ")";
   return d;
 }
