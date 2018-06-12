@@ -1297,8 +1297,19 @@ void Editor::deleteSelected() {
   if (d->selection.isEmpty())
     return;
   Group &here(d->layout.root().subgroup(d->crumbs));
-  for (int id: d->selection) 
-    here.remove(id);
+  for (int id: d->selection) {
+    if (here.object(id).isGroup()) {
+      int tid = here.object(id).asGroup().refTextId();
+      if (tid>0)
+        here.remove(tid);
+      here.remove(id);
+    } else if (here.object(id).isText()
+               && here.object(id).asText().groupAffiliation()>0) {
+      // refuse to delete ref text object
+    } else {
+      here.remove(id);
+    }
+  }
   clearSelection();
   update();
 }
