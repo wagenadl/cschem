@@ -338,7 +338,7 @@ void PBData::getPropertiesFromSelection() {
 
   got = false;
   // set fs if we have text, and all are same
-  text->setText("");
+  fs->setNoValue();
   for (int k: objects) {
     Object const &obj(here.object(k));
     if (obj.isText()) {
