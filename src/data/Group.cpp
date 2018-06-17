@@ -98,9 +98,15 @@ void Group::dissolveSubgroup(int gid) {
   d.detach();
   Group const *g(&d->obj[gid]->asGroup());
   Point p = g->origin;
+  int tid = g->refTextId();
   for (Object const *obj: g->d->obj) {
     int id = insert(*obj);
     d->obj[id]->translate(p);
+  }
+  if (d->obj.contains(tid)) {
+    Object &obj(*d->obj[tid]);
+    if (obj.isText())
+      obj.asText().setGroupAffiliation(0);
   }
   remove(gid);
 }
