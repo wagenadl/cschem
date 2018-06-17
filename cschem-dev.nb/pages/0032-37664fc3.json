@@ -1,0 +1,100 @@
+{ "typ": "page",
+  "cre": "2018-05-24T12:21:26",
+  "mod": "2018-05-24T12:23:35",
+  "cui": "d9b60ec1d2cb2a5e",
+  "stampTime": 0,
+  "startPage": 32,
+  "unlocked": false,
+  "uuid": "37664fc3",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-05-24T12:21:26",
+      "mod": "2018-05-24T12:21:26",
+      "uuid": "c7b33ec5"
+    },
+    { "typ": "title",
+      "cre": "2018-05-24T12:21:26",
+      "mod": "2018-05-24T12:21:31",
+      "uuid": "dac667fe",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-24T12:21:26",
+          "mod": "2018-05-24T12:21:31",
+          "lines": [
+            0
+          ],
+          "text": "Reconsidering PCB building",
+          "uuid": "d64d3861"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-24T12:21:31",
+      "mod": "2018-05-24T12:21:55",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a41c5708",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-24T12:21:31",
+          "mod": "2018-05-24T12:21:55",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "After suffering with expressPCB on wine, I am reconsidering the need for a native PCB package.",
+          "uuid": "4cf98284"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-24T12:21:55",
+      "mod": "2018-05-24T12:22:18",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "1942dbec",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-24T12:21:55",
+          "mod": "2018-05-24T12:22:18",
+          "lines": [
+            0,
+            55
+          ],
+          "text": "Also, packaging of components really doesn’t belong in cschem. It should be part of the newly considered cpcb.",
+          "uuid": "c746acfe"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-05-24T12:22:21",
+      "mod": "2018-05-24T12:23:35",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9e280197",
+      "y0": 172.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-05-24T12:22:21",
+          "mod": "2018-05-24T12:23:35",
+          "lines": [
+            0,
+            58,
+            108,
+            169
+          ],
+          "text": "I don’t want much. Just a simple program like expressPCB. Place components, wires, text, and holes. Compose components. Link to cschem schematic. Pin number translation is a subject of research. I don’t need autorouting.",
+          "uuid": "c918f369"
+        }
+      ]
+    }
+  ]
+}
