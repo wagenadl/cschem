@@ -131,10 +131,10 @@ void EData::selectPointsOfComponent(Group const &g, Point const &ori) {
     Object const &obj = g.object(id);
     switch (obj.type()) {
     case Object::Type::Hole:
-      selpts << obj.asHole().p + ori;
+      selpts << obj.asHole().p + ori + g.origin;
       break;
     case Object::Type::Pad:
-      selpts << obj.asPad().p + ori;
+      selpts << obj.asPad().p + ori + g.origin;
       break;
     default:
       break;
@@ -961,8 +961,18 @@ void Editor::selectArea(Rect r, bool add) {
     Object const &obj(here.object(id));
     if (!d->selection.contains(id)) {
       if (r.contains(obj.boundingRect())) {
-	d->selection << id;
-	d->selectPointsOf(obj);
+        if (obj.isText() && obj.asText().groupAffiliation()>0) {
+          // don't rectangle select a group reference text
+        } else if (obj.isGroup()) {
+          d->selection << id;
+          d->selectPointsOf(obj);
+          int tid = obj.asGroup().refTextId();
+          if (here.contains(tid))
+            d->selection << tid;
+        } else {
+          d->selection << id;
+          d->selectPointsOf(obj);
+        }          
       }
     }
   }
