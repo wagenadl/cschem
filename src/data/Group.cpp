@@ -239,6 +239,24 @@ bool Group::touches(Point p, Dim mrg) const {
   return false;
 }
 
+QSet<Point> Group::points() const {
+  QSet<Point> pp;
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    switch (obj.type()) {
+    case Object::Type::Hole:
+      pp << obj.asHole().p + origin;
+      break;
+    case Object::Type::Pad:
+      pp << obj.asPad().p + origin;
+      break;
+    default:
+      break;
+    }
+  }
+  return pp;
+}  
+
 QList<int> Group::objectsAt(Point p, Dim mrg) const {
   p -= origin;
   QList<int> ids;

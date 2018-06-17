@@ -21,6 +21,7 @@ public:
     tracing = false;
     moving = false;
     rubberband = 0;
+    stuckptsvalid = false;
   }
   void drawBoard(QPainter &) const;
   void drawGrid(QPainter &) const;
@@ -50,9 +51,10 @@ public:
   void startMoveSelection();
   void newSelectionUnless(int id, Point p, Dim mrg, bool add);
   void selectPointsOf(int id);
-  void selectPointsOf(Object const &obj);
-  void selectPointsOfComponent(Group const &g, Point const &ori);
+  QSet<Point> pointsOf(Object const &obj, Point const &ori) const;
   Rect selectionBounds() const; // board coordinates
+  void validateStuckPoints() const;
+  void invalidateStuckPoints() const;
 public:
   Editor *ed;
   Layout layout;
@@ -64,6 +66,10 @@ public:
   QSet<int> selection;
   QSet<Point> selpts; // selected points that *are* part of a selected object
   QSet<Point> purepts; // selected points that are *not* part of any sel. object
+  mutable bool stuckptsvalid; // indicator: if false, stuckpts needs to be
+  // recalced.
+  mutable QSet<Point> stuckpts; // points that are part of a selected object but
+  // also of a non-trace non-selected object and that should not move
   EProps props;
   Point tracestart;
   Point tracecurrent;
@@ -76,6 +82,30 @@ public:
   Mode mode;
   QRubberBand *rubberband = 0;
 };
+
+void EData::invalidateStuckPoints() const {
+  stuckptsvalid = false;
+}
+
+void EData::validateStuckPoints() const {
+  if (stuckptsvalid)
+    return;
+  // stuckpts will be the | of all points of nonselected nontraces, but only
+  // if those points are also in selpts. (Others are irrelevant.)
+  stuckpts.clear();
+  Group const &here(layout.root().subgroup(crumbs));
+  Point ori = layout.root().originOf(crumbs);
+  for (int id: here.keys()) {
+    if (!selection.contains(id)) {
+      Object const &obj(here.object(id));
+      if (!obj.isTrace())
+        stuckpts |= pointsOf(obj, ori);
+    }
+  }
+  stuckpts &= selpts;
+  stuckptsvalid = true;
+  qDebug() << "stuckpts:" << stuckpts;
+}
 
 Rect EData::selectionBounds() const {
   Group const &here(layout.root().subgroup(crumbs));
@@ -96,50 +126,36 @@ Rect EData::selectionBounds() const {
 void EData::selectPointsOf(int id) {
   Group const &here(layout.root().subgroup(crumbs));
   if (here.contains(id))
-    selectPointsOf(here.object(id));
+    selpts |= pointsOf(here.object(id), layout.root().originOf(crumbs));
 }
 
-void EData::selectPointsOf(Object const &obj) {
-  Point ori = layout.root().originOf(crumbs);
+QSet<Point> EData::pointsOf(Object const &obj, Point const &ori) const {
+  QSet<Point> pp;
   switch (obj.type()) {
   case Object::Type::Null:
     break;
   case Object::Type::Hole:
-    selpts << obj.asHole().p + ori;
+    pp << obj.asHole().p + ori;
     break;
   case Object::Type::Pad:
-    selpts << obj.asPad().p + ori;
+    pp << obj.asPad().p + ori;
     break;
   case Object::Type::Arc:
-    selpts << obj.asArc().center + ori;
+    pp << obj.asArc().center + ori;
     break;
   case Object::Type::Text:
     break;
   case Object::Type::Trace:
-    selpts << obj.asTrace().p1 + ori << obj.asTrace().p2 + ori;
+    pp << obj.asTrace().p1 + ori << obj.asTrace().p2 + ori;
     break;
   case Object::Type::Group:
-    selectPointsOfComponent(obj.asGroup(), ori);
+    for (Point const &p: obj.asGroup().points())
+      pp << p + ori;
     break;
   case Object::Type::Plane:
     break;
   }
-}
-
-void EData::selectPointsOfComponent(Group const &g, Point const &ori) {
-  for (int id: g.keys()) {
-    Object const &obj = g.object(id);
-    switch (obj.type()) {
-    case Object::Type::Hole:
-      selpts << obj.asHole().p + ori + g.origin;
-      break;
-    case Object::Type::Pad:
-      selpts << obj.asPad().p + ori + g.origin;
-      break;
-    default:
-      break;
-    }
-  }
+  return pp;
 }
 
 void EData::drawBoard(QPainter &p) const {
@@ -259,13 +275,18 @@ void EData::drawObject(Object const &o, Layer l,
       Point p2 = origin + t.p2;
       if (moving && toplevel) {
 	if (selected) {
-	  p1 += movingdelta;
-	  p2 += movingdelta;
+          validateStuckPoints();
+          if (!stuckpts.contains(p1))
+            p1 += movingdelta;
+          if (!stuckpts.contains(p2))
+              p2 += movingdelta;
 	} else {
-	  if (selpts.contains(t.p1) || purepts.contains(t.p1))
+	  if ((selpts.contains(p1) || purepts.contains(p1))
+              && !stuckpts.contains(p1))
 	    p1 += movingdelta;
-	  if (selpts.contains(t.p2) || purepts.contains(t.p2))
-	    p2 += movingdelta;
+	  if ((selpts.contains(t.p2) || purepts.contains(t.p2))
+              && !stuckpts.contains(p2))
+            p2 += movingdelta;
 	}
       }
       p.drawLine(mils2widget.map(p1.toMils()),
@@ -649,18 +670,29 @@ void EData::moveBanding(Point p) {
 }
 
 void EData::releaseMoving(Point p) {
+  validateStuckPoints();
   movingdelta = p.roundedTo(layout.board().grid) - movingstart;
   Group &here(layout.root().subgroup(crumbs));
   Point ori(layout.root().originOf(crumbs));
   for (int id: here.keys()) {
     Object &obj(here.object(id));
     if (selection.contains(id)) {
-      obj.translate(movingdelta);
+      if (obj.isTrace()) {
+        Trace &t = obj.asTrace();
+        if (!stuckpts.contains(t.p1+ori))
+          t.p1 += movingdelta;
+        if (!stuckpts.contains(t.p2+ori))
+          t.p2 += movingdelta;
+      } else {
+        obj.translate(movingdelta);
+      }
     } else if (obj.isTrace()) {
       Trace &t = obj.asTrace();
-      if (selpts.contains(t.p1 + ori) || purepts.contains(t.p1 + ori))
+      if ((selpts.contains(t.p1 + ori) || purepts.contains(t.p1 + ori))
+          && !stuckpts.contains(t.p1+ori))
 	t.p1 += movingdelta;
-      if (selpts.contains(t.p2 + ori) || purepts.contains(t.p2 + ori))
+      if ((selpts.contains(t.p2 + ori) || purepts.contains(t.p2 + ori))
+          && !stuckpts.contains(t.p2+ori))
 	t.p2 += movingdelta;
     }
   }
@@ -887,6 +919,7 @@ bool Editor::leaveAllGroups() {
 }
 
 void Editor::select(int id, bool add) {
+  d->invalidateStuckPoints();
   Group &here(d->layout.root().subgroup(d->crumbs));
   if (!add) {
     d->selection.clear();
@@ -902,6 +935,7 @@ void Editor::select(int id, bool add) {
 }
 
 void Editor::selectPoint(Point p, bool add) {
+  d->invalidateStuckPoints();
   if (!add) {
     d->selection.clear();
     d->selpts.clear();
@@ -914,6 +948,7 @@ void Editor::selectPoint(Point p, bool add) {
 }
 
 void Editor::deselect(int id) {
+  d->invalidateStuckPoints();
   if (d->selection.contains(id)) {
     d->selection.remove(id);
     update();
@@ -922,6 +957,7 @@ void Editor::deselect(int id) {
 }
 
 void Editor::deselectPoint(Point p) {
+  d->invalidateStuckPoints();
   if (d->selpts.contains(p) || d->purepts.contains(p)) {
     d->selpts.remove(p);
     d->purepts.remove(p);
@@ -931,16 +967,18 @@ void Editor::deselectPoint(Point p) {
 }
 
 void Editor::selectAll() {
+  d->invalidateStuckPoints();
   Group const &here(d->layout.root().subgroup(d->crumbs));
   d->selection = QSet<int>::fromList(here.keys());
   d->purepts.clear();
   for (int id: d->selection)
-    d->selectPointsOf(here.object(id));
+    d->selectPointsOf(id);
   update();
   emit selectionChanged();
 }
 
 void Editor::clearSelection() {
+  d->invalidateStuckPoints();
   d->selection.clear();
   d->selpts.clear();
   d->purepts.clear();
@@ -949,6 +987,7 @@ void Editor::clearSelection() {
 }
 
 void Editor::selectArea(Rect r, bool add) {
+  d->invalidateStuckPoints();
   if (!add) {
     d->selection.clear();
     d->selpts.clear();
@@ -965,13 +1004,13 @@ void Editor::selectArea(Rect r, bool add) {
           // don't rectangle select a group reference text
         } else if (obj.isGroup()) {
           d->selection << id;
-          d->selectPointsOf(obj);
+          d->selectPointsOf(id);
           int tid = obj.asGroup().refTextId();
           if (here.contains(tid))
             d->selection << tid;
         } else {
           d->selection << id;
-          d->selectPointsOf(obj);
+          d->selectPointsOf(id);
         }          
       }
     }

@@ -50,6 +50,7 @@ public:
   void setRefTextId(int);
   bool saveComponent(int id, QString fn); // id must be a subgroup
   int insertComponent(QString fn);
+  QSet<Point> points() const; // relative to parent
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  
