@@ -5,6 +5,7 @@
 #include "Propertiesbar.h"
 #include "Statusbar.h"
 #include "Editor.h"
+#include "data/Paths.h"
 
 #include <QMessageBox>
 #include <QMenu>
@@ -25,6 +26,8 @@ public:
   void openDialog();
   void saveAsDialog();
   void saveImmediately();
+  void insertComponentDialog();
+  void saveComponentDialog();
 public:
   MainWindow *mw;
   Modebar *modebar;
@@ -32,12 +35,13 @@ public:
   Statusbar *statusbar;
   Editor *editor;
   QString pwd;
+  QString compwd;
   QString filename;
 };
 
 void MWData::openDialog() {
   if (pwd.isEmpty())
-    pwd = QDir::home().absoluteFilePath("Desktop");
+    pwd = Paths::defaultLocation();
   
   QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
 					    pwd,
@@ -71,9 +75,55 @@ void MWData::saveImmediately() {
   }
 }
 
+void MWData::saveComponentDialog() {
+  QString msg;
+  int id = editor->selectedComponent(&msg);
+  if (!id) {
+    QMessageBox::warning(mw, "Cannot save component", msg);
+    return;
+  }
+
+  if (compwd.isEmpty()) {
+     compwd = Paths::componentRoot();
+     QDir::home().mkpath(compwd);
+  }
+  QString fn = QFileDialog::getSaveFileName(0, "Save component…",
+					    compwd,
+					    "PCB components (*.cpart)");
+  if (fn.isEmpty())
+    return;
+
+  if (!fn.endsWith(".cpart"))
+    fn += ".cpart";
+
+  compwd = QFileInfo(fn).dir().absolutePath();
+  
+  editor->saveComponent(id, fn);
+}
+
+void MWData::insertComponentDialog() {
+  if (compwd.isEmpty()) {
+     compwd = Paths::componentRoot();
+     QDir::home().mkpath(compwd);
+  }
+  Point pt = editor->hoverPoint();
+  QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
+					    compwd,
+					    "PCB components (*.cpart)");
+  if (fn.isEmpty())
+    return;
+
+  compwd = QFileInfo(fn).dir().absolutePath();
+
+  if (!editor->insertComponent(fn, pt)) 
+    QMessageBox::warning(mw, "Failed to insert component",
+                         "Cannot insert component “" + fn
+                         + "”. Could the file be damaged?");
+}
+
 void MWData::saveAsDialog() {
   if (pwd.isEmpty())
-    pwd = QDir::home().absoluteFilePath("Desktop");
+    pwd = Paths::defaultLocation();
   
   QString fn = QFileDialog::getSaveFileName(0, "Save as…",
 					    pwd,
@@ -127,10 +177,24 @@ void MWData::makeMenus() {
   file->addAction("&Quit", []() { QApplication::quit(); });
 
   auto *edit = mb->addMenu("&Edit");
+  edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
+                  QKeySequence(Qt::CTRL + Qt::Key_R));
+  edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
+                  QKeySequence(Qt::CTRL + Qt::Key_R));
+  edit->addAction("Rotate &anticlockwise", [this]() { editor->rotateCCW(); },
+                  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+  edit->addAction("&Flip left–right", [this]() { editor->flipH(); },
+                  QKeySequence(Qt::CTRL + Qt::Key_F));
+  edit->addAction("Flip &up–down", [this]() { editor->flipV(); },
+                  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_F));
   edit->addAction("&Group", [this]() { editor->formGroup(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_G));
   edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
+  edit->addAction("&Insert component", [this]() { insertComponentDialog(); },
+                  QKeySequence(Qt::CTRL + Qt::Key_L));
+  edit->addAction("&Save component", [this]() { saveComponentDialog(); },
+                  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
   edit->addAction("&Delete selected", [this]() { editor->deleteSelected(); },
 		  QKeySequence(Qt::Key_Delete));
 

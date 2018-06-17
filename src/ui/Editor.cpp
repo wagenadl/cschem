@@ -69,6 +69,7 @@ public:
   Point tracecurrent;
   Point presspoint;
   Point movingstart;
+  Point hoverpt;
   bool tracing;
   bool moving;
   Point movingdelta;
@@ -783,6 +784,7 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
     d->moveBanding(p);
   else if (d->moving)
     d->moveMoving(p);
+  d->hoverpt = p;
   emit hovering(p);
 }
 
@@ -815,6 +817,8 @@ void Editor::enterEvent(QEvent *) {
 
 void Editor::leaveEvent(QEvent *) {
   d->abortTracing();
+  d->hoverpt
+    = Point::fromMils(d->widget2mils.map(QPoint(width()/2, height()/2)));
   emit leaving();
 }
 
@@ -1314,3 +1318,73 @@ void Editor::deleteSelected() {
   update();
 }
   
+int Editor::selectedComponent(QString *msg) const {
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  int gid = 0;
+  int tid = 0;
+  QString m = "";
+  for (int id: d->selection) {
+    if (here.object(id).isGroup()) {
+      if (gid) {
+        m = "More than one item selected";
+        gid = 0;
+        break;
+      } else {
+        gid = id;
+        int tid1 = here.object(id).asGroup().refTextId();
+        if (tid && tid!=tid1) {
+          m = "More than one item selected";
+          gid = 0;
+          break;
+        } else {
+          tid = tid1;
+        }
+      }
+    } else if (here.object(id).isText()) {
+      int gid1 = here.object(id).asText().groupAffiliation();
+      if (gid1==0 || (gid && gid1!=gid)) {
+        m = "More than one item selected";
+        gid = 0;
+        break;
+      } else {
+        tid = id;
+        gid = gid1;
+      }
+    } else {
+      if (d->selection.size()>1)
+        m = "More than one item selected";
+      else
+        m = "Nongroup selected";
+      break;
+    }
+  }
+  if (msg)
+    *msg = m;
+  return gid;
+}
+
+bool Editor::saveComponent(int id, QString fn) const {
+  return d->layout.root().subgroup(d->crumbs).saveComponent(id, fn);
+}
+
+bool Editor::insertComponent(QString fn, Point pt) {
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  Point ori = d->layout.root().originOf(d->crumbs);
+  int gid = here.insertComponent(fn);
+  if (!gid)
+    return false;
+  Object &obj(here.object(gid));
+  Rect bb = obj.boundingRect();
+  Point delta = pt - ori - bb.center();
+  obj.translate(delta);
+  int tid = obj.asGroup().refTextId();
+  if (here.contains(tid))
+    here.object(tid).translate(delta);
+  select(gid, false);
+  select(tid, true);
+  return true;
+}
+
+Point Editor::hoverPoint() const {
+  return d->hoverpt;
+}

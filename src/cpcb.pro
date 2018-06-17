@@ -25,7 +25,7 @@ HEADERS += data/FileIO.h   data/Rect.h   data/Arc.h
 SOURCES += data/FileIO.cpp data/Rect.cpp data/Arc.cpp
 HEADERS += ui/Propertiesbar.h   ui/Editor.h   ui/DimSpinner.h
 SOURCES += ui/Propertiesbar.cpp ui/Editor.cpp ui/DimSpinner.cpp
-HEADERS += data/SimpleFont.h	
-SOURCES += data/SimpleFont.cpp
+HEADERS += data/SimpleFont.h   data/Paths.h
+SOURCES += data/SimpleFont.cpp data/Paths.cpp
 
 RESOURCES += ui/ui.qrc

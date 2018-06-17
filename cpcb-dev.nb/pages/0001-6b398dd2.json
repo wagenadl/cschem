@@ -1,0 +1,425 @@
+{ "typ": "page",
+  "cre": "2018-06-09T18:58:22",
+  "mod": "2018-06-09T19:31:56",
+  "cui": "1aadbc5b7b929d43",
+  "stampTime": 0,
+  "startPage": 1,
+  "unlocked": false,
+  "uuid": "6b398dd2",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-09T18:58:22",
+      "mod": "2018-06-09T19:20:48",
+      "uuid": "7573b06b",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-06-09T19:20:48",
+          "mod": "2018-06-09T19:20:48",
+          "archive": "_1_-991564b7.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "991564b7"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2018-06-09T18:58:22",
+      "mod": "2018-06-09T18:58:30",
+      "uuid": "8e549ad4",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T18:58:22",
+          "mod": "2018-06-09T18:58:30",
+          "lines": [
+            0
+          ],
+          "text": "CPCB Grouping",
+          "uuid": "219a7fc9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T18:58:30",
+      "mod": "2018-06-09T18:59:49",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "fe3bb889",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T18:58:30",
+          "mod": "2018-06-09T18:59:49",
+          "lines": [
+            0,
+            57,
+            121,
+            182
+          ],
+          "text": "I spent a good amount of time writing cpcb, a PCB layout program. I can now lay traces, text, pads, holes, and arcs. Not yet filled planes or non-rectangular boards. The program has roughly the same parametrization as Pcb Express.",
+          "uuid": "b598d1c2",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-09T18:58:41",
+              "mod": "2018-06-09T18:58:41",
+              "end": 42,
+              "start": 38,
+              "style": 1,
+              "uuid": "7c3a6268"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T18:59:52",
+      "mod": "2018-06-09T19:02:22",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "1ac16315",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T18:59:52",
+          "mod": "2018-06-09T19:02:22",
+          "lines": [
+            0,
+            60,
+            127,
+            189,
+            248
+          ],
+          "text": "I am planning to make a hierarchical library of components. At top level, I’ll have through hole vs SMT. (Of course I’ll start with the through hole library.) The next level will comprise: sockets, headers, other connectors, resistors, capacitors, transistors, diodes. ",
+          "uuid": "d8a4505c",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-09T19:00:28",
+              "mod": "2018-06-09T19:00:28",
+              "end": 99,
+              "start": 97,
+              "style": 1,
+              "uuid": "f520b343"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T19:02:38",
+      "mod": "2018-06-09T19:04:42",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "73bed179",
+      "y0": 288.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T19:02:38",
+          "mod": "2018-06-09T19:04:42",
+          "lines": [
+            0,
+            57,
+            114,
+            171,
+            231,
+            293,
+            357
+          ],
+          "text": "What I am struggling with right now, is how to implement the Ref. label that should go with components. I already created a way to create a group from a selection (and to ungroup it again), but the question is how the label object should be associated with the group. The group already has an explicit ref property that can be edited on the properties bar, but not yet an obvious way to place a ref text on the PCB.",
+          "uuid": "2c45ccfe",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-09T19:04:04",
+              "mod": "2018-06-09T19:04:04",
+              "end": 305,
+              "start": 302,
+              "style": 1,
+              "uuid": "c665e7b0"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T19:04:45",
+      "mod": "2018-06-09T19:04:49",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a0c75e43",
+      "y0": 454.656,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T19:04:45",
+          "mod": "2018-06-09T19:04:49",
+          "lines": [
+            0
+          ],
+          "text": "There are several options:",
+          "uuid": "e3c209a7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T19:04:49",
+      "mod": "2018-06-09T19:07:20",
+      "h": 189.328,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5aacb094",
+      "y0": 481.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T19:04:49",
+          "mod": "2018-06-09T19:07:20",
+          "lines": [
+            0,
+            55,
+            65,
+            127,
+            162,
+            220,
+            261,
+            323
+          ],
+          "text": "(0) not do anything, and make the user place ref texts manually;\n(1) create a text object inside the group that is marked by a special isref property in the xml;\n(2) create a text object that is part of the group object metadata but distinct from its children;\n(3) create a text object outside of the group that is somehow linked with it.",
+          "uuid": "993da13c",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-09T19:05:33",
+              "mod": "2018-06-09T19:05:33",
+              "end": 82,
+              "start": 78,
+              "style": 1,
+              "uuid": "dfcfb27b"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-09T19:06:02",
+              "mod": "2018-06-09T19:06:02",
+              "end": 140,
+              "start": 135,
+              "style": 1,
+              "uuid": "877850c8"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-09T19:06:20",
+              "mod": "2018-06-09T19:06:20",
+              "end": 179,
+              "start": 175,
+              "style": 1,
+              "uuid": "c05dd332"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-09T19:06:33",
+              "mod": "2018-06-09T19:06:33",
+              "end": 212,
+              "start": 207,
+              "style": 1,
+              "uuid": "cd175e6b"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-09T19:06:48",
+              "mod": "2018-06-09T19:06:48",
+              "end": 278,
+              "start": 274,
+              "style": 1,
+              "uuid": "3b9aaa82"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T19:07:44",
+      "mod": "2018-06-09T19:10:59",
+      "h": 281.992,
+      "ind": 0,
+      "sheet": 0,
+      "split": [
+        23.166
+      ],
+      "uuid": "d339a522",
+      "y0": 671.15,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T19:07:44",
+          "mod": "2018-06-09T19:10:59",
+          "lines": [
+            0,
+            58,
+            114,
+            176,
+            238,
+            300,
+            363,
+            425,
+            488,
+            549,
+            612,
+            672
+          ],
+          "text": "A secondary question is whether this text object must pre-exist when the group is made (and somehow marked by the user for the purpose, e.g., by containing a special text like “REF” or “###”), or whether the program will generate it when forming the group. It could be an option, of course, to use a preexisting text if it exists, but create one if it doesn’t. A related question is what should happen to the object when the group gets dissolved. Should it simply vanish (like in Express PCB), reformed into an ordinary text object (which would not be recognized as special if the group were to be reformed), or reformed into a text object with special text like “REF” or “###”.",
+          "uuid": "703eb08f",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-09T19:10:30",
+              "mod": "2018-06-09T19:10:30",
+              "end": 548,
+              "start": 545,
+              "style": 1,
+              "uuid": "0644774a"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T19:07:22",
+      "mod": "2018-06-09T19:20:22",
+      "h": 397.822,
+      "ind": 1,
+      "sheet": 1,
+      "split": [
+        370.656
+      ],
+      "uuid": "d78b33b8",
+      "y0": 330.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T19:07:22",
+          "mod": "2018-06-09T19:20:22",
+          "lines": [
+            0,
+            57,
+            115,
+            176,
+            237,
+            297,
+            352,
+            416,
+            476,
+            534,
+            597,
+            656,
+            715,
+            778,
+            838,
+            899,
+            962
+          ],
+          "text": "Each option should be evaluated on: user convenience and programming convenience. I want the tag object to be move with the group when the group is selected, but of course, it should also be possible to select the tag object separately. Note that there is no particular need to have the in-memory organization exactly match the on-disk organization. I particular, all objects have an id within their parent group in memory but not on disk. I could have a <ref><text …/></ref> sequence in the xml inside the <group>…</group>, but have the text object be created as a sister to the group in-memory. It would be easy enough to add a “reffor” property to text objects and a “refid” property to group objects. That way, Editor could add the text object to the selection whenever the group is selected, and update the ref property of the group whenever the text is edited. Right now, the “Ref” box in the Propertiesbar gets shaded when a text object is selected along with a group, but that wouldn’t have to be the case.",
+          "uuid": "fc1f2732",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-09T19:13:37",
+              "mod": "2018-06-09T19:13:37",
+              "end": 386,
+              "start": 384,
+              "style": 1,
+              "uuid": "d764fdda"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-09T19:14:34",
+              "mod": "2018-06-09T19:14:34",
+              "end": 502,
+              "start": 496,
+              "style": 1,
+              "uuid": "cac24897"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-09T19:17:05",
+              "mod": "2018-06-09T19:17:05",
+              "end": 815,
+              "start": 812,
+              "style": 1,
+              "uuid": "23c4f518"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-06-09T19:20:48",
+      "mod": "2018-06-09T19:20:52",
+      "h": 292.585,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "364723f0",
+      "xref": 0.0,
+      "y0": 99.166,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-06-09T19:20:48",
+          "mod": "2018-06-09T19:20:52",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 792.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.346698,
+          "uuid": "3bf4653f",
+          "width": 1326.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T19:20:53",
+      "mod": "2018-06-09T19:21:39",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "c7ba3253",
+      "y0": 391.751,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T19:20:53",
+          "mod": "2018-06-09T19:21:39",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "In fact, it would be easy enough to crosslink that box with the ref. text object.",
+          "uuid": "5f7df570"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-09T19:31:55",
+      "mod": "2018-06-09T19:31:55",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "a4c1e4a0",
+      "y0": 442.083,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-09T19:31:55",
+          "mod": "2018-06-09T19:31:55",
+          "lines": [
+            0
+          ],
+          "text": "",
+          "uuid": "9013d4e9"
+        }
+      ]
+    }
+  ]
+}

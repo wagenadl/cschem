@@ -268,7 +268,42 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   return s;
 }
 
-static void readGroupAndRef(QXmlStreamReader &s, Group &t) {
+bool Group::saveComponent(int id, QString fn) {
+  if (!d->obj.contains(id))
+    return false;
+  Object const &obj(*d->obj[id]);
+  if (!obj.isGroup())
+    return false;
+  
+  Group const &grp(obj.asGroup());
+  int refid = grp.refTextId();
+  Text reftext;
+  if (d->obj.contains(refid)) {
+    Object const &ref(*d->obj[refid]);
+    if (ref.isText())
+      reftext = ref.asText();
+  }
+
+  QFile file(fn);
+  if (!file.open(QFile::WriteOnly)) {
+    qDebug() << "Failed to open" << fn;
+    return false;
+  }
+  
+  QXmlStreamWriter sw(&file);
+  sw.setAutoFormatting(true);
+  sw.setAutoFormattingIndent(2);
+  sw.writeStartDocument("1.0", false);
+  sw.writeStartElement("cpcb-component");
+  sw.writeDefaultNamespace("http://www.danielwagenaar.net/cpcb-ns.html");
+  sw << grp;
+  sw << reftext;
+  sw.writeEndElement();
+  sw.writeEndDocument();
+  return true;
+}
+
+static int readGroupAndRef(QXmlStreamReader &s, Group &t) {
   int gid = 0;
   int tid = 0;
   while (!s.atEnd()) {
@@ -302,8 +337,23 @@ static void readGroupAndRef(QXmlStreamReader &s, Group &t) {
     if (tid<=0)
       qDebug() << "Missing ref text in gr";
   }
+  return gid;
 }
-  
+
+int Group::insertComponent(QString fn) {
+  QFile file(fn);
+  if (file.open(QFile::ReadOnly)) {
+    QXmlStreamReader sr(&file);
+    while (!sr.atEnd()) {
+      sr.readNext();
+      if (sr.isStartElement() && sr.name() == "cpcb-component") {
+        return readGroupAndRef(sr, *this);
+      }
+    }
+  }
+  return 0;
+}
+
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   t = Group();
   bool ok;

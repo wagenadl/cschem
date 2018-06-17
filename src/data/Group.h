@@ -48,6 +48,8 @@ public:
   int refTextId() const; // ID (in parent group) of the text object
   // that represents our Ref., or 0 if none.
   void setRefTextId(int);
+  bool saveComponent(int id, QString fn); // id must be a subgroup
+  int insertComponent(QString fn);
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

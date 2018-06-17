@@ -26,6 +26,8 @@ public:
   Group const &currentGroup() const;
   Point groupOffset() const;
   EProps &properties(); // for Propertiesbar to directly affect
+  int selectedComponent(QString *msg=0) const;
+  // returns ID if one group, or 0 if none, in which case msg says why
 public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);
@@ -64,6 +66,10 @@ public slots:
   void formGroup();
   void dissolveGroup();
   void deleteSelected();
+  bool saveComponent(int id, QString fn) const; // true if OK.
+  // id must be in current group (see breadcrumbs).
+  bool insertComponent(QString fn, Point pt); // true if OK.
+  Point hoverPoint() const;
 signals:
   void boardChanged(Board const &);
   void hovering(Point);
