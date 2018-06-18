@@ -265,6 +265,7 @@ void EData::drawObject(Object const &o, Layer l,
    */
   switch (o.type()) {
   case Object::Type::Trace: {
+    validateStuckPoints();
     Trace const &t = o.asTrace();
     if (t.layer==l) {
       p.setPen(QPen(layerColor(t.layer, selected),
@@ -275,7 +276,6 @@ void EData::drawObject(Object const &o, Layer l,
       Point p2 = origin + t.p2;
       if (moving && toplevel) {
 	if (selected) {
-          validateStuckPoints();
           if (!stuckpts.contains(p1))
             p1 += movingdelta;
           if (!stuckpts.contains(p2))
