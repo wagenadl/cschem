@@ -20,6 +20,7 @@ public:
     mode = Mode::Edit;
     tracing = false;
     moving = false;
+    panning = false;
     rubberband = 0;
     stuckptsvalid = false;
   }
@@ -47,6 +48,8 @@ public:
   void moveMoving(Point);
   void releaseBanding(Point);
   void releaseMoving(Point);
+  void pressPanning(QPoint);
+  void movePanning(QPoint);
   void dropFromSelection(int id, Point p, Dim mrg);
   void startMoveSelection();
   void newSelectionUnless(int id, Point p, Dim mrg, bool add);
@@ -55,6 +58,7 @@ public:
   Rect selectionBounds() const; // board coordinates
   void validateStuckPoints() const;
   void invalidateStuckPoints() const;
+  void zoom(double factor);
 public:
   Editor *ed;
   Layout layout;
@@ -78,9 +82,12 @@ public:
   Point hoverpt;
   bool tracing;
   bool moving;
+  bool panning;
   Point movingdelta;
   Mode mode;
   QRubberBand *rubberband = 0;
+  QTransform pan0;
+  QPoint panstart;
 };
 
 void EData::invalidateStuckPoints() const {
@@ -669,6 +676,21 @@ void EData::moveBanding(Point p) {
 			  .toRect());
 }
 
+void EData::pressPanning(QPoint p) {
+  autofit = false;
+  pan0 = mils2widget;
+  panstart = p;
+  panning = true;
+}
+
+void EData::movePanning(QPoint p) {
+  QPoint delta = p - panstart;
+  mils2widget = pan0;
+  mils2widget.translate(delta.x()/mils2px, delta.y()/mils2px);
+  widget2mils = mils2widget.inverted();
+  ed->update();
+}
+
 void EData::releaseMoving(Point p) {
   validateStuckPoints();
   movingdelta = p.roundedTo(layout.board().grid) - movingstart;
@@ -768,9 +790,27 @@ void Editor::scaleToFit() {
 }
 
 void Editor::zoomIn() {
+  d->zoom(sqrt(2));
 }
 
 void Editor::zoomOut() {
+  d->zoom(1/sqrt(2));
+}
+
+void EData::zoom(double factor) {
+  autofit = false;
+  QPointF xy0m = hoverpt.toMils();
+  QPointF xy0 = mils2widget.map(xy0m); // where do we project now?
+  mils2widget.scale(factor, factor);
+  QPointF xy1m = mils2widget.inverted().map(xy0);
+  mils2widget.translate(xy1m.x()-xy0m.x(), xy1m.y()-xy0m.y());
+  mils2px = mils2widget.m11(); // *= factor;
+  widget2mils = mils2widget.inverted();
+  ed->update();
+}
+
+void Editor::wheelEvent(QWheelEvent *e) {
+  d->zoom(pow(2, e->angleDelta().y()/240.));
 }
 
 void Editor::resizeEvent(QResizeEvent *) {
@@ -782,27 +822,32 @@ void Editor::mousePressEvent(QMouseEvent *e) {
   Point p = Point::fromMils(d->widget2mils.map(e->pos()));
   if (e->button() == Qt::LeftButton) {
     d->presspoint = p;
-    switch (d->mode) {
-    case Mode::Edit:
-      d->pressEdit(p, e->modifiers());
-      break;
-    case Mode::PlaceTrace:
-      d->pressTracing(p);
-      break;
-    case Mode::PlaceHole:
-      d->pressHole(p);
-      break;
-    case Mode::PlaceText:
-      d->pressText(p);
-      break;
-    case Mode::PlacePad:
-      d->pressPad(p);
-      break;
-    case Mode::PlaceArc:
-      d->pressArc(p);
-      break;
-    default:
-      break;
+    if (e->modifiers() & Qt::ControlModifier) {
+      d->pressPanning(e->pos());
+    } else {
+      d->panning = false;
+      switch (d->mode) {
+      case Mode::Edit:
+	d->pressEdit(p, e->modifiers());
+	break;
+      case Mode::PlaceTrace:
+	d->pressTracing(p);
+	break;
+      case Mode::PlaceHole:
+	d->pressHole(p);
+	break;
+      case Mode::PlaceText:
+	d->pressText(p);
+	break;
+      case Mode::PlacePad:
+	d->pressPad(p);
+	break;
+      case Mode::PlaceArc:
+	d->pressArc(p);
+	break;
+      default:
+	break;
+      }
     }
   }
   QWidget::mousePressEvent(e);
@@ -810,7 +855,9 @@ void Editor::mousePressEvent(QMouseEvent *e) {
 
 void Editor::mouseMoveEvent(QMouseEvent *e) {
   Point p = Point::fromMils(d->widget2mils.map(e->pos()));
-  if (d->tracing)
+  if (d->panning)
+    d->movePanning(e->pos());
+  else if (d->tracing)
     d->moveTracing(p);
   else if (d->rubberband)
     d->moveBanding(p);
@@ -826,6 +873,7 @@ void Editor::mouseReleaseEvent(QMouseEvent *e) {
     d->releaseBanding(p);
   else if (d->moving)
     d->releaseMoving(p);
+  d->panning = false;
 }
 
 void Editor::keyPressEvent(QKeyEvent *e) {

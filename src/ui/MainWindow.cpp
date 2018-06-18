@@ -201,6 +201,10 @@ void MWData::makeMenus() {
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_0));
+  view->addAction("Zoom &in", [this]() { editor->zoomIn(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_Equal));
+  view->addAction("Zoom &out", [this]() { editor->zoomOut(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_Minus));
   
   auto *help = mb->addMenu("&Help");
   help->addAction("&About", [this]() { about(); });

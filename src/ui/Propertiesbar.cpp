@@ -312,11 +312,12 @@ void PBData::getPropertiesFromSelection() {
       break;
     }
   }
+  if (l==Layer::Invalid)
+    return;
   silk->setChecked(l==Layer::Silk);
   top->setChecked(l==Layer::Top);
   bottom->setChecked(l==Layer::Bottom);
-  if (l != Layer::Invalid)
-    editor->properties().layer = l;
+  editor->properties().layer = l;
 
   got = false;
   // set text if we have precisely one text object, otherwise clear it
@@ -437,18 +438,24 @@ void PBData::hideAndShow() {
     wc->setEnabled(true);
     hc->setEnabled(true);
     layera->setEnabled(true);
-    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked())
+    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
       top->setChecked(true);
+      editor->properties().layer = Layer::Top;
+    }
     break;
   case Mode::PlaceText:
     texta->setEnabled(true);
     layera->setEnabled(true);
     orienta->setEnabled(true);
     if (!up->isChecked() && !right->isChecked()
-	&& !down->isChecked() && !left->isChecked())
+	&& !down->isChecked() && !left->isChecked()) {
       up->setChecked(true);
-    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked())
+      editor->properties().orient.rot = 0;
+    }
+    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
       silk->setChecked(true);
+      editor->properties().layer = Layer::Silk;
+    }
     break;
   case Mode::PlaceArc:
     dima->setEnabled(true);
@@ -456,8 +463,10 @@ void PBData::hideAndShow() {
     idc->setEnabled(true);
     arca->setEnabled(true);
     layera->setEnabled(true);
-    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked())
+    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
       silk->setChecked(true);
+      editor->properties().layer = Layer::Silk;
+    }
     break;
   case Mode::PlacePlane:
     layera->setEnabled(true);
@@ -535,11 +544,11 @@ void PBData::hsEdit() {
     for (int k: objects) { 
       Object const &obj(here.object(k));
       if (obj.isGroup()) {
-        int tid = obj.asGroup().refTextId();
-        if (objects.contains(tid)) {
-          // got group and its ref text
-          refa->setEnabled(true);
-        }
+	int tid = obj.asGroup().refTextId();
+	if (objects.contains(tid)) {
+	  // got group and its ref text
+	  refa->setEnabled(true);
+	}
       }
     }
   }
@@ -641,13 +650,13 @@ void PBData::setupUI() {
   };
 
   /*
-  auto makeRadio = [](QWidget *container, QString text) {
+    auto makeRadio = [](QWidget *container, QString text) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QRadioButton *s = new QRadioButton(text);
     container->layout()->addWidget(s);
     return s;
-  };
+    };
   */
 
   auto makeTextTool = [](QWidget *container, QString text) {
@@ -686,13 +695,13 @@ void PBData::setupUI() {
   };
   
   /*
-  auto makeCheckBox = [](QWidget *container, QString text) {
+    auto makeCheckBox = [](QWidget *container, QString text) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QCheckBox *s = new QCheckBox(text);
     container->layout()->addWidget(s);
     return s;
-  };
+    };
   */
     
   xyg = makeGroup(&xya);
@@ -834,25 +843,25 @@ void PBData::setupUI() {
 		   [this](bool b) {
 		     if (b) 
 		       editor->setRotation(0);
-		     });
+		   });
   right = makeIconTool(orientc, "Right", true, true);
   QObject::connect(right, &QToolButton::clicked,
 		   [this](bool b) {
 		     if (b) 
 		       editor->setRotation(1);
-		     });
+		   });
   down = makeIconTool(orientc, "Down", true, true);
   QObject::connect(down, &QToolButton::clicked,
 		   [this](bool b) {
 		     if (b) 
 		       editor->setRotation(2);
-		     });
+		   });
   left = makeIconTool(orientc, "Left", true, true);
   QObject::connect(left, &QToolButton::clicked,
 		   [this](bool b) {
 		     if (b)
 		       editor->setRotation(3);
-		     });
+		   });
   flipped = makeIconTool(c3, "Flipped", true);
   QObject::connect(flipped, &QToolButton::clicked,
 		   [this](bool b) {
@@ -920,16 +929,29 @@ Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) 
 void Propertiesbar::reflectMode(Mode m) {
   d->mode = m;
   if (m==Mode::PlaceHole) {
-    if (!d->square->isChecked())
+    if (!d->square->isChecked()) {
       d->circle->setChecked(true);
+      d->editor->setSquare(false);
+    }
   }
-  if (m==Mode::PlaceArc || m==Mode::PlaceTrace
-      || m==Mode::PlaceText || m==Mode::PlacePad)
-    if (d->layer()==Layer::Invalid)
+  if (m==Mode::PlaceArc || m==Mode::PlaceText) {
+    if (d->layer()==Layer::Invalid) {
+      d->silk->setChecked(true);
+      d->editor->properties().layer = Layer::Silk;
+    }
+  }
+  if (m==Mode::PlaceTrace || m==Mode::PlacePad) {
+    if (d->layer()==Layer::Invalid) {
       d->top->setChecked(true);
-  if (m==Mode::PlaceArc)
-    if (d->extent()==Arc::Extent::Invalid)
+      d->editor->properties().layer = Layer::Top;
+    }
+  }
+  if (m==Mode::PlaceArc) {
+    if (d->extent()==Arc::Extent::Invalid) {
       d->arcfull->setChecked(true);
+      d->editor->properties().ext = Arc::Extent::Full;
+    }
+  }
   d->hideAndShow();
 }
 

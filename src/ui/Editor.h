@@ -84,6 +84,7 @@ protected:
   void leaveEvent(QEvent *) override;
   void paintEvent(QPaintEvent *) override;
   void resizeEvent(QResizeEvent *) override;
+  void wheelEvent(QWheelEvent *) override;
 private:
   void selectPointsOf(int id);
   void selectPointsOf(Object const &obj);
