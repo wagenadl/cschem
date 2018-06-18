@@ -425,6 +425,7 @@ void MainWindow::load(QString fn) {
   d->libview->rebuild();
   setWindowTitle(fn);
   d->filename = fn;
+  d->lastdir = QFileInfo(fn).dir().absolutePath();
   setStatusMessage(tr("Loaded “%1”").arg(fn));
 }
 
