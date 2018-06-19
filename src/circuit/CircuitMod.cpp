@@ -886,27 +886,9 @@ bool CircuitMod::rotateElements(QSet<int> eltids, int steps) {
 }
 
 bool CircuitMod::rotateElement(int eltid, int steps) {
-  if (!d->circ.elements.contains(eltid))
-    return false;
-  steps &= 3;
-  Circuit c0 = d->circ;
-  Geometry geom(d->circ, d->lib);
-  Element elt = d->circ.elements[eltid];
-  QPoint dx0 = geom.centerOfPinMass(elt);
-  elt.rotation += steps;
-  for (int k=0; k<steps; k++)
-    elt.namePosition
-      = QPoint(elt.namePosition.y(), -elt.namePosition.x());
-      for (int k=0; k<steps; k++)
-	elt.valuePosition
-	  = QPoint(elt.valuePosition.y(), -elt.valuePosition.x());
-  QPoint dx1 = geom.centerOfPinMass(elt);
-  elt.position += + dx0 - dx1;
-  d->insert(elt);
-  QSet<int> ee; ee << eltid;
-  for (int c: d->circ.connectionsFrom(ee) + d->circ.connectionsTo(ee))
-    reroute(c, c0);
-  return true;
+  QSet<int> elts;
+  elts << eltid;
+  return rotateElements(elts, steps);
 }
 
 bool CircuitMod::flipElements(QSet<int> eltids) {
