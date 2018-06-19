@@ -1,0 +1,797 @@
+{ "typ": "page",
+  "cre": "2018-06-19T15:33:17",
+  "mod": "2018-06-19T16:24:21",
+  "cui": "497766c36b53c059",
+  "stampTime": 0,
+  "startPage": 38,
+  "unlocked": false,
+  "uuid": "dc0e74f0",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-19T15:33:17",
+      "mod": "2018-06-19T16:23:35",
+      "uuid": "c73c6bbd",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-06-19T15:44:23",
+          "mod": "2018-06-19T15:44:23",
+          "archive": "_1_-ecf6d6ca.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "ecf6d6ca"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T15:46:53",
+          "mod": "2018-06-19T15:46:53",
+          "archive": "_2_-15c18aba.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*2",
+          "title": "",
+          "uuid": "15c18aba"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T15:54:17",
+          "mod": "2018-06-19T15:54:17",
+          "archive": "_3_-7f545b4e.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*3",
+          "title": "",
+          "uuid": "7f545b4e"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T15:56:56",
+          "mod": "2018-06-19T15:56:56",
+          "archive": "_4_-b9fb1b1f.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*4",
+          "title": "",
+          "uuid": "b9fb1b1f"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T15:58:27",
+          "mod": "2018-06-19T15:58:27",
+          "archive": "_5_-eb4f3b01.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*5",
+          "title": "",
+          "uuid": "eb4f3b01"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T15:59:43",
+          "mod": "2018-06-19T15:59:43",
+          "archive": "_6_-456950e6.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*6",
+          "title": "",
+          "uuid": "456950e6"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T16:03:53",
+          "mod": "2018-06-19T16:03:53",
+          "archive": "_7_-4133cb26.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*7",
+          "title": "",
+          "uuid": "4133cb26"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T16:09:23",
+          "mod": "2018-06-19T16:09:23",
+          "archive": "_8_-a612e21d.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*8",
+          "title": "",
+          "uuid": "a612e21d"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T16:10:22",
+          "mod": "2018-06-19T16:10:22",
+          "archive": "_9_-1023e7ba.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*9",
+          "title": "",
+          "uuid": "1023e7ba"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T16:21:07",
+          "mod": "2018-06-19T16:21:07",
+          "archive": "_10_-c0e151fd.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*10",
+          "title": "",
+          "uuid": "c0e151fd"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T16:23:35",
+          "mod": "2018-06-19T16:23:35",
+          "archive": "_11_-a773ab00.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*11",
+          "title": "",
+          "uuid": "a773ab00"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2018-06-19T15:33:17",
+      "mod": "2018-06-19T15:33:19",
+      "uuid": "8f4ae8a9",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:33:17",
+          "mod": "2018-06-19T15:33:19",
+          "lines": [
+            0
+          ],
+          "text": "Containers",
+          "uuid": "bcc937ce"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:33:19",
+      "mod": "2018-06-19T15:34:40",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "357dd137",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:33:19",
+          "mod": "2018-06-19T15:34:40",
+          "lines": [
+            0,
+            53,
+            117,
+            178,
+            241
+          ],
+          "text": "Containers have been a disaster. They should be much simplified in concept. Basically, I have two problems: (1) many ICs contain multiple logical components (e.g., opamps, logic gates), and (2) pin ordering is not consistent between similar items. These are separate problems with separate solutions.",
+          "uuid": "b6cabf92",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:33:32",
+              "mod": "2018-06-19T15:33:32",
+              "end": 52,
+              "start": 48,
+              "style": 1,
+              "uuid": "9c697ed8"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:34:42",
+      "mod": "2018-06-19T15:40:12",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "888aa1d7",
+      "y0": 191.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:34:42",
+          "mod": "2018-06-19T15:40:12",
+          "lines": [
+            0,
+            56,
+            116,
+            177,
+            243,
+            303
+          ],
+          "text": "(2) is the easier problem. I think it mainly applies to transistors. E.g., most TO-220 MOSFETS use GDS order but TO-92 N-channel MOSFETS use DGS or SGD order. I kid you not. On the schematic, I don’t want to care about the details. Instead, I can easily have a component in cpcb named “to-92-dgs”, etc. Who cares that that creates more files?",
+          "uuid": "a9882aa0"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:40:48",
+      "mod": "2018-06-19T15:43:21",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "2aeadd67",
+      "y0": 334.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:40:48",
+          "mod": "2018-06-19T15:43:21",
+          "lines": [
+            0,
+            63,
+            125,
+            187,
+            250,
+            314
+          ],
+          "text": "I could also have a lookup list so that putting “BS170” as the “part/value” in cschem would automatically DGS order, or even infer “to-92-dgs” entirely. I could have a system of pin name mapping here, so that a “to-92” file could have pin numbers 1, 2, 3, and the map could say “to-92:dgs” to imply order. But why bother?",
+          "uuid": "2277a131",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:40:50",
+              "mod": "2018-06-19T15:40:50",
+              "end": 7,
+              "start": 2,
+              "style": 1,
+              "uuid": "7110b133"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:42:32",
+              "mod": "2018-06-19T15:42:32",
+              "end": 160,
+              "start": 155,
+              "style": 1,
+              "uuid": "1c10fb10"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:43:26",
+      "mod": "2018-06-19T15:44:23",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "6297f13d",
+      "y0": 477.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:43:26",
+          "mod": "2018-06-19T15:44:23",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "(1) should be made easy. I definitely want to be able to use just the core opamp symbol in the schematic:",
+          "uuid": "e81dde0a",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:43:30",
+              "mod": "2018-06-19T15:43:30",
+              "end": 18,
+              "start": 14,
+              "style": 1,
+              "uuid": "b0e08ce2"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-06-19T15:44:23",
+      "mod": "2018-06-19T15:46:00",
+      "h": 77.2978,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ccb9ee29",
+      "xref": 0.0,
+      "y0": 528.154,
+      "yref": -13.0968,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-06-19T15:44:23",
+          "mod": "2018-06-19T15:44:48",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 388.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.123946,
+          "uuid": "0222fb27",
+          "width": 496.0,
+          "x": 0.0,
+          "y": 0.0,
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-06-19T15:44:45",
+              "mod": "2018-06-19T15:44:48",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "05919f95",
+              "x": 337.39,
+              "y": 333.863,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-06-19T15:44:45",
+                  "mod": "2018-06-19T15:44:48",
+                  "lines": [
+                    0
+                  ],
+                  "text": "A1",
+                  "uuid": "8e09d112",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2018-06-19T15:44:48",
+                      "mod": "2018-06-19T15:44:48",
+                      "end": 2,
+                      "start": 1,
+                      "style": 7,
+                      "uuid": "81f40707"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2018-06-19T15:44:53",
+          "mod": "2018-06-19T15:46:00",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 340.981,
+          "uuid": "5d4268e8",
+          "x": 96.9573,
+          "y": 3.90322,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T15:44:53",
+              "mod": "2018-06-19T15:45:50",
+              "lines": [
+                0,
+                56,
+                113
+              ],
+              "text": "(Note, by the way, that annotation placement for opamps is not well served by the rules on pp. 34‒35. But that’s why an annotation rectangle in the SVG can be helpful.)",
+              "uuid": "bb9370d1"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:44:30",
+      "mod": "2018-06-19T15:46:27",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ad581871",
+      "y0": 605.452,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:44:30",
+          "mod": "2018-06-19T15:46:27",
+          "lines": [
+            0,
+            63,
+            124
+          ],
+          "text": "without power lines obstructing clarity. I then want to have a container item that can be placed elsewhere on the schematic that explains the power situation:",
+          "uuid": "f7465916"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-06-19T15:46:53",
+      "mod": "2018-06-19T16:12:11",
+      "h": 153.589,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "6f839aea",
+      "xref": 0.0,
+      "y0": 72.0,
+      "yref": -13.0904,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-06-19T15:46:53",
+          "mod": "2018-06-19T16:09:30",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 492.0,
+          "res": [
+            "*2"
+          ],
+          "resName": "*2",
+          "scale": 0.131852,
+          "uuid": "278de3ba",
+          "width": 618.0,
+          "x": 0.0,
+          "y": 0.0,
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-06-19T15:49:24",
+              "mod": "2018-06-19T15:49:28",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "014e04e4",
+              "x": 577.28,
+              "y": 394.822,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-06-19T15:49:24",
+                  "mod": "2018-06-19T15:49:26",
+                  "lines": [
+                    0
+                  ],
+                  "text": "A1",
+                  "uuid": "bb91cc5f",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2018-06-19T15:49:26",
+                      "mod": "2018-06-19T15:49:26",
+                      "end": 2,
+                      "start": 1,
+                      "style": 7,
+                      "uuid": "fa4fb59c"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        { "typ": "gfximage",
+          "cre": "2018-06-19T15:54:17",
+          "mod": "2018-06-19T16:12:03",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 25.0,
+          "height": 480.0,
+          "res": [
+            "*3"
+          ],
+          "resName": "*3",
+          "scale": 0.118599,
+          "uuid": "638d4982",
+          "width": 622.0,
+          "x": 41.0412,
+          "y": 74.5709
+        },
+        { "typ": "gfxnote",
+          "cre": "2018-06-19T15:54:30",
+          "mod": "2018-06-19T16:11:52",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 354.335,
+          "uuid": "5db8de41",
+          "x": 104.281,
+          "y": 3.90961,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T15:54:30",
+              "mod": "2018-06-19T16:10:33",
+              "lines": [
+                0,
+                54,
+                111,
+                167
+              ],
+              "text": "Would a slight internal separation make for a clearer symbol? Or shading or other use of color? In the case of multiple contained elements, they must be numbered “1”, “2”, etc. I think some form of color could be very helpful.",
+              "uuid": "a7389fc5"
+            }
+          ]
+        },
+        { "typ": "gfximage",
+          "cre": "2018-06-19T15:58:27",
+          "mod": "2018-06-19T16:12:06",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 18.0,
+          "height": 472.0,
+          "res": [
+            "*5"
+          ],
+          "resName": "*5",
+          "scale": 0.123062,
+          "uuid": "68e9fb83",
+          "width": 604.0,
+          "x": 107.778,
+          "y": 72.6066
+        },
+        { "typ": "gfximage",
+          "cre": "2018-06-19T15:59:43",
+          "mod": "2018-06-19T16:12:09",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 24.0,
+          "height": 474.0,
+          "res": [
+            "*6"
+          ],
+          "resName": "*6",
+          "scale": 0.126322,
+          "uuid": "04ab7840",
+          "width": 626.0,
+          "x": 181.634,
+          "y": 74.1402
+        },
+        { "typ": "gfximage",
+          "cre": "2018-06-19T16:03:53",
+          "mod": "2018-06-19T16:12:11",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 38.0,
+          "height": 472.0,
+          "res": [
+            "*7"
+          ],
+          "resName": "*7",
+          "scale": 0.126253,
+          "uuid": "744bf3a0",
+          "width": 628.0,
+          "x": 284.502,
+          "y": 70.5275
+        },
+        { "typ": "gfximage",
+          "cre": "2018-06-19T16:10:22",
+          "mod": "2018-06-19T16:11:54",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 444.0,
+          "res": [
+            "*9"
+          ],
+          "resName": "*9",
+          "scale": 0.122941,
+          "uuid": "55770c96",
+          "width": 570.0,
+          "x": 366.161,
+          "y": 75.4325
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:46:56",
+      "mod": "2018-06-19T15:48:48",
+      "h": 166.162,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "6dabdbad",
+      "y0": 225.589,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:46:56",
+          "mod": "2018-06-19T15:48:48",
+          "lines": [
+            0,
+            64,
+            121,
+            184,
+            242,
+            304,
+            369
+          ],
+          "text": "Here, the “x” marks indicate lines without connections, and the internal lines indicate connections that are made on the contained object rather than on the container. Also, the whole thing shows DIP-8 shape. I think that’s a good thing. For opamps that have more auxillary lines, a similar drawing with more lines can easily be created. None of this has to be part of the automatically loaded library.",
+          "uuid": "e679c90f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:48:51",
+      "mod": "2018-06-19T15:52:10",
+      "h": 212.494,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "786d48de",
+      "y0": 391.751,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:48:51",
+          "mod": "2018-06-19T15:52:10",
+          "lines": [
+            0,
+            57,
+            126,
+            183,
+            242,
+            302,
+            363,
+            419,
+            479
+          ],
+          "text": "Linking the container with the contained elements should be simple. In this case, it would suffice to label both “A1”. I will not support arbitrary linking. So no “U1[G1, G3, G8]” or whatever. Just “U1” containing “U1.1”, “U1.2”, etc. I will automatically copy “desc” annotations between container and contained objects, prefixing “½” or “⅙” as needed. This will only happen automatically when that annotation is first created: the user should be free to change text without the computer being bossy.",
+          "uuid": "39ec2c3a",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:49:18",
+              "mod": "2018-06-19T15:49:18",
+              "end": 116,
+              "start": 115,
+              "style": 7,
+              "uuid": "1a673627"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:49:46",
+              "mod": "2018-06-19T15:49:46",
+              "end": 166,
+              "start": 165,
+              "style": 7,
+              "uuid": "43acf304"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:49:53",
+              "mod": "2018-06-19T15:49:53",
+              "end": 177,
+              "start": 176,
+              "style": 7,
+              "uuid": "6a04fe7f"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:49:55",
+              "mod": "2018-06-19T15:49:55",
+              "end": 173,
+              "start": 172,
+              "style": 7,
+              "uuid": "f682019b"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:49:56",
+              "mod": "2018-06-19T15:49:56",
+              "end": 169,
+              "start": 168,
+              "style": 7,
+              "uuid": "d2cc81b8"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:50:04",
+              "mod": "2018-06-19T15:50:04",
+              "end": 201,
+              "start": 200,
+              "style": 7,
+              "uuid": "0c288e9a"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:50:09",
+              "mod": "2018-06-19T15:50:09",
+              "end": 219,
+              "start": 216,
+              "style": 7,
+              "uuid": "3d7fe85f"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:50:12",
+              "mod": "2018-06-19T15:50:12",
+              "end": 227,
+              "start": 224,
+              "style": 7,
+              "uuid": "427ec079"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:50:53",
+              "mod": "2018-06-19T15:50:53",
+              "end": 241,
+              "start": 237,
+              "style": 1,
+              "uuid": "094f3d92"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:51:42",
+              "mod": "2018-06-19T15:51:42",
+              "end": 367,
+              "start": 363,
+              "style": 1,
+              "uuid": "3b220688"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-06-19T16:21:07",
+      "mod": "2018-06-19T16:24:11",
+      "h": 262.126,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "b08fa8e8",
+      "xref": 0.0,
+      "y0": 72.0,
+      "yref": 26.1973,
+      "cc": [
+        { "typ": "gfxnote",
+          "cre": "2018-06-19T16:21:12",
+          "mod": "2018-06-19T16:23:53",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 155.315,
+          "uuid": "d22f2a91",
+          "x": 258.499,
+          "y": 247.684,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T16:21:12",
+              "mod": "2018-06-19T16:23:49",
+              "lines": [
+                0,
+                26
+              ],
+              "text": "Example of a container in an incomplete circuit.",
+              "uuid": "97d21a66"
+            }
+          ]
+        },
+        { "typ": "gfximage",
+          "cre": "2018-06-19T16:23:35",
+          "mod": "2018-06-19T16:24:11",
+          "cropBottom": 53.0,
+          "cropLeft": 50.0,
+          "cropRight": 79.0,
+          "cropTop": 21.0,
+          "height": 686.0,
+          "res": [
+            "*11"
+          ],
+          "resName": "*11",
+          "scale": 0.384729,
+          "uuid": "77ca1ef6",
+          "width": 740.0,
+          "x": -12.4475,
+          "y": 27.118
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T16:23:57",
+      "mod": "2018-06-19T16:24:21",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "02a73d52",
+      "y0": 334.126,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T16:23:57",
+          "mod": "2018-06-19T16:24:21",
+          "lines": [
+            0
+          ],
+          "text": "I think that will be quite workable from a user’s perspective.",
+          "uuid": "3fa3d8ab"
+        }
+      ]
+    }
+  ]
+}

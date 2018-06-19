@@ -1,0 +1,76 @@
+{ "typ": "page",
+  "cre": "2018-06-19T15:26:43",
+  "mod": "2018-06-19T15:32:50",
+  "cui": "497766c36b53c059",
+  "stampTime": 0,
+  "startPage": 36,
+  "unlocked": false,
+  "uuid": "315a67b6",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-19T15:26:43",
+      "mod": "2018-06-19T15:26:43",
+      "uuid": "15bafbbc"
+    },
+    { "typ": "title",
+      "cre": "2018-06-19T15:26:43",
+      "mod": "2018-06-19T15:26:48",
+      "uuid": "f11eaf59",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:26:43",
+          "mod": "2018-06-19T15:26:48",
+          "lines": [
+            0
+          ],
+          "text": "Nomenclature of annotations",
+          "uuid": "0275e5df"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:26:48",
+      "mod": "2018-06-19T15:32:50",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "2ed4220d",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:26:48",
+          "mod": "2018-06-19T15:32:50",
+          "lines": [
+            0,
+            62,
+            128,
+            194,
+            255,
+            321
+          ],
+          "text": "Right now, the annotations are “nn” and “value”. I think both are terrible. Instead, it should be “ref.” and “desc.”. That way, “ref.” is easily understood as a placeholder for things like “R3” and “U1”, whereas “desc.” is easily understood to be a place holder for things like “1 𝝁F”, “1 Ω, 3 W”, or “OPA2350”. Instead of “desc.”, it might be better to say “part/value”. I am not sure.",
+          "uuid": "d0497279",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:27:46",
+              "mod": "2018-06-19T15:27:46",
+              "end": 192,
+              "start": 191,
+              "style": 7,
+              "uuid": "11f7f026"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:27:58",
+              "mod": "2018-06-19T15:27:58",
+              "end": 201,
+              "start": 200,
+              "style": 7,
+              "uuid": "b2b898c3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
