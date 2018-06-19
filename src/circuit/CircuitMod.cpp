@@ -914,14 +914,13 @@ bool CircuitMod::flipElements(QSet<int> eltids) {
   Geometry geom(d->circ, d->lib);
 
   int N = 0;
-  QPoint p0;
+  QPoint p0(0, 0);
   for (int id: eltids) {
     if (d->circ.elements.contains(id)) {
       Element elt = d->circ.elements[id];
       p0 += geom.centerOfPinMass(elt);
+      qDebug() << "pinmass p0" << p0;
       N++;
-      elt.namePosition.setX(-elt.namePosition.x());
-      elt.valuePosition.setX(-elt.valuePosition.x());
     }
   }
   p0 /= N; // original CMp
@@ -932,6 +931,8 @@ bool CircuitMod::flipElements(QSet<int> eltids) {
       elt.flipped = !elt.flipped;
       QPoint dp = elt.position - p0;
       elt.position = p0 + QPoint(-dp.x(), dp.y());
+      elt.namePosition.setX(-elt.namePosition.x());
+      elt.valuePosition.setX(-elt.valuePosition.x());
       d->insert(elt);
     }
   }
@@ -953,19 +954,9 @@ bool CircuitMod::flipElements(QSet<int> eltids) {
 }
 
 bool CircuitMod::flipElement(int eltid) {
-  if (!d->circ.elements.contains(eltid))
-    return false;
-  Circuit c0 = d->circ;
-  Geometry geom(d->circ, d->lib);
-  Element elt = d->circ.elements[eltid];
-  elt.flipped = !elt.flipped;
-  elt.namePosition.setX(-elt.namePosition.x());
-  elt.valuePosition.setX(-elt.valuePosition.x());
-  d->insert(elt);
-  QSet<int> ee; ee << eltid;
-  for (int c: d->circ.connectionsFrom(ee) + d->circ.connectionsTo(ee))
-    reroute(c, c0);
-  return true;
+  QSet<int> elts;
+  elts << eltid;
+  return flipElements(elts);
 }
 
 void CircuitMod::forceRebuildElement(int eltid) {
