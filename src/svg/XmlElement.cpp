@@ -103,3 +103,19 @@ void XmlElement::writeChildren(QXmlStreamWriter &dst) const {
 void XmlElement::writeEndElement(QXmlStreamWriter &dst) const {
   dst.writeEndElement();
 }
+
+QString XmlElement::title() const {
+  for (auto const &c: children()) {
+    if (c.type()==XmlNode::Type::Element) {
+      auto const &elt = c.element();
+      if (elt.qualifiedName() == "title") {
+        for (auto const &c: elt.children())
+          if (c.type()==XmlNode::Type::Text)
+            return c.text();
+      } else {
+        return ""; // title must be first element
+      }
+    }
+  }
+  return "";
+}
