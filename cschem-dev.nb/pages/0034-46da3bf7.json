@@ -1,0 +1,304 @@
+{ "typ": "page",
+  "cre": "2018-06-19T15:10:16",
+  "mod": "2018-06-19T15:26:40",
+  "cui": "497766c36b53c059",
+  "stampTime": 0,
+  "startPage": 34,
+  "unlocked": false,
+  "uuid": "46da3bf7",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-19T15:10:16",
+      "mod": "2018-06-19T15:23:20",
+      "uuid": "96b014d5",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-06-19T15:23:20",
+          "mod": "2018-06-19T15:23:20",
+          "archive": "_1_-31cb0d7d.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "31cb0d7d"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2018-06-19T15:10:16",
+      "mod": "2018-06-19T15:10:28",
+      "uuid": "c7c09083",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:10:16",
+          "mod": "2018-06-19T15:10:28",
+          "lines": [
+            0
+          ],
+          "text": "Text alignment",
+          "uuid": "93930505"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:10:21",
+      "mod": "2018-06-19T15:14:54",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a357e44a",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:10:21",
+          "mod": "2018-06-19T15:14:54",
+          "lines": [
+            0,
+            60,
+            121,
+            186
+          ],
+          "text": "Text alignment should be simpler. I don’t want to have left/center/right/whatever. Instead, I want the file to contain a simple left anchor for all text. That way, typing English leaves the anchor in place. ",
+          "uuid": "072cb933",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:14:58",
+              "mod": "2018-06-19T15:14:58",
+              "end": 14,
+              "start": 5,
+              "style": 2,
+              "uuid": "722aaa5e"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:10:21",
+      "mod": "2018-06-19T15:17:46",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a357e44a",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:10:21",
+          "mod": "2018-06-19T15:17:23",
+          "lines": [
+            0,
+            56,
+            120,
+            185,
+            247,
+            312,
+            375
+          ],
+          "text": "Dragging — I want text dragging to be smarter: Magnetic snapping of relevant edges of text box to component: If text is off to the left or right of the component, snap to inside of top/bottom and to center line*; if text is off above or below the component, snap to inside of left/right edge and to center line. In all cases, snap to a reasonable distance from the component in the cross direction. ",
+          "uuid": "072cb933",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:14:37",
+              "mod": "2018-06-19T15:14:37",
+              "end": 8,
+              "start": 0,
+              "style": 2,
+              "uuid": "7d2b00eb"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:17:24",
+              "mod": "2018-06-19T15:17:24",
+              "end": 211,
+              "start": 210,
+              "style": 6,
+              "uuid": "d5f3282b"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-19T15:17:24",
+              "mod": "2018-06-19T15:17:24",
+              "end": 211,
+              "start": 210,
+              "style": 5,
+              "uuid": "2d4ec3b6"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2018-06-19T15:17:24",
+          "mod": "2018-06-19T15:17:46",
+          "h": 37.534,
+          "ind": 1,
+          "sheet": 0,
+          "split": [ ],
+          "tag": "*",
+          "uuid": "4c731b4e",
+          "y0": 670.466,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T15:17:24",
+              "mod": "2018-06-19T15:17:46",
+              "lines": [
+                0,
+                71
+              ],
+              "text": "Should snap to above center line as well so that secondary text can be placed below center line",
+              "uuid": "f9f7037e"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:13:50",
+      "mod": "2018-06-19T15:16:21",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "434f1910",
+      "y0": 334.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:13:50",
+          "mod": "2018-06-19T15:16:21",
+          "lines": [
+            0,
+            59,
+            123,
+            182,
+            247
+          ],
+          "text": "Flipping and rotating — I also want text positioning to be smarter during rotate and flip. Basically, I want the center to stay put relative to the component during flipping. During rotation, that might still be best, but it may be even better to maintain the appropriate snap.",
+          "uuid": "a556460d",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:14:49",
+              "mod": "2018-06-19T15:14:49",
+              "end": 21,
+              "start": 0,
+              "style": 2,
+              "uuid": "934a9fb4"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:16:10",
+      "mod": "2018-06-19T15:17:11",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "10846db0",
+      "y0": 454.656,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:16:10",
+          "mod": "2018-06-19T15:17:11",
+          "lines": [
+            0,
+            56
+          ],
+          "text": "Secondary text — The “value/part no.” annotation should snap to below the “ref.” annotation.",
+          "uuid": "f009809c",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-19T15:16:15",
+              "mod": "2018-06-19T15:16:15",
+              "end": 14,
+              "start": 0,
+              "style": 2,
+              "uuid": "4f4ec604"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:23:16",
+      "mod": "2018-06-19T15:23:19",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ebd6d47f",
+      "y0": 504.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:23:16",
+          "mod": "2018-06-19T15:23:19",
+          "lines": [
+            0
+          ],
+          "text": "For instance:",
+          "uuid": "493acd94"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-06-19T15:23:20",
+      "mod": "2018-06-19T15:23:23",
+      "h": 181.29,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "182c60b5",
+      "xref": 0.0,
+      "y0": 72.0,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-06-19T15:23:20",
+          "mod": "2018-06-19T15:23:23",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 1044.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.156408,
+          "uuid": "a37ec42b",
+          "width": 1210.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:23:24",
+      "mod": "2018-06-19T15:26:40",
+      "h": 235.66,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "5c2755f8",
+      "y0": 253.29,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:23:24",
+          "mod": "2018-06-19T15:26:40",
+          "lines": [
+            0,
+            51,
+            107,
+            167,
+            228,
+            291,
+            351,
+            408,
+            465,
+            520
+          ],
+          "text": "Here “L–L” means Left edge of text to Left edge of component, etc. “B–C” means bottom of text to Center of component. “2nd” is placement of secondary label snapped to below primary label. This can also happen above or below any of the other snaps. Note that B–C snaps a few points above the center line, and likewise T–C would snap a few points below the centerline, so that the secondary label ends up with symmetric placement. Secondary snaps to align left/right/center with primary, depending on where it is grabbed. Snapping is indicated by transient blue dotted lines.",
+          "uuid": "e13f675a"
+        }
+      ]
+    }
+  ]
+}

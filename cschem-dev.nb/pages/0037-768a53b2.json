@@ -1,0 +1,102 @@
+{ "typ": "page",
+  "cre": "2018-06-19T15:29:02",
+  "mod": "2018-06-19T15:32:19",
+  "cui": "497766c36b53c059",
+  "stampTime": 0,
+  "startPage": 37,
+  "unlocked": false,
+  "uuid": "768a53b2",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-19T15:29:02",
+      "mod": "2018-06-19T15:29:02",
+      "uuid": "19ff7027"
+    },
+    { "typ": "title",
+      "cre": "2018-06-19T15:29:02",
+      "mod": "2018-06-19T15:29:06",
+      "uuid": "4fa1335c",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:29:02",
+          "mod": "2018-06-19T15:29:06",
+          "lines": [
+            0
+          ],
+          "text": "Get rid of packaging",
+          "uuid": "fa0a515f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:29:06",
+      "mod": "2018-06-19T15:30:14",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "939690f1",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:29:06",
+          "mod": "2018-06-19T15:30:14",
+          "lines": [
+            0,
+            59,
+            122,
+            188
+          ],
+          "text": "Although I put some real effort into the packaging code in cschem, I think it should go away. It never was very nice. And now that I am writing cpcb, there is less reason to deal with the unpleasantness of exporting to gEDA.",
+          "uuid": "f2ca7626"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:30:20",
+      "mod": "2018-06-19T15:31:44",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "962555f5",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:30:20",
+          "mod": "2018-06-19T15:31:44",
+          "lines": [
+            0,
+            57,
+            121,
+            187
+          ],
+          "text": "The Parts List should be hidden by default. Only columns should be “Ref.”, “Description”, and “Notes”. The latter is not visible on the schematic, but can be used, e.g., for Digikey part order numbers.",
+          "uuid": "9bab1ff8"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T15:31:51",
+      "mod": "2018-06-19T15:32:19",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "1e5f26c5",
+      "y0": 265.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T15:31:51",
+          "mod": "2018-06-19T15:32:19",
+          "lines": [
+            0,
+            57
+          ],
+          "text": "I find myself hesitating between “Description” and “Part/Value”. Both here and on the schematic.",
+          "uuid": "8c64ab2f"
+        }
+      ]
+    }
+  ]
+}
