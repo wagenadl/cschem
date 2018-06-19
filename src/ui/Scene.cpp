@@ -757,34 +757,36 @@ void SceneData::hideDragIn() {
 }
 
 bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
-  SymbolLibrary pl(filename);
-  if (pl.symbolNames().isEmpty())
+  Symbol symbol = Symbol::load(filename);
+  qDebug() << "startSvgDragIn" << filename << pos << symbol.isValid();
+  if (!symbol.isValid())
     return false;
-  Symbol symbol = pl.symbol(pl.symbolNames().first());
+
   if (dragin)
     delete dragin;
   dragin = new FloatingSymbol(symbol);
+
   hovermanager->newDrag(symbol);
   moveDragIn(pos);
   scene->addItem(dragin);
+
   return true;
 }
 
 bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
-  SymbolLibrary pl(filename);
-  if (pl.symbolNames().isEmpty())
+  Symbol symbol = Symbol::load(filename);
+  if (!symbol.isValid())
     return false;
-  lib().merge(filename); // I should allow merging two libraries directly
-  // or else I should make merge return a list of symbols successfully merged.
+  lib().insert(symbol);
 
-  QString symbol = pl.symbolNames().first();
+  QString name = symbol.name();
   
   QPoint pt = lib().downscale(pos);
   Element elt;
-  if (symbol.startsWith("part:"))
-    elt = Element::component(symbol.mid(5), pt);
-  else if (symbol.startsWith("port:"))
-    elt = Element::port(symbol.mid(5), pt);
+  if (name.startsWith("part:"))
+    elt = Element::component(name.mid(5), pt);
+  else if (name.startsWith("port:"))
+    elt = Element::port(name.mid(5), pt);
 
   if (elt.isValid()) {
     CircuitMod cm(circ(), lib());
@@ -795,7 +797,7 @@ bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
       cm.mergeSelection(ee);
     }
     for (Element const &elt: circ().elements)
-      if (elt.symbol()==symbol)
+      if (elt.symbol()==name)
 	cm.forceRebuildElement(elt.id);
     
     rebuildAsNeeded(cm);

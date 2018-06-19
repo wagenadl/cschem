@@ -3,6 +3,7 @@
 #include "Symbol.h"
 #include <QSvgRenderer>
 #include <QDebug>
+#include <QFileInfo>
 #include <iostream>
 
 static QMap<QString, QSharedPointer<QSvgRenderer> > &symbolRenderers() {
@@ -130,9 +131,12 @@ Symbol::Symbol() {
   d = new SymbolData;
 }
 
-Symbol::Symbol(XmlElement const &elt): Symbol() {
+Symbol::Symbol(XmlElement const &elt, QString name): Symbol() {
   d->elt = elt;
-  d->name = elt.attributes().value("inkscape:label").toString();
+  if (name.isEmpty())
+    d->name = elt.attributes().value("inkscape:label").toString();
+  else
+    d->name = name;
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
       d->scanPins(e.element());
@@ -142,6 +146,42 @@ Symbol::Symbol(XmlElement const &elt): Symbol() {
 }
 
 Symbol::~Symbol() {
+}
+
+Symbol Symbol::load(QString svgfn) {
+  Symbol sym;
+  QFile file(svgfn);
+  QString name = QFileInfo(svgfn).baseName();
+  name.replace("-", ":");
+  if (!name.startsWith("port:")
+      && !name.startsWith("part-"))
+    name = "part:" + name;
+  
+  if (!file.open(QFile::ReadOnly)) 
+    return sym;
+
+  QXmlStreamReader sr(&file);
+  int groupcount = 0;
+  while (!sr.atEnd()) {
+    sr.readNext();
+    if (sr.isStartElement() && sr.qualifiedName()=="svg") {
+      XmlElement svg(sr);
+      for (auto &c: svg.children()) {
+        if (c.type()==XmlNode::Type::Element) {
+          XmlElement elt(c.element());
+          if (elt.qualifiedName()=="g") {
+            if (groupcount==0)
+              sym = Symbol(elt, name);
+            groupcount++;
+          }
+        }
+      }
+    }
+  }
+  if (groupcount>1)
+    qDebug() << "Only the first group was read";
+  
+  return sym;
 }
 
 Symbol::Symbol(Symbol const &o) {
@@ -155,7 +195,10 @@ Symbol &Symbol::operator=(Symbol const &o) {
 
 void SymbolData::scanPins(XmlElement const &elt) {
   if (elt.qualifiedName()=="circle") {
-    QString label = elt.attributes().value("inkscape:label").toString();
+    QString label = elt.title();
+    qDebug() << "circle title" << label;
+    if (label.isEmpty())
+      label = elt.attributes().value("inkscape:label").toString();
     if (label.startsWith("pin")) {
       QString name = label.mid(4);
       double x = elt.attributes().value("cx").toDouble();
@@ -164,7 +207,10 @@ void SymbolData::scanPins(XmlElement const &elt) {
       pinIds[name] = elt.attributes().value("id").toString();
     }
   } else if (elt.qualifiedName()=="rect") {
-    QString label = elt.attributes().value("inkscape:label").toString();
+    QString label = elt.title();
+    qDebug() << "rect title" << label;
+    if (label.isEmpty())
+      label = elt.attributes().value("inkscape:label").toString();
     if (label.startsWith("annotation:")) {
       QStringList bits = label.split(":");
       if (bits.size()>=2) {
@@ -180,6 +226,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
 	  {"right",  Qt::AlignRight | Qt::AlignVCenter },
 	  {"center",  Qt::AlignHCenter | Qt::AlignVCenter }
 	};
+        annotationAlign[name] = map["center"];
 	if (bits.size()>=3) {
 	  QString align = bits[2];
 	  if (map.contains(align)) {
@@ -187,7 +234,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
 	  } else {
 	    qDebug() << "Unknown alignment" << align << "in" << label;
 	  }
-	}
+        }
       }
     }
     

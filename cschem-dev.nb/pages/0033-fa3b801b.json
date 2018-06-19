@@ -1,0 +1,139 @@
+{ "typ": "page",
+  "cre": "2018-06-18T22:03:03",
+  "mod": "2018-06-18T22:15:16",
+  "cui": "ad842b09f37c94d5",
+  "stampTime": 0,
+  "startPage": 33,
+  "unlocked": false,
+  "uuid": "fa3b801b",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-18T22:03:03",
+      "mod": "2018-06-18T22:03:03",
+      "uuid": "6f87c32e"
+    },
+    { "typ": "title",
+      "cre": "2018-06-18T22:03:03",
+      "mod": "2018-06-18T22:03:09",
+      "uuid": "d470a171",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-18T22:03:03",
+          "mod": "2018-06-18T22:03:09",
+          "lines": [
+            0
+          ],
+          "text": "Clarification of symbol svg form",
+          "uuid": "8be0caaa"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-18T22:03:09",
+      "mod": "2018-06-18T22:06:11",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b7ce4169",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-18T22:03:09",
+          "mod": "2018-06-18T22:06:11",
+          "lines": [
+            0,
+            62,
+            125,
+            186,
+            249,
+            308
+          ],
+          "text": "A separate symbol svg file must have a single group (usually, an inkscape “layer”) as its only top-level element. This group must contain precisely one further group, which contains the graphics of the element. It may also have any number of circle elements which mark pins and rectangle elements which mark annotations. ",
+          "uuid": "8a5ab601",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-18T22:03:17",
+              "mod": "2018-06-18T22:03:17",
+              "end": 31,
+              "start": 27,
+              "style": 1,
+              "uuid": "3630f0fb"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-18T22:03:59",
+              "mod": "2018-06-18T22:03:59",
+              "end": 129,
+              "start": 125,
+              "style": 1,
+              "uuid": "ff113f1b"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-18T22:03:09",
+      "mod": "2018-06-18T22:06:12",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b7ce4169",
+      "y0": 214.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-18T22:03:09",
+          "mod": "2018-06-18T22:06:11",
+          "lines": [
+            0,
+            61,
+            128,
+            185
+          ],
+          "text": "The name of each pin must be given as either a title element to the circle or as an inkscape:label property. In either case, it must contain text of the form “pin:XXX” where XXX is the name or number of the pin.",
+          "uuid": "8a5ab601",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-18T22:05:33",
+              "mod": "2018-06-18T22:06:11",
+              "end": 44,
+              "start": 38,
+              "style": 1,
+              "uuid": "2ee53f3c"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-18T22:06:15",
+      "mod": "2018-06-18T22:15:16",
+      "h": 212.494,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "34f62fb3",
+      "y0": 311.66,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-18T22:06:15",
+          "mod": "2018-06-18T22:15:16",
+          "lines": [
+            0,
+            58,
+            123,
+            172,
+            227,
+            282,
+            342,
+            399,
+            465
+          ],
+          "text": "The function of each annotation must be given as either a title element to the rectangle or as an inkscape:label property. In either case, it must contain text of the form “annotation:XXX[:YYY]” where XXX describes the type of annotation and YYY optionally describes alignment. For instance, “annotation:name:left” means a left-aligning name (“Ref.”) field. Annotation type must be one of “name” or “value”. Alignment, if given, must be one of “left”, “center”, or “right”. The default is “center”.",
+          "uuid": "7c7227e2"
+        }
+      ]
+    }
+  ]
+}

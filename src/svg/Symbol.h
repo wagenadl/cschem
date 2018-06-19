@@ -11,11 +11,12 @@
 
 class Symbol {
 public:
-  Symbol(XmlElement const &elt);
+  Symbol(XmlElement const &elt, QString name="");
   Symbol();
   ~Symbol();
   Symbol(Symbol const &);
   Symbol &operator=(Symbol const &);
+  static Symbol load(QString svgfn);
   XmlElement const &element() const;
   QString name() const;
   QPointF bbPinPosition(QString pinname) const; // relative to TL of bbox

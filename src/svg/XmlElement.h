@@ -29,6 +29,7 @@ public:
   void writeStartElement(QXmlStreamWriter &dst) const;
   void writeChildren(QXmlStreamWriter &dst) const;
   void writeEndElement(QXmlStreamWriter &dst) const;
+  QString title() const; // the text of any contained title element
 private:
   QSharedDataPointer<XmlElementData> d;
 };
