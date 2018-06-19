@@ -5,8 +5,9 @@
 #include "circuit/Circuit.h"
 #include "svg/SymbolLibrary.h"
 #include <QDebug>
-#include  <QTransform>
+#include <QTransform>
 #include <QMap>
+#include <math.h>
 
 class OrderedPoint: public QPoint {
 public:
@@ -241,12 +242,22 @@ QPoint Geometry::centerOfPinMass(Element const &elt) const {
   if (!d)
     return QPoint();
   Symbol const &symbol(d->lib.symbol(elt.symbol()));
-  QStringList pins = symbol.pinNames();
+  QStringList pins = symbol.pinNames(); // these are presorted!
   QPointF sum;
   int N = pins.size();
+  if (N==0)
+    return QPoint();
   for (QString p: pins)
     sum += pinPosition(elt, p);
-  return (sum/N).toPoint();
+  double sumx = sum.x();
+  double sumy = sum.y();
+  double x = sum.x() / N;
+  double y = sum.y() / N;
+  if (x != round(x)) // attempt to break tie by weighing first pin more heavily
+    x = (sumx + pinPosition(elt, pins[0]).x()) / (N+1);
+  if (y != round(y))
+    y = (sumy + pinPosition(elt, pins[0]).y()) / (N+1);
+  return QPointF(x, y).toPoint();
 }
 
 QPolygon Geometry::connectionPath(int conid) const {

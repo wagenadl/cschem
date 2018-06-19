@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2018-06-18T22:03:03",
-  "mod": "2018-06-18T22:15:16",
+  "mod": "2018-06-18T22:44:25",
   "cui": "ad842b09f37c94d5",
   "stampTime": 0,
   "startPage": 33,
@@ -108,8 +108,8 @@
     },
     { "typ": "textblock",
       "cre": "2018-06-18T22:06:15",
-      "mod": "2018-06-18T22:15:16",
-      "h": 212.494,
+      "mod": "2018-06-18T22:44:25",
+      "h": 258.826,
       "ind": 1,
       "sheet": 0,
       "split": [ ],
@@ -118,7 +118,7 @@
       "cc": [
         { "typ": "text",
           "cre": "2018-06-18T22:06:15",
-          "mod": "2018-06-18T22:15:16",
+          "mod": "2018-06-18T22:44:25",
           "lines": [
             0,
             58,
@@ -128,9 +128,11 @@
             282,
             342,
             399,
-            465
+            465,
+            525,
+            587
           ],
-          "text": "The function of each annotation must be given as either a title element to the rectangle or as an inkscape:label property. In either case, it must contain text of the form “annotation:XXX[:YYY]” where XXX describes the type of annotation and YYY optionally describes alignment. For instance, “annotation:name:left” means a left-aligning name (“Ref.”) field. Annotation type must be one of “name” or “value”. Alignment, if given, must be one of “left”, “center”, or “right”. The default is “center”.",
+          "text": "The function of each annotation must be given as either a title element to the rectangle or as an inkscape:label property. In either case, it must contain text of the form “annotation:XXX[:YYY]” where XXX describes the type of annotation and YYY optionally describes alignment. For instance, “annotation:name:left” means a left-aligning name (“Ref.”) field. Annotation type must be one of “name” or “value”. Alignment, if given, must be one of “left”, “center”, or “right”. The default is “center”. However, the alignment is currently ignored, which is part of why annotations misbehave during flip and rotate.",
           "uuid": "7c7227e2"
         }
       ]
