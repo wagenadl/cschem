@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2018-06-19T18:25:00",
-  "mod": "2018-06-19T18:50:22",
+  "mod": "2018-06-19T19:10:42",
   "cui": "a4cd1d54218e5b36",
   "stampTime": 0,
   "startPage": 41,
@@ -395,6 +395,27 @@
           ],
           "text": "CUI numbers its stereo SMT connectors 1=sleeve, 2=tip, 3=ring, (4=tip switch). Molex uses the same for its—unusual—upright through hole stereo connector. So there does appear to be some kind of standard, but it poorly generalizes across connector types.",
           "uuid": "813e174f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T19:10:30",
+      "mod": "2018-06-19T19:10:42",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "4f6acf20",
+      "y0": 191.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T19:10:30",
+          "mod": "2018-06-19T19:10:42",
+          "lines": [
+            0
+          ],
+          "text": "Stereo connectors use tip=left, ring=right, sleeve=ground.",
+          "uuid": "c464f10e"
         }
       ]
     }
