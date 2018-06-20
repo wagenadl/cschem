@@ -1,0 +1,57 @@
+{ "typ": "page",
+  "cre": "2018-06-20T08:42:10",
+  "mod": "2018-06-20T08:43:44",
+  "cui": "b92269f0b742f40f",
+  "stampTime": 0,
+  "startPage": 43,
+  "unlocked": false,
+  "uuid": "902effb5",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-20T08:42:10",
+      "mod": "2018-06-20T08:42:10",
+      "uuid": "c45ecc82"
+    },
+    { "typ": "title",
+      "cre": "2018-06-20T08:42:10",
+      "mod": "2018-06-20T08:42:20",
+      "uuid": "1257ec79",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:42:10",
+          "mod": "2018-06-20T08:42:20",
+          "lines": [
+            0
+          ],
+          "text": "Pin numbering: aliases",
+          "uuid": "c0f9f001"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:42:15",
+      "mod": "2018-06-20T08:43:44",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "70802193",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:42:15",
+          "mod": "2018-06-20T08:43:44",
+          "lines": [
+            0,
+            61,
+            124,
+            189,
+            249
+          ],
+          "text": "In cschem, an LED could be given “pin:1/K” and “pin:2/A”. In cpcb, an led-t1 would be given “pin:1/K” and “pin:2/A” whereas an led-t1-ir would be given “pin:1/A” and “pin:2/K” and a simple connector would have just “pin:1” and “pin:2”. The conflict would be resolved in favor of the named alias.",
+          "uuid": "e630c0d9"
+        }
+      ]
+    }
+  ]
+}
