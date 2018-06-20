@@ -32,12 +32,6 @@ public:
   class Scene *scene();
   int id() const;
   QString symbol() const;
-  void showName();
-  void hideName();
-  void showValue();
-  void hideValue();
-  void showLabel();
-  void hideLabel();
   void rebuild();
   void hover();
   void unhover();
