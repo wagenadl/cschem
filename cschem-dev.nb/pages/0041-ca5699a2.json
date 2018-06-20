@@ -1,0 +1,402 @@
+{ "typ": "page",
+  "cre": "2018-06-19T18:25:00",
+  "mod": "2018-06-19T18:50:22",
+  "cui": "a4cd1d54218e5b36",
+  "stampTime": 0,
+  "startPage": 41,
+  "unlocked": false,
+  "uuid": "ca5699a2",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-19T18:25:00",
+      "mod": "2018-06-19T18:43:55",
+      "uuid": "dd633758",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-06-19T18:25:00",
+          "mod": "2018-06-19T18:25:00",
+          "archive": "40_-8358e45c",
+          "desc": "",
+          "preview": "40_-8358e45cp.png",
+          "source": "page://0.0.0.40/dc0e74f0/2",
+          "tag": "40",
+          "title": "",
+          "uuid": "8358e45c"
+        },
+        { "typ": "res",
+          "cre": "2018-06-19T18:43:55",
+          "mod": "2018-06-19T18:43:55",
+          "archive": "_1_-a3a53092.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "a3a53092"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2018-06-19T18:25:00",
+      "mod": "2018-06-19T18:25:00",
+      "uuid": "c3f1537a",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T18:25:00",
+          "mod": "2018-06-19T18:25:00",
+          "lines": [
+            0
+          ],
+          "text": "Containers (cont’d)",
+          "uuid": "1c84def0",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-06-19T18:25:00",
+              "mod": "2018-06-19T18:25:00",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "c4291ab5",
+              "x": -46.8281,
+              "y": 45.06,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-06-19T18:25:00",
+                  "mod": "2018-06-19T18:25:00",
+                  "lines": [
+                    0
+                  ],
+                  "text": "p. 40 >",
+                  "uuid": "e931eeeb",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2018-06-19T18:25:00",
+                      "mod": "2018-06-19T18:25:00",
+                      "end": 5,
+                      "res": [
+                        "40"
+                      ],
+                      "start": 3,
+                      "style": 4,
+                      "uuid": "7167238b"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T18:25:01",
+      "mod": "2018-06-19T18:27:36",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "29c5a377",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T18:25:01",
+          "mod": "2018-06-19T18:27:36",
+          "lines": [
+            0,
+            58,
+            113,
+            177,
+            241
+          ],
+          "text": "Containers have various pins that belong to the contained elements. These should be mapped in the container. The easiest way to do that is to just place a bunch of circles with <title> items like: “pc:3/1.+” for “numbered pin 3 is named pin ’+’ on subdevice 1”.",
+          "uuid": "f004811d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T18:27:37",
+      "mod": "2018-06-19T18:28:59",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "e35bf9ea",
+      "y0": 191.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T18:27:37",
+          "mod": "2018-06-19T18:28:59",
+          "lines": [
+            0,
+            53,
+            112,
+            174
+          ],
+          "text": "In general, I want to have fewer named pins and more numbered pins, because those map more directly to physical devices. I don’t know whether connectors like DC barrel jacks or audio jacks have standard pin numbering.",
+          "uuid": "24b1ada1"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T18:30:09",
+      "mod": "2018-06-19T18:35:46",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "337291da",
+      "y0": 288.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T18:30:09",
+          "mod": "2018-06-19T18:35:46",
+          "lines": [
+            0,
+            57,
+            122,
+            187,
+            246,
+            311,
+            376
+          ],
+          "text": "On a standard BNC jack, pin 1 is signal, pin 2 is ground (0.035” ID, 0.065” OD in ExpressPCB); ground is 0.1” to the left of signal. (Board guards are .079”/.150”; 0.2” to the left/right and 0.2” north of signal. Board edge line is 0.3” north of guards, 0.572” long. Front of barrel is a further .25” north and .28” wide, which is not an accurate representation of the actual barrel shape.)",
+          "uuid": "2eb58d20"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T18:36:31",
+      "mod": "2018-06-19T18:40:48",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "d9bfdd83",
+      "y0": 454.656,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T18:36:31",
+          "mod": "2018-06-19T18:40:48",
+          "lines": [
+            0,
+            61,
+            125,
+            190
+          ],
+          "text": "Diodes have a square for – side, which is called pin 1. LEDs have a square for the flat side, which is called pin 1. So that makes pin 1 − for most LEDs, but + for IR LEDs. Which means I’ll want a special symbol led-t1¾-ir in cpcb for those.",
+          "uuid": "d5c5d838"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T18:39:29",
+      "mod": "2018-06-19T18:41:44",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "291a88f0",
+      "y0": 551.32,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T18:39:29",
+          "mod": "2018-06-19T18:41:44",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "Polarized capacitors have a square for the + side, which is called pin 1.",
+          "uuid": "08273843"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T18:42:08",
+      "mod": "2018-06-19T18:43:54",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "bc0973c1",
+      "y0": 601.652,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T18:42:08",
+          "mod": "2018-06-19T18:43:54",
+          "lines": [
+            0
+          ],
+          "text": "ExpressPCB has only one DC connector, CP202-A on Digikey:",
+          "uuid": "a91e2e8b"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2018-06-19T18:43:55",
+      "mod": "2018-06-19T18:47:04",
+      "h": 73.959,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a8011b2c",
+      "xref": 0.0,
+      "y0": 628.818,
+      "yref": -10.3734,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2018-06-19T18:43:55",
+          "mod": "2018-06-19T18:43:58",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 384.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.14215,
+          "uuid": "e310660c",
+          "width": 302.0,
+          "x": 0.0,
+          "y": 0.0
+        },
+        { "typ": "gfxnote",
+          "cre": "2018-06-19T18:44:00",
+          "mod": "2018-06-19T18:44:01",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "8ba26c7b",
+          "x": 70.2091,
+          "y": 6.62658,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T18:44:00",
+              "mod": "2018-06-19T18:44:01",
+              "lines": [
+                0
+              ],
+              "text": "1",
+              "uuid": "7e0bb1b5"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2018-06-19T18:44:02",
+          "mod": "2018-06-19T18:44:08",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "47893ab2",
+          "x": 70.9307,
+          "y": 28.3464,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T18:44:02",
+              "mod": "2018-06-19T18:44:03",
+              "lines": [
+                0
+              ],
+              "text": "2",
+              "uuid": "936b26d4"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2018-06-19T18:44:05",
+          "mod": "2018-06-19T18:44:09",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "0e5318b8",
+          "x": 83.199,
+          "y": 16.0781,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T18:44:05",
+              "mod": "2018-06-19T18:44:05",
+              "lines": [
+                0
+              ],
+              "text": "3",
+              "uuid": "38aaac40"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2018-06-19T18:45:22",
+          "mod": "2018-06-19T18:45:48",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "e312843a",
+          "x": 155.365,
+          "y": 13.9131,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T18:45:22",
+              "mod": "2018-06-19T18:45:48",
+              "lines": [
+                0
+              ],
+              "text": "1=inside, 2=outside, 3=switch/outside",
+              "uuid": "d4e0add8"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2018-06-19T18:46:53",
+          "mod": "2018-06-19T18:47:04",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "4d757fc3",
+          "x": 104.849,
+          "y": 37.0063,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-19T18:46:53",
+              "mod": "2018-06-19T18:47:04",
+              "lines": [
+                0
+              ],
+              "text": "This is CUI. Switchcraft doesn’t bother with numbers.",
+              "uuid": "4d55db50"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-19T18:48:12",
+      "mod": "2018-06-19T18:50:22",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "416ab613",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-19T18:48:12",
+          "mod": "2018-06-19T18:50:22",
+          "lines": [
+            0,
+            55,
+            115,
+            175,
+            237
+          ],
+          "text": "CUI numbers its stereo SMT connectors 1=sleeve, 2=tip, 3=ring, (4=tip switch). Molex uses the same for its—unusual—upright through hole stereo connector. So there does appear to be some kind of standard, but it poorly generalizes across connector types.",
+          "uuid": "813e174f"
+        }
+      ]
+    }
+  ]
+}

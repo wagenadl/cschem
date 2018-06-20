@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="126.00012"
-   height="266.00006"
-   viewBox="0 0 126.00012 266.00007"
+   width="140"
+   height="105.75"
+   viewBox="0 0 140 105.75"
    version="1.1"
    id="svg852"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
@@ -26,10 +26,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.9050362"
-     inkscape:cx="-187.06164"
-     inkscape:cy="109.73448"
+     inkscape:cx="-280.23249"
+     inkscape:cy="81.734481"
      inkscape:document-units="px"
-     inkscape:current-layer="g1262"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      fit-margin-top="0"
@@ -49,8 +49,8 @@
        id="grid1508"
        spacingx="7.0000001"
        spacingy="7.0000001"
-       originx="8.452434e-05"
-       originy="161.00002"
+       originx="-6.9999932"
+       originy="133.00002"
        empspacing="4" />
   </sodipodi:namedview>
   <metadata
@@ -61,7 +61,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -69,7 +69,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-1139.8571,-449.94818)">
+     transform="translate(-1146.8572,-582.19824)">
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#e497e4;fill-opacity:0.47096773;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="path3052"
