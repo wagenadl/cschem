@@ -73,8 +73,7 @@ void SymbolData::writeSvg(QXmlStreamWriter &sw, bool withpins) const {
   elt.writeStartElement(sw);
   for (auto &c: elt.children()) {
     if (!withpins && c.type()==XmlNode::Type::Element
-	&& skip.contains(c.element().attributes().value("inkscape:label")
-			 .split(":").first().toString())) {
+	&& skip.contains(c.element().label().split(":").first())) {
       // skip
     } else {
       c.write(sw);
@@ -134,7 +133,7 @@ Symbol::Symbol() {
 Symbol::Symbol(XmlElement const &elt, QString name): Symbol() {
   d->elt = elt;
   if (name.isEmpty())
-    d->name = elt.attributes().value("inkscape:label").toString();
+    d->name = elt.label();
   else
     d->name = name;
   for (auto &e: elt.children()) 
@@ -198,7 +197,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
     QString label = elt.title();
     qDebug() << "circle title" << label;
     if (label.isEmpty())
-      label = elt.attributes().value("inkscape:label").toString();
+      label = elt.label();
     if (label.startsWith("pin")) {
       QString name = label.mid(4);
       double x = elt.attributes().value("cx").toDouble();
@@ -210,7 +209,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
     QString label = elt.title();
     qDebug() << "rect title" << label;
     if (label.isEmpty())
-      label = elt.attributes().value("inkscape:label").toString();
+      label = elt.label();
     if (label.startsWith("annotation:")) {
       QStringList bits = label.split(":");
       if (bits.size()>=2) {
