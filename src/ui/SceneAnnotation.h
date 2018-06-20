@@ -15,7 +15,8 @@ public:
   SceneAnnotation &operator=(SceneAnnotation const &) = delete;
 public:
   void backspace();
-  void setBaseline(QPointF);
+  void setBaseline(QPointF xy); // set position based on left=x, baseline=y
+  void setCenter(QPointF xy); // set position based on center of bbox
 signals:
   void returnPressed();
   void escapePressed();

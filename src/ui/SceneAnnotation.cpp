@@ -21,6 +21,7 @@ public:
   double movestep;
   QPointF sp_press; // scene position of mouse button press
   QPointF p_orig; // my position before moving
+  QPointF p_center; // center position when gaining focus
   bool pressing;
   bool moving;
   QString origtext;
@@ -41,11 +42,13 @@ SceneAnnotation::~SceneAnnotation() {
 void SceneAnnotation::focusOutEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusOutEvent(e);
   emit returnPressed(); // hmmm..
+  emit moved(boundingRect().center() - d->p_center);
 }
 
 void SceneAnnotation::focusInEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusInEvent(e);
   setGraphicsEffect(0);
+  d->p_center = boundingRect().center();
 }
  
 void SceneAnnotation::keyPressEvent(QKeyEvent *e) {
@@ -116,6 +119,11 @@ void SceneAnnotation::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 
 void SceneAnnotation::backspace() {
   emit removalRequested();
+}
+
+void SceneAnnotation::setCenter(QPointF p) {
+  QRectF me = boundingRect();
+  setPos(p - QPointF(me.width()/2, me.height()/2));
 }
 
 void SceneAnnotation::setBaseline(QPointF p) {

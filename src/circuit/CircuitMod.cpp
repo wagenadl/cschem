@@ -901,7 +901,6 @@ bool CircuitMod::flipElements(QSet<int> eltids) {
     if (d->circ.elements.contains(id)) {
       Element elt = d->circ.elements[id];
       p0 += geom.centerOfPinMass(elt);
-      qDebug() << "pinmass p0" << p0;
       N++;
     }
   }

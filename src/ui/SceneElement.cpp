@@ -66,7 +66,7 @@ void SceneElementData::nameTextToWidget() {
   Element const &elt(circ.elements[id]);
   QString txt = elt.name;
   if (txt.isEmpty()) {
-    name->setHtml("<i>nn</i>");
+    name->setHtml("<i>Ref.</i>");
     name->setDefaultTextColor(Style::faintColor());
   } else {
     name->setHtml(PartNumbering::nameToHtml(txt));
@@ -81,7 +81,7 @@ void SceneElementData::nameTextToCircuit() {
   // Called when return pressed
   Element elt(scene->circuit().elements[id]);
   QString txt = name->toPlainText();
-  if (txt == "nn")
+  if (txt == "Ref.")
     txt = "";
   if (txt.isEmpty())
     txt = scene->circuit().autoName(elt.symbol());
@@ -95,7 +95,7 @@ void SceneElementData::valueTextToWidget() {
   // Copy value from circuit to widget
   QString txt = scene->circuit().elements[id].value;
   if (txt.isEmpty()) {
-    value->setHtml("<i>value</i>");
+    value->setHtml("<i>Part/Value</i>");
     value->setDefaultTextColor(Style::faintColor());
   } else {
     value->setPlainText(txt);
@@ -109,7 +109,7 @@ void SceneElementData::valueTextToCircuit() {
   // Copy value from widget to circuit
   Element elt(scene->circuit().elements[id]);
   QString txt = value->toPlainText();
-  if (txt == "value")
+  if (txt == "Part/Value")
     txt = "";
   txt = PartNumbering::prettyValue(txt, elt.name);
   if (txt != elt.value) { // prevent recursion
@@ -146,12 +146,7 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
 }
 
 SceneElement::~SceneElement() {
-  // delete d;
 }
-
-// static double L2(QPointF p) {
-//   return p.x()*p.x() + p.y()*p.y();
-// }
 
 void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
   Element elt = d->scene->circuit().elements[d->id];
@@ -251,12 +246,12 @@ void SceneElement::rebuild() {
     if (p.isNull()) {
       Geometry geom(circ, lib);
       QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "name");
-      p = abb.bottomLeft().toPoint();
+      p = abb.center().toPoint();
       elt.namePosition = p;
       d->scene->modifyElementAnnotations(elt);
     }
-    d->name->setBaseline(p);
     d->nameTextToWidget();
+    d->name->setCenter(p);
     if (elt.name.isEmpty()) {
       d->nameTextToCircuit(); // automated magic
       elt = circ.elements[d->id];
@@ -286,11 +281,11 @@ void SceneElement::rebuild() {
     if (p.isNull()) {
       Geometry geom(circ, lib);
       QRectF abb = geom.defaultAnnotationSvgBoundingRect(elt, "value");
-      p = abb.bottomLeft().toPoint();
+      p = abb.center().toPoint();
       elt.valuePosition = p;
       d->scene->modifyElementAnnotations(elt);
     }
-    d->value->setBaseline(p);
+    d->value->setCenter(p);
     d->valueTextToWidget();
   } else if (d->value) {
     d->value->hide();
