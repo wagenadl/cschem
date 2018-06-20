@@ -119,3 +119,10 @@ QString XmlElement::title() const {
   }
   return "";
 }
+
+QString XmlElement::label() const {
+  QString txt = title();
+  if (txt.isEmpty())
+    txt = attributes().value("inkscape:label").toString();
+  return txt;
+}

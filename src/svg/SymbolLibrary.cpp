@@ -51,7 +51,7 @@ void SymbolLibrary::insert(Symbol const &p) {
 
 void SymbolLibrary::scanSymbols(XmlElement const &src) {
   if (src.qualifiedName()=="g") {
-    QString label = src.attributes().value("inkscape:label").toString();
+    QString label = src.label();
     if (label.startsWith("part:") || label.startsWith("port:")
         || label=="junction") {
       insert(Symbol(src));
