@@ -126,13 +126,13 @@ void SceneAnnotation::setCenter(QPointF p) {
   setPos(p - QPointF(me.width()/2, me.height()/2));
 }
 
-void SceneAnnotation::setBaseline(QPointF p) {
-  QTextLayout *lay = document()->firstBlock().layout();
-  QPointF p0 = lay->position();
-  QTextLine line = lay->lineAt(0);
-  QPointF p1 = line.position();
-  setPos(p - p0 - p1 - QPointF(0, line.ascent()));
-}
+//void SceneAnnotation::setBaseline(QPointF p) {
+//  QTextLayout *lay = document()->firstBlock().layout();
+//  QPointF p0 = lay->position();
+//  QTextLine line = lay->lineAt(0);
+//  QPointF p1 = line.position();
+//  setPos(p - p0 - p1 - QPointF(0, line.ascent()));
+//}
 
 void SceneAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
   auto *ef = new QGraphicsColorizeEffect;

@@ -285,8 +285,8 @@ void SceneElement::rebuild() {
       elt.valuePosition = p;
       d->scene->modifyElementAnnotations(elt);
     }
-    d->value->setCenter(p);
     d->valueTextToWidget();
+    d->value->setCenter(p);
   } else if (d->value) {
     d->value->hide();
   }
