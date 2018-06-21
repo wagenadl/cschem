@@ -431,6 +431,8 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     d->rbstart = e->scenePos();
   } else if (d->hovermanager->onConnection()) {
     QGraphicsScene::mousePressEvent(e); // pass on to items
+  } else if (itemAt(e->scenePos(), QTransform())) {
+    QGraphicsScene::mousePressEvent(e); // pass on to items
   } else {
     if (!(e->modifiers() & Qt::ShiftModifier))
 	clearSelection();
