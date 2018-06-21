@@ -214,7 +214,6 @@ void PackagePanel::setElement(Element const &elt) {
         break;
       }
     }
-    qDebug() << "Inserting recommended before" << idx;
 
     // insert recommendations in layout
     for (QString s: rec) {
@@ -238,7 +237,6 @@ void PackagePanel::setElement(Element const &elt) {
     compat = d->lib->compatiblePackages(symbol);
   }
   
-  qDebug() << "compat: " << compat;
   idx1 = compat.indexOf(pkg);
   if (idx1>=0)
     compat.removeAt(idx1);
@@ -247,9 +245,6 @@ void PackagePanel::setElement(Element const &elt) {
     if (idx1>=0)
       compat.removeAt(idx1);
   }
-  qDebug() << "rec:" << d->currentrec;
-  qDebug() << "-> compat:" << compat;
-  qDebug() << "current:" << d->currentcompat;
   
   if (compat!=d->currentcompat) { // change in compatibles
     
@@ -268,11 +263,9 @@ void PackagePanel::setElement(Element const &elt) {
         break;
       }
     }
-    qDebug() << "Inserting compatibles before" << idx;
 
     // insert compatibles in layout
     for (QString s: compat) {
-      qDebug() << "Creating compatible" << s;
       auto *w = new PackageWidget();
       connect(w, &PackageWidget::pressed, this, &PackagePanel::press);
       w->setLibrary(d->lib);

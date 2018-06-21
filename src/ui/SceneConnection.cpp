@@ -327,7 +327,6 @@ void SceneConnection::unhover() {
 
 void SceneConnection::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
   /* Simplify if possible */
-  qDebug() << "SceneConnection::mouseDoubleClickEvent";
   scene()->clearSelection();
   int seg = segmentAt(e->scenePos());
   scene()->simplifySegment(d->id, seg);
@@ -336,7 +335,6 @@ void SceneConnection::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
 }  
 
 void SceneConnection::mousePressEvent(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "SceneConnection::mousePressEvent";
   scene()->clearSelection();
   int seg = segmentAt(e->scenePos());
   d->moveseg = seg;
@@ -350,7 +348,6 @@ void SceneConnection::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 void SceneConnectionData::startRealMove() {
   QPen pen(draftPen());
   origpath = path();
-  qDebug() << "origpath" << origpath;
   if (moveseg==0) {
     if (!scene->circuit().connections[id].danglingStart()) {
       moveseg0 = new SCSegment(origpath.first(), conn);
@@ -391,7 +388,6 @@ void SceneConnectionData::updateMove(QPointF delta) {
 }
 
 void SceneConnection::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "SceneConnection::mouseMoveEvent";
   if (d->moveseg<0)
     return;
 
@@ -408,7 +404,6 @@ void SceneConnection::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "SceneConnection::mouseReleaseEvent";
   if (d->moveseg < 0)
     return;
 

@@ -119,7 +119,6 @@ void MainWindow::showLibrary() {
 
 void MainWindow::showPartsList() {
   bool vis = d->partlistviewdock->isVisible();
-  qDebug() << "showpartslist" << vis;
   if (vis) {
     d->partlistviewdock->hide();
   } else {
@@ -130,7 +129,6 @@ void MainWindow::showPartsList() {
 
 void MainWindow::showPackagePanel() {
   bool vis = d->packagepaneldock->isVisible();
-  qDebug() << "showpackagepanel" << vis;
   if (vis) {
     d->packagepaneldock->hide();
   } else {
@@ -146,7 +144,6 @@ void MainWindow::createView() {
   d->view = new QGraphicsView(this);
   d->view->setInteractive(true);
   d->view->setMouseTracking(true);
-  d->view->setDragMode(QGraphicsView::RubberBandDrag);
   setCentralWidget(d->view);
 }
 
@@ -465,7 +462,6 @@ void MainWindow::zoomOut() {
 }
 
 void MainWindow::setStatusMessage(QString msg) {
-  qDebug() << "Status message:" << msg;
   statusBar()->showMessage(msg);
 }
 

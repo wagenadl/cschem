@@ -35,9 +35,7 @@ void CircuitModData::insert(Element const &elt) {
 }
 
 void CircuitModData::drop(Connection const &con) {
-  qDebug() << "drop connection" << con << circ.connections.size();
   circ.connections.remove(con.id);
-  qDebug() << "  => new size" << circ.connections.size();
   acons << con.id;
 }
 
@@ -158,7 +156,6 @@ void CircuitModData::rewirePassthroughs(int id, QSet<int> cc) {
       qDebug() << "rewirepassthroughs requires valid connections";
       return;
     }
-    qDebug() << "orig con" << con.report();
     cons << con;
   }
   // So now we have four connections that all start at the junction
@@ -200,8 +197,6 @@ void CircuitModData::rewirePassthroughs(int id, QSet<int> cc) {
   con0 = cons.first();
   con0.reverse();
   QPolygon path = geom.connectionPath(con0);
-  qDebug() << "path" << path;
-  qDebug() << "pl" << paths.last();
   path += paths.last();
   path = geom.simplifiedPath(path);
   con0.setTo(cons.last().to());
@@ -233,12 +228,8 @@ bool CircuitModData::removePointlessJunction(int id) {
   if (circ.elements[id].type != Element::Type::Junction)
     return false;
 
-  qDebug() << "removepointlessjunction" << id << " at " << circ.elements[id].position;
-  
   QList<int> cc = circ.connectionsOn(id, "").toList();
 
-  qDebug() << "  affected connections" << cc;
-  
   if (cc.size() > 2)
     return false;
   
@@ -246,25 +237,18 @@ bool CircuitModData::removePointlessJunction(int id) {
     // reconnect what would be dangling
     Connection con0(circ.connections[cc[0]]);
     Connection con1(circ.connections[cc[1]]);
-    qDebug() << "  con0" <<  con0;
-    qDebug() << "  con1" <<  con1;
 
     if (con0.fromId == id)
       con0.reverse();
     if (con1.toId == id)
       con1.reverse();
 
-    qDebug() << "  con0=>" <<  con0;
-    qDebug() << "  con1=>" <<  con1;
-    
     con0.setTo(con1.to());
     con0.via << circ.elements[id].position;
     con0.via += con1.via;
-    qDebug() << "  con0=>" << con0;
     Geometry geom(circ, lib);
     con0.via = geom.viaFromPath(con0,
 				geom.simplifiedPath(geom.connectionPath(con0)));
-    qDebug() << "  con0=>" << con0;
     insert(con0);
     dropCon(cc[1]);
   } else {
@@ -281,13 +265,10 @@ bool CircuitMod::removePointlessJunction(int id) {
 }
 
 bool CircuitMod::deleteConnection(int id) {
-  qDebug() << "deleteconnection" << id;
   if (!d->circ.connections.contains(id))
     return false;
 
-  qDebug() << "  contained";
   Connection con(d->circ.connections[id]);
-  qDebug() << "  equals" << con;
 
   d->drop(con);
   
@@ -311,7 +292,6 @@ bool CircuitMod::deleteConnectionSegment(int id, int seg) {
     return false;
   Connection con(d->circ.connections[id]);
   QPolygon via = con.via;
-  qDebug() << "deleteConnectionSegment" << id << seg << con.report();
   if (via.isEmpty()) 
     return deleteConnection(id);
 
@@ -397,19 +377,15 @@ bool CircuitMod::removeIfDangling(int id) {
 
 bool CircuitMod::removeAllDanglingOrInvalid() {
   bool any = false;
-  qDebug() << "removealldanglingorinvalid" << d->circ;
   while (true) {
     /* This odd while loop is needed, because deleting a connection
        can effectively change IDs of other connections through
        deletion of a junction. */
     bool now = false;
-    qDebug() << "  loop" << d->circ;
     for (auto const &c: d->circ.connections) {
       if (!c.isValid() || c.isDangling()) {
-	qDebug() << "    deleting " << c << c.isValid() << c.isDangling();
         now = true;
         deleteConnection(c.id);
-	qDebug() << "  now" << d->circ;
         break;
       }
     }
@@ -418,7 +394,6 @@ bool CircuitMod::removeAllDanglingOrInvalid() {
     else
       break;
   }
-  qDebug() << "  donelooping" << any << d->circ;
   return any;
 }
 
@@ -547,9 +522,7 @@ bool CircuitMod::simplifyConnection(int id) {
 bool CircuitModData::removeOverlappingJunctions(int id) {
   if (!circ.elements.contains(id))
     return false;
-  qDebug() << "removeoverlap" << circ;
   Element junc(circ.elements[id]);
-  qDebug() << "  =>" << circ;
   if (junc.type != Element::Type::Junction)
     return false;
   
@@ -653,14 +626,11 @@ OverlapResult CircuitModData::overlappingStart(Connection const &a,
   if (a.id==b.id || a.fromId<=0 || a.from()!=b.from())
     return res;
   Geometry geom(circ, lib);
-  qDebug() << "overlappingstart?" << a.report() << b.report();
   QPolygon patha(geom.connectionPath(a));
   QPolygon pathb(geom.connectionPath(b));
   // By construction, the first points in the path are the same
   QPoint deltaa = patha[1] - patha[0];
   QPoint deltab = pathb[1] - pathb[0];
-  qDebug() << " patha" << patha << "length" << deltaa;
-  qDebug() << " pathb" << pathb << "length" << deltab;
   res.overlap
     = (deltaa.x()==0 && deltab.x()==0 && deltaa.y()*deltab.y()>0)
     || (deltaa.y()==0 && deltab.y()==0 && deltaa.x()*deltab.x()>0);
@@ -670,7 +640,6 @@ OverlapResult CircuitModData::overlappingStart(Connection const &a,
   int la = deltaa.manhattanLength();
   int lb = deltab.manhattanLength();
 
-  qDebug() << " => " << la << lb;
   if (la<=lb)
     res.allOfFirstSegmentA = true;
   if (lb<=la)
@@ -689,7 +658,6 @@ bool CircuitMod::adjustOverlappingConnections(int id) {
   bool keepgoing = true;
   while (keepgoing) {
     keepgoing = false;
-    qDebug() << "adjust overlapping" << id << d->circ;
     if (!d->circ.connections.contains(id))
       break;
     Connection a(d->circ.connections[id]);
@@ -785,7 +753,6 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
     con.setFrom(junc.id);
     insert(con);
     insert(junc);
-    qDebug() << "inject at start of dangling";
     return junc.id;
   }
   if (con.danglingEnd() && inter.q==path.last()) {
@@ -795,7 +762,6 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
     con.setTo(junc.id);
     insert(con);
     insert(junc);
-    qDebug() << "inject at end of dangling" << con.report() << junc.report();
     return junc.id;
   }
 
@@ -829,7 +795,6 @@ int CircuitModData::injectJunction(int conid, QPoint at) {
   insert(con);
   insert(con1);
   insert(junc);
-  qDebug() << "inject somewhere else" << con.report() << con1.report();  
   return junc.id;
 }
 

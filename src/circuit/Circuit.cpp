@@ -78,7 +78,6 @@ void Circuit::insert(Connection const &c) {
 
 void Circuit::removeElementWithConnections(int id) {
   if (elements.contains(id)) {
-    qDebug() << "removingwithconnections" << id << elements[id];
     elements.remove(id);
     QList<int> cids;
     for (auto const &c: connections) 
@@ -89,7 +88,6 @@ void Circuit::removeElementWithConnections(int id) {
   } else {
     qDebug() << "Nothing to remove for " << id;
   }
-  qDebug() << "removedelementwithconnections" << *this;
 }
 
 QSet<int> Circuit::connectionsOn(PinID const &pid) const {

@@ -195,7 +195,6 @@ Symbol &Symbol::operator=(Symbol const &o) {
 void SymbolData::scanPins(XmlElement const &elt) {
   if (elt.qualifiedName()=="circle") {
     QString label = elt.title();
-    qDebug() << "circle title" << label;
     if (label.isEmpty())
       label = elt.label();
     if (label.startsWith("pin")) {
@@ -207,7 +206,6 @@ void SymbolData::scanPins(XmlElement const &elt) {
     }
   } else if (elt.qualifiedName()=="rect") {
     QString label = elt.title();
-    qDebug() << "rect title" << label;
     if (label.isEmpty())
       label = elt.label();
     if (label.startsWith("annotation:")) {
