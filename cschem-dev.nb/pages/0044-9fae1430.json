@@ -1,0 +1,116 @@
+{ "typ": "page",
+  "cre": "2018-06-21T08:59:49",
+  "mod": "2018-06-21T09:03:26",
+  "cui": "6cb92883ba1f5bf5",
+  "stampTime": 0,
+  "startPage": 44,
+  "unlocked": false,
+  "uuid": "9fae1430",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-21T08:59:49",
+      "mod": "2018-06-21T08:59:49",
+      "uuid": "24905518"
+    },
+    { "typ": "title",
+      "cre": "2018-06-21T08:59:49",
+      "mod": "2018-06-21T08:59:54",
+      "uuid": "379fcb3e",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-21T08:59:49",
+          "mod": "2018-06-21T08:59:54",
+          "lines": [
+            0
+          ],
+          "text": "Selection model",
+          "uuid": "7deea438"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-21T08:59:55",
+      "mod": "2018-06-21T09:02:18",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "488599ad",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-21T08:59:55",
+          "mod": "2018-06-21T09:02:18",
+          "lines": [
+            0,
+            66,
+            125,
+            184,
+            245,
+            299
+          ],
+          "text": "I want rectangle select to grab only things entirely contained in the rectangle. I want to use shift for add to selection in rectangle mode and for toggle in click mode. I want to use control to drag out connections. I am debating how I want to disable magnetic snapping. Probably control, but that requires slightly careful interaction with drag out.",
+          "uuid": "82251b35",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-21T09:00:28",
+              "mod": "2018-06-21T09:00:28",
+              "end": 100,
+              "start": 95,
+              "style": 2,
+              "uuid": "ab5a5f71"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-21T09:01:03",
+              "mod": "2018-06-21T09:01:03",
+              "end": 191,
+              "start": 184,
+              "style": 2,
+              "uuid": "bf95827d"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-21T09:01:19",
+              "mod": "2018-06-21T09:01:19",
+              "end": 261,
+              "start": 253,
+              "style": 2,
+              "uuid": "ffd73f9b"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-21T09:02:02",
+              "mod": "2018-06-21T09:02:02",
+              "end": 288,
+              "start": 281,
+              "style": 2,
+              "uuid": "eb343723"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-21T09:02:28",
+      "mod": "2018-06-21T09:03:26",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "705962b1",
+      "y0": 214.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-21T09:02:28",
+          "mod": "2018-06-21T09:03:26",
+          "lines": [
+            0,
+            59,
+            106,
+            159
+          ],
+          "text": "This means I need to unset the Qt’s DragMode. I think I do need to pass through mouse press events to the QGraphicsScene, otherwise the QGraphicsItems may not receive them.",
+          "uuid": "1f39b79c"
+        }
+      ]
+    }
+  ]
+}

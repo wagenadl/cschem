@@ -1,0 +1,36 @@
+{ "typ": "latenote",
+  "cre": "2018-06-21T09:03:40",
+  "mod": "2018-06-21T09:07:03",
+  "dx": 0.0,
+  "dy": 0.0,
+  "sheet": 1,
+  "textWidth": 0.0,
+  "uuid": "999287ad",
+  "x": 111.572,
+  "y": 513.918,
+  "cc": [
+    { "typ": "text",
+      "cre": "2018-06-21T09:03:40",
+      "mod": "2018-06-21T09:07:03",
+      "lines": [
+        0,
+        63,
+        128,
+        184,
+        246,
+        287,
+        347,
+        412,
+        475,
+        535
+      ],
+      "text": "I implemented using the center of the bounding box as anchor.I didn’t do the snapping yet, but I think I know how to do it: The SceneAnnotion will keep track of the parentRect and one siblingRect and snap to those. It will create dotted lines as children to visually indicate snapping. \nWhat I do not know is whether I want to make positioning of annotations with subgrid precision possible. Probably, yes, if I am going to do snapping at all, because otherwise text to text alignment will never be precise, since the centers would be aligned to the grid.",
+      "uuid": "b43f81da"
+    },
+    { "typ": "resources",
+      "cre": "2018-06-21T09:03:40",
+      "mod": "2018-06-21T09:03:40",
+      "uuid": "04333eae"
+    }
+  ]
+}
