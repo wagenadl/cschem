@@ -21,19 +21,16 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Packaging &c) {
       } else if (n=="packages") {
         auto const &a = sr.attributes();
         QStringList names = a.value("names").toString().split(" ");
-        qDebug() << "packages?" << names;
         for (QString n: names) {
           Package pkg;
           pkg.name = n;
           pkg.pcb = n.toUpper();
-          qDebug() << "from packages" << pkg;
           c.packages[pkg.name] = pkg;
         }
         sr.skipCurrentElement();
       } else if (n=="package") {
 	Package pkg;
 	sr >> pkg;
-        qDebug() << "from package" << pkg;
 	c.packages[pkg.name] = pkg;
       } else {
 	qDebug() << "Unexpected element in packaging: " << sr.name();
@@ -112,7 +109,6 @@ QStringList Packaging::recommendedPackages(QString symbol) const {
   QStringList sym = symbol.split(":");
 
   if (sym.size()==3 && sym[1]=="container") {
-    qDebug() << "Recommendation for container" << sym[2];
     return QStringList() << sym[2];
   }
 

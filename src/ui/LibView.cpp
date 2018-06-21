@@ -59,7 +59,6 @@ void LibViewElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     QMimeData *mimeData = new QMimeData;
     mimeData->setData("application/x-dnd-cschem", name.toUtf8());
     drag->setMimeData(mimeData);
-    qDebug() << "Drag started for" << name;
     if (drag->exec(Qt::CopyAction, Qt::CopyAction))
       setGraphicsEffect(0);
   }
@@ -193,6 +192,5 @@ LibView::~LibView() {
 }
 
 void LibView::activate(QString symbol) {
-  qDebug() << "LibView::activate" << symbol;
   emit activated(symbol);
 }

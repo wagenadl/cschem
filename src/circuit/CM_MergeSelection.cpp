@@ -11,16 +11,12 @@ public:
     top(d->circ.subset(sel)),
     topgeom(top, d->lib) {
     bot = d->circ;
-    qDebug() << "CM_Merge";
-    qDebug() << "top" << top;
-    qDebug() << "bot" << bot;
     for (Connection const &c: top.connections)
       bot.connections.remove(c.id);
     CircuitMod mod(bot, d->lib);
     for (Element const &e: top.elements)
       mod.deleteElement(e.id);
     bot = mod.circuit();
-    qDebug() << "bot => " << bot;
     botgeom = Geometry(bot, d->lib);
   }
   CM_Merge(CircuitModData *d, int conid):
@@ -64,21 +60,15 @@ bool CircuitMod::mergeConnection(int id) {
 bool CircuitMod::mergeSelection(QSet<int> sel) {
   CM_Merge mrg(d, sel);
   mrg.considerPinPin();
-  qDebug() << "consideredpinpin" << d->circ;
   mrg.considerPinCon();
-  qDebug() << "consideredpincon" << d->circ;
   mrg.considerConPin();
-  qDebug() << "consideredconpin" << d->circ;
   mrg.considerConCon();
-  qDebug() << "consideredconcon" << d->circ;
-  qDebug() << "junctst" << mrg.junctst;
   // Cleanup
   for (int j: mrg.junctst) {
     removeOverlappingJunctions(j);
     removePointlessJunction(j);
   }
 
-  qDebug() << "Done merging" << mrg.any << d->circ;
   return mrg.any;
 }
 
@@ -131,21 +121,16 @@ void CM_Merge::considerConPin() {
     Symbol const &prt(d->lib.symbol(elttop.symbol()));
     if (!prt.isValid())
       continue;
-    qDebug() << "considering merge of " << elttop;
     QStringList pins = prt.pinNames();
     for (QString p: pins) {
       PinID pidtop(elttop.id, p);
       QPoint pos = topgeom.pinPosition(elttop, p);
-      qDebug() << "  considering pin" << p << " at " << pos;
       int conbot = botgeom.connectionAt(pos);
       if (conbot>0) {
-	qDebug() << "    touches connection" << bot.connections[conbot];
         // Let's just make sure the two aren't already connected:
         if (Net(d->circ, pidtop).connections().contains(conbot))
           continue; // never mind
-	qDebug() << "    not already connected";
         junctst << d->addInPlaceConnection(pidtop, conbot, pos);
-	qDebug() << "    addedinplace" << junctst;
         any = true;
       }
     }
@@ -183,7 +168,6 @@ void CM_Merge::considerConCon() {
 }
 
 int CircuitModData::addInPlaceConnection(int con0, int con1, QPoint pos) {
-  qDebug() << "addInPlaceConnection" << con0 << con1 << pos;
   int jid0 = injectJunction(con0, pos);
   if (jid0<0)
     return -1;
@@ -216,12 +200,9 @@ int CircuitModData::addInPlaceConnection(PinID pidbot, int conid, QPoint pos) {
 int CircuitModData::addInPlaceConnection(PinID pidbot, PinID pidtop,
                                          QPoint pos) {
   /* Create a connection between two pins in the same location. */
-  qDebug() << "addInPlaceConnection" << pidtop << pidbot << pos;
   int jid = -1;
   Element const &elttop(circ.elements[pidtop.element()]);
   Element const &eltbot(circ.elements[pidbot.element()]);
-  qDebug() << "  elttop" << elttop;
-  qDebug() << "  eltbot" << eltbot;
   if (eltbot.type==Element::Type::Junction
       || elttop.type==Element::Type::Junction) {
     // At least one junction, so we'll connect the two and rewire
@@ -245,7 +226,6 @@ int CircuitModData::addInPlaceConnection(PinID pidbot, PinID pidtop,
     // to inject a junction
     QSet<int> cctop = circ.connectionsOn(pidtop);
     QSet<int> ccbot = circ.connectionsOn(pidbot);
-    qDebug() << "neither junction" << cctop << ccbot;
     if (cctop.isEmpty() && ccbot.isEmpty()) {
       // Easy, just connect the two
       insert(Connection(pidtop, pidbot));

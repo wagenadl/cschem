@@ -140,9 +140,6 @@ SceneElement::SceneElement(class Scene *parent, Element const &elt):
     setZValue(20);
   else
     setZValue(10);
-  
-  setFlag(ItemIsMovable);
-  setFlag(ItemIsSelectable);
 }
 
 SceneElement::~SceneElement() {
@@ -160,11 +157,12 @@ void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
 }
 
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
+  qDebug() << "element press";
   d->dragmoved = false;
   Circuit const &circ = d->scene->circuit();
   SymbolLibrary const &lib = d->scene->library();
   d->delta0 = circ.elements[d->id].position - lib.downscale(e->scenePos());
-  QGraphicsItem::mousePressEvent(e);
+  e->accept();
 }
 
 void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
@@ -172,13 +170,13 @@ void SceneElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
   QPoint oldpos = circ.elements[d->id].position;
-  QGraphicsItem::mouseMoveEvent(e);
   
   if (d->dragmoved || newpos != oldpos) {
     d->scene->tentativelyMoveSelection(newpos - oldpos, !d->dragmoved,
 				       e->modifiers() & Qt::ControlModifier);
     d->dragmoved = true;
   }
+  e->accept();
 }
 
 void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
@@ -186,11 +184,11 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
   QPoint oldpos = circ.elements[d->id].position;
-  QGraphicsItem::mouseReleaseEvent(e);
   if (d->dragmoved || newpos != oldpos) {
     d->scene->moveSelection(newpos - oldpos,
 			    e->modifiers() & Qt::ControlModifier);
   }
+  e->accept();
 }
 
 void SceneElement::temporaryTranslate(QPoint delta) {
@@ -380,4 +378,13 @@ QRectF SceneElement::boundingRect() const {
 
 QString SceneElement::symbol() const {
   return d->sym;
+}
+
+void SceneElement::setSelected(bool s) {
+  d->selected = s;
+  update();
+}
+
+bool SceneElement::isSelected() const {
+  return d->selected;
 }

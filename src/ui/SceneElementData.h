@@ -19,6 +19,7 @@ public:
     dragmoved = false;
     hover = false;
     nhover = vhover = false;
+    selected = false;
   }
   virtual ~SceneElementData();
 public:
@@ -46,6 +47,7 @@ public:
   bool dragmoved;
   bool hover;
   bool nhover, vhover;
+  bool selected;
 };
 
 #endif

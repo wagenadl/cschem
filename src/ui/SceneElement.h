@@ -38,6 +38,8 @@ public:
   QRectF boundingRect() const override;
   void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;
   void temporaryTranslate(QPoint delta);
+  void setSelected(bool);
+  bool isSelected() const;
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) override;

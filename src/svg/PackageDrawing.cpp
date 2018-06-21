@@ -178,9 +178,8 @@ PackageDrawing::PackageDrawing(): d(new FPPicData) {
 
 PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
   QFile f(fn);
-  qDebug() << "PackageDrawing" << fn;
   if (!f.open(QFile::ReadOnly)) {
-    qDebug() << " .. not found";
+    qDebug() << "PackageDrawing" << fn << "not found";
     return;
   }
 
@@ -241,7 +240,6 @@ PackageDrawing::PackageDrawing(QString fn): PackageDrawing() {
   ptr.end();
 
   d->valid = !d->pins.isEmpty();
-  qDebug() << " .. loaded. valid?" << d->valid;
 }
 		  
 bool PackageDrawing::isValid() const {

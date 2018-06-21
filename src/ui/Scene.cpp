@@ -24,6 +24,7 @@ public:
     connbuilder = 0;
     dragin = 0;
     partlist = 0;
+    rubberband = 0;
   }
   void rebuild();
   void keyPressAnywhere(QKeyEvent *);
@@ -72,6 +73,9 @@ public:
   ConnBuilder *connbuilder;
   FloatingSymbol *dragin;
   PartList *partlist;
+  QGraphicsRectItem *rubberband;
+  QPointF rbstart;
+  QSet<int> prebandselection;
 };
 
 QRectF SceneData::minRect() {
@@ -395,44 +399,75 @@ void Scene::moveSelection(QPoint delta, bool nomagnet) {
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->mousexy = e->scenePos();
   d->hovermanager->setPrimaryPurpose((d->connbuilder ||
-                                      e->modifiers() & Qt::ShiftModifier)
+                                      e->modifiers() & Qt::ControlModifier)
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
 
   if (d->connbuilder) {
     d->connbuilder->mousePress(e);
-    e->accept();
     update();
-  } else {
-    if (d->hovermanager->onPin()) {
-      d->startConnectionFromPin(e->scenePos());
-      e->accept();
-    } else if (d->hovermanager->onFakePin()) {
-      d->startConnectionFromConnection(e->scenePos());
-      e->accept();
-    } else if (d->hovermanager->onConnection()
-               && (e->modifiers() & Qt::ShiftModifier)) {
-      d->startConnectionFromConnection(e->scenePos());
-      e->accept();
+  } else if (d->hovermanager->onPin()) {
+    d->startConnectionFromPin(e->scenePos());
+  } else if (d->hovermanager->onFakePin()) {
+    d->startConnectionFromConnection(e->scenePos());
+  } else if (d->hovermanager->onConnection()
+	     && (e->modifiers() & Qt::ControlModifier)) {
+    d->startConnectionFromConnection(e->scenePos());
+  } else if (d->hovermanager->onElement()) {
+    QGraphicsScene::mousePressEvent(e); // pass on to items
+    int elt = d->hovermanager->element();
+    if (e->modifiers() & Qt::ShiftModifier) {
+      // toggle
+      if (d->elts.contains(elt))
+	d->elts[elt]->setSelected(!d->elts[elt]->isSelected());
     } else {
-      QGraphicsScene::mousePressEvent(e);
-    }    
+      // if not selected, select exclusively
+      if (d->elts.contains(elt) && !d->elts[elt]->isSelected()) {
+	clearSelection();
+	d->elts[elt]->setSelected(true);
+      }
+    }
+    d->rbstart = e->scenePos();
+  } else if (d->hovermanager->onConnection()) {
+    QGraphicsScene::mousePressEvent(e); // pass on to items
+  } else {
+    if (!(e->modifiers() & Qt::ShiftModifier))
+	clearSelection();
+    d->rbstart = e->scenePos();
+    d->prebandselection = selectedElements();
+    d->rubberband = new QGraphicsRectItem;
+    d->rubberband->setRect(QRectF(d->rbstart, d->rbstart));
+    d->rubberband->setBrush(QBrush(QColor(0, 128, 255, 32)));
+    d->rubberband->setBrush(QBrush(QColor(255, 255, 0, 64)));
+    d->rubberband->setPen(QPen(Qt::NoPen));
+    d->rubberband->setZValue(-1000);
+    addItem(d->rubberband);
   }
 }
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   d->mousexy = e->scenePos();
-  d->hovermanager->setPrimaryPurpose((d->connbuilder ||
-                                      e->modifiers() & Qt::ShiftModifier)
-                                     ? HoverManager::Purpose::Connecting
-                                     : e->buttons()
-                                     ? HoverManager::Purpose::None
-                                     : HoverManager::Purpose::Moving);
+  auto purp = HoverManager::Purpose::Moving;
+  if (d->connbuilder)
+    purp = HoverManager::Purpose::Connecting;
+  else if (e->buttons())
+    // already doing something
+    purp = HoverManager::Purpose::None;
+  else if (e->modifiers() & Qt::ControlModifier)
+    purp = HoverManager::Purpose::Connecting;
+  
+  d->hovermanager->setPrimaryPurpose(purp);
   d->hovermanager->update(e->scenePos());
   if (d->connbuilder) {
     d->connbuilder->mouseMove(e);
     update();
+  } else if (d->rubberband) {
+    QRectF rect = QRectF(d->rbstart, e->scenePos()).normalized();
+    d->rubberband->setRect(rect);
+    for (int id: d->elts.keys())
+      d->elts[id]->setSelected(d->prebandselection.contains(id)
+			       || rect.contains(d->elts[id]->sceneBoundingRect()));
   } else {
     QGraphicsScene::mouseMoveEvent(e);
   }
@@ -441,7 +476,7 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   d->mousexy = e->scenePos();
   d->hovermanager->setPrimaryPurpose((d->connbuilder ||
-                                      e->modifiers() & Qt::ShiftModifier)
+                                      e->modifiers() & Qt::ControlModifier)
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
@@ -451,9 +486,12 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     if (d->connbuilder->isComplete())
       d->finalizeConnection();
     d->hovermanager->setPrimaryPurpose((d->connbuilder ||
-                                        e->modifiers() & Qt::ShiftModifier)
+                                        e->modifiers() & Qt::ControlModifier)
                                        ? HoverManager::Purpose::Connecting
                                        : HoverManager::Purpose::Moving);
+  } else if (d->rubberband) {
+    delete d->rubberband;
+    d->rubberband = 0;
   } else {
     QGraphicsScene::mouseReleaseEvent(e);
   }
@@ -713,13 +751,14 @@ void Scene::pasteFromClipboard() {
     qDebug() << "nothing to paste";
     return;
   }
+
   d->preact();
 
   for (Element const &elt: pp.elements)
     if (!d->lib().contains(elt.symbol()))
       if (altlib.contains(elt.symbol()))
-       d->lib().insert(altlib.symbol(elt.symbol()));
-  
+	d->lib().insert(altlib.symbol(elt.symbol()));
+	  
   d->circ().merge(pp);
   d->rebuildAsNeeded(QSet<int>::fromList(pp.elements.keys()),
                      QSet<int>::fromList(pp.connections.keys()));
@@ -869,7 +908,7 @@ void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
 
 void Scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *e) {
   d->hovermanager->setPrimaryPurpose((d->connbuilder ||
-                                      e->modifiers() & Qt::ShiftModifier)
+                                      e->modifiers() & Qt::ControlModifier)
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
@@ -884,7 +923,7 @@ void Scene::dragMoveEvent(QGraphicsSceneDragDropEvent *e) {
 
 void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
   d->hovermanager->setPrimaryPurpose((d->connbuilder ||
-                                      e->modifiers() & Qt::ShiftModifier)
+                                      e->modifiers() & Qt::ControlModifier)
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
@@ -996,3 +1035,7 @@ HoverManager *Scene::hoverManager() const {
   return d->hovermanager;
 }
 
+void Scene::clearSelection() {
+  for (SceneElement *elt: elements())
+    elt->setSelected(false);
+}
