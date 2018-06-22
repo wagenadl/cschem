@@ -22,8 +22,6 @@ public:
   Circuit &circuit();
   class SymbolLibrary const &library() const;
   class SymbolLibrary &library();
-  class PackageLibrary const &packaging() const;
-  class PackageLibrary &packaging();
 public:
   void saveSymbolLibrary(QXmlStreamWriter &dst,
                          bool onlySaveUsedSymbols=true) const;

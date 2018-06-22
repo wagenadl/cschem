@@ -105,10 +105,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Element &c) {
   c.nameVisible = a.value("namevis").toInt() > 0;
   c.rotation = a.value("rotation").toInt();
   c.flipped = a.value("flip").toInt() ? true : false;
-  c.info.vendor = a.value("vendor").toString();
-  c.info.partno = a.value("partno").toString();
-  c.info.package = a.value("package").toString();
-  c.info.notes = a.value("notes").toString();
+  c.notes = a.value("notes").toString();
 
   sr.skipCurrentElement();
   return sr;
@@ -135,14 +132,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Element const &c) {
     sw.writeAttribute("namevis", QString::number(c.nameVisible ? 1 : 0));
   }
   
-  if (!c.info.vendor.isEmpty())
-    sw.writeAttribute("vendor", c.info.vendor);
-  if (!c.info.partno.isEmpty())
-    sw.writeAttribute("partno", c.info.partno);
-  if (!c.info.package.isEmpty())
-    sw.writeAttribute("package", c.info.package);
-  if (!c.info.notes.isEmpty())
-    sw.writeAttribute("notes", c.info.notes);
+  if (!c.notes.isEmpty())
+    sw.writeAttribute("notes", c.notes);
   
   if (c.rotation)
     sw.writeAttribute("rotation", QString::number(c.rotation));
@@ -166,7 +157,7 @@ void Element::autoSetVisibility() {
 }    
 
 void Element::copyAnnotationsFrom(Element const &o) {
-  info = o.info;
+  notes = o.notes;
   value = o.value;
   name = o.name;
   valuePosition = o.valuePosition;

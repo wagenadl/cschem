@@ -33,13 +33,10 @@ public slots:
   void removeDanglingAction();
   void showLibrary();
   void showPartsList();
-  void showPackagePanel();
-  void showVirtuals();
   void rotateCCWAction();
   void rotateCWAction();
   void flipAction();
   void exportCircuitAction();
-  void exportGEDAAction();
   void exportPartListAction();
   void circuitToClipboardAction();
   void partListToClipboardAction();

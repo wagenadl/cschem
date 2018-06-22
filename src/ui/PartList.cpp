@@ -51,14 +51,8 @@ QVariant PartList::data(QModelIndex const &index,
       return elt.name;
   case Column::Value:
     return elt.value;
-  case Column::Vendor:
-    return elt.info.vendor;
-  case Column::CatNo:
-    return elt.info.partno;
-  case Column::Package:
-    return elt.info.package;
   case Column::Notes:
-    return elt.info.notes;
+    return elt.notes;
   default:
     return QVariant();
   }
@@ -82,17 +76,8 @@ bool PartList::setData(QModelIndex const &index, QVariant const &value,
     txt = PartNumbering::prettyValue(txt, elt.name);
     elt.value = txt;
     break;
-  case Column::Vendor:
-    elt.info.vendor = txt;
-    break;
-  case Column::CatNo: 
-    elt.info.partno = txt;
-    break;
-  case Column::Package: 
-    elt.info.package = txt;
-    break;
   case Column::Notes: 
-    elt.info.notes = txt;
+    elt.notes = txt;
     break;
   default:
     return false;
@@ -123,12 +108,6 @@ QVariant PartList::headerData(int section, Qt::Orientation orientation,
       return QString("Ref.");
     case Column::Value:
       return QString("Value");
-    case Column::Vendor:
-      return QString("Vendor");
-    case Column::CatNo:
-      return QString("Cat.#");
-    case Column::Package:
-      return QString("Pkg.");
     case Column::Notes:
       return QString("Notes");
     default:
@@ -204,13 +183,11 @@ void PartList::rebuild() {
 QList<QStringList> PartList::asTable() const {
   QMap<QString, QStringList> map;
   QStringList hdr;
-  hdr << "Ref." << "Value" << "Pkg." << "Vendor" << "Cat.#"  << "Notes";
+  hdr << "Ref." << "Value" << "Notes";
   map[""] = hdr;
   for (Element const &elt: d->elements) {
-    Element::Info const &info = elt.info;
     QStringList line;
-    line << elt.name << elt.value
-         << info.package << info.vendor << info.partno << info.notes;
+    line << elt.name << elt.value << elt.notes;
     map[elt.name] = line;
   }
   return map.values();

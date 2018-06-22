@@ -2,20 +2,16 @@
 
 #include "Schem.h"
 #include "svg/SymbolLibrary.h"
-#include "svg/PackageLibrary.h"
 #include <QDebug>
-#include "Packaging.h"
 
 class SchemData: public QSharedData {
 public:
   SchemData(bool valid):
-    valid(valid), library(SymbolLibrary::defaultSymbols()),
-    packaging(PackageLibrary::defaultPackages()) { }
+    valid(valid), library(SymbolLibrary::defaultSymbols()) { }
 public:
   bool valid;
   Circuit circuit;
   SymbolLibrary library;
-  PackageLibrary packaging;
 };  
 
 Schem::Schem(bool valid) {
@@ -34,8 +30,6 @@ Schem::Schem(QXmlStreamReader &src): Schem() {
       if (src.name()=="circuit") {
         src >> d->circuit;
 	d->valid = d->circuit.isValid();
-      } else if (src.name()=="packaging") {
-        src >> d->packaging;
       } else if (src.name()=="svg") {
         d->library.merge(src);
       } else {
@@ -80,7 +74,6 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Schem const &c) {
   sr.writeStartElement("cschem");
   sr.writeDefaultNamespace("http://www.danielwagenaar.net/cschem-ns.html");
   sr << c.circuit();
-  sr << c.packaging();
   c.saveSymbolLibrary(sr);
   sr.writeEndElement();
   return sr;
@@ -93,15 +86,6 @@ SymbolLibrary const &Schem::library() const {
 SymbolLibrary &Schem::library() {
   d.detach();
   return d->library;
-}
-
-PackageLibrary const &Schem::packaging() const {
-  return d->packaging;
-}
-
-PackageLibrary &Schem::packaging() {
-  d.detach();
-  return d->packaging;
 }
 
 void Schem::saveSymbolLibrary(QXmlStreamWriter &sw, bool onlyused) const {

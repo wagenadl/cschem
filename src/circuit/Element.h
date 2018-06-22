@@ -25,12 +25,6 @@ public:
     Port,
     Junction,
   };
-  struct Info {
-    QString vendor;
-    QString partno;
-    QString package;
-    QString notes;
-  };
 public:
   Element();
   static Element junction(QPoint);
@@ -53,10 +47,10 @@ public:
   QString subtype;
   QString value;
   QString name;
+  QString notes;
   int id;
   Rotation rotation;
   bool flipped;
-  Element::Info info;
   QPoint valuePosition;
   QPoint namePosition;
   bool valueVisible;

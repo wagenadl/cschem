@@ -29,9 +29,6 @@ void PartListView::showEvent(QShowEvent *e) {
   hideColumn(int(PartList::Column::Id));
   resizeColumnToContents(int(PartList::Column::Name));
   resizeColumnToContents(int(PartList::Column::Value));
-  resizeColumnToContents(int(PartList::Column::Vendor));
-  resizeColumnToContents(int(PartList::Column::CatNo));
-  resizeColumnToContents(int(PartList::Column::Package));
 }
 
 void PartListView::resetWidth() {
@@ -74,12 +71,3 @@ void PartListView::selectElements(QSet<int> const &set) {
   }
 }
 
-void PartListView::applyPackage(QString pkg) {
-  for (int elt: selectedElements()) {
-    int r = model()->findElement(elt);
-    if (r<0)
-      continue;
-    int c = int(PartList::Column::Package);
-    model()->setData(model()->index(r,c), pkg);
-  }
-}

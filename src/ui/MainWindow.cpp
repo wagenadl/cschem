@@ -16,13 +16,11 @@
 #include <QMessageBox>
 #include "LibView.h"
 #include "PartListView.h"
-#include "PackagePanel.h"
 #include "PartList.h"
 #include <QDockWidget>
 #include "LibView.h"
 #include "ui/SignalAccumulator.h"
 #include "svg/SvgExporter.h"
-#include "svg/GedaExporter.h"
 #include  <QClipboard>
 #include <QItemSelectionModel>
 #include "HoverManager.h"
@@ -34,11 +32,9 @@ public:
     scene(0),
     libview(0), libviewdock(0),
     partlistview(0), partlistviewdock(0),
-    packagepanel(0), packagepaneldock(0),
     unsaved(false),
     recursedepth(0) {
   }
-  void selectionToPackagePanel();
 public:
   QGraphicsView *view;
   Scene *scene;
@@ -48,23 +44,11 @@ public:
   QDockWidget *libviewdock;
   PartListView *partlistview;
   QDockWidget *partlistviewdock;
-  PackagePanel *packagepanel;
-  QDockWidget *packagepaneldock;
   bool unsaved;
   int recursedepth;
 };
 
 QString MWData::lastdir;
-
-void MWData::selectionToPackagePanel() {
-  QSet<int> sel = scene->selectedElements();
-  if (sel.size()==1) {
-    Element const &elt(scene->circuit().elements[*sel.begin()]);
-    packagepanel->setElement(elt);
-  } else {
-    packagepanel->clear();
-  }
-}
 
 MainWindow::MainWindow(): d(new MWData()) {
   createView();
@@ -94,17 +78,10 @@ void MainWindow::createDocks() {
   d->libviewdock->setWidget(d->libview);
   showLibrary();
 
-  d->partlistview = new PartListView(this);
-  d->partlistviewdock = new QDockWidget("Parts list", this);
+  d->partlistview = new PartListView();
+  d->partlistviewdock = new QDockWidget("Parts list");
   d->partlistviewdock->setWidget(d->partlistview);
-  showPartsList();
-  
-  d->packagepanel = new PackagePanel(this);
-  d->packagepaneldock = new QDockWidget("Package preview", this);
-  d->packagepaneldock->setWidget(d->packagepanel);
-  connect(d->packagepanel, &PackagePanel::pressed,
-          d->partlistview, &PartListView::applyPackage);
-  showPackagePanel();
+  d->partlistviewdock->hide();
 }
 
 void MainWindow::showLibrary() {
@@ -125,19 +102,6 @@ void MainWindow::showPartsList() {
     d->partlistviewdock->show();
     addDockWidget(Qt::RightDockWidgetArea, d->partlistviewdock);
   }
-}
-
-void MainWindow::showPackagePanel() {
-  bool vis = d->packagepaneldock->isVisible();
-  if (vis) {
-    d->packagepaneldock->hide();
-  } else {
-    d->packagepaneldock->show();
-    addDockWidget(Qt::RightDockWidgetArea, d->packagepaneldock);
-  }
-}
-
-void MainWindow::showVirtuals() {
 }
 
 void MainWindow::createView() {
@@ -178,11 +142,6 @@ void MainWindow::createActions() {
   act = new QAction(tr("&Export circuit as svg…"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
   connect(act, &QAction::triggered, this, &MainWindow::exportCircuitAction);
-  menu->addAction(act);
-
-  act = new QAction(tr("Export circuit as &gEDA…"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
-  connect(act, &QAction::triggered, this, &MainWindow::exportGEDAAction);
   menu->addAction(act);
 
   act = new QAction(tr("Export &parts list as csv…"), this);
@@ -299,12 +258,6 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::showPartsList);
   menu->addAction(act);
 
-  act = new QAction(tr("Package previe&w"), this);
-  act->setStatusTip(tr("Show/hide package preview"));
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_W));
-  connect(act, &QAction::triggered, this, &MainWindow::showPackagePanel);
-  menu->addAction(act);
-  
   menuBar()->addSeparator();
   menu = menuBar()->addMenu(tr("&Help"));
 
@@ -393,11 +346,8 @@ void MainWindow::create(Schem const &schem) {
   d->filename = "";
 
   d->libview->setLibrary(&d->scene->library());
-  d->packagepanel->setLibrary(&d->scene->schem().packaging());
-  d->packagepanel->setSymbolLibrary(&d->scene->library());
   
   d->partlistview->setModel(d->scene->partlist());
-  d->partlistviewdock->show();
 
   connect(d->scene, &Scene::libraryChanged,
 	  d->libview, &LibView::rebuild);
@@ -450,7 +400,6 @@ void MainWindow::markChanged() {
   if (fn.isEmpty())
     fn = "(Untitled)";
   setWindowTitle(fn + " *");
-  d->selectionToPackagePanel();
 }
 
 void MainWindow::zoomIn() {
@@ -585,36 +534,6 @@ void MainWindow::exportCircuitAction() {
   }
 }
 
-void MainWindow::exportGEDAAction() {
-  if (d->lastdir.isEmpty())
-    d->lastdir = QDir::home().absoluteFilePath("Desktop");
-  
-  QFileDialog dlg;
-  dlg.setWindowTitle(tr("Export schematic as gEDA…"));
-  dlg.setAcceptMode(QFileDialog::AcceptSave);
-  dlg.setDefaultSuffix("sch");
-  dlg.setDirectory(d->lastdir);
-  dlg.setNameFilter(tr("gEDA Circuit files (*.sch)"));
-  if (!d->filename.isEmpty()) {
-    QFileInfo fi(d->filename);
-    dlg.selectFile(fi.baseName() + ".sch");
-  }
-  if (!dlg.exec())
-    return;
-  QStringList fns = dlg.selectedFiles();
-  if (fns.isEmpty())
-    return;
-
-  d->lastdir = dlg.directory().absolutePath();
-
-  QString fn = fns.first();
-
-  GedaExporter xp(d->scene->schem());
-  if (!xp.exportGeda(fn)) {
-    qDebug() << "Failed to export svg";
-  }
-}
-
 void MainWindow::exportPartListAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = QDir::home().absoluteFilePath("Desktop");
@@ -684,7 +603,6 @@ void MainWindow::partListToClipboardAction() {
 void MainWindow::selectionToPartList() {
   qDebug() << "selection to partlist" << d->scene->selectedElements();
   d->recursedepth ++;
-  d->selectionToPackagePanel();
   if (d->recursedepth == 1)
     d->partlistview->selectElements(d->scene->selectedElements());
   d->recursedepth --;
