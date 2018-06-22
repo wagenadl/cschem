@@ -48,6 +48,7 @@ public:
   class PartList *partlist() const;
   class HoverManager *hoverManager() const;
   void clearSelection();
+  void perhapsEmitSelectionChange();
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;
