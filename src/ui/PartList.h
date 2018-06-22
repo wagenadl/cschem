@@ -12,9 +12,6 @@ public:
     Id=0,
     Name,
     Value,
-    Package,
-    Vendor,
-    CatNo,
     Notes,
     N
   };    

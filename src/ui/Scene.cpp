@@ -14,8 +14,6 @@
 #include "SceneAnnotation.h"
 #include "FloatingSymbol.h"
 #include "PartList.h"
-#include "svg/PackageLibrary.h"
-
 
 class SceneData {
 public:
@@ -891,7 +889,6 @@ void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
 
   if (elt.isValid()) {
     elt.name = circuit().autoName(elt.symbol());
-    elt.info.package = schem().packaging().recommendedPackage(elt.symbol());
     d->preact();
     CircuitMod cm(d->circ(), d->lib());
     cm.addElement(elt);
@@ -997,7 +994,7 @@ void Scene::updateFromPartList(Element const &elt) {
     Element &e(d->circ().elements[id]);
     e.name = elt.name;
     e.value = elt.value;
-    e.info = elt.info;
+    e.notes = elt.notes;
   }
   if (d->elts.contains(id))
     d->elts[id]->rebuild();
