@@ -382,9 +382,11 @@ QString SceneElement::symbol() const {
 
 void SceneElement::setSelected(bool s) {
   d->selected = s;
+  d->scene->perhapsEmitSelectionChange();
   update();
 }
 
 bool SceneElement::isSelected() const {
+  qDebug() << "isselected" << this << d->selected;
   return d->selected;
 }

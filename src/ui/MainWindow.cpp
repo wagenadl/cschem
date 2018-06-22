@@ -682,6 +682,7 @@ void MainWindow::partListToClipboardAction() {
 } 
 
 void MainWindow::selectionToPartList() {
+  qDebug() << "selection to partlist" << d->scene->selectedElements();
   d->recursedepth ++;
   d->selectionToPackagePanel();
   if (d->recursedepth == 1)

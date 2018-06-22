@@ -16,6 +16,7 @@
 #include "PartList.h"
 #include "svg/PackageLibrary.h"
 
+
 class SceneData {
 public:
   SceneData(Scene *scene, Schem const &schem):
@@ -25,6 +26,7 @@ public:
     dragin = 0;
     partlist = 0;
     rubberband = 0;
+    postpone = 0;
   }
   void rebuild();
   void keyPressAnywhere(QKeyEvent *);
@@ -76,6 +78,23 @@ public:
   QGraphicsRectItem *rubberband;
   QPointF rbstart;
   QSet<int> prebandselection;
+  int postpone;
+};
+
+
+class SelChgPostpone {
+public:
+  SelChgPostpone(SceneData *d): d(d) {
+    d->postpone++;
+  }
+  ~SelChgPostpone() {
+    d->postpone--;
+    qDebug() << "~postpone" << d->postpone;
+    if (d->postpone==0)
+      d->scene->selectionChanged();
+  }
+private:
+  SceneData *d;
 };
 
 QRectF SceneData::minRect() {
@@ -92,6 +111,8 @@ QPointF SceneData::pinPosition(int id, QString pin) const {
 bool SceneData::undo() {
   if (undobuffer.isEmpty())
     return false;
+
+  SelChgPostpone blk(this);
 
   redobuffer << circ();
   redoselections << selectedElements();
@@ -111,6 +132,8 @@ bool SceneData::redo() {
   if (redobuffer.isEmpty())
     return false;
 
+  SelChgPostpone blk(this);
+  
   undobuffer << circ();
   undoselections << selectedElements();
 
@@ -314,6 +337,7 @@ QSet<int> Scene::selectedElements() const {
 }
 
 void Scene::selectElements(QSet<int> const &set) {
+  SelChgPostpone blk(d);
   QSet<int> old = selectedElements();
   for (int id: set-old)
     if (d->elts.contains(id))
@@ -465,6 +489,7 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     d->connbuilder->mouseMove(e);
     update();
   } else if (d->rubberband) {
+    SelChgPostpone blk(d);
     QRectF rect = QRectF(d->rbstart, e->scenePos()).normalized();
     d->rubberband->setRect(rect);
     for (int id: d->elts.keys())
@@ -743,6 +768,7 @@ void Scene::copyToClipboard(bool cut) {
 }
 
 void Scene::pasteFromClipboard() {
+  SelChgPostpone blk(d);
   int mx = d->circ().maxId();
   Circuit pp = Clipboard::clipboard().retrieve();
   SymbolLibrary const &altlib = Clipboard::clipboard().library();
@@ -1038,6 +1064,12 @@ HoverManager *Scene::hoverManager() const {
 }
 
 void Scene::clearSelection() {
+  SelChgPostpone blk(d);
   for (SceneElement *elt: elements())
     elt->setSelected(false);
+}
+
+void Scene::perhapsEmitSelectionChange() {
+  if (d->postpone<=0)
+    emit selectionChanged();
 }
