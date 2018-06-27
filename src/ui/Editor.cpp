@@ -13,6 +13,7 @@
 #include <QPen>
 #include <QRubberBand>
 #include <QInputDialog>
+#include <QMimeData>
 
 class EData {
 public:
@@ -600,6 +601,7 @@ void EData::releaseBanding(Point p) {
 
 Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   setMouseTracking(true);
+  setAcceptDrops(true);
   setFocusPolicy(Qt::StrongFocus);
   scaleToFit();
 }
@@ -1352,4 +1354,54 @@ bool Editor::insertComponent(QString fn, Point pt) {
 
 Point Editor::hoverPoint() const {
   return d->hoverpt;
+}
+
+void Editor::dragEnterEvent(QDragEnterEvent *e) {
+  QMimeData const *md = e->mimeData();
+  if (md->hasUrls()) {
+    QList<QUrl> urls = md->urls();
+    QString fn;
+    for (QUrl url: urls) {
+      if (url.isLocalFile() && url.path().endsWith(".svg")) {
+	fn = url.path();
+	break;
+      }
+    }
+    if (!fn.isEmpty()) {
+      e->accept();
+    } else {
+      e->ignore();
+    }
+  } else {
+    e->ignore();
+  }
+}
+
+void Editor::dragLeaveEvent(QDragLeaveEvent *e) {
+  e->accept();
+}
+
+void Editor::dragMoveEvent(QDragMoveEvent *e) {
+  e->accept();
+}
+
+void Editor::dropEvent(QDropEvent *e) {
+  QMimeData const *md = e->mimeData();
+  if (md->hasUrls()) {
+    QList<QUrl> urls = md->urls();
+    bool take = false;
+    clearSelection();
+    for (QUrl url: urls)
+      if (url.isLocalFile() && url.path().endsWith(".svg"))
+        take = insertComponent(url.path(),
+			       Point::fromMils(d->widget2mils.map(e->pos())));
+    if (take) {
+      update();
+      e->accept();
+    } else {
+      e->ignore();
+    }
+  } else {
+    e->ignore();
+  }  
 }
