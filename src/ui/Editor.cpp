@@ -15,6 +15,7 @@
 #include <QRubberBand>
 #include <QInputDialog>
 #include <QMimeData>
+#include <QFileInfo>
 
 class EData {
 public:
@@ -1333,8 +1334,12 @@ int Editor::selectedComponent(QString *msg) const {
   return gid;
 }
 
-bool Editor::saveComponent(int id, QString fn) const {
-  return d->layout.root().subgroup(d->crumbs).saveComponent(id, fn);
+bool Editor::saveComponent(int id, QString fn) {
+  bool ok = d->layout.root().subgroup(d->crumbs).saveComponent(id, fn);
+  if (ok)
+    d->layout.root().subgroup(d->crumbs).object(id).asGroup().pkg
+      = QFileInfo(fn).baseName();
+  return ok;
 }
 
 bool Editor::insertComponent(QString fn, Point pt) {

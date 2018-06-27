@@ -5,6 +5,7 @@
 #include "Const.h"
 #include "ui/ORenderer.h"
 #include <QBuffer>
+#include <QFileInfo>
 
 class GData: public QSharedData {
 public:
@@ -82,7 +83,6 @@ int Group::formSubgroup(QSet<int> const &ids) {
   reftext.p = Point(bb.left, bb.top - Dim::fromInch(0.05));
   int tid = insert(Object(reftext));
   g.ref = reftext.text;
-  qDebug() << "ref" << g.ref;
   g.setRefTextId(tid); // this works, but for reasons I do not understand,
   // it does not work if I insert it first and /then/ change the reftextid.
   // Perhaps I do not actually understand all the way how detach() works?
@@ -276,6 +276,10 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   s.writeStartElement("group");
   s.writeAttribute("o", t.origin.toString());
   s.writeAttribute("ref", t.ref);
+  if (!t.notes.isEmpty())
+    s.writeAttribute("notes", t.notes);
+  if (!t.pkg.isEmpty())
+    s.writeAttribute("pkg", t.pkg);
   for (Object const *o: t.d->obj) {
     if (o->isGroup()) {
       s.writeStartElement("gr");
@@ -326,6 +330,7 @@ bool Group::saveComponent(int id, QString fn) {
 
       sw.writeNamespace("http://www.danielwagenaar.net/cpcb-ns.html", "cpcb");
       sw.writeStartElement("cpcb:part");
+      sw.writeAttribute("pkg", QFileInfo(fn).baseName());
       sw.writeDefaultNamespace("http://www.danielwagenaar.net/cpcb-ns.html");
   
       Group const &grp(obj.asGroup());
@@ -351,13 +356,17 @@ bool Group::saveComponent(int id, QString fn) {
 static int readGroupAndRef(QXmlStreamReader &s, Group &t) {
   int gid = 0;
   int tid = 0;
+  QString pkg;
+  if (s.isStartElement())
+    pkg = s.attributes().value("pkg").toString();
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
-      qDebug() << "rgar" << s.name();
       if (s.name()=="group") {
         Object o;
         s >> o;
+	if (o.asGroup().pkg=="")
+	  o.asGroup().pkg = pkg;
         gid = t.insert(o);
       } else if (s.name()=="text") {
         Object o;
@@ -407,6 +416,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   bool ok;
   auto a = s.attributes();
   t.ref = a.value("ref").toString();
+  t.notes = a.value("notes").toString();
+  t.pkg = a.value("pkg").toString();
   t.origin = Point::fromString(a.value("o").toString(), &ok);
   if (!ok) {
     s.skipCurrentElement();

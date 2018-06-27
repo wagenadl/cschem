@@ -68,8 +68,9 @@ public slots:
   void formGroup();
   void dissolveGroup();
   void deleteSelected();
-  bool saveComponent(int id, QString fn) const; // true if OK.
-  // id must be in current group (see breadcrumbs).
+  bool saveComponent(int id, QString fn); // true if OK.
+  // id must be in current group (see breadcrumbs). Updates "pkg" of
+  // saved group
   bool insertComponent(QString fn, Point pt); // true if OK.
   Point hoverPoint() const;
 signals:

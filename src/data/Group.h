@@ -19,6 +19,8 @@ public:
   Point origin; // to be added to all contained coordinates;
   // relative to parent's origin
   QString ref;
+  QString notes;
+  QString pkg; // name of component file
 public:
   Group();
   ~Group();
