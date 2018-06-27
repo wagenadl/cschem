@@ -1,6 +1,6 @@
-// FileIO.cpp
+// PCBFileIO.cpp
 
-#include "FileIO.h"
+#include "PCBFileIO.h"
 #include <QDebug>
 #include <QFile>
 #include <QXmlStreamReader>

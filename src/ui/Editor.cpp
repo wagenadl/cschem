@@ -1,11 +1,12 @@
 // Editor.cpp
 
 #include "Editor.h"
-#include "data/FileIO.h"
+#include "data/PCBFileIO.h"
 #include "data/Layout.h"
 #include "data/Orient.h"
 #include "data/Object.h"
 #include "ORenderer.h"
+#include "data/LinkedSchematic.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -87,6 +88,7 @@ public:
   QRubberBand *rubberband = 0;
   QTransform pan0;
   QPoint panstart;
+  LinkedSchematic linkedschematic;
 };
 
 void EData::invalidateStuckPoints() const {
@@ -617,6 +619,7 @@ void Editor::setMode(Mode m) {
 
 bool Editor::load(QString fn) {
   d->layout = FileIO::loadLayout(fn);
+  d->linkedschematic.link(d->layout.board().linkedschematic);
   scaleToFit();
   update();
   return !d->layout.root().isEmpty();
@@ -1405,3 +1408,20 @@ void Editor::dropEvent(QDropEvent *e) {
     e->ignore();
   }  
 }
+
+bool Editor::linkSchematic(QString fn) {
+  d->linkedschematic.link(fn);
+  if (d->linkedschematic.isValid()) {
+    d->layout.board().linkedschematic = fn;
+    return true;
+  } else {
+    d->layout.board().linkedschematic = "";
+    return false;
+  }
+}
+
+void Editor::unlinkSchematic() {
+  d->linkedschematic.unlink();
+  d->layout.board().linkedschematic = "";
+}
+

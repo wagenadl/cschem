@@ -1,8 +1,8 @@
 // FileIO.h
 
-#ifndef FILEIO_H
+#ifndef PCBFILEIO_H
 
-#define FILEIO_H
+#define PCBFILEIO_H
 
 #include "Layout.h"
 

@@ -24,6 +24,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Board const &t) {
   for (Layer l: t.layervisible.keys())
     s.writeAttribute(QString("layer%1vis").arg(int(l)),
 		     t.layervisible[l] ? "1" : "0");
+  if (!t.linkedschematic.isEmpty())
+    s.writeAttribute("schem", t.linkedschematic);
   s.writeEndElement();
   return s;
 }
@@ -44,6 +46,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Board &t) {
   for (Layer l: t.layervisible.keys())
     if (ok)
       t.layervisible[l] = a.value(QString("layer%1vis").arg(int(l))).toInt(&ok);
+  if (ok)
+    t.linkedschematic = a.value("schem").toString();
   s.skipCurrentElement();
   return s;
 }
@@ -56,6 +60,7 @@ QDebug operator<<(QDebug d, Board const &t) {
     << (t.metric ? "metric" : "inch")
     << t.layervisible
     << t.planesvisible
+    << t.linkedschematic
     << ")";
   return d;
 }

@@ -20,6 +20,7 @@ public:
   Dim grid;
   QMap<Layer, bool> layervisible;
   bool planesvisible;
+  QString linkedschematic;
 };
 
 QDebug operator<<(QDebug, Board const &);

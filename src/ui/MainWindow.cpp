@@ -26,6 +26,7 @@ public:
   void openDialog();
   void saveAsDialog();
   void saveImmediately();
+  void linkSchematicDialog();
   void insertComponentDialog();
   void saveComponentDialog();
 public:
@@ -101,6 +102,7 @@ void MWData::saveComponentDialog() {
   editor->saveComponent(id, fn);
 }
 
+
 void MWData::insertComponentDialog() {
   if (compwd.isEmpty()) {
      compwd = Paths::componentRoot();
@@ -120,6 +122,26 @@ void MWData::insertComponentDialog() {
                          "Cannot insert component “" + fn
                          + "”. Could the file be damaged?");
 }
+
+void MWData::linkSchematicDialog() {
+  if (pwd.isEmpty()) {
+     pwd = Paths::defaultLocation();
+     QDir::home().mkpath(pwd);
+  }
+  QString fn = QFileDialog::getOpenFileName(0, "Link schematic…",
+					    compwd,
+					    "Schematics (*.schem)");
+  if (fn.isEmpty())
+    return;
+
+  pwd = QFileInfo(fn).dir().absolutePath();
+
+  if (!editor->linkSchematic(fn)) 
+    QMessageBox::warning(mw, "Failed to link schematic",
+                         "Cannot link schematic “" + fn
+                         + "”. Could the file be damaged?");
+}
+
 
 void MWData::saveAsDialog() {
   if (pwd.isEmpty())
@@ -174,6 +196,14 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::CTRL + Qt::Key_S));		  
   file->addAction("Save &as…", [this]() { saveAsDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
+  file->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_L));
+  file->addAction("&Unlink schematic", [this]() { editor->unlinkSchematic(); },
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+  file->addAction("&Insert component…", [this]() { insertComponentDialog(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_I));
+  file->addAction("Save &component…", [this]() { saveComponentDialog(); },
+                  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
   file->addAction("&Quit", []() { QApplication::quit(); });
 
   auto *edit = mb->addMenu("&Edit");
@@ -191,10 +221,6 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::CTRL + Qt::Key_G));
   edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
-  edit->addAction("&Insert component", [this]() { insertComponentDialog(); },
-                  QKeySequence(Qt::CTRL + Qt::Key_L));
-  edit->addAction("&Save component", [this]() { saveComponentDialog(); },
-                  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
   edit->addAction("&Delete selected", [this]() { editor->deleteSelected(); },
 		  QKeySequence(Qt::Key_Delete));
 

@@ -28,6 +28,8 @@ public:
   EProps &properties(); // for Propertiesbar to directly affect
   int selectedComponent(QString *msg=0) const;
   // returns ID if one group, or 0 if none, in which case msg says why
+  bool linkSchematic(QString fn);
+  void unlinkSchematic();
 public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);
