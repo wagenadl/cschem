@@ -3,13 +3,14 @@
 #include "Editor.h"
 #include "data/FileIO.h"
 #include "data/Layout.h"
-#include "data/SimpleFont.h"
 #include "data/Orient.h"
+#include "data/Object.h"
+#include "ORenderer.h"
+
 #include <QTransform>
 #include <QPainter>
 #include <QBrush>
 #include <QPen>
-#include "data/Object.h"
 #include <QRubberBand>
 #include <QInputDialog>
 
@@ -31,9 +32,6 @@ public:
   void drawObject(Object const &o, Layer l, Point const &origin,
 		  QPainter &p, bool selected, bool toplevel=false) const;
   // only draw parts of object that are part of given layer
-  void drawText(Text const &t, QPainter &p, bool selected,
-		Point const &origin) const;
-  void drawPlanes(Layer l, QPainter &p) const;
   void drawTracing(QPainter &) const;
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
@@ -167,11 +165,9 @@ QSet<Point> EData::pointsOf(Object const &obj, Point const &ori) const {
 
 void EData::drawBoard(QPainter &p) const {
   p.setBrush(QBrush(QColor(0,0,0)));
-  QPointF wtopleft = mils2widget.map(QPointF(0,0));
   double lw = layout.board().width.toMils();
   double lh = layout.board().height.toMils();
-  QPointF wbotright = mils2widget.map(QPointF(lw, lh));
-  p.drawRect(QRectF(wtopleft, wbotright));
+  p.drawRect(QRectF(QPointF(0,0), QPointF(lw, lh)));
 }
 
 void EData::drawGrid(QPainter &p) const {
@@ -181,23 +177,17 @@ void EData::drawGrid(QPainter &p) const {
     ? layout.board().metric
     : layout.board().grid.isMetric();
   double lgrid = metric ? 2000/25.4 : 100;
-  QPointF wgrid = mils2widget.map(QPointF(lgrid,lgrid))
-    - mils2widget.map(QPointF(0,0));
-  QPointF wtopleft = mils2widget.map(QPointF(0,0));
-  double lw = layout.board().width.toMils();
-  double lh = layout.board().height.toMils();
-  QPointF wbotright = mils2widget.map(QPointF(lw, lh));
-  double wgdx = wgrid.x();
-  double wgdy = wgrid.y();
-  double wx0 = wtopleft.x();
-  double wx1 = wbotright.x();
-  double wy0 = wtopleft.y();
-  double wy1 = wbotright.y();
+  double wgdx = lgrid;
+  double wgdy = lgrid;
+  double wx0 = 0;
+  double wx1 = layout.board().width.toMils();
+  double wy0 = 0;
+  double wy1 = layout.board().height.toMils();
   constexpr int major = 5;
-  p.setPen(QPen(QColor(255, 255, 255), 1));
+  p.setPen(QPen(QColor(255, 255, 255), 1.0/mils2px));
   QPointF dpx(2,0);
   QPointF dpy(0,2);
-  if (wgdy >= 10 && wgdy >= 10) {
+  if (wgdy*mils2px >= 10 && wgdy*mils2px >= 10) {
     // draw everything
     for (int i=0; wx0+wgdx*i<=wx1; i++) {
       for (int j=0; wy0+wgdy*j<=wy1; j++) {
@@ -226,36 +216,47 @@ void EData::drawTracing(QPainter &p) const {
     return;
   p.setPen(QPen(layerColor(props.layer), props.linewidth.toMils()*mils2px,
 		Qt::SolidLine, Qt::RoundCap));
-  p.drawLine(mils2widget.map(tracestart.toMils()),
-	     mils2widget.map(tracecurrent.toMils()));
-}
-
-void EData::drawPlanes(Layer, QPainter &) const {
-  // Bottom filled plane is easy.
-  // Top filled plane is tricky because holes should let bottom shine through.
-  // The full solution is to render the plane into a pixmap first, then
-  // copy to the widget.
-  // An alternative is to ADD the plane to the widget, then SUBTRACT
-  // the holes, using appropriate color scheme. That would let bottom traces
-  // shine through, but I am OK with that.
+  p.drawLine(tracestart.toMils(), tracecurrent.toMils());
 }
 
 void EData::drawObjects(QPainter &p) const {
   Group const &here(layout.root().subgroup(crumbs));
   Point origin = layout.root().originOf(crumbs);
+  validateStuckPoints();  
+
+  ORenderer rndr(&p, origin);
+  if (moving)
+    rndr.setMoving(movingdelta);
+  rndr.setSelPoints(selpts);
+  rndr.setPurePoints(purepts);
+  rndr.setStuckPoints(stuckpts);
+  
   auto onelayer = [&](Layer l) {
+    rndr.setLayer(l);
     for (int id: here.keys())
-      drawObject(here.object(id), l, origin, p, selection.contains(id), true);
+      rndr.drawObject(here.object(id), selection.contains(id));
   };
+
+  auto drawplanes = [&](Layer) {
+    // Bottom filled plane is easy.
+    // Top filled plane is tricky because holes should let bottom shine through.
+    // The full solution is to render the plane into a pixmap first, then
+    // copy to the widget.
+    // An alternative is to ADD the plane to the widget, then SUBTRACT
+    // the holes, using appropriate color scheme. That would let bottom traces
+    // shine through, but I am OK with that.
+  };
+  
   Board const &brd = layout.board();
+
   if (brd.layervisible[Layer::Bottom]) {
     if (brd.planesvisible)
-      drawPlanes(Layer::Bottom, p);
+      drawplanes(Layer::Bottom);
     onelayer(Layer::Bottom);
   }
   if (brd.layervisible[Layer::Top]) {
     if (brd.planesvisible)
-      drawPlanes(Layer::Top, p);
+      drawplanes(Layer::Top);
     onelayer(Layer::Top);
   }
   if (brd.layervisible[Layer::Silk])
@@ -263,157 +264,15 @@ void EData::drawObjects(QPainter &p) const {
   onelayer(Layer::Invalid); // magic to punch holes
 }
 
-void EData::drawObject(Object const &o, Layer l,
-		       Point const &origin, QPainter &p,
-		       bool selected, bool toplevel) const {
-  /* In toplevel *only*, and only during moves, selected objects are
-     translated by the movingdelta and nonselected traces with
-     selected endpoints have those endpoints translated.
-   */
-  switch (o.type()) {
-  case Object::Type::Trace: {
-    validateStuckPoints();
-    Trace const &t = o.asTrace();
-    if (t.layer==l) {
-      p.setPen(QPen(layerColor(t.layer, selected),
-		    t.width.toMils()*mils2px,
-		    Qt::SolidLine,
-		    Qt::RoundCap));
-      Point p1 = origin + t.p1;
-      Point p2 = origin + t.p2;
-      if (moving && toplevel) {
-	if (selected) {
-          if (!stuckpts.contains(p1))
-            p1 += movingdelta;
-          if (!stuckpts.contains(p2))
-              p2 += movingdelta;
-	} else {
-	  if ((selpts.contains(p1) || purepts.contains(p1))
-              && !stuckpts.contains(p1))
-	    p1 += movingdelta;
-	  if ((selpts.contains(t.p2) || purepts.contains(t.p2))
-              && !stuckpts.contains(p2))
-            p2 += movingdelta;
-	}
-      }
-      p.drawLine(mils2widget.map(p1.toMils()),
-		 mils2widget.map(p2.toMils()));
-    }
-  } break;
-  case Object::Type::Text: {
-    Text const &t = o.asText();
-    if (t.layer==l)
-      drawText(t, p, selected,
-	       (moving && toplevel && selected) ? origin + movingdelta : origin);
-  } break;
-  case Object::Type::Hole:
-    if (l==Layer::Bottom || l==Layer::Top || l==Layer::Invalid) {
-      Hole const &t = o.asHole();
-      Point p1 = origin + t.p;
-      if (selected && moving && toplevel) 
-	p1 += movingdelta;
-      p.setPen(QPen(Qt::NoPen));
-      if (l==Layer::Invalid) {
-	double id = mils2px*t.id.toMils();
-	p.setBrush(QColor(0,0,0));
-	p.drawEllipse(mils2widget.map(p1.toMils()), id/2, id/2);
-      } else {
-	double od = mils2px*t.od.toMils();
-	p.setBrush(layerColor(l, selected));
-	if (t.square)
-	  p.drawRect(QRectF(mils2widget.map(p1.toMils()) - QPointF(od/2, od/2),
-			    QSizeF(od, od)));
-	else 
-	  p.drawEllipse(mils2widget.map(p1.toMils()), od/2, od/2);
-      }
-    }
-    break;
-  case Object::Type::Pad: {
-    Pad const &t = o.asPad();
-    if (t.layer == l) {
-      p.setPen(Qt::NoPen);
-      p.setBrush(layerColor(l, selected));
-      QPointF p0 = mils2widget.map(t.p.toMils());
-      double w = mils2px * t.width.toMils();
-      double h = mils2px * t.height.toMils();
-      p.drawRect(QRectF(p0 - QPointF(w/2,h/2), p0 + QPointF(w/2,h/2)));
-    }
-  } break;
-  case Object::Type::Arc: {
-    Arc const &t = o.asArc();
-    if (t.layer == l) {
-      Point o((moving && toplevel && selected) ? origin + movingdelta : origin);
-
-      p.setPen(QPen(layerColor(l, selected), mils2px*t.linewidth.toMils(),
-		    Qt::SolidLine, Qt::RoundCap));
-      p.setBrush(Qt::NoBrush);
-      QPointF c(mils2widget.map((o+t.center).toMils()));
-      double r = mils2px*t.radius.toMils();
-      QRectF rect(c - QPointF(r,r), c + QPointF(r,r));
-      switch (t.extent) {
-      case Arc::Extent::Invalid: break;
-      case Arc::Extent::Full: p.drawArc(rect, 0, 16*360); break;
-      case Arc::Extent::LeftHalf: p.drawArc(rect, 16*90, 16*180); break;
-      case Arc::Extent::RightHalf: p.drawArc(rect, 16*-90, 16*180); break;;
-      case Arc::Extent::TopHalf: p.drawArc(rect, 0, 16*180); break;
-      case Arc::Extent::BottomHalf: p.drawArc(rect, -16*180, 16*180); break;
-      case Arc::Extent::TLQuadrant: p.drawArc(rect, 16*90, 16*90); break;
-      case Arc::Extent::TRQuadrant: p.drawArc(rect, 0, 16*90); break;
-      case Arc::Extent::BRQuadrant: p.drawArc(rect, -16*90, 16*90); break;
-      case Arc::Extent::BLQuadrant: p.drawArc(rect, 16*180, 16*90); break;
-      }
-    }
-  } break;
-  case Object::Type::Group: {
-    Group const &g = o.asGroup();
-    Point ori = origin + g.origin;
-    if (selected && toplevel && moving)
-      ori += movingdelta;
-    for (int id: g.keys())
-      drawObject(g.object(id), l, ori, p, selected);
-  } break;
-  default:
-    break;
-  }
-}
-
-void EData::drawText(Text const &t, QPainter &p, bool selected,
-		     Point const &origin) const {
-  SimpleFont const &sf(SimpleFont::instance());
-  Point pt = origin + t.p;
-  p.save();
-  p.setPen(QPen(QColor(255,255,255), 4));
-  p.translate(mils2widget.map(pt.toMils()));
-  p.rotate(90*t.orient.rot);
-  int xflip = ((t.layer==Layer::Bottom) ^ t.orient.flip) ? -1 : 1;
-  p.scale(xflip*mils2px*t.fontsize.toMils()/sf.baseSize(),
-	  -mils2px*t.fontsize.toMils()/sf.baseSize());
-  p.setPen(QPen(layerColor(t.layer, selected), 2,
-		Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-  for (int k=0; k<t.text.size(); k++) {
-    QVector<QPolygonF> const &glyph = sf.character(t.text[k].unicode());
-    for (auto const &pp: glyph) 
-      if (pp.size()==1)
-	p.drawPoint(pp[0]);
-      else
-	p.drawPolyline(pp);
-    p.translate(sf.dx(),0);
-  }
-  p.restore();
-    
-}
-
 void EData::drawSelectedPoints(QPainter &p) const {
   if (purepts.isEmpty())
     return;
   p.setPen(QPen(Qt::NoPen));
   p.setBrush(QColor(200, 200, 200));
-  double r = mils2px * 25;
   for (Point pt: purepts) {
     if (moving)
       pt += movingdelta;
-    QPointF c = mils2widget.map(pt.toMils());
-    p.drawEllipse(c, r, r);
+    p.drawEllipse(pt.toMils(), 25, 25);
   }
 }
 
@@ -904,6 +763,7 @@ void Editor::leaveEvent(QEvent *) {
 
 void Editor::paintEvent(QPaintEvent *) {
   QPainter p(this);
+  p.setTransform(d->mils2widget, true);
   d->drawBoard(p);
   d->drawGrid(p);
   d->drawObjects(p);

@@ -27,5 +27,7 @@ HEADERS += ui/Propertiesbar.h   ui/Editor.h   ui/DimSpinner.h
 SOURCES += ui/Propertiesbar.cpp ui/Editor.cpp ui/DimSpinner.cpp
 HEADERS += data/SimpleFont.h   data/Paths.h
 SOURCES += data/SimpleFont.cpp data/Paths.cpp
+HEADERS += ui/ORenderer.h
+SOURCES += ui/ORenderer.cpp
 
 RESOURCES += ui/ui.qrc
