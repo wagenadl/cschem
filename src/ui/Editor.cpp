@@ -1279,26 +1279,32 @@ int Editor::selectedComponent(QString *msg) const {
   Group &here(d->layout.root().subgroup(d->crumbs));
   int gid = 0;
   int tid = 0;
-  QString m = "";
+  QString m = "Nothing selected";
   for (int id: d->selection) {
-    if (here.object(id).isGroup()) {
-      if (gid) {
-        m = "More than one item selected";
+    Object const &obj(here.object(id));
+    if (obj.isGroup()) {
+      qDebug() << "found group" << id << "already had" << gid << tid;
+      if (gid && gid!=id) {
+        m = "More than one group selected";
         gid = 0;
         break;
       } else {
         gid = id;
-        int tid1 = here.object(id).asGroup().refTextId();
+        int tid1 = obj.asGroup().refTextId();
+	qDebug() << "found group" << id << "("<<tid1
+		 <<") already had" << gid << tid;
         if (tid && tid!=tid1) {
-          m = "More than one item selected";
+          m = "More than one group selected";
           gid = 0;
           break;
         } else {
           tid = tid1;
         }
       }
-    } else if (here.object(id).isText()) {
-      int gid1 = here.object(id).asText().groupAffiliation();
+    } else if (obj.isText()) {
+      int gid1 = obj.asText().groupAffiliation();
+      qDebug() << "found text" << id << "("<<gid1
+	       <<") already had" << gid << tid;
       if (gid1==0 || (gid && gid1!=gid)) {
         m = "More than one item selected";
         gid = 0;
@@ -1308,10 +1314,12 @@ int Editor::selectedComponent(QString *msg) const {
         gid = gid1;
       }
     } else {
+      qDebug() << "found other object" << id << int(obj.type())
+	       << "already had" << gid << tid;
       if (d->selection.size()>1)
-        m = "More than one item selected";
+	m = "More than one item selected";
       else
-        m = "Nongroup selected";
+	m = "Nongroup selected";
       break;
     }
   }

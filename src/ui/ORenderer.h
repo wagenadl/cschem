@@ -20,7 +20,10 @@ public:
   void setLayer(Layer l);
   void pushOrigin(Point const &origin);
   void popOrigin();
-  void drawObject(Object const &o, bool selected);
+  void drawObject(Object const &o, bool selected=false);
+public:
+  static QByteArray objectToSvg(Object const &,
+				  Dim margin=Dim(), Dim minSize=Dim());
 private:
   void drawText(Text const &t, bool selected);
   void drawTrace(Trace const &t, bool selected);

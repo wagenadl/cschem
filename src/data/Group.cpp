@@ -3,6 +3,8 @@
 #include "Group.h"
 #include "Object.h"
 #include "Const.h"
+#include "ui/ORenderer.h"
+#include <QBuffer>
 
 class GData: public QSharedData {
 public:
@@ -298,32 +300,51 @@ bool Group::saveComponent(int id, QString fn) {
   Object const &obj(*d->obj[id]);
   if (!obj.isGroup())
     return false;
-  
-  Group const &grp(obj.asGroup());
-  int refid = grp.refTextId();
-  Text reftext;
-  if (d->obj.contains(refid)) {
-    Object const &ref(*d->obj[refid]);
-    if (ref.isText())
-      reftext = ref.asText();
-  }
 
   QFile file(fn);
   if (!file.open(QFile::WriteOnly)) {
     qDebug() << "Failed to open" << fn;
     return false;
   }
-  
   QXmlStreamWriter sw(&file);
   sw.setAutoFormatting(true);
   sw.setAutoFormattingIndent(2);
-  sw.writeStartDocument("1.0", false);
-  sw.writeStartElement("cpcb-component");
-  sw.writeDefaultNamespace("http://www.danielwagenaar.net/cpcb-ns.html");
-  sw << grp;
-  sw << reftext;
-  sw.writeEndElement();
-  sw.writeEndDocument();
+  
+  QByteArray svg = ORenderer::objectToSvg(obj, Dim::fromMils(50),
+					  Dim::fromMils(500));
+  QBuffer svgbuf(&svg);
+  svgbuf.open(QBuffer::ReadOnly);
+  QXmlStreamReader sr(&svgbuf);
+
+  while (!sr.atEnd()) {
+    sr.readNext();
+    if (sr.isStartElement() && sr.name()=="svg") {
+      sw.writeStartElement("svg");
+      sw.writeAttributes(sr.attributes());
+      for (auto ns: sr.namespaceDeclarations())
+	sw.writeNamespace(ns.namespaceUri().toString(), ns.prefix().toString());
+
+      sw.writeNamespace("http://www.danielwagenaar.net/cpcb-ns.html", "cpcb");
+      sw.writeStartElement("cpcb:part");
+      sw.writeDefaultNamespace("http://www.danielwagenaar.net/cpcb-ns.html");
+  
+      Group const &grp(obj.asGroup());
+      int refid = grp.refTextId();
+      Text reftext;
+      if (d->obj.contains(refid)) {
+	Object const &ref(*d->obj[refid]);
+	if (ref.isText())
+	  reftext = ref.asText();
+      }
+
+      sw << grp;
+      sw << reftext;
+
+      sw.writeEndElement(); // cpart
+    } else {
+      sw.writeCurrentToken(sr);
+    }
+  }
   return true;
 }
 
@@ -333,6 +354,7 @@ static int readGroupAndRef(QXmlStreamReader &s, Group &t) {
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
+      qDebug() << "rgar" << s.name();
       if (s.name()=="group") {
         Object o;
         s >> o;
@@ -370,8 +392,10 @@ int Group::insertComponent(QString fn) {
     QXmlStreamReader sr(&file);
     while (!sr.atEnd()) {
       sr.readNext();
-      if (sr.isStartElement() && sr.name() == "cpcb-component") {
-        return readGroupAndRef(sr, *this);
+      if (sr.isStartElement()) {
+	qDebug() << "elt" << sr.name() << sr.prefix();
+	if (sr.isStartElement() && sr.prefix()=="cpcb" && sr.name()=="part") 
+	  return readGroupAndRef(sr, *this);
       }
     }
   }

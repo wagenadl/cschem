@@ -89,12 +89,12 @@ void MWData::saveComponentDialog() {
   }
   QString fn = QFileDialog::getSaveFileName(0, "Save component…",
 					    compwd,
-					    "PCB components (*.cpart)");
+					    "PCB components (*.svg)");
   if (fn.isEmpty())
     return;
 
-  if (!fn.endsWith(".cpart"))
-    fn += ".cpart";
+  if (!fn.endsWith(".svg"))
+    fn += ".svg";
 
   compwd = QFileInfo(fn).dir().absolutePath();
   
@@ -109,7 +109,7 @@ void MWData::insertComponentDialog() {
   Point pt = editor->hoverPoint();
   QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
 					    compwd,
-					    "PCB components (*.cpart)");
+					    "PCB components (*.svg)");
   if (fn.isEmpty())
     return;
 
