@@ -1,0 +1,151 @@
+{ "typ": "page",
+  "cre": "2018-06-28T06:46:12",
+  "mod": "2018-06-28T06:52:49",
+  "cui": "37d0380bc9be9e4a",
+  "stampTime": 0,
+  "startPage": 6,
+  "unlocked": false,
+  "uuid": "11d963c3",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-28T06:46:12",
+      "mod": "2018-06-28T06:46:12",
+      "uuid": "6bc88ed1"
+    },
+    { "typ": "title",
+      "cre": "2018-06-28T06:46:12",
+      "mod": "2018-06-28T06:46:23",
+      "uuid": "0e3a413f",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-28T06:46:12",
+          "mod": "2018-06-28T06:46:23",
+          "lines": [
+            0
+          ],
+          "text": "Graphical parts list",
+          "uuid": "e34e6485"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-28T06:46:15",
+      "mod": "2018-06-28T06:49:49",
+      "h": 212.494,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "331d1047",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-28T06:46:15",
+          "mod": "2018-06-28T06:49:49",
+          "lines": [
+            0,
+            70,
+            127,
+            186,
+            247,
+            307,
+            370,
+            433,
+            491
+          ],
+          "text": "Instead of a traditional parts list, I want a graphical parts list: A panel (row or column) with the refs. and P/Vs of all the components along with the actual pictures of the packages. You can than drag from the filer to that panel to change the package, drag the package on to the PCB, rotate or flip the package before dragging, or right-click* to select a different package from a short list of “favorites”. Possibly, notes from cschem could show up as balloon help, or after optionally expanding the panel. ",
+          "uuid": "b21cbc4e",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-28T06:48:43",
+              "mod": "2018-06-28T06:48:43",
+              "end": 347,
+              "start": 346,
+              "style": 6,
+              "uuid": "c4c0e182"
+            },
+            { "typ": "markup",
+              "cre": "2018-06-28T06:48:43",
+              "mod": "2018-06-28T06:48:43",
+              "end": 347,
+              "start": 346,
+              "style": 5,
+              "uuid": "4f38e2eb"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2018-06-28T06:48:43",
+          "mod": "2018-06-28T06:48:50",
+          "h": 20.767,
+          "ind": 1,
+          "sheet": 0,
+          "split": [ ],
+          "tag": "*",
+          "uuid": "8cfde493",
+          "y0": 687.233,
+          "cc": [
+            { "typ": "text",
+              "cre": "2018-06-28T06:48:43",
+              "mod": "2018-06-28T06:48:50",
+              "lines": [
+                0
+              ],
+              "text": "or bottom-right-corner click, or whatever",
+              "uuid": "c8d48f8c"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-28T06:49:59",
+      "mod": "2018-06-28T06:50:25",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9d3060d8",
+      "y0": 284.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-28T06:49:59",
+          "mod": "2018-06-28T06:50:25",
+          "lines": [
+            0,
+            56,
+            117
+          ],
+          "text": "A more traditional parts list could still be useful for additional notes. Certainly, you’d want to be able to export something in text form.",
+          "uuid": "f9336498"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-28T06:50:59",
+      "mod": "2018-06-28T06:52:49",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b88b78f0",
+      "y0": 357.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-28T06:50:59",
+          "mod": "2018-06-28T06:52:49",
+          "lines": [
+            0,
+            61,
+            120,
+            174,
+            235,
+            291,
+            353
+          ],
+          "text": "At present, notes in cpcb inevitably get lost when a package is ungrouped. A general place for notes might therefore be better than notes with the packages directly. For per-component notes, cschem could be the right place. Of course, it is easy enough to make the general note window smart enough to typeset names of components intelligently, at least upon export.",
+          "uuid": "b3dde280"
+        }
+      ]
+    }
+  ]
+}

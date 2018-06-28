@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-06-16T20:33:54",
-  "mod": "2018-06-26T16:09:34",
+  "mod": "2018-06-28T06:46:23",
   "uuid": "ebd324bb",
   "cc": [
     { "typ": "entry",
@@ -29,6 +29,15 @@
       "startPage": 5,
       "title": "Part files",
       "uuid": "db837368"
+    },
+    { "typ": "entry",
+      "cre": "2018-06-28T06:46:12",
+      "mod": "2018-06-28T06:46:23",
+      "seen": "2018-06-28T06:46:12",
+      "sheetCount": 1,
+      "startPage": 6,
+      "title": "Graphical parts list",
+      "uuid": "11d963c3"
     }
   ]
 }
