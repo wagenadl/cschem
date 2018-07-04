@@ -5,6 +5,7 @@
 #include "Propertiesbar.h"
 #include "Statusbar.h"
 #include "Editor.h"
+#include "MultiCompView.h"
 #include "data/Paths.h"
 
 #include <QMessageBox>
@@ -12,16 +13,23 @@
 #include <QMenuBar>
 #include <QApplication>
 #include <QFileDialog>
+#include <QDockWidget>
 
 class MWData {
 public:
   MWData(MainWindow *mw): mw(mw) {
+    mcv = 0;
+    mcvdock = 0;
   }
   void about();
   void makeToolbars();
   void makeMenus();
+  void makeParts();
   void makeEditor();
   void makeConnections();
+  void showHideParts();
+  void showParts();
+  void hideParts();
   void fillBars();
   void openDialog();
   void saveAsDialog();
@@ -34,11 +42,33 @@ public:
   Modebar *modebar;
   Propertiesbar *propbar;
   Statusbar *statusbar;
+  MultiCompView *mcv;
+  QDockWidget *mcvdock;
   Editor *editor;
   QString pwd;
   QString compwd;
   QString filename;
 };
+
+void MWData::showHideParts() {
+  if (!mcv)
+    makeParts();
+  if (mcvdock->isVisible())
+    hideParts();
+  else
+    showParts();
+}
+
+void MWData::hideParts() {
+  mcvdock->hide();
+}
+
+void MWData::showParts() {
+  mcvdock->show();
+  mw->addDockWidget(Qt::LeftDockWidgetArea, mcvdock);
+  mcv->setSchem(editor->linkedSchematic());
+  mcv->setRoot(editor->pcbLayout().root());
+}
 
 void MWData::openDialog() {
   if (pwd.isEmpty())
@@ -136,7 +166,9 @@ void MWData::linkSchematicDialog() {
 
   pwd = QFileInfo(fn).dir().absolutePath();
 
-  if (!editor->linkSchematic(fn)) 
+  if (editor->linkSchematic(fn))
+    showParts();
+  else
     QMessageBox::warning(mw, "Failed to link schematic",
                          "Cannot link schematic “" + fn
                          + "”. Could the file be damaged?");
@@ -176,6 +208,12 @@ void MWData::about() {
 		     + "<p>" + "You should have received a copy of the GNU General Public License along with this program. If not, see <a href=\"http://www.gnu.org/licenses/gpl-3.0.en.html\">www.gnu.org/licenses/gpl-3.0.en.html</a>.");
 }
 
+void MWData::makeParts() {
+  mcvdock = new QDockWidget("Parts", mw);
+  mcv = new MultiCompView;
+  mcvdock->setWidget(mcv);
+  showParts();
+}
 
 void MWData::makeToolbars() {
   mw->addToolBar(Qt::LeftToolBarArea,

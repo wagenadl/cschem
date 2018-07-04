@@ -33,3 +33,8 @@ LinkedSchematic::~LinkedSchematic() {
 bool LinkedSchematic::isValid() const {
   return !d->fn.isEmpty();
 }
+
+Schem const &LinkedSchematic::schematic() const {
+  return d->schem;
+}
+

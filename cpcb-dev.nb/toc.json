@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-06-16T20:33:54",
-  "mod": "2018-06-28T06:46:23",
+  "mod": "2018-06-28T06:55:58",
   "uuid": "ebd324bb",
   "cc": [
     { "typ": "entry",
@@ -32,9 +32,9 @@
     },
     { "typ": "entry",
       "cre": "2018-06-28T06:46:12",
-      "mod": "2018-06-28T06:46:23",
+      "mod": "2018-06-28T06:55:58",
       "seen": "2018-06-28T06:46:12",
-      "sheetCount": 1,
+      "sheetCount": 2,
       "startPage": 6,
       "title": "Graphical parts list",
       "uuid": "11d963c3"

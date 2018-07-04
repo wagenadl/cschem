@@ -1430,3 +1430,6 @@ void Editor::unlinkSchematic() {
   d->layout.board().linkedschematic = "";
 }
 
+Schem const &Editor::linkedSchematic() const {
+  return d->linkedschematic.schematic();
+}

@@ -27,8 +27,10 @@ HEADERS += ui/Propertiesbar.h   ui/Editor.h   ui/DimSpinner.h
 SOURCES += ui/Propertiesbar.cpp ui/Editor.cpp ui/DimSpinner.cpp
 HEADERS += data/SimpleFont.h   data/Paths.h   data/LinkedSchematic.h
 SOURCES += data/SimpleFont.cpp data/Paths.cpp data/LinkedSchematic.cpp
-HEADERS += ui/ORenderer.h   ui/PartsListEditor.h
-SOURCES += ui/ORenderer.cpp ui/PartsListEditor.cpp
+HEADERS += ui/ORenderer.h   ui/ElementView.h   ui/ComponentView.h
+SOURCES += ui/ORenderer.cpp ui/ElementView.cpp ui/ComponentView.cpp
+HEADERS += ui/MultiCompView.h
+SOURCES += ui/MultiCompView.cpp
 
 # From CSCHEM
 HEADERS += circuit/IDFactory.h

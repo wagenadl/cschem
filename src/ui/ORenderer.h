@@ -21,16 +21,17 @@ public:
   void pushOrigin(Point const &origin);
   void popOrigin();
   void drawObject(Object const &o, bool selected=false);
+  void drawGroup(Group const &g, bool selected=false);
+  void drawText(Text const &t, bool selected=false);
+  void drawTrace(Trace const &t, bool selected=false);
+  void drawArc(Arc const &g, bool selected=false);
+  void drawPad(Pad const &g, bool selected=false);
+  void drawHole(Hole const &g, bool selected=false);
 public:
   static QByteArray objectToSvg(Object const &,
 				  Dim margin=Dim(), Dim minSize=Dim());
-private:
-  void drawText(Text const &t, bool selected);
-  void drawTrace(Trace const &t, bool selected);
-  void drawGroup(Group const &g, bool selected);
-  void drawArc(Arc const &g, bool selected);
-  void drawPad(Pad const &g, bool selected);
-  void drawHole(Hole const &g, bool selected);
+  static void render(Group const &, QPainter *); // all layers
+  static void render(Object const &, QPainter *); // all layers
 private:
   QPainter *p;
   Layer layer;

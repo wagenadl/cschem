@@ -13,6 +13,7 @@ public:
   void unlink();
   ~LinkedSchematic();
   bool isValid() const;
+  class Schem const &schematic() const;
 private:
   LinkedSchematic(LinkedSchematic const &) = delete;
   LinkedSchematic &operator=(LinkedSchematic const &) = delete;

@@ -30,6 +30,7 @@ public:
   // returns ID if one group, or 0 if none, in which case msg says why
   bool linkSchematic(QString fn);
   void unlinkSchematic();
+  class Schem const &linkedSchematic() const;
 public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);
