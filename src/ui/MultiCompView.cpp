@@ -12,6 +12,8 @@ class MCVData {
 public:
   MCVData(MultiCompView *mcv): mcv(mcv) {
     lay = new QVBoxLayout;
+    lay->setContentsMargins(4, 4, 4, 4);
+    lay->setSpacing(4);
     lay->addStretch(1);
     mcv->setLayout(lay);
   }
