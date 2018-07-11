@@ -12,6 +12,7 @@ class MCVData {
 public:
   MCVData(MultiCompView *mcv): mcv(mcv) {
     lay = new QVBoxLayout;
+    lay->addStretch(1);
     mcv->setLayout(lay);
   }
   void rebuild();
@@ -39,6 +40,7 @@ void MCVData::rebuild() {
       evs.remove(ref);
     }
   }
+  newelts.remove("");
   for (QString ref: newelts.keys()) {
     if (!newused.contains(ref)) {
       if (!evs.contains(ref)) {
@@ -47,12 +49,15 @@ void MCVData::rebuild() {
 	lay->insertWidget(idx, evs[ref]);
       }
       evs[ref]->setRefText(ref);
-      evs[ref]->setPVText(newelts[ref].value);
+      QString pv = newelts[ref].value;
+      if (pv.isEmpty())
+	pv = "<i>" + newelts[ref].symbol() + "</i>";
+      pv.replace("part:", "");
+      evs[ref]->setPVText(pv);
       // now, set default package?
     }
   }
 }
-  
 
 MultiCompView::MultiCompView(QWidget *parent):
   QScrollArea(parent), d(new MCVData(this)) {

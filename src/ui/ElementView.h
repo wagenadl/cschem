@@ -4,30 +4,30 @@
 
 #define ELEMENTVIEW_H
 
-#include <QWidget>
+#include "ComponentView.h"
 
-class ElementView: public QWidget {
+class ElementView: public ComponentView {
   Q_OBJECT;
 public:
   ElementView(QWidget *parent=0);
   virtual ~ElementView();
   QString refText() const;
   QString pvText() const;
-  class ComponentView const *component() const;
-  class ComponentView *component();
 public:
   static ElementView *instance(int); // search by ID
 public slots:
   void setRefText(QString);
   void setPVText(QString);
+protected:
+  void paintEvent(QPaintEvent *) override;
 private:
   void relabel();
 private:
-  class QLabel *l1, *l2;
-  ComponentView *cv;
   QString ref;
   QString pv;
   static QMap<int, ElementView *> &cvmap();
+  QString reflbl;
+  QString pvlbl;
 };
 
 #endif

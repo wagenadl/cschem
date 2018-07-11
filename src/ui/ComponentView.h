@@ -10,6 +10,8 @@
 class ComponentView: public QWidget {
   Q_OBJECT;
 public:
+  static constexpr char const *dndformat = "application/x-dnd-cpcb-componentview";
+public:
   ComponentView(QWidget *parent=0);
   virtual ~ComponentView();
 public:

@@ -7,6 +7,7 @@
 #include "data/Object.h"
 #include "ORenderer.h"
 #include "data/LinkedSchematic.h"
+#include "ComponentView.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -1366,7 +1367,8 @@ Point Editor::hoverPoint() const {
 
 void Editor::dragEnterEvent(QDragEnterEvent *e) {
   QMimeData const *md = e->mimeData();
-  if (md->hasUrls()) {
+  if (md->hasFormat(ComponentView::dndformat)) {
+  } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
     QString fn;
     for (QUrl url: urls) {

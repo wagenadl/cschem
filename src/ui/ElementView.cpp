@@ -1,35 +1,16 @@
 // ElementView.cpp
 
 #include "ElementView.h"
-#include "ComponentView.h"
-#include <QLabel>
-#include <QVBoxLayout>
 #include <QRegExp>
+#include <QPainter>
+#include <QTextDocument>
 
-ElementView::ElementView(QWidget *parent): QWidget(parent) {
-  l1 = new QLabel;
-  l2 = 0;
-  cv = new ComponentView;
-  cvmap()[cv->id()] = this;
-
-  auto *lay = new QVBoxLayout;
-  lay->setMargin(0);
-  lay->setSpacing(0);
-  lay->addWidget(l1);
-  lay->addWidget(cv);
-  setLayout(lay);
-
-  // auto p = l1->palette();
-  // p.setColor(QPalette::WindowText, QColor(255, 255, 255));
-  // p.setColor(QPalette::Text, QColor(255, 255, 255));
-  // p.setColor(QPalette::Window, QColor(0, 0, 0));
-  // p.setColor(QPalette::Base, QColor(0, 0, 0));
-  l1->setPalette(QPalette(QColor(0,0,0)));
-  l1->setTextFormat(Qt::RichText);
+ElementView::ElementView(QWidget *parent): ComponentView(parent) {
+  cvmap()[id()] = this;
 }
 
 ElementView::~ElementView() {
-  cvmap().remove(cv->id()); 
+  cvmap().remove(id()); 
 }
 
 QString ElementView::refText() const {
@@ -38,14 +19,6 @@ QString ElementView::refText() const {
 
 QString ElementView::pvText() const {
   return pv;
-}
-
-ComponentView const *ElementView::component() const {
-  return cv;
-}
-
-ComponentView *ElementView::component() {
-  return cv;
 }
 
 void ElementView::setRefText(QString s) {
@@ -59,19 +32,18 @@ void ElementView::setPVText(QString s) {
 }
 
 void ElementView::relabel() {
-  QString lbl = "<b>";
+  reflbl = "<body><b>";
   bool isNum = ref.mid(1).toDouble()>0;
-  int midStart = isNum ? 1 : lbl.indexOf("_");
+  int midStart = isNum ? 1 : ref.indexOf("_");
   int leftLen = isNum ? midStart : midStart - 1;
   if (midStart>0)
-    lbl += "<i>" + ref.left(leftLen) + "</i>"
+    reflbl += "<i>" + ref.left(leftLen) + "</i>"
       + "<sub>" + ref.mid(midStart) + "</sub>";
   else
-    lbl += ref;
-  lbl += "</b>";
-  lbl += "  ";
-  lbl += pv;
-  l1->setText(lbl);
+    reflbl += ref;
+  reflbl += "</b></body>";
+  pvlbl = "<body>" + pv + "</body>";
+  update();
 }
 
 QMap<int, ElementView *> &ElementView::cvmap() {
@@ -86,3 +58,16 @@ ElementView *ElementView::instance(int id) {
     return 0;
 }
 
+void ElementView::paintEvent(QPaintEvent *e) {
+  ComponentView::paintEvent(e);
+  QPainter p(this);
+  QTextDocument doc;
+  doc.setDefaultStyleSheet("body { color: #ffffff; }");
+
+  doc.setHtml(reflbl);
+  doc.drawContents(&p);
+
+  doc.setHtml(pvlbl);
+  p.translate(width() - doc.size().width(), height() - doc.size().height());
+  doc.drawContents(&p);
+}

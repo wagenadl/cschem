@@ -60,10 +60,13 @@ void MWData::showHideParts() {
 }
 
 void MWData::hideParts() {
-  mcvdock->hide();
+  if (mcvdock)
+    mcvdock->hide();
 }
 
 void MWData::showParts() {
+  if (!mcv)
+    makeParts();
   mcvdock->show();
   mw->addDockWidget(Qt::LeftDockWidgetArea, mcvdock);
   mcv->setSchem(editor->linkedSchematic());

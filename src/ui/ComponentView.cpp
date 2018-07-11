@@ -8,14 +8,13 @@
 #include <QMimeData>
 #include "ElementView.h"
 
-constexpr char const *dndformat = "application/x-dnd-cpcb-componentview";
-
 ComponentView::ComponentView(QWidget *parent): QWidget(parent) {
   id_ = idgen();
   rot = 0;
   flp = false;
-  mil2px = 0.1;
+  mil2px = 0.2;
   setAcceptDrops(true);
+  setPalette(QPalette(QColor(0,0,0)));
 }
 
 int ComponentView::idgen() {
@@ -72,12 +71,12 @@ void ComponentView::setScale(double pxPerMil) {
 
 QSize ComponentView::sizeHint() const {
   QSizeF mil = grp.boundingRect().toMils().size();
-  if (mil.width() < 500)
-    mil.setWidth(500);
-  if (mil.height() < 500)
-    mil.setHeight(500);
-  mil.setWidth(mil.width() + 100);
-  mil.setHeight(mil.height() + 100);
+  if (mil.width() < 300)
+    mil.setWidth(300);
+  if (mil.height() < 300)
+    mil.setHeight(300);
+  mil.setWidth(mil.width() + 50);
+  mil.setHeight(mil.height() + 50);
   QSizeF px = mil2px * mil;
   if (rot & 1)
     px = QSizeF(px.height(), px.width());
@@ -184,10 +183,7 @@ void ComponentView::dropEvent(QDropEvent *e) {
     }
   } else if (md->hasFormat(dndformat)) {
     int id = QString(md->data(dndformat)).toInt();
-    ElementView const *ev = ElementView::instance(id);
-    ComponentView const *src = 0;
-    if (ev)
-      src = ev->component();
+    ElementView const *src = ElementView::instance(id);
     if (src) {
       rot = src->rotation();
       flp = src->isFlipped();
@@ -203,7 +199,7 @@ void ComponentView::dropEvent(QDropEvent *e) {
 }
 
 void ComponentView::paintEvent(QPaintEvent *) {
-  QPainter p;
+  QPainter p(this);
   p.setPen(QPen(Qt::NoPen));
   p.setBrush(QBrush(QColor(0,0,0)));
   p.drawRect(QRect(QPoint(0,0), size()));
