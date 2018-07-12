@@ -114,7 +114,7 @@ void ComponentView::mousePressEvent(QMouseEvent *e) {
 
 void ComponentView::mouseMoveEvent(QMouseEvent *e) {
   e->accept();
-  if (!(e->button() & Qt::LeftButton))
+  if (!(e->buttons() & Qt::LeftButton))
     return;
   if ((e->pos()-presspt).manhattanLength()<5)
     return;
@@ -123,6 +123,7 @@ void ComponentView::mouseMoveEvent(QMouseEvent *e) {
   QMimeData *mimeData = new QMimeData;
   mimeData->setData(dndformat, QString::number(id_).toUtf8());
   drag->setMimeData(mimeData);
+  drag->setPixmap(draggable());
   drag->exec(Qt::CopyAction, Qt::CopyAction);
 }
 
@@ -196,6 +197,27 @@ void ComponentView::dropEvent(QDropEvent *e) {
   } else {
     e->ignore();
   }
+}
+
+QPixmap ComponentView::draggable() const {
+  QRectF r = grp.boundingRect().toMils();
+  QPointF c = r.center();
+  QSizeF s = r.size();
+  constexpr int margin = 2;
+  double w = (rot&1) ? s.height() : s.width();
+  double h = (rot&1) ? s.width() : s.height();
+  QPixmap drg(w*mil2px + 2*margin, h*mil2px + 2*margin);
+  drg.fill(QColor(0,0,0,0));
+  QPainter p(&drg);
+  p.translate(drg.width()/2, drg.height()/2);
+  if (rot)
+    p.rotate(rot*90*16); // is that right?
+  if (flp)
+    p.scale(-1, 1);
+  p.scale(mil2px, mil2px);
+  p.translate(-c.x(), -c.y());
+  ORenderer::render(grp, &p);
+  return drg;
 }
 
 void ComponentView::paintEvent(QPaintEvent *) {

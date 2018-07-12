@@ -20,6 +20,7 @@ public:
   Group const &group() const;
   double scale() const;
   int id() const;
+  QPixmap draggable() const;
 public slots:
   void setGroup(Group const &);
   void setRotation(int);
