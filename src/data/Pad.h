@@ -16,6 +16,7 @@ public:
   Dim height;
   Layer layer;
   bool elliptic;
+  QString ref;
 public:
   Pad();
   bool isValid() const { return layer!=Layer::Invalid; }

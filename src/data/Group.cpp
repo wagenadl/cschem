@@ -241,6 +241,54 @@ bool Group::touches(Point p, Dim mrg) const {
   return false;
 }
 
+QStringList Group::pinNames() const {
+  QMap<QString, int> names;
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    switch (obj.type()) {
+    case Object::Type::Hole:
+      names[obj.asHole().ref] = id;
+      break;
+    case Object::Type::Pad:
+      names[obj.asPad().ref] = id;
+      break;
+    default:
+      break;
+    }
+  }
+  return QStringList(names.keys());
+}
+
+Point Group::anchor() const {
+  QStringList names = pinNames();
+  if (names.isEmpty())
+    return boundingRect().center();
+  else
+    return pinPosition(names.first());
+}
+
+Point Group::pinPosition(QString name) const {
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    switch (obj.type()) {
+    case Object::Type::Hole: {
+      Hole const &h(obj.asHole());
+      if (h.ref==name)
+	return h.p + origin;
+    } break;
+    case Object::Type::Pad: {
+      Pad const &h(obj.asPad());
+      if (h.ref==name)
+	return h.p + origin;
+    } break;
+    default:
+      break;
+    }
+  }
+  return Point();
+}  
+  
+
 QSet<Point> Group::points() const {
   QSet<Point> pp;
   for (int id: keys()) {

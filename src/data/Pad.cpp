@@ -17,6 +17,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Pad const &t) {
   s.writeAttribute("w", t.width.toString());
   s.writeAttribute("h", t.height.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
+  s.writeAttribute("ref", t.ref);
   if (t.elliptic)
     s.writeAttribute("ell", "1");
   s.writeEndElement();
@@ -40,12 +41,13 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
   else
     t.layer = Layer::Invalid;
   t.elliptic = a.value("ell").toInt() != 0;
+  t.ref = a.value("ref").toString();
   s.skipCurrentElement();
   return s;
 }
 
 QDebug operator<<(QDebug d, Pad const &t) {
-  d << "Pad(" << t.p
+  d << "Pad(" << t.ref << t.p
     << t.width
     << t.height
     << t.layer

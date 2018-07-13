@@ -8,6 +8,7 @@
 #include "ORenderer.h"
 #include "data/LinkedSchematic.h"
 #include "ComponentView.h"
+#include "ElementView.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -1368,6 +1369,7 @@ Point Editor::hoverPoint() const {
 void Editor::dragEnterEvent(QDragEnterEvent *e) {
   QMimeData const *md = e->mimeData();
   if (md->hasFormat(ComponentView::dndformat)) {
+    e->accept();
   } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
     QString fn;
@@ -1397,7 +1399,16 @@ void Editor::dragMoveEvent(QDragMoveEvent *e) {
 
 void Editor::dropEvent(QDropEvent *e) {
   QMimeData const *md = e->mimeData();
-  if (md->hasUrls()) {
+  if (md->hasFormat(ComponentView::dndformat)) {
+    int id = QString(md->data(ComponentView::dndformat)).toInt();
+    ElementView const *src = ElementView::instance(id);
+    Group grp(src->group());
+    Point droppos = Point::fromMils(d->widget2mils.map(e->pos()));
+    QString ref = src->refText();
+    QString pv = src->pvText();
+    qDebug() << "Dropping" << ref << pv << "at" << droppos;
+    e->accept();
+  } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
     bool take = false;
     clearSelection();

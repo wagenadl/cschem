@@ -15,16 +15,18 @@ public:
   ComponentView(QWidget *parent=0);
   virtual ~ComponentView();
 public:
-  int rotation() const;
-  bool isFlipped() const;
   Group const &group() const;
   double scale() const;
   int id() const;
   QPixmap draggable() const;
+  QPoint mapWidgetToDraggable(QPixmap const &draggable, QPoint onWidget) const;
+  QPoint mapGroupToDraggable(QPixmap const &draggable, Point onGroup) const;
 public slots:
   void setGroup(Group const &);
-  void setRotation(int);
-  void setFlipped(bool);
+  void rotateCW();
+  void rotateCCW();
+  void flipLeftRight();
+  void flipUpDown();
   void setScale(double pxPerMil);
 signals:
   void edited(); // user has rotated, flipped, or changed the group by dropping
@@ -45,8 +47,6 @@ protected:
   void paintEvent(QPaintEvent *) override;
 private:
   Group grp;
-  int rot;
-  bool flp;
   double mil2px;
   QPoint presspt;
   int id_;

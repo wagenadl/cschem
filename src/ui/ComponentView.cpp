@@ -10,10 +10,9 @@
 
 ComponentView::ComponentView(QWidget *parent): QWidget(parent) {
   id_ = idgen();
-  rot = 0;
-  flp = false;
   mil2px = 0.2;
   setAcceptDrops(true);
+  setFocusPolicy(Qt::StrongFocus);
   setPalette(QPalette(QColor(0,0,0)));
 }
 
@@ -23,14 +22,6 @@ int ComponentView::idgen() {
 }
 
 ComponentView::~ComponentView() {
-}
-
-int ComponentView::rotation() const {
-  return rot;
-}
-
-bool ComponentView::isFlipped() const {
-  return flp;
 }
 
 Group const &ComponentView::group() const {
@@ -48,15 +39,29 @@ void ComponentView::setGroup(class Group const &g) {
   emit changed();
 }
 
-void ComponentView::setRotation(int r) {
-  rot = r&3;
+void ComponentView::rotateCW() {
+  grp.rotateCW(grp.anchor());
   updateGeometry();
   update();
   emit changed();
 }
 
-void ComponentView::setFlipped(bool f) {
-  flp = f;
+void ComponentView::rotateCCW() {
+  grp.rotateCCW(grp.anchor());
+  updateGeometry();
+  update();
+  emit changed();
+}
+
+void ComponentView::flipLeftRight() {
+  grp.flipLeftRight(grp.anchor().x);
+  updateGeometry();
+  update();
+  emit changed();
+}
+
+void ComponentView::flipUpDown() {
+  grp.flipUpDown(grp.anchor().y);
   updateGeometry();
   update();
   emit changed();
@@ -78,16 +83,12 @@ QSize ComponentView::sizeHint() const {
   mil.setWidth(mil.width() + 50);
   mil.setHeight(mil.height() + 50);
   QSizeF px = mil2px * mil;
-  if (rot & 1)
-    px = QSizeF(px.height(), px.width());
   return px.toSize();
 }
 
 QSize ComponentView::minimumSizeHint() const {
   QSizeF mil = grp.boundingRect().toMils().size();
   QSizeF px = mil2px * mil;
-  if (rot & 1)
-    px = QSizeF(px.height(), px.width());
   return px.toSize();
 }
 
@@ -95,11 +96,17 @@ QSize ComponentView::minimumSizeHint() const {
 void ComponentView::keyPressEvent(QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_R:
-    setRotation(rot + ((e->modifiers() & Qt::ShiftModifier) ? 3 : 1));
+    if (e->modifiers() & Qt::ShiftModifier)
+      rotateCCW();
+    else
+      rotateCW();
     emit edited();
     break;
   case Qt::Key_F:
-    setFlipped(!flp);
+    if (e->modifiers() & Qt::ShiftModifier)
+      flipUpDown();
+    else
+      flipLeftRight();
     emit edited();
     break;
   default:
@@ -123,7 +130,17 @@ void ComponentView::mouseMoveEvent(QMouseEvent *e) {
   QMimeData *mimeData = new QMimeData;
   mimeData->setData(dndformat, QString::number(id_).toUtf8());
   drag->setMimeData(mimeData);
-  drag->setPixmap(draggable());
+  QPixmap drg(draggable());
+  drag->setPixmap(drg);
+#if 0
+  drag->setHotSpot(mapWidgetToDraggable(drg, presspt));
+#else
+  QStringList pn(grp.pinNames());
+  if (pn.isEmpty())
+    drag->setHotSpot(mapGroupToDraggable(drg, grp.boundingRect().center()));
+  else
+    drag->setHotSpot(mapGroupToDraggable(drg, grp.pinPosition(pn.first())));
+#endif
   drag->exec(Qt::CopyAction, Qt::CopyAction);
 }
 
@@ -186,8 +203,6 @@ void ComponentView::dropEvent(QDropEvent *e) {
     int id = QString(md->data(dndformat)).toInt();
     ElementView const *src = ElementView::instance(id);
     if (src) {
-      rot = src->rotation();
-      flp = src->isFlipped();
       setGroup(src->group());
       emit edited();
       e->accept();
@@ -199,21 +214,28 @@ void ComponentView::dropEvent(QDropEvent *e) {
   }
 }
 
+QPoint ComponentView::mapWidgetToDraggable(QPixmap const &drg,
+					   QPoint pw) const {
+  QPoint cw(width()/2, height()/2);
+  QPoint cd(drg.width()/2, drg.height()/2);
+  return pw - cw + cd;
+}
+
+QPoint ComponentView::mapGroupToDraggable(QPixmap const &drg, Point p) const {
+  QPointF pg = (p - grp.boundingRect().center()).toMils();
+  // in mils relative to center of bounding rect
+  return QPoint(drg.width()/2, drg.height()/2) + (pg*mil2px).toPoint();
+}
+
 QPixmap ComponentView::draggable() const {
   QRectF r = grp.boundingRect().toMils();
   QPointF c = r.center();
   QSizeF s = r.size();
   constexpr int margin = 2;
-  double w = (rot&1) ? s.height() : s.width();
-  double h = (rot&1) ? s.width() : s.height();
-  QPixmap drg(w*mil2px + 2*margin, h*mil2px + 2*margin);
+  QPixmap drg(s.width()*mil2px + 2*margin, s.height()*mil2px + 2*margin);
   drg.fill(QColor(0,0,0,0));
   QPainter p(&drg);
   p.translate(drg.width()/2, drg.height()/2);
-  if (rot)
-    p.rotate(rot*90*16); // is that right?
-  if (flp)
-    p.scale(-1, 1);
   p.scale(mil2px, mil2px);
   p.translate(-c.x(), -c.y());
   ORenderer::render(grp, &p);
@@ -226,10 +248,6 @@ void ComponentView::paintEvent(QPaintEvent *) {
   p.setBrush(QBrush(QColor(0,0,0)));
   p.drawRect(QRect(QPoint(0,0), size()));
   p.translate(width()/2, height()/2);
-  if (rot)
-    p.rotate(rot*90*16); // is that right?
-  if (flp)
-    p.scale(-1, 1);
   p.scale(mil2px, mil2px);
   QRectF r = grp.boundingRect().toMils();
   QPointF c = r.center();
