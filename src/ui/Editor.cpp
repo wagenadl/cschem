@@ -58,6 +58,7 @@ public:
   void newSelectionUnless(int id, Point p, Dim mrg, bool add);
   void selectPointsOf(int id);
   QSet<Point> pointsOf(Object const &obj, Point const &ori) const;
+  QSet<Point> pointsOf(Object const &obj, Point const &ori, Layer lay) const;
   Rect selectionBounds() const; // board coordinates
   void validateStuckPoints() const;
   void invalidateStuckPoints() const;
@@ -75,8 +76,9 @@ public:
   QSet<Point> purepts; // selected points that are *not* part of any sel. object
   mutable bool stuckptsvalid; // indicator: if false, stuckpts needs to be
   // recalced.
-  mutable QSet<Point> stuckpts; // points that are part of a selected object but
-  // also of a non-trace non-selected object and that should not move
+  mutable QMap<Layer, QSet<Point> > stuckpts; // points that are part of a
+  // selected object but also of a non-trace non-selected object and that
+  // should not move
   EProps props;
   Point tracestart;
   Point tracecurrent;
@@ -106,14 +108,17 @@ void EData::validateStuckPoints() const {
   stuckpts.clear();
   Group const &here(layout.root().subgroup(crumbs));
   Point ori = layout.root().originOf(crumbs);
+  QList<Layer> lays{Layer::Silk, Layer::Top, Layer::Bottom};
   for (int id: here.keys()) {
     if (!selection.contains(id)) {
       Object const &obj(here.object(id));
       if (!obj.isTrace())
-        stuckpts |= pointsOf(obj, ori);
+	for (Layer l: lays)
+	  stuckpts[l] |= pointsOf(obj, ori, l);
     }
   }
-  stuckpts &= selpts;
+  for (Layer l: lays)
+    stuckpts[l] &= selpts;
   stuckptsvalid = true;
   qDebug() << "stuckpts:" << stuckpts;
 }
@@ -161,6 +166,40 @@ QSet<Point> EData::pointsOf(Object const &obj, Point const &ori) const {
     break;
   case Object::Type::Group:
     for (Point const &p: obj.asGroup().points())
+      pp << p + ori;
+    break;
+  case Object::Type::Plane:
+    break;
+  }
+  return pp;
+}
+
+QSet<Point> EData::pointsOf(Object const &obj, Point const &ori,
+			    Layer lay) const {
+  QSet<Point> pp;
+  switch (obj.type()) {
+  case Object::Type::Null:
+    break;
+  case Object::Type::Hole:
+    if (lay==Layer::Top || lay==Layer::Bottom)
+      pp << obj.asHole().p + ori;
+    break;
+  case Object::Type::Pad:
+    if (lay==obj.asPad().layer)
+      pp << obj.asPad().p + ori;
+    break;
+  case Object::Type::Arc:
+    if (lay==obj.asArc().layer)
+      pp << obj.asArc().center + ori;
+    break;
+  case Object::Type::Text:
+    break;
+  case Object::Type::Trace:
+    if (lay==obj.asTrace().layer)
+      pp << obj.asTrace().p1 + ori << obj.asTrace().p2 + ori;
+    break;
+  case Object::Type::Group:
+    for (Point const &p: obj.asGroup().points(lay))
       pp << p + ori;
     break;
   case Object::Type::Plane:
@@ -566,9 +605,9 @@ void EData::releaseMoving(Point p) {
     if (selection.contains(id)) {
       if (obj.isTrace()) {
         Trace &t = obj.asTrace();
-        if (!stuckpts.contains(t.p1+ori))
+        if (!stuckpts[t.layer].contains(t.p1+ori))
           t.p1 += movingdelta;
-        if (!stuckpts.contains(t.p2+ori))
+        if (!stuckpts[t.layer].contains(t.p2+ori))
           t.p2 += movingdelta;
       } else {
         obj.translate(movingdelta);
@@ -576,10 +615,10 @@ void EData::releaseMoving(Point p) {
     } else if (obj.isTrace()) {
       Trace &t = obj.asTrace();
       if ((selpts.contains(t.p1 + ori) || purepts.contains(t.p1 + ori))
-          && !stuckpts.contains(t.p1+ori))
+          && !stuckpts[t.layer].contains(t.p1+ori))
 	t.p1 += movingdelta;
       if ((selpts.contains(t.p2 + ori) || purepts.contains(t.p2 + ori))
-          && !stuckpts.contains(t.p2+ori))
+          && !stuckpts[t.layer].contains(t.p2+ori))
 	t.p2 += movingdelta;
     }
   }

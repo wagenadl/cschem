@@ -4,6 +4,7 @@
 
 #define GROUP_H
 
+#include "Layer.h"
 #include "Rect.h"
 #include <QList>
 #include <QMap>
@@ -54,6 +55,7 @@ public:
   bool saveComponent(int id, QString fn); // id must be a subgroup
   int insertComponent(QString fn);
   QSet<Point> points() const; // relative to parent
+  QSet<Point> points(Layer) const; // relative to parent
   QStringList pinNames() const;
   Point pinPosition(QString name) const; // relative to parent
   Point anchor() const; // first named pin, relative to parent

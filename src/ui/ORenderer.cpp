@@ -21,7 +21,7 @@ void ORenderer::setMoving(Point const &p) {
   movingdelta = p;
 }
 
-void ORenderer::setStuckPoints(QSet<Point> const &pp) {
+void ORenderer::setStuckPoints(QMap<Layer, QSet<Point> > const &pp) {
   stuckpts = pp;
 }
 
@@ -54,16 +54,16 @@ void ORenderer::drawTrace(Trace const &t, bool selected) {
   Point p2 = origin + t.p2;
   if (toplevel) {
     if (selected) {
-      if (!stuckpts.contains(p1))
+      if (!stuckpts[layer].contains(p1))
 	p1 += movingdelta;
-      if (!stuckpts.contains(p2))
+      if (!stuckpts[layer].contains(p2))
 	p2 += movingdelta;
     } else {
       if ((selpts.contains(p1) || purepts.contains(p1))
-	  && !stuckpts.contains(p1))
+	  && !stuckpts[layer].contains(p1))
 	p1 += movingdelta;
       if ((selpts.contains(t.p2) || purepts.contains(t.p2))
-	  && !stuckpts.contains(p2))
+	  && !stuckpts[layer].contains(p2))
 	p2 += movingdelta;
     }
   }

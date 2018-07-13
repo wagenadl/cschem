@@ -16,7 +16,7 @@ public:
   void setMoving(Point const &movingdelta);
   void setSelPoints(QSet<Point> const &);
   void setPurePoints(QSet<Point> const &);
-  void setStuckPoints(QSet<Point> const &);
+  void setStuckPoints(QMap<Layer, QSet<Point> > const &);
   void setLayer(Layer l);
   void pushOrigin(Point const &origin);
   void popOrigin();
@@ -38,7 +38,7 @@ private:
   QList<Point> originstack;
   Point origin;
   Point movingdelta;
-  QSet<Point> stuckpts;
+  QMap<Layer, QSet<Point> > stuckpts;
   QSet<Point> selpts;
   QSet<Point> purepts;
   bool toplevel;

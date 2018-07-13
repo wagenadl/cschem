@@ -335,6 +335,27 @@ QSet<Point> Group::points() const {
   return pp;
 }  
 
+QSet<Point> Group::points(Layer l) const {
+  QSet<Point> pp;
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    switch (obj.type()) {
+    case Object::Type::Hole:
+      if (l==Layer::Top || l==Layer::Bottom)
+	pp << obj.asHole().p + origin;
+      break;
+    case Object::Type::Pad: {
+      Pad const &pad(obj.asPad());
+      if (l==pad.layer)
+	pp << pad.p + origin;
+    } break;
+    default:
+      break;
+    }
+  }
+  return pp;
+}  
+
 QList<int> Group::objectsAt(Point p, Dim mrg) const {
   p -= origin;
   QList<int> ids;
