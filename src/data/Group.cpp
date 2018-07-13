@@ -9,15 +9,12 @@
 
 class GData: public QSharedData {
 public:
-  QMap<int, Object *> obj;
+  QMap<int, Object> obj;
   int lastid;
   GData() {
+    qDebug() << "GData" << this;
     lastid = 0;
     reftextid = 0;
-  }
-  ~GData() {
-    for (Object *o: obj) 
-      delete o;
   }
   int reftextid;
   mutable bool hasbbox;
@@ -25,6 +22,7 @@ public:
 };
 
 Group::Group(): d(new GData) {
+  qDebug() << "Group" << this;
 }
 
 Group::~Group() {
@@ -37,6 +35,8 @@ Group::Group(Group const &o) {
 }
 
 Group &Group::operator=(Group const &o) {
+  if (this == &o)
+    return *this;
   d = o.d;
   ref = o.ref;
   origin = o.origin;
@@ -56,6 +56,29 @@ void Group::setRefTextId(int id) {
   d->reftextid = id;
 }
 
+int Group::ensureRefText(int gid) {
+  if (!d->obj.contains(gid))
+    return 0;
+  Group g(d->obj[gid].asGroup());
+  if (g.refTextId() > 0)
+    return g.refTextId(); // already exists
+  d.detach();
+
+  Text reftext;
+  reftext.layer = Layer::Silk;
+  reftext.fontsize = Dim::fromInch(.05);
+  reftext.orient.rot = 0;
+  reftext.orient.flip = false;
+  reftext.text = g.ref;
+  Rect bb = g.boundingRect();
+  reftext.p = Point(bb.left, bb.top - Dim::fromInch(0.05));
+
+  int tid = insert(Object(reftext));
+  g.setRefTextId(tid); // does this work?
+  d->obj[tid].asText().setGroupAffiliation(gid);
+  return tid;
+}
+
 int Group::formSubgroup(QSet<int> const &ids) {
   d.detach();
   Group g;
@@ -70,10 +93,10 @@ int Group::formSubgroup(QSet<int> const &ids) {
   };
   for (int id: ids) {
     if (d->obj.contains(id)) {
-      if (d->obj[id]->isText() && reftextmatch(d->obj[id]->asText().text))
-        reftext = d->obj[id]->asText();
+      if (d->obj[id].isText() && reftextmatch(d->obj[id].asText().text))
+        reftext = d->obj[id].asText();
       else
-        g.insert(*d->obj[id]);
+        g.insert(d->obj[id]);
     }
   }
   for (int id: ids)
@@ -83,72 +106,73 @@ int Group::formSubgroup(QSet<int> const &ids) {
   reftext.p = Point(bb.left, bb.top - Dim::fromInch(0.05));
   int tid = insert(Object(reftext));
   g.ref = reftext.text;
-  g.setRefTextId(tid); // this works, but for reasons I do not understand,
-  // it does not work if I insert it first and /then/ change the reftextid.
-  // Perhaps I do not actually understand all the way how detach() works?
   int gid = insert(Object(g));
-  d->obj[tid]->asText().setGroupAffiliation(gid);
-  qDebug() << "..." << d->obj[gid]->asGroup().ref;
+  d->obj[gid].asGroup().setRefTextId(tid); 
+  d->obj[tid].asText().setGroupAffiliation(gid);
+  qDebug() << "..." << d->obj[gid].asGroup().ref;
   return gid;
 }
 
-void Group::dissolveSubgroup(int gid) {
+QSet<int> Group::dissolveSubgroup(int gid) {
+  QSet<int> ids;
   if (!d->obj.contains(gid))
-    return; // error
-  if (!d->obj[gid]->isGroup())
-    return; // error
+    return ids; // error
+  if (!d->obj[gid].isGroup())
+    return ids; // error
   d.detach();
-  Group const *g(&d->obj[gid]->asGroup());
+  Group const *g(&d->obj[gid].asGroup());
   Point p = g->origin;
   int tid = g->refTextId();
-  for (Object const *obj: g->d->obj) {
-    int id = insert(*obj);
-    d->obj[id]->translate(p);
+  for (Object const &obj: g->d->obj) {
+    int id = insert(obj);
+    ids << id;
+    d->obj[id].translate(p);
   }
   if (d->obj.contains(tid)) {
-    Object &obj(*d->obj[tid]);
+    Object &obj(d->obj[tid]);
     if (obj.isText())
       obj.asText().setGroupAffiliation(0);
   }
   remove(gid);
+  return ids;
 }
 
 void Group::rotateCCW(Point p) {
   d.detach();
   d->hasbbox = false;
   p -= origin;
-  for (Object *o: d->obj)
-    o->rotateCCW(p);
+  for (Object &o: d->obj)
+    o.rotateCCW(p);
 }
 
 void Group::rotateCW(Point p) {
   d.detach();
   d->hasbbox = false;
   p -= origin;
-  for (Object *o: d->obj)
-    o->rotateCW(p);
+  for (Object &o: d->obj)
+    o.rotateCW(p);
 }
 
 void Group::flipLeftRight(Dim x) {
   d.detach();
   d->hasbbox = false;
   x -= origin.x;
-  for (Object *o: d->obj)
-    o->flipLeftRight(x);
+  for (Object &o: d->obj)
+    o.flipLeftRight(x);
 }
 
 void Group::flipUpDown(Dim y) {
   d.detach();
   d->hasbbox = false;
   y -= origin.y;
-  for (Object *o: d->obj)
-    o->flipUpDown(y);
+  for (Object &o: d->obj)
+    o.flipUpDown(y);
 }
 
 int Group::insert(Object const &o) {
   d.detach();
   d->hasbbox = false;
-  d->obj[++d->lastid] = new Object(o);
+  d->obj[++d->lastid] = o;
   return d->lastid;
 }
 
@@ -156,7 +180,6 @@ void Group::remove(int key) {
   if (d->obj.contains(key)) {
     d.detach();
     d->hasbbox = false;
-    delete d->obj[key];
     d->obj.remove(key);
   }
 }
@@ -167,8 +190,9 @@ bool Group::contains(int key) const {
 
 Object const &Group::object(int key) const {
   static Object nil;
-  if (d->obj.contains(key))
-    return *d->obj[key];
+  auto it = d->obj.find(key);
+  if (it!=d->obj.end())
+    return *it;
   else
     return nil;
 }
@@ -223,8 +247,8 @@ Rect Group::boundingRect() const {
   if (d->hasbbox)
     return d->bbox.translated(origin);
   Rect r;
-  for (Object *o: d->obj)
-    r |= o->boundingRect();
+  for (Object const &o: d->obj)
+    r |= o.boundingRect();
   d->bbox = r;
   d->hasbbox = true;
   return r.translated(origin);
@@ -236,7 +260,7 @@ bool Group::touches(Point p, Dim mrg) const {
   QList<int> ids;
   p -= origin;
   for (int id: d->obj.keys()) 
-    if (d->obj[id]->touches(p, mrg))
+    if (d->obj[id].touches(p, mrg))
       return true;
   return false;
 }
@@ -311,7 +335,7 @@ QList<int> Group::objectsAt(Point p, Dim mrg) const {
   p -= origin;
   QList<int> ids;
   for (int id: d->obj.keys()) 
-    if (d->obj[id]->touches(p, mrg))
+    if (d->obj[id].touches(p, mrg))
       ids << id;
   return ids;
 }
@@ -328,18 +352,18 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
     s.writeAttribute("notes", t.notes);
   if (!t.pkg.isEmpty())
     s.writeAttribute("pkg", t.pkg);
-  for (Object const *o: t.d->obj) {
-    if (o->isGroup()) {
+  for (Object const &o: t.d->obj) {
+    if (o.isGroup()) {
       s.writeStartElement("gr");
-      int id = o->asGroup().refTextId();
+      int id = o.asGroup().refTextId();
       if (id>0 && t.d->obj.contains(id)) 
-        s << *t.d->obj[id];
-      s << *o;
+        s << t.d->obj[id];
+      s << o;
       s.writeEndElement();
-    } else if (o->isText() && o->asText().groupAffiliation()>0) {
+    } else if (o.isText() && o.asText().groupAffiliation()>0) {
       // let the group handle this item
     } else {
-      s << *o;
+      s << o;
     }
   }
   s.writeEndElement();
@@ -349,7 +373,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
 bool Group::saveComponent(int id, QString fn) {
   if (!d->obj.contains(id))
     return false;
-  Object const &obj(*d->obj[id]);
+  Object const &obj(d->obj[id]);
   if (!obj.isGroup())
     return false;
 
@@ -385,7 +409,7 @@ bool Group::saveComponent(int id, QString fn) {
       int refid = grp.refTextId();
       Text reftext;
       if (d->obj.contains(refid)) {
-	Object const &ref(*d->obj[refid]);
+	Object const &ref(d->obj[refid]);
 	if (ref.isText())
 	  reftext = ref.asText();
       }
@@ -497,8 +521,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 
 QDebug operator<<(QDebug d, Group const &t) {
   d << "Group(" << t.ref << " at " << t.origin;
-  for (Object const *o: t.d->obj)
-    d << "    " << *o << "\n";
+  for (Object const &o: t.d->obj)
+    d << "    " << o << "\n";
   d << ")";
   return d;
 }

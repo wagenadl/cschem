@@ -137,11 +137,9 @@ void DimSpinner::setInch() {
 }
 
 double DimSpinner::valueFromText(QString const &s) const {
-  qDebug() << "valuefromtext" << s;
   return QDoubleSpinBox::valueFromText(s);
 }
 
 QString DimSpinner::textFromValue(double d) const {
-  qDebug() << "textfromvalue" << d;
   return QDoubleSpinBox::textFromValue(d);
 }

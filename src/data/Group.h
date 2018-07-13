@@ -42,7 +42,8 @@ public:
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
   // only direct children are returned
   int formSubgroup(QSet<int> const &);
-  void dissolveSubgroup(int);
+  QSet<int> dissolveSubgroup(int);
+  int ensureRefText(int); // ensure that subgroup has reftext object
   void rotateCCW(Point p); // p is relative to parent
   void rotateCW(Point p); // p is relative to parent
   void flipLeftRight(Dim x); // x is relative to parent

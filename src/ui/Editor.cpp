@@ -1406,7 +1406,17 @@ void Editor::dropEvent(QDropEvent *e) {
     Point droppos = Point::fromMils(d->widget2mils.map(e->pos()));
     QString ref = src->refText();
     QString pv = src->pvText();
+    grp.ref = ref;
+    grp.setRefTextId(0);
     qDebug() << "Dropping" << ref << pv << "at" << droppos;
+    Group &here(d->layout.root().subgroup(d->crumbs));
+    Point ori = d->layout.root().originOf(d->crumbs);
+    Point anch = grp.anchor(); // this should be at droppos
+    droppos -= ori; // convert to current group coords
+    Object obj(grp);
+    obj.translate(droppos - anch);
+    int gid = here.insert(obj);
+    here.ensureRefText(gid);
     e->accept();
   } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
