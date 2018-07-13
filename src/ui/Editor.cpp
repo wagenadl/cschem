@@ -1417,6 +1417,7 @@ void Editor::dropEvent(QDropEvent *e) {
     obj.translate(droppos - anch);
     int gid = here.insert(obj);
     here.ensureRefText(gid);
+    update();
     e->accept();
   } else if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();

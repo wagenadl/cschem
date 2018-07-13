@@ -57,11 +57,15 @@ void Group::setRefTextId(int id) {
 }
 
 int Group::ensureRefText(int gid) {
-  if (!d->obj.contains(gid))
+  const Group *me = this;
+  if (!me->contains(gid) || !me->object(gid).isGroup())
     return 0;
-  Group g(d->obj[gid].asGroup());
-  if (g.refTextId() > 0)
-    return g.refTextId(); // already exists
+  qDebug() << "ensurereftext";
+  Group const &g(me->object(gid).asGroup());
+  if (g.refTextId()>0)
+    return g.refTextId();
+  qDebug() << "still here";
+
   d.detach();
 
   Text reftext;
@@ -74,8 +78,8 @@ int Group::ensureRefText(int gid) {
   reftext.p = Point(bb.left, bb.top - Dim::fromInch(0.05));
 
   int tid = insert(Object(reftext));
-  g.setRefTextId(tid); // does this work?
-  d->obj[tid].asText().setGroupAffiliation(gid);
+  object(gid).asGroup().setRefTextId(tid);
+  object(tid).asText().setGroupAffiliation(gid);
   return tid;
 }
 
@@ -92,11 +96,11 @@ int Group::formSubgroup(QSet<int> const &ids) {
     return txt == ref || QRegExp("[A-Z]([0-9]+|\\?)").exactMatch(txt);
   };
   for (int id: ids) {
-    if (d->obj.contains(id)) {
-      if (d->obj[id].isText() && reftextmatch(d->obj[id].asText().text))
-        reftext = d->obj[id].asText();
+    if (contains(id)) {
+      if (object(id).isText() && reftextmatch(object(id).asText().text))
+	reftext = object(id).asText();
       else
-        g.insert(d->obj[id]);
+        g.insert(object(id));
     }
   }
   for (int id: ids)
@@ -107,29 +111,29 @@ int Group::formSubgroup(QSet<int> const &ids) {
   int tid = insert(Object(reftext));
   g.ref = reftext.text;
   int gid = insert(Object(g));
-  d->obj[gid].asGroup().setRefTextId(tid); 
-  d->obj[tid].asText().setGroupAffiliation(gid);
-  qDebug() << "..." << d->obj[gid].asGroup().ref;
+  object(gid).asGroup().setRefTextId(tid); 
+  object(tid).asText().setGroupAffiliation(gid);
+  qDebug() << "..." << object(gid).asGroup().ref;
   return gid;
 }
 
 QSet<int> Group::dissolveSubgroup(int gid) {
   QSet<int> ids;
-  if (!d->obj.contains(gid))
+  if (!contains(gid))
     return ids; // error
-  if (!d->obj[gid].isGroup())
+  if (!object(gid).isGroup())
     return ids; // error
   d.detach();
-  Group const *g(&d->obj[gid].asGroup());
-  Point p = g->origin;
-  int tid = g->refTextId();
-  for (Object const &obj: g->d->obj) {
+  Group const &g(object(gid).asGroup());
+  Point p = g.origin;
+  int tid = g.refTextId();
+  for (Object const &obj: g.d->obj) {
     int id = insert(obj);
     ids << id;
-    d->obj[id].translate(p);
+    object(id).translate(p);
   }
-  if (d->obj.contains(tid)) {
-    Object &obj(d->obj[tid]);
+  if (contains(tid)) {
+    Object &obj(object(tid));
     if (obj.isText())
       obj.asText().setGroupAffiliation(0);
   }
@@ -172,7 +176,7 @@ void Group::flipUpDown(Dim y) {
 int Group::insert(Object const &o) {
   d.detach();
   d->hasbbox = false;
-  d->obj[++d->lastid] = o;
+  d->obj.insert(++d->lastid, o);
   return d->lastid;
 }
 
@@ -260,7 +264,7 @@ bool Group::touches(Point p, Dim mrg) const {
   QList<int> ids;
   p -= origin;
   for (int id: d->obj.keys()) 
-    if (d->obj[id].touches(p, mrg))
+    if (object(id).touches(p, mrg))
       return true;
   return false;
 }
@@ -335,7 +339,7 @@ QList<int> Group::objectsAt(Point p, Dim mrg) const {
   p -= origin;
   QList<int> ids;
   for (int id: d->obj.keys()) 
-    if (d->obj[id].touches(p, mrg))
+    if (object(id).touches(p, mrg))
       ids << id;
   return ids;
 }
@@ -357,7 +361,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
       s.writeStartElement("gr");
       int id = o.asGroup().refTextId();
       if (id>0 && t.d->obj.contains(id)) 
-        s << t.d->obj[id];
+        s << t.object(id);
       s << o;
       s.writeEndElement();
     } else if (o.isText() && o.asText().groupAffiliation()>0) {
@@ -373,7 +377,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
 bool Group::saveComponent(int id, QString fn) {
   if (!d->obj.contains(id))
     return false;
-  Object const &obj(d->obj[id]);
+  Object const &obj(object(id));
   if (!obj.isGroup())
     return false;
 
@@ -408,8 +412,8 @@ bool Group::saveComponent(int id, QString fn) {
       Group const &grp(obj.asGroup());
       int refid = grp.refTextId();
       Text reftext;
-      if (d->obj.contains(refid)) {
-	Object const &ref(d->obj[refid]);
+      if (contains(refid)) {
+	Object const &ref(object(refid));
 	if (ref.isText())
 	  reftext = ref.asText();
       }

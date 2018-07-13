@@ -204,6 +204,7 @@ Text const &Object::asText() const {
 }
 
 Group const &Object::asGroup() const {
+  qDebug() << "asgroup const";
   Q_ASSERT(isGroup());
   return *d->group;
 }
@@ -234,6 +235,7 @@ Text &Object::asText() {
 }
 
 Group &Object::asGroup() {
+  qDebug() << "asgroup non-const";
   d.detach();
   return as_nonconst(as_const(*this).asGroup());
 }
