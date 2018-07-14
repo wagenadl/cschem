@@ -123,7 +123,6 @@ void EData::validateStuckPoints() const {
   for (Layer l: lays)
     stuckpts[l] &= selpts[l];
   stuckptsvalid = true;
-  qDebug() << "stuckpts:" << stuckpts;
 }
 
 Rect EData::selectionBounds() const {
@@ -271,7 +270,7 @@ void EData::drawTracing(QPainter &p) const {
 
 void EData::drawObjects(QPainter &p) const {
   Group const &here(layout.root().subgroup(crumbs));
-  Point origin = layout.root().originOf(crumbs);
+  Point origin = layout.root().originOf(crumbs) + here.origin;
   validateStuckPoints();  
 
   ORenderer rndr(&p, origin);
@@ -469,10 +468,13 @@ enum class Prio {
 };
 
 int EData::visibleObjectAt(Point p, Dim mrg) const {
-  Group const &group(layout.root().subgroup(crumbs));
+  Group const &here(layout.root().subgroup(crumbs));
   Point ori(layout.root().originOf(crumbs));
+  qDebug() << "visibleobjectat" << p << mrg << "crumbs" << crumbs << "ori" << ori;
   p -= ori;
-  QList<int> ids = group.objectsAt(p, mrg);
+  qDebug() << "  shifted p" << p;
+  QList<int> ids = here.objectsAt(p, mrg);
+  qDebug() << "  found" << ids;
   /* Now, we want to select one item that P is on.
      We prioritize higher layers over lower layers, ignore pads, text, traces
      on hidden layers, prioritize holes, pads, groups [components], text over
@@ -768,6 +770,27 @@ void Editor::resizeEvent(QResizeEvent *) {
     scaleToFit();
 }
 
+void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
+  Point p = Point::fromMils(d->widget2mils.map(e->pos()));
+  if (e->button() == Qt::LeftButton) {
+    d->presspoint = p;
+    if (d->mode == Mode::Edit) {
+      Dim mrg = Dim::fromMils(4/d->mils2px);
+      int fave = d->visibleObjectAt(p, mrg);
+      qDebug() << "fave" << fave << d->crumbs;
+      if (fave<0) {
+	leaveGroup();
+      } else {
+	enterGroup(fave);
+	fave = d->visibleObjectAt(p, mrg);
+	if (fave>=0)
+	  select(fave);
+      }
+      qDebug() << "crumbs now" << d->crumbs;
+    }
+  }
+}
+
 void Editor::mousePressEvent(QMouseEvent *e) {
   Point p = Point::fromMils(d->widget2mils.map(e->pos()));
   if (e->button() == Qt::LeftButton) {
@@ -832,7 +855,14 @@ void Editor::mouseReleaseEvent(QMouseEvent *e) {
 void Editor::keyPressEvent(QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_Escape:
-    d->abortTracing();
+    if (d->tracing) {
+      d->abortTracing();
+    } else {
+      if (e->modifiers() & Qt::ControlModifier)
+	leaveAllGroups();
+      else
+	leaveGroup();
+    }
     break;
   case Qt::Key_Enter: case Qt::Key_Return:
     if (d->tracing) {
@@ -894,12 +924,14 @@ void Editor::setPlanesVisibility(bool b) {
 
 bool Editor::enterGroup(int sub) {
   clearSelection();
-  Group &here(d->layout.root().subgroup(d->crumbs));
-  if (here.isEmpty())
-    return leaveAllGroups();
-  d->crumbs << sub;
-  update();
-  return true;
+  Group const &here(d->layout.root().subgroup(d->crumbs));
+  if (here.contains(sub) && here.object(sub).isGroup()) {
+    d->crumbs << sub;
+    update();
+    return true;
+  } else {
+    return false;
+  }
 }
 
 bool Editor::leaveGroup() {
@@ -1390,7 +1422,6 @@ int Editor::selectedComponent(QString *msg) const {
   for (int id: d->selection) {
     Object const &obj(here.object(id));
     if (obj.isGroup()) {
-      qDebug() << "found group" << id << "already had" << gid << tid;
       if (gid && gid!=id) {
         m = "More than one group selected";
         gid = 0;
@@ -1398,8 +1429,6 @@ int Editor::selectedComponent(QString *msg) const {
       } else {
         gid = id;
         int tid1 = obj.asGroup().refTextId();
-	qDebug() << "found group" << id << "("<<tid1
-		 <<") already had" << gid << tid;
         if (tid && tid!=tid1) {
           m = "More than one group selected";
           gid = 0;
@@ -1410,8 +1439,6 @@ int Editor::selectedComponent(QString *msg) const {
       }
     } else if (obj.isText()) {
       int gid1 = obj.asText().groupAffiliation();
-      qDebug() << "found text" << id << "("<<gid1
-	       <<") already had" << gid << tid;
       if (gid1==0 || (gid && gid1!=gid)) {
         m = "More than one item selected";
         gid = 0;
@@ -1421,8 +1448,6 @@ int Editor::selectedComponent(QString *msg) const {
         gid = gid1;
       }
     } else {
-      qDebug() << "found other object" << id << int(obj.type())
-	       << "already had" << gid << tid;
       if (d->selection.size()>1)
 	m = "More than one item selected";
       else
@@ -1507,7 +1532,6 @@ void Editor::dropEvent(QDropEvent *e) {
     QString pv = src->pvText();
     grp.ref = ref;
     grp.setRefTextId(0);
-    qDebug() << "Dropping" << ref << pv << "at" << droppos;
     Group &here(d->layout.root().subgroup(d->crumbs));
     Point ori = d->layout.root().originOf(d->crumbs);
     Point anch = grp.anchor(); // this should be at droppos

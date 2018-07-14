@@ -89,21 +89,17 @@ Rect Arc::boundingRect() const {
   }
   Rect rect(p0, p1);
   rect.grow(linewidth);
-  qDebug() << "arc bbox" << center << p0 << p1 << rect;
   return rect;
 }
 
 bool Arc::onEdge(Point p, Dim mrg) const {
   Rect br(boundingRect());
   br.grow(mrg/2);
-  qDebug() << "arc on edge" << br << p << mrg;
   if (!br.contains(p))
     return false;
   Dim rmrg = (linewidth + mrg) / 2;
   Dim dist = center.distance(p);
-  qDebug() << "  on edge" << p << center << dist << radius << rmrg;
   bool ok = dist > radius - rmrg && dist < radius + rmrg;
-  qDebug() << "  ok " << ok;
   return ok;
 }
 

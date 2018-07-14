@@ -208,7 +208,7 @@ QList<int> Group::keys() const {
 
 Point Group::originOf(QList<int> path) const {
   if (path.isEmpty())
-    return origin;
+    return Point();
   Object const &obj = object(path.takeFirst());
   if (obj.isGroup())
     return origin + obj.asGroup().originOf(path);

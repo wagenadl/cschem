@@ -7,7 +7,9 @@ Hole::Hole() {
 
 Rect Hole::boundingRect() const {
   Dim r = od/2;
-  return Rect(p - Point(r, r), p + Point(r, r));
+  Rect rct(p - Point(r, r), p + Point(r, r));
+  qDebug() << "Hole" << ref << "bbox" << rct;
+  return rct;
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
