@@ -250,8 +250,6 @@ void MWData::makeMenus() {
   auto *edit = mb->addMenu("&Edit");
   edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
                   QKeySequence(Qt::CTRL + Qt::Key_R));
-  edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
-                  QKeySequence(Qt::CTRL + Qt::Key_R));
   edit->addAction("Rotate &anticlockwise", [this]() { editor->rotateCCW(); },
                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
   edit->addAction("&Flip left–right", [this]() { editor->flipH(); },
