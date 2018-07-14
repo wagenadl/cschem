@@ -13,7 +13,7 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   m = Mode::Invalid;
   addAct(Mode::Edit, "Edit", Qt::Key_F1);
   addAct(Mode::PlaceTrace, "Trace", Qt::Key_F2);
-  addAct(Mode::PlaceComponent, "Component", Qt::Key_F3);
+  //  addAct(Mode::PlaceComponent, "Component", Qt::Key_F3);
   addAct(Mode::PlaceHole, "Hole", Qt::Key_F4);
   addAct(Mode::PlacePad, "Pad", Qt::Key_F5);
   addAct(Mode::PlaceText, "Text", Qt::Key_F6);
