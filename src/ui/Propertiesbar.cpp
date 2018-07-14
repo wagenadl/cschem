@@ -50,7 +50,7 @@ public:
   QWidget *refg;
   QAction *refa;
   QLineEdit *ref;
-  QToolButton *component; // popup for replacing component
+  QAction *component; // popup for replacing component
   
   QWidget *textg;
   QAction *texta;
@@ -60,21 +60,21 @@ public:
   QWidget *arcg;
   QAction *arca;
   QWidget *arcc;
-  QToolButton *arcfull, *arctop, *arcbot, *arcleft, *arcright;
-  QToolButton *arctl, *arctr, *arcbl, *arcbr;
+  QAction *arcfull, *arctop, *arcbot, *arcleft, *arcright;
+  QAction *arctl, *arctr, *arcbl, *arcbr;
   
   QWidget *layerg;
   QAction *layera;
-  QToolButton *silk, *top, *bottom;
+  QAction *silk, *top, *bottom;
 
   QWidget *orientg;
   QAction *orienta;
   QWidget *orientc;
   QWidget *rotatec;
-  QToolButton *ccw, *cw;
-  QToolButton *left, *up, *right, *down;
-  QToolButton *flipped;
-  QToolButton *fliph, *flipv;
+  QAction *ccw, *cw;
+  QAction *left, *up, *right, *down;
+  QAction *flipped;
+  QAction *fliph, *flipv;
   
   bool metric;
   
@@ -391,8 +391,6 @@ Layer PBData::layer() const {
 }
 
 void PBData::hideAndShow() {
-  qDebug() << "hs" << int(mode);
-  
   xya->setEnabled(false);
   dima->setEnabled(false);
   refa->setEnabled(false);
@@ -674,24 +672,24 @@ void PBData::setupUI() {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QToolButton *s = new QToolButton;
-    s->setIcon(QIcon(":icons/" + icon + ".svg"));
-    s->setToolTip(icon);
-    s->setCheckable(chkb);
+    QAction *a = new QAction(QIcon(":icons/" + icon + ".svg"), icon);
+    s->setDefaultAction(a);
+    a->setCheckable(chkb);
     s->setAutoExclusive(ae);
     container->layout()->addWidget(s);
-    return s;
+    return a;
   };
 
   auto makeIconToolGrid = [](QGridLayout *container, QString icon, int r, int c,
 			     bool chkb=true, bool ae=true) {
     Q_ASSERT(container);
     QToolButton *s = new QToolButton;
-    s->setIcon(QIcon(":icons/" + icon + ".svg"));
-    s->setToolTip(icon);
-    s->setCheckable(chkb);
+    QAction *a = new QAction(QIcon(":icons/" + icon + ".svg"), icon);
+    s->setDefaultAction(a);
+    a->setCheckable(chkb);
     s->setAutoExclusive(ae);
     container->addWidget(s, r, c);
-    return s;
+    return a;
   };
   
   /*
@@ -811,23 +809,23 @@ void PBData::setupUI() {
   arctr = makeIconToolGrid(lay, "ArcRTQuadrant", 1, 2);
   arcbr = makeIconToolGrid(lay, "ArcRBQuadrant", 1, 3);
   arcbl = makeIconToolGrid(lay, "ArcLBQuadrant", 1, 4);
-  QObject::connect(arcfull, &QToolButton::clicked,
+  QObject::connect(arcfull, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::Full); });
-  QObject::connect(arcleft, &QToolButton::clicked,
+  QObject::connect(arcleft, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::LeftHalf); });
-  QObject::connect(arcright, &QToolButton::clicked,
+  QObject::connect(arcright, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::RightHalf); });
-  QObject::connect(arctop, &QToolButton::clicked,
+  QObject::connect(arctop, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::TopHalf); });
-  QObject::connect(arcbot, &QToolButton::clicked,
+  QObject::connect(arcbot, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::BottomHalf); });
-  QObject::connect(arctl, &QToolButton::clicked,
+  QObject::connect(arctl, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::TLQuadrant); });
-  QObject::connect(arctr, &QToolButton::clicked,
+  QObject::connect(arctr, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::TRQuadrant); });
-  QObject::connect(arcbl, &QToolButton::clicked,
+  QObject::connect(arcbl, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::BLQuadrant); });
-  QObject::connect(arcbr, &QToolButton::clicked,
+  QObject::connect(arcbr, &QAction::triggered,
 		   [this]() { editor->setExtent(Arc::Extent::BRQuadrant); });
   
   QWidget *x = new QWidget;
@@ -839,57 +837,58 @@ void PBData::setupUI() {
   orientc = makeContainer(c3);
   rotatec = makeContainer(c3);
   up = makeIconTool(orientc, "Up", true, true);
-  QObject::connect(up, &QToolButton::clicked,
+  QObject::connect(up, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) 
 		       editor->setRotation(0);
 		   });
   right = makeIconTool(orientc, "Right", true, true);
-  QObject::connect(right, &QToolButton::clicked,
+  QObject::connect(right, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) 
 		       editor->setRotation(1);
 		   });
   down = makeIconTool(orientc, "Down", true, true);
-  QObject::connect(down, &QToolButton::clicked,
+  QObject::connect(down, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) 
 		       editor->setRotation(2);
 		   });
   left = makeIconTool(orientc, "Left", true, true);
-  QObject::connect(left, &QToolButton::clicked,
+  QObject::connect(left, &QAction::triggered,
 		   [this](bool b) {
 		     if (b)
 		       editor->setRotation(3);
 		   });
   flipped = makeIconTool(c3, "Flipped", true);
-  QObject::connect(flipped, &QToolButton::clicked,
+  QObject::connect(flipped, &QAction::triggered,
 		   [this](bool b) {
 		     editor->setFlipped(b);
 		   });
 
   ccw = makeIconTool(rotatec, "CCW");
   ccw->setToolTip("Rotate left");
-  QObject::connect(ccw, &QToolButton::clicked,
+  QObject::connect(ccw, &QAction::triggered,
 		   [this]() { editor->rotateCCW(); });
   cw = makeIconTool(rotatec, "CW");
   cw->setToolTip("Rotate right");
-  QObject::connect(cw, &QToolButton::clicked,
+  QObject::connect(cw, &QAction::triggered,
 		   [this]() { editor->rotateCW(); });
   fliph = makeIconTool(rotatec, "FlipH");
   fliph->setToolTip("Flip left to right");
-  QObject::connect(fliph, &QToolButton::clicked,
+  QObject::connect(fliph, &QAction::triggered,
 		   [this]() { editor->flipH(); });
   flipv = makeIconTool(rotatec, "FlipV");
   flipv->setToolTip("Flip top to bottom");
-  QObject::connect(flipv, &QToolButton::clicked,
+  QObject::connect(flipv, &QAction::triggered,
 		   [this]() { editor->flipV(); });
 
   layerg = makeGroup(&layera);
   auto *lc = makeContainer(layerg);
   makeLabel(lc, "Layer");
   silk = makeIconTool(lc, "Silk", true);
-  QObject::connect(silk, &QToolButton::clicked,
+  silk->setShortcut(QKeySequence(Qt::Key_1));
+  QObject::connect(silk, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) {
 		       top->setChecked(false);
@@ -897,7 +896,8 @@ void PBData::setupUI() {
 		       editor->setLayer(Layer::Silk);
 		     }});
   top = makeIconTool(lc, "Top", true);
-  QObject::connect(top, &QToolButton::clicked,
+  top->setShortcut(QKeySequence(Qt::Key_2));
+  QObject::connect(top, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) {
 		       silk->setChecked(false);
@@ -905,7 +905,8 @@ void PBData::setupUI() {
 		       editor->setLayer(Layer::Top);
 		     }});
   bottom = makeIconTool(lc, "Bottom", true);
-  QObject::connect(bottom, &QToolButton::clicked,
+  bottom->setShortcut(QKeySequence(Qt::Key_3));
+  QObject::connect(bottom, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) {
 		       silk->setChecked(false);
@@ -956,7 +957,6 @@ void Propertiesbar::reflectMode(Mode m) {
 }
 
 void Propertiesbar::reflectSelection() {
-  qDebug() << "reflectselection";
   d->getPropertiesFromSelection();
   d->hideAndShow();
 }
