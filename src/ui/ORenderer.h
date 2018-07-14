@@ -14,8 +14,8 @@ public:
   ORenderer(QPainter *painter, Point const &origin=Point());
   ~ORenderer();
   void setMoving(Point const &movingdelta);
-  void setSelPoints(QSet<Point> const &);
-  void setPurePoints(QSet<Point> const &);
+  void setSelPoints(QMap<Layer, QSet<Point> > const &);
+  void setPurePoints(QMap<Layer, QSet<Point> > const &);
   void setStuckPoints(QMap<Layer, QSet<Point> > const &);
   void setLayer(Layer l);
   void pushOrigin(Point const &origin);
@@ -39,8 +39,8 @@ private:
   Point origin;
   Point movingdelta;
   QMap<Layer, QSet<Point> > stuckpts;
-  QSet<Point> selpts;
-  QSet<Point> purepts;
+  QMap<Layer, QSet<Point> > selpts;
+  QMap<Layer, QSet<Point> > purepts;
   bool toplevel;
 };
 

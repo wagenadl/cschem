@@ -25,11 +25,11 @@ void ORenderer::setStuckPoints(QMap<Layer, QSet<Point> > const &pp) {
   stuckpts = pp;
 }
 
-void ORenderer::setPurePoints(QSet<Point> const &pp) {
+void ORenderer::setPurePoints(QMap<Layer, QSet<Point> > const &pp) {
   purepts = pp;
 }
 
-void ORenderer::setSelPoints(QSet<Point> const &pp) {
+void ORenderer::setSelPoints(QMap<Layer, QSet<Point> > const &pp) {
   selpts = pp;
 }
 
@@ -59,10 +59,10 @@ void ORenderer::drawTrace(Trace const &t, bool selected) {
       if (!stuckpts[layer].contains(p2))
 	p2 += movingdelta;
     } else {
-      if ((selpts.contains(p1) || purepts.contains(p1))
+      if ((selpts[layer].contains(p1) || purepts[layer].contains(p1))
 	  && !stuckpts[layer].contains(p1))
 	p1 += movingdelta;
-      if ((selpts.contains(t.p2) || purepts.contains(t.p2))
+      if ((selpts[layer].contains(t.p2) || purepts[layer].contains(t.p2))
 	  && !stuckpts[layer].contains(p2))
 	p2 += movingdelta;
     }

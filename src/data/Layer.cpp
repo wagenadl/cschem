@@ -25,6 +25,11 @@ QColor const &layerColor(Layer l, bool sel) {
   return invalid;
 }
 
+QList<Layer> const &layers() {
+  static QList<Layer> lays{Layer::Silk, Layer::Top, Layer::Bottom};
+  return lays;
+}
+
 QDebug operator<<(QDebug d, Layer const &l) {
   switch (l) {
   case Layer::Silk: d << "Silk"; break;
@@ -34,3 +39,4 @@ QDebug operator<<(QDebug d, Layer const &l) {
   }
   return d;
 }
+

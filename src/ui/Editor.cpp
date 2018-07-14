@@ -72,8 +72,10 @@ public:
   bool autofit;
   QList<int> crumbs;
   QSet<int> selection;
-  QSet<Point> selpts; // selected points that *are* part of a selected object
-  QSet<Point> purepts; // selected points that are *not* part of any sel. object
+  QMap<Layer, QSet<Point> > selpts; // selected points that *are* part
+  // of a selected object, by layer
+  QMap<Layer, QSet<Point> > purepts; // selected points that are *not*
+  // part of any sel. object, by layer
   mutable bool stuckptsvalid; // indicator: if false, stuckpts needs to be
   // recalced.
   mutable QMap<Layer, QSet<Point> > stuckpts; // points that are part of a
@@ -108,7 +110,7 @@ void EData::validateStuckPoints() const {
   stuckpts.clear();
   Group const &here(layout.root().subgroup(crumbs));
   Point ori = layout.root().originOf(crumbs);
-  QList<Layer> lays{Layer::Silk, Layer::Top, Layer::Bottom};
+  auto const &lays(::layers());
   for (int id: here.keys()) {
     if (!selection.contains(id)) {
       Object const &obj(here.object(id));
@@ -118,7 +120,7 @@ void EData::validateStuckPoints() const {
     }
   }
   for (Layer l: lays)
-    stuckpts[l] &= selpts;
+    stuckpts[l] &= selpts[l];
   stuckptsvalid = true;
   qDebug() << "stuckpts:" << stuckpts;
 }
@@ -132,8 +134,9 @@ Rect EData::selectionBounds() const {
     r |= here.object(id).boundingRect();
   r = r.translated(ori);
 
-  for (Point p: purepts)
-    r |= p;
+  for (Layer l: ::layers()) 
+    for (Point p: purepts[l])
+      r |= p;
 
   return r;
 }
@@ -142,7 +145,8 @@ Rect EData::selectionBounds() const {
 void EData::selectPointsOf(int id) {
   Group const &here(layout.root().subgroup(crumbs));
   if (here.contains(id))
-    selpts |= pointsOf(here.object(id), layout.root().originOf(crumbs));
+    for (Layer l: ::layers())
+      selpts[l] |= pointsOf(here.object(id), layout.root().originOf(crumbs), l);
 }
 
 QSet<Point> EData::pointsOf(Object const &obj, Point const &ori) const {
@@ -310,11 +314,14 @@ void EData::drawObjects(QPainter &p) const {
 }
 
 void EData::drawSelectedPoints(QPainter &p) const {
-  if (purepts.isEmpty())
+  QSet<Point> pts;
+  for (Layer l: layers())
+    pts |= purepts[l];
+  if (pts.isEmpty())
     return;
   p.setPen(QPen(Qt::NoPen));
   p.setBrush(QColor(200, 200, 200));
-  for (Point pt: purepts) {
+  for (Point pt: pts) {
     if (moving)
       pt += movingdelta;
     p.drawEllipse(pt.toMils(), 25, 25);
@@ -521,9 +528,9 @@ void EData::dropFromSelection(int id, Point p, Dim mrg) {
     p -= layout.root().originOf(crumbs);
     Trace const &t(obj.asTrace());
     if (t.onP1(p, mrg)) 
-      purepts.remove(t.p1);
+      purepts[t.layer].remove(t.p1);
     if (t.onP2(p, mrg)) 
-      purepts.remove(t.p2);
+      purepts[t.layer].remove(t.p2);
   }
   
   for (int k: selection)
@@ -548,14 +555,14 @@ void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
     Point ori = layout.root().originOf(crumbs);
     Trace const &t(obj.asTrace());
     if (t.onP1(p - ori, mrg)) {
-      if (purepts.contains(t.p1 + ori)) {
+      if (purepts[t.layer].contains(t.p1 + ori)) {
 	if (add)
 	  ed->deselectPoint(t.p1 + ori);
       } else {
 	ed->selectPoint(t.p1 + ori, add);
       }
     } else if (t.onP2(p - ori, mrg)) {
-      if (purepts.contains(t.p2 + ori)) {
+      if (purepts[t.layer].contains(t.p2 + ori)) {
 	if (add)
 	  ed->deselectPoint(t.p2 + ori);
       } else {
@@ -614,23 +621,27 @@ void EData::releaseMoving(Point p) {
       }
     } else if (obj.isTrace()) {
       Trace &t = obj.asTrace();
-      if ((selpts.contains(t.p1 + ori) || purepts.contains(t.p1 + ori))
+      if ((selpts[t.layer].contains(t.p1 + ori)
+	   || purepts[t.layer].contains(t.p1 + ori))
           && !stuckpts[t.layer].contains(t.p1+ori))
 	t.p1 += movingdelta;
-      if ((selpts.contains(t.p2 + ori) || purepts.contains(t.p2 + ori))
+      if ((selpts[t.layer].contains(t.p2 + ori)
+	   || purepts[t.layer].contains(t.p2 + ori))
           && !stuckpts[t.layer].contains(t.p2+ori))
 	t.p2 += movingdelta;
     }
   }
 
-  QSet<Point> newsel;
-  for (Point const &pt: selpts)
-    newsel << pt + movingdelta;
-  selpts = newsel;
-  QSet<Point> newpure;
-  for (Point const &pt: purepts)
-    newpure << pt + movingdelta;
-  purepts = newpure;
+  for (Layer l: ::layers()) {
+    QSet<Point> newsel;
+    for (Point const &pt: selpts[l])
+      newsel << pt + movingdelta;
+    selpts[l] = newsel;
+    QSet<Point> newpure;
+    for (Point const &pt: purepts[l])
+      newpure << pt + movingdelta;
+    purepts[l] = newpure;
+  }
   
   moving = false;
   ed->update();
@@ -896,8 +907,10 @@ void Editor::selectPoint(Point p, bool add) {
     d->selpts.clear();
     d->purepts.clear();
   }
-  if (!d->selpts.contains(p))
-    d->purepts.insert(p);
+  for (Layer l: ::layers()) 
+    if (d->layout.board().layervisible[l])
+      if (!d->selpts[l].contains(p))
+	d->purepts[l].insert(p);
   update();
   emit selectionChanged();
 }
@@ -913,9 +926,15 @@ void Editor::deselect(int id) {
 
 void Editor::deselectPoint(Point p) {
   d->invalidateStuckPoints();
-  if (d->selpts.contains(p) || d->purepts.contains(p)) {
-    d->selpts.remove(p);
-    d->purepts.remove(p);
+  bool any = false;
+  for (Layer l: layers()) {
+    if (d->selpts[l].contains(p) || d->purepts[l].contains(p)) {
+      d->selpts[l].remove(p);
+      d->purepts[l].remove(p);
+      any = true;
+    }
+  }
+  if (any) {
     update();
     emit selectionChanged();
   }
@@ -974,10 +993,10 @@ void Editor::selectArea(Rect r, bool add) {
     Object const &obj(here.object(id));
     if (obj.type()==Object::Type::Trace) {
       Trace const &t(obj.asTrace());
-      if (r.contains(t.p1) && !d->selpts.contains(t.p1))
-	d->purepts << t.p1;
-      if (r.contains(t.p2) && !d->selpts.contains(t.p2)) 
-	d->purepts << t.p2;
+      if (r.contains(t.p1) && !d->selpts[t.layer].contains(t.p1))
+	d->purepts[t.layer] << t.p1;
+      if (r.contains(t.p2) && !d->selpts[t.layer].contains(t.p2)) 
+	d->purepts[t.layer] << t.p2;
     }
   }
   update();
@@ -1171,7 +1190,10 @@ QSet<int> Editor::selectedObjects() const {
 }
 
 QSet<Point> Editor::selectedPoints() const {
-  return d->purepts | d->selpts;
+  QSet<Point> all;
+  for (Layer l: layers())
+    all |= d->purepts[l] | d->selpts[l];
+  return all;
 }
 
 Group const &Editor::currentGroup() const {
@@ -1195,7 +1217,7 @@ void Editor::rotateCW() {
     here.object(id).rotateCW(center);
 
   Dim mrg = Dim::fromMils(4/d->mils2px);
-  for (Point p: d->purepts | d->selpts) {
+  for (Point p: selectedPoints()) {
     // Rotate end points of traces if those end points are in purepts,
     // but the trace itself is not in selection.
     for (int id: here.keys()) {
@@ -1212,15 +1234,16 @@ void Editor::rotateCW() {
     }
   }
 
-  QSet<Point> newpts;
-  for (Point const &p: d->purepts)
-    newpts << p.rotatedCW(center);
-  d->purepts = newpts;
-  newpts.clear();
-  for (Point const &p: d->selpts)
-    newpts << p.rotatedCW(center);
-  d->selpts = newpts;
-  
+  for (Layer l: layers()) {
+    QSet<Point> newpts;
+    for (Point const &p: d->purepts[l])
+      newpts << p.rotatedCW(center);
+    d->purepts[l] = newpts;
+    newpts.clear();
+    for (Point const &p: d->selpts[l])
+      newpts << p.rotatedCW(center);
+    d->selpts[l] = newpts;
+  }
   update();
 }
 
@@ -1243,7 +1266,7 @@ void Editor::flipH() {
     here.object(id).flipLeftRight(center);
 
   Dim mrg = Dim::fromMils(4/d->mils2px);
-  for (Point p: d->purepts | d->selpts) {
+  for (Point p: selectedPoints()) {
     // Rotate end points of traces if those end points are in purepts,
     // but the trace itself is not in selection.
     for (int id: here.keys()) {
@@ -1259,15 +1282,16 @@ void Editor::flipH() {
       }
     }
   }
-  QSet<Point> newpts;
-  for (Point const &p: d->purepts)
-    newpts << p.flippedLeftRight(center);
-  d->purepts = newpts;
-  newpts.clear();
-  for (Point const &p: d->selpts)
-    newpts << p.flippedLeftRight(center);
-  d->selpts = newpts;
-
+  for (Layer l: layers()) {
+    QSet<Point> newpts;
+    for (Point const &p: d->purepts[l])
+      newpts << p.flippedLeftRight(center);
+    d->purepts[l] = newpts;
+    newpts.clear();
+    for (Point const &p: d->selpts[l])
+      newpts << p.flippedLeftRight(center);
+    d->selpts[l] = newpts;
+  }
   update();
 }
 
