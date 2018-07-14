@@ -14,7 +14,6 @@ public:
   Group *group;
 public:
   OData() {
-    qDebug() << "OData" << this;
     hole = 0;
     pad = 0;
     arc = 0;
@@ -24,8 +23,6 @@ public:
     typ = Object::Type::Null;
   }
   OData(OData const &o): OData() {
-    qDebug() << "OData copy" << this
-	     << (o.hole ? "Hole" : o.text ? "Text" : o.group ? "Group" : "Other");
     if (o.hole)
       hole = new Hole(*o.hole);
     if (o.pad)
@@ -41,8 +38,6 @@ public:
     typ = o.typ;
   }
   OData &operator=(OData const &o) {
-    qDebug() << "OData =" << this << &o
-	     << (o.hole ? "Hole" : o.text ? "Text" : o.group ? "Group" : "Other");
     if (&o == this)
       return *this;
 
@@ -76,26 +71,16 @@ public:
   }
   
   ~OData() {
-    qDebug() << "~ OData" << this
-	     << (hole ? "Hole" : text ? "Text" : group ? "Group" : "Other");
-    if (hole)
-      qDebug() << hole;
-    if (text)
-      qDebug() << text;
-    if (group)
-      qDebug() << group;
     delete hole;
     delete pad;
     delete arc;
     delete text;
     delete trace;
     delete group;
-    qDebug() << "end of ~OData" << this;
   }
 };
 
 Object::Object(Hole const &t): Object() {
-  qDebug() << "Object(Hole)" << this;
   d->hole = new Hole(t);
   d->typ = Type::Hole;
 }
@@ -122,26 +107,21 @@ Object::Object(Text const &t): Object() {
 
 Object::Object(Group const &t): Object() {
   d->group = new Group(t);
-  qDebug() << "Object(Group)" << this << &t << d->group;
   d->typ = Type::Group;
 }
 
 Object::Object(): d(new OData) {
-  qDebug() << "Object" << this;
   d->typ = Type::Null;
 }
 
 Object::~Object() {
-  qDebug() << "~Object" << this;
 }
 
 Object::Object(Object const &o) {
-  qDebug() << "Object (copy)" << this << &o;
   d = o.d;
 }
 
 Object &Object::operator=(Object const &o) {
-  qDebug() << "Object = " << this << &o;
   d = o.d;
   return *this;
 }
@@ -204,7 +184,6 @@ Text const &Object::asText() const {
 }
 
 Group const &Object::asGroup() const {
-  qDebug() << "asgroup const";
   Q_ASSERT(isGroup());
   return *d->group;
 }
@@ -235,7 +214,6 @@ Text &Object::asText() {
 }
 
 Group &Object::asGroup() {
-  qDebug() << "asgroup non-const";
   d.detach();
   return as_nonconst(as_const(*this).asGroup());
 }

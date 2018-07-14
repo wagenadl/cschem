@@ -12,7 +12,6 @@ public:
   QMap<int, Object> obj;
   int lastid;
   GData() {
-    qDebug() << "GData" << this;
     lastid = 0;
     reftextid = 0;
   }
@@ -22,7 +21,6 @@ public:
 };
 
 Group::Group(): d(new GData) {
-  qDebug() << "Group" << this;
 }
 
 Group::~Group() {
@@ -60,11 +58,9 @@ int Group::ensureRefText(int gid) {
   const Group *me = this;
   if (!me->contains(gid) || !me->object(gid).isGroup())
     return 0;
-  qDebug() << "ensurereftext";
   Group const &g(me->object(gid).asGroup());
   if (g.refTextId()>0)
     return g.refTextId();
-  qDebug() << "still here";
 
   d.detach();
 
@@ -113,7 +109,6 @@ int Group::formSubgroup(QSet<int> const &ids) {
   int gid = insert(Object(g));
   object(gid).asGroup().setRefTextId(tid); 
   object(tid).asText().setGroupAffiliation(gid);
-  qDebug() << "..." << object(gid).asGroup().ref;
   return gid;
 }
 
@@ -499,7 +494,6 @@ int Group::insertComponent(QString fn) {
     while (!sr.atEnd()) {
       sr.readNext();
       if (sr.isStartElement()) {
-	qDebug() << "elt" << sr.name() << sr.prefix();
 	if (sr.isStartElement() && sr.prefix()=="cpcb" && sr.name()=="part") 
 	  return readGroupAndRef(sr, *this);
       }
