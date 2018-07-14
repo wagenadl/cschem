@@ -45,6 +45,7 @@ public:
   void pressHole(Point);
   void pressText(Point);
   void pressTracing(Point);
+  void pressPickingUp(Point);
   void moveTracing(Point);
   void abortTracing();
   void moveBanding(Point);
@@ -263,7 +264,7 @@ void EData::drawGrid(QPainter &p) const {
 void EData::drawTracing(QPainter &p) const {
   if (!tracing)
     return;
-  p.setPen(QPen(layerColor(props.layer), props.linewidth.toMils()*mils2px,
+  p.setPen(QPen(layerColor(props.layer), props.linewidth.toMils(),
 		Qt::SolidLine, Qt::RoundCap));
   p.drawLine(tracestart.toMils(), tracecurrent.toMils());
 }
@@ -390,6 +391,36 @@ void EData::pressArc(Point p) {
   t.extent = props.ext;
   t.layer = props.layer;
   here.insert(Object(t));
+  ed->update();
+}
+
+void EData::pressPickingUp(Point p) {
+  if (tracing) {
+    pressTracing(p);
+    return;
+  }
+  Dim mrg = Dim::fromMils(4/mils2px);
+  int fave = visibleObjectAt(p, mrg);
+  if (fave<0)
+    return;
+  Group &here(layout.root().subgroup(crumbs));
+  Object const &obj(here.object(fave));
+  if (!obj.isTrace())
+    return;
+  Point ori = layout.root().originOf(crumbs);
+  Trace const &t(obj.asTrace());
+  Dim d1 = (p-ori).distance(t.p1);
+  Dim d2 = (p-ori).distance(t.p2);
+  if (d1<d2) {
+    // pickup p1, leave p2
+    tracestart = t.p2 + ori;
+  } else {
+    // pickup p2
+    tracestart = t.p1 + ori;
+  }    
+  here.remove(fave);
+  tracecurrent = p;
+  tracing = true;
   ed->update();
 }
 
@@ -763,6 +794,9 @@ void Editor::mousePressEvent(QMouseEvent *e) {
 	break;
       case Mode::PlaceArc:
 	d->pressArc(p);
+	break;
+      case Mode::PickupTrace:
+	d->pressPickingUp(p);
 	break;
       default:
 	break;
