@@ -1209,6 +1209,7 @@ void Editor::setRef(QString t) {
       int tid = g.refTextId();
       if (tid>0 && here.contains(tid))
         here.object(tid).asText().text = t;
+      emit componentsChanged();
     }
   }
   update();
@@ -1223,8 +1224,10 @@ void Editor::setText(QString t) {
       Text &txt(obj.asText());
       txt.text = t;
       int gid = txt.groupAffiliation();
-      if (gid>0 && here.contains(gid))
+      if (gid>0 && here.contains(gid)) {
         here.object(gid).asGroup().ref = t;
+	emit componentsChanged();
+      }
     }
   }
   update();
@@ -1379,6 +1382,7 @@ void Editor::formGroup() {
   Group &here(d->layout.root().subgroup(d->crumbs));
   here.formSubgroup(d->selection);
   clearSelection();
+  emit componentsChanged();
   update();
 }
 
@@ -1389,6 +1393,7 @@ void Editor::dissolveGroup() {
   for (int id: d->selection) 
     if (here.object(id).isGroup())
       here.dissolveSubgroup(id);
+  emit componentsChanged();
   clearSelection();
   update();
 }
@@ -1540,6 +1545,7 @@ void Editor::dropEvent(QDropEvent *e) {
     obj.translate(droppos - anch);
     int gid = here.insert(obj);
     here.ensureRefText(gid);
+    emit componentsChanged();
     update();
     e->accept();
   } else if (md->hasUrls()) {

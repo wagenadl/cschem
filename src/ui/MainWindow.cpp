@@ -18,6 +18,7 @@
 class MWData {
 public:
   MWData(MainWindow *mw): mw(mw) {
+    editor = 0;
     mcv = 0;
     mcvdock = 0;
   }
@@ -214,6 +215,9 @@ void MWData::about() {
 void MWData::makeParts() {
   mcvdock = new QDockWidget("Parts", mw);
   mcv = new MultiCompView;
+  Q_ASSERT(editor);
+  QObject::connect(editor, &Editor::componentsChanged,
+		   [this]() { mcv->setRoot(editor->pcbLayout().root()); });
   mcvdock->setWidget(mcv);
   showParts();
 }

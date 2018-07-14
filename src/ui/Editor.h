@@ -79,6 +79,8 @@ signals:
   void hovering(Point);
   void leaving();
   void selectionChanged();
+  void componentsChanged(); // emitted when a component has been placed,
+  // created, removed, or renamed
 protected:
   void mouseDoubleClickEvent(QMouseEvent *) override;
   void mousePressEvent(QMouseEvent *) override;
