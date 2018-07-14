@@ -374,6 +374,7 @@ void EData::pressPad(Point p) {
   t.p = p;
   t.width = props.w;
   t.height = props.h;
+  t.layer = props.layer; 
   here.insert(Object(t));
   ed->update();
 }
@@ -387,6 +388,7 @@ void EData::pressArc(Point p) {
   t.radius = props.id / 2;
   t.linewidth = props.linewidth;
   t.extent = props.ext;
+  t.layer = props.layer;
   here.insert(Object(t));
   ed->update();
 }
