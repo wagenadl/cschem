@@ -437,7 +437,7 @@ void EData::pressTracing(Point p) {
     t.p2 = p - ori;
     t.width = props.linewidth;
     t.layer = props.layer;
-    here.insert(Object(t));
+    here.insertSegmentedTrace(t);
   } else {
     tracing = true;
   }

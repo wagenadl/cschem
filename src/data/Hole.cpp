@@ -1,6 +1,7 @@
 // Hole.cpp
 
 #include "Hole.h"
+#include "Trace.h"
 
 Hole::Hole() {
 }
@@ -48,4 +49,23 @@ QDebug operator<<(QDebug d, Hole const &t) {
     << (t.square ? "square" : "circ")
     << ")";
   return d;
+}
+
+Point Hole::intersectionWith(class Trace const &t, bool *ok) const {
+  if (ok)
+    *ok = false;
+  if (!(t.layer==Layer::Top || t.layer==Layer::Bottom))
+    return Point();
+  if (t.onSegment(p, od/2)
+      || (square
+	  && (t.onSegment(p + Point(od/2, od/2))
+	      || t.onSegment(p + Point(od/2, -od/2))
+	      || t.onSegment(p + Point(-od/2, od/2))
+	      || t.onSegment(p + Point(-od/2, -od/2))))) {
+    // this is not perfect, but pretty close
+    if (ok)
+      *ok = true;
+    return p;
+  }
+  return Point();
 }

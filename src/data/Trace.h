@@ -25,7 +25,8 @@ public:
   bool onSegment(Point p, Dim mrg=Dim()) const;
   // ONSEGMENT(p, mrg) returns true if P is close enough to the line segment.
   // Close enough means within a distance .5*WIDTH + MRG.
-  // ONSEGMENT returns true even if ONP1 or ONP2 would return true as well,
+  // ONSEGMENT returns true even if ONP1 or ONP2 would return true as well.
+  Point intersectionWith(class Trace const &t, bool *ok=0) const;
 };
 
 QDebug operator<<(QDebug, Trace const &);

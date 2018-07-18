@@ -369,6 +369,12 @@ Layer Object::layer() const {
     return Layer::Invalid;
   }
 }
+
+Object Object::translated(Point const &p) const {
+  Object o1 = *this;
+  o1.translate(p);
+  return o1;
+}
   
 void Object::translate(Point const &p) {
   switch (d->typ) {
@@ -485,4 +491,32 @@ void Object::flipUpDown(Dim y0) {
     asGroup().flipUpDown(y0);
     break;
   }
+}
+
+Point intersectionPoint(Object const &o, Trace const &t, bool *ok) {
+  switch (o.type()) {
+  case Object::Type::Null:
+    break;
+  case Object::Type::Hole:
+    return o.asHole().intersectionWith(t, ok);
+  case Object::Type::Pad:
+    return o.asPad().intersectionWith(t, ok);
+  case Object::Type::Arc:
+    break;
+  case Object::Type::Text:
+    break;
+  case Object::Type::Trace:
+    return o.asTrace().intersectionWith(t, ok);
+  case Object::Type::Plane:
+    break;
+  case Object::Type::Group:
+    return o.asGroup().intersectionWith(t, ok);
+  }
+  if (ok)
+    *ok = false;
+  return Point();
+}
+
+Point intersectionPoint(Trace const &t, Object const &o, bool *ok) {
+  return intersectionPoint(o, t, ok);
 }

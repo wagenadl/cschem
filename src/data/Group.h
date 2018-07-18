@@ -59,6 +59,8 @@ public:
   QStringList pinNames() const;
   Point pinPosition(QString name) const; // relative to parent
   Point anchor() const; // first named pin, relative to parent
+  void insertSegmentedTrace(class Trace const &t);
+  Point intersectionWith(class Trace const &t, bool *ok=0) const;
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

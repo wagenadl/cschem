@@ -22,6 +22,8 @@ public:
   bool isValid() const { return layer!=Layer::Invalid; }
   Rect boundingRect() const;
   void rotate();
+  Point intersectionWith(class Trace const &t, bool *ok=0) const;
+  /* Returns our center if t touches us, otherwise null. */
 };
 
 QDebug operator<<(QDebug, Pad const &);

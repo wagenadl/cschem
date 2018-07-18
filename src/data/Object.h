@@ -64,6 +64,7 @@ public:
   Rect boundingRect() const;
   Layer layer() const;
   void translate(Point const &);
+  Object translated(Point const &) const;
   void rotateCCW(Point const &);
   void rotateCW(Point const &);
   void flipLeftRight(Dim x);
@@ -71,6 +72,9 @@ public:
 private:
   QSharedDataPointer<class OData> d;
 };
+
+Point intersectionPoint(Object const &o, Trace const &t, bool *ok=0);
+Point intersectionPoint(Trace const &t, Object const &o, bool *ok=0);
 
 QDebug operator<<(QDebug, Object const &);
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Object const &);

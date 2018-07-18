@@ -171,7 +171,7 @@ void Group::flipUpDown(Dim y) {
 int Group::insert(Object const &o) {
   d.detach();
   d->hasbbox = false;
-  d->obj.insert(++d->lastid, o);
+  d->obj.insert(++d->lastid, o.translated(-origin));
   return d->lastid;
 }
 
@@ -544,4 +544,49 @@ QDebug operator<<(QDebug d, Group const &t) {
     d << "    " << o << "\n";
   d << ")";
   return d;
+}
+
+void Group::insertSegmentedTrace(Trace const &t) {
+  /* Find out whether there are any traces, holes, or pads crossed by the
+     newly proposed trace. If so, break the trace into two parts at the
+     crossing point (possibly mildly distorting it), and insert both parts
+     recursively. Otherwise, simply insert the trace. */
+  /* Do we need to be careful not to go around in circles? Perhaps I should
+     test if the cut parts are actually shorter than the original. */
+  // t is specified in terms of parents coords.
+  bool ok;
+  Point p = intersectionWith(t, &ok);
+  if (ok) {
+    Dim len = Point::distance(t.p1, t.p2);
+    ok = p.distance(t.p1) < len && p.distance(t.p2) < len
+      && p!=t.p1 && p!=t.p2;
+  }
+  if (ok) {
+    Trace t1(t);
+    t1.p2 = p;
+    Trace t2(t);
+    t1.p1 = p;
+    insertSegmentedTrace(t1);
+    insertSegmentedTrace(t2);
+  } else {
+    insert(Object(t));
+  }
+}
+
+Point Group::intersectionWith(class Trace const &t, bool *ok) const {
+  Trace t1(t);
+  t1.p1 = t.p1 - origin;
+  t1.p2 = t.p2 - origin;
+  bool got = false;
+  for (Object const &obj: d->obj) {
+    Point p = intersectionPoint(t1, obj, &got);
+    if (got) {
+      if (ok)
+	*ok = true;
+      return p + origin;
+    }
+  }
+  if (ok)
+    *ok = false;
+  return Point();
 }

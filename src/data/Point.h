@@ -36,7 +36,10 @@ public:
   Point &flipUpDown(Dim y=Dim());
   Point &rotateCW(Point const &p=Point());
   Point &rotateCCW(Point const &p=Point());
+  inline static Dim distance(Point const &a, Point const &b) {
+    return a.distance(b); }
 };
+
 
 QDebug operator<<(QDebug, Point const &);
 inline uint qHash(Point const &p) {

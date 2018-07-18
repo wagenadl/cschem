@@ -75,3 +75,13 @@ bool Trace::onSegment(Point p, Dim mrg) const {
   // Instead of testing a/b < m, I test a < m*b to avoid misery when p1==p2.
   return a < m*b;
 }
+
+Point Trace::intersectionWith(class Trace const &t, bool *ok) const {
+  /* This is actually a fairly tricky calculation. I don't feel up to that
+     right this minute.
+  */
+  qDebug() << "Trace::intersectionWith(Trace) NYI";
+  if (ok)
+    *ok = false;
+  return Point();
+}
