@@ -554,10 +554,15 @@ void Group::insertSegmentedTrace(Trace const &t) {
   /* Do we need to be careful not to go around in circles? Perhaps I should
      test if the cut parts are actually shorter than the original. */
   // t is specified in terms of parents coords.
+  qDebug() << "insertsegmented" << t;
+  if (t.p1==t.p2)
+    return;
+  
   bool ok;
   Point p = intersectionWith(t, &ok);
   if (ok) {
     Dim len = Point::distance(t.p1, t.p2);
+    qDebug() << "Got len" << len << " p " << p;
     ok = p.distance(t.p1) < len && p.distance(t.p2) < len
       && p!=t.p1 && p!=t.p2;
   }
@@ -565,7 +570,7 @@ void Group::insertSegmentedTrace(Trace const &t) {
     Trace t1(t);
     t1.p2 = p;
     Trace t2(t);
-    t1.p1 = p;
+    t2.p1 = p;
     insertSegmentedTrace(t1);
     insertSegmentedTrace(t2);
   } else {

@@ -56,6 +56,8 @@ Point Hole::intersectionWith(class Trace const &t, bool *ok) const {
     *ok = false;
   if (!(t.layer==Layer::Top || t.layer==Layer::Bottom))
     return Point();
+  if (p==t.p1 || p==t.p2)
+    return Point();
   if (t.onSegment(p, od/2)
       || (square
 	  && (t.onSegment(p + Point(od/2, od/2))

@@ -66,6 +66,8 @@ Point Pad::intersectionWith(class Trace const &t, bool *ok) const {
     *ok = false;
   if (t.layer != layer)
     return Point();
+  if (p==t.p1 || p==t.p2)
+    return Point();
   Dim diam = Dim::quadrature(width/2, height/2);
   if (t.onSegment(p, diam)) {
     // This is a slightly liberal interpretation of touching, actually, so
