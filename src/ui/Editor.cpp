@@ -9,6 +9,7 @@
 #include "data/LinkedSchematic.h"
 #include "ComponentView.h"
 #include "ElementView.h"
+#include "data/UndoStep.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -29,6 +30,7 @@ public:
     panning = false;
     rubberband = 0;
     stuckptsvalid = false;
+    stepsfromsaved = false;
   }
   void drawBoard(QPainter &) const;
   void drawGrid(QPainter &) const;
@@ -64,6 +66,7 @@ public:
   void validateStuckPoints() const;
   void invalidateStuckPoints() const;
   void zoom(double factor);
+  void createUndoPoint();
 public:
   Editor *ed;
   Layout layout;
@@ -97,6 +100,9 @@ public:
   QTransform pan0;
   QPoint panstart;
   LinkedSchematic linkedschematic;
+  QList<UndoStep> undostack;
+  QList<UndoStep> redostack;
+  int stepsfromsaved;
 };
 
 void EData::invalidateStuckPoints() const {
@@ -141,6 +147,19 @@ Rect EData::selectionBounds() const {
   return r;
 }
   
+void EData::createUndoPoint() {
+  UndoStep s;
+  s.layout = layout;
+  s.selection = selection;
+  s.selpts = selpts;
+  s.purepts = purepts;
+  undostack << s;
+  redostack->clear();
+  stepsfromsaved ++;
+  ed->undoAvailable(!undostack.isEmpty());
+  ed->redoAvailable(!undostack.isEmpty());
+  ed->changedFromSaved(stepsfromsaved != 0);
+}
 
 void EData::selectPointsOf(int id) {
   Group const &here(layout.root().subgroup(crumbs));
@@ -1585,4 +1604,77 @@ void Editor::unlinkSchematic() {
 
 Schem const &Editor::linkedSchematic() const {
   return d->linkedschematic.schematic();
+}
+
+void Editor::undo() {
+  if (d->undostack.isEmpty())
+    return;
+  { UndoStep s;
+    s.layout = d->layout;
+    s.selection = d->selection;
+    s.selpts = d->selpts;
+    s.purepts = d->purepts;
+    d->redostack << s;
+  }
+  { UndoStep const &s = d->undostack.last();
+    d->layout = s.layout;
+    d->selection = s.selection;
+    d->selpts = s.selpts;
+    d->purepts = s.purepts;
+  }
+  d->invalidateStuckPoints();
+  d->undostack.removeLast();
+  d->stepsfromsaved--;
+  emit changedFromSaved(d->stepsfromsaved != 0);
+  emit selectionChanged();
+  emit componentsChanged();
+  emit boardChanged(d->layout.board());
+  emit undoAvailable(!d->undostack.isEmpty());
+  emit redoAvailable(!d->undostack.isEmpty());
+  update();
+}
+
+void Editor::redo() {
+  if (d->redostack.isEmpty())
+    return;
+  { UndoStep s;
+    s.layout = d->layout;
+    s.selection = d->selection;
+    s.selpts = d->selpts;
+    s.purepts = d->purepts;
+    d->undostack << s;
+  }
+  { UndoStep const &s = d->redostack.last();
+    d->layout = s.layout;
+    d->selection = s.selection;
+    d->selpts = s.selpts;
+    d->purepts = s.purepts;
+  }
+  d->invalidateStuckPoints();
+  d->redostack.removeLast();
+  d->stepsfromsaved++;
+  emit changedFromSaved(d->stepsfromsaved != 0);
+  emit selectionChanged();
+  emit componentsChanged();
+  emit boardChanged(d->layout.board());
+  emit undoAvailable(!d->undostack.isEmpty());
+  emit redoAvailable(!d->undostack.isEmpty());
+  update();
+}
+
+bool Editor::isUndoAvailable() const {
+  return !d->undostack.isEmpty();
+}
+
+bool Editor::isRedoAvailable() const {
+  return !d->redostack.isEmpty();
+}
+
+bool Editor::isAsSaved() const {
+  return d->stepsfromsaved == 0;
+}
+
+
+void Editor::markAsSaved() {
+  d->stepsfromsaved = 0;
 }

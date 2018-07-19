@@ -31,6 +31,10 @@ public:
   bool linkSchematic(QString fn);
   void unlinkSchematic();
   class Schem const &linkedSchematic() const;
+  Point hoverPoint() const;
+  bool isUndoAvailable() const;
+  bool isRedoAvailable() const;
+  bool isAsSaved() const;
 public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);
@@ -73,7 +77,9 @@ public slots:
   // id must be in current group (see breadcrumbs). Updates "pkg" of
   // saved group
   bool insertComponent(QString fn, Point pt); // true if OK.
-  Point hoverPoint() const;
+  void undo();
+  void redo();
+  void markAsSaved();
 signals:
   void boardChanged(Board const &);
   void hovering(Point);
@@ -81,6 +87,9 @@ signals:
   void selectionChanged();
   void componentsChanged(); // emitted when a component has been placed,
   // created, removed, or renamed
+  void changedFromSaved(bool);
+  void undoAvailable(bool);
+  void redoAvailable(bool);
 protected:
   void mouseDoubleClickEvent(QMouseEvent *) override;
   void mousePressEvent(QMouseEvent *) override;
