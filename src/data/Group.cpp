@@ -199,7 +199,7 @@ Object const &Group::object(int key) const {
 Object &Group::object(int key) {
   d.detach();
   d->hasbbox = false;
-  return as_nonconst(as_const(*this).object(key));
+  return d->obj[key];
 }
 
 QList<int> Group::keys() const {

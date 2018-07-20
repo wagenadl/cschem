@@ -266,6 +266,10 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
   edit->addAction("&Delete selected", [this]() { editor->deleteSelected(); },
 		  QKeySequence(Qt::Key_Delete));
+  edit->addAction("&Undo", [this]() { editor->undo(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_Z));
+  edit->addAction("&Redo", [this]() { editor->redo(); },
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
 
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },

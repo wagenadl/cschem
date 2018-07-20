@@ -105,6 +105,29 @@ public:
   int stepsfromsaved;
 };
 
+class UndoCreator {
+public:
+  void operator()() {
+    if (!any)
+      d->createUndoPoint();
+    any = true;
+  }
+  UndoCreator(EData *d, bool imm=false): d(d), any(false) {
+    if (imm)
+      (*this)();
+  }
+  ~UndoCreator() {
+    if (any) {
+      qDebug() << "created undo";
+      d->ed->changedFromSaved(d->stepsfromsaved != 0);
+      d->ed->update();
+    }
+  }
+private:
+  EData *d;
+  bool any;
+};    
+
 void EData::invalidateStuckPoints() const {
   stuckptsvalid = false;
 }
@@ -148,17 +171,20 @@ Rect EData::selectionBounds() const {
 }
   
 void EData::createUndoPoint() {
+  qDebug() << "createundopoint";
   UndoStep s;
   s.layout = layout;
   s.selection = selection;
   s.selpts = selpts;
   s.purepts = purepts;
   undostack << s;
-  redostack->clear();
+  redostack.clear();
   stepsfromsaved ++;
-  ed->undoAvailable(!undostack.isEmpty());
-  ed->redoAvailable(!undostack.isEmpty());
+  ed->undoAvailable(true);
+  ed->redoAvailable(false);
   ed->changedFromSaved(stepsfromsaved != 0);
+  qDebug() << "undostack top" << undostack.last().layout.root();
+  qDebug() << "undo #" << undostack.size() << "redo #" << redostack.size();
 }
 
 void EData::selectPointsOf(int id) {
@@ -367,8 +393,8 @@ void EData::pressText(Point p) {
   t.orient = props.orient;
   t.text = props.text;
   t.layer = props.layer;
+  UndoCreator uc(this, true);
   here.insert(Object(t));
-  ed->update();
 } 
 
 void EData::pressHole(Point p) {
@@ -380,8 +406,10 @@ void EData::pressHole(Point p) {
   t.od = props.od;
   t.id = props.id;
   t.square = props.square;
+  UndoCreator uc(this, true);
+  qDebug() << "inserting hole";
   here.insert(Object(t));
-  ed->update();
+  qDebug() << "done inserting";
 }
 
 
@@ -393,9 +421,9 @@ void EData::pressPad(Point p) {
   t.p = p;
   t.width = props.w;
   t.height = props.h;
-  t.layer = props.layer; 
+  t.layer = props.layer;
+  UndoCreator uc(this, true);
   here.insert(Object(t));
-  ed->update();
 }
 
 void EData::pressArc(Point p) {
@@ -408,8 +436,8 @@ void EData::pressArc(Point p) {
   t.linewidth = props.linewidth;
   t.extent = props.ext;
   t.layer = props.layer;
+  UndoCreator uc(this, true);
   here.insert(Object(t));
-  ed->update();
 }
 
 void EData::pressPickingUp(Point p) {
@@ -436,10 +464,10 @@ void EData::pressPickingUp(Point p) {
     // pickup p2
     tracestart = t.p1 + ori;
   }    
+  UndoCreator uc(this, true);
   here.remove(fave);
   tracecurrent = p;
   tracing = true;
-  ed->update();
 }
 
 void EData::pressTracing(Point p) {
@@ -456,6 +484,7 @@ void EData::pressTracing(Point p) {
     t.p2 = p - ori;
     t.width = props.linewidth;
     t.layer = props.layer;
+    UndoCreator uc(this, true);
     here.insertSegmentedTrace(t);
   } else {
     tracing = true;
@@ -489,11 +518,8 @@ enum class Prio {
 int EData::visibleObjectAt(Point p, Dim mrg) const {
   Group const &here(layout.root().subgroup(crumbs));
   Point ori(layout.root().originOf(crumbs));
-  qDebug() << "visibleobjectat" << p << mrg << "crumbs" << crumbs << "ori" << ori;
   p -= ori;
-  qDebug() << "  shifted p" << p;
   QList<int> ids = here.objectsAt(p, mrg);
-  qDebug() << "  found" << ids;
   /* Now, we want to select one item that P is on.
      We prioritize higher layers over lower layers, ignore pads, text, traces
      on hidden layers, prioritize holes, pads, groups [components], text over
@@ -657,11 +683,18 @@ void EData::movePanning(QPoint p) {
 }
 
 void EData::releaseMoving(Point p) {
-  validateStuckPoints();
   movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+  if (movingdelta.isNull()) {
+    moving = false;
+    ed->update();
+    return;
+  }
+  validateStuckPoints();
+  UndoCreator uc(this);
   Group &here(layout.root().subgroup(crumbs));
   Point ori(layout.root().originOf(crumbs));
   for (int id: here.keys()) {
+    uc();
     Object &obj(here.object(id));
     if (selection.contains(id)) {
       if (obj.isTrace()) {
@@ -671,9 +704,13 @@ void EData::releaseMoving(Point p) {
         if (!stuckpts[t.layer].contains(t.p2+ori))
           t.p2 += movingdelta;
       } else {
+	qDebug() << "Before translating:" << undostack.last().layout.root();
         obj.translate(movingdelta);
+	qDebug() << "After translating:" << undostack.last().layout.root();
+	qDebug() << undostack.last().layout.root();
       }
     } else if (obj.isTrace()) {
+      uc();
       Trace &t = obj.asTrace();
       if ((selpts[t.layer].contains(t.p1 + ori)
 	   || purepts[t.layer].contains(t.p1 + ori))
@@ -727,13 +764,25 @@ void Editor::setMode(Mode m) {
 bool Editor::load(QString fn) {
   d->layout = FileIO::loadLayout(fn);
   d->linkedschematic.link(d->layout.board().linkedschematic);
+  d->stepsfromsaved = 0;
+  d->undostack.clear();
+  d->redostack.clear();
+  emit undoAvailable(false);
+  emit redoAvailable(false);
+  emit changedFromSaved(false);
   scaleToFit();
   update();
   return !d->layout.root().isEmpty();
 }
 
-bool Editor::save(QString fn) const {
-  return FileIO::saveLayout(fn, d->layout);
+bool Editor::save(QString fn) {
+  if (FileIO::saveLayout(fn, d->layout)) {
+    d->stepsfromsaved = 0;
+    emit changedFromSaved(false);
+    return true;
+  } else {
+    return false;
+  }
 }
 
 Layout const &Editor::pcbLayout() const {
@@ -1093,51 +1142,60 @@ void Editor::selectArea(Rect r, bool add) {
 void Editor::setExtent(Arc::Extent ext) {
   d->props.ext = ext;
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.isArc())
+    if (obj.isArc()) {
+      uc();
       obj.asArc().extent = ext;
+    }
   }
-  update();
 }
 
 void Editor::setLineWidth(Dim l) {
   d->props.linewidth = l;
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.isTrace())
+    if (obj.isTrace()) {
+      uc();
       obj.asTrace().width = l;
-    else if (obj.isArc())
+    } else if (obj.isArc()) {
+      uc();
       obj.asArc().linewidth = l;
+    }
   }
-  update();
 }
 
 void Editor::setLayer(Layer l) {
   d->props.layer = l;
 
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
     switch (obj.type()) {
     case Object::Type::Trace:
+      uc();
       obj.asTrace().layer = l;
       break;
     case Object::Type::Text:
+      uc();
       obj.asText().setLayer(l);
       break;
     case Object::Type::Pad:
+      uc();
       obj.asPad().layer = l;
       break;
     case Object::Type::Arc:
+      uc();
       obj.asArc().layer = l;
       break;
     default:
       break;
     }
   }
-  update();
 }
 
 void Editor::setID(Dim x) {
@@ -1146,34 +1204,37 @@ void Editor::setID(Dim x) {
   d->props.id = x;
 
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isHole()) {
+      uc();
       obj.asHole().id = x;
       if (obj.asHole().od < x + Dim::fromInch(.015))
 	obj.asHole().od = x + Dim::fromInch(.015);
     } else if (obj.isArc()) {
+      uc();
       obj.asArc().radius = x/2;
     }
   }
-  update();
 }
 
 void Editor::setOD(Dim x) {
   if (x < Dim::fromInch(.02))
     x = Dim::fromInch(.02);
   d->props.od = x;
+  UndoCreator uc(d);
 
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.type()==Object::Type::Hole) {
+      uc();
       obj.asHole().od = x;
       if (obj.asHole().id > x - Dim::fromInch(.015))
 	obj.asHole().id = x - Dim::fromInch(.015);
     }      
   }
-  update();
 }
 
 void Editor::setWidth(Dim x) {
@@ -1182,64 +1243,73 @@ void Editor::setWidth(Dim x) {
   d->props.w = x;
 
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.type()==Object::Type::Pad)
+    if (obj.type()==Object::Type::Pad) {
+      uc();
       obj.asPad().width = x;
+    }
   }
-  update();
 }
 
 void Editor::setHeight(Dim x) {
   if (x < Dim::fromInch(.01))
     x = Dim::fromInch(.01);
   d->props.h = x;
-
+  UndoCreator uc(d);
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.type()==Object::Type::Pad)
+    if (obj.type()==Object::Type::Pad) {
+      uc();
       obj.asPad().height = x;
+    }
   }
-  update();
 }
 
 void Editor::setSquare(bool b) {
   d->props.square = b;
-
+  UndoCreator uc(d);
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.type()==Object::Type::Hole)
+    if (obj.type()==Object::Type::Hole) {
+      uc();
       obj.asHole().square = b;
+    }
   }
-  update();
 }
 
 void Editor::setRef(QString t) {
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isHole()) {
+      uc();
       obj.asHole().ref = t;
     } else if (obj.isGroup()) {
       Group &g(obj.asGroup());
       g.ref = t;
       int tid = g.refTextId();
-      if (tid>0 && here.contains(tid))
+      if (tid>0 && here.contains(tid)) {
+	uc();
         here.object(tid).asText().text = t;
+      }
       emit componentsChanged();
     }
   }
-  update();
 }
 
 void Editor::setText(QString t) {
   d->props.text = t;
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isText()) {
+      uc();
       Text &txt(obj.asText());
       txt.text = t;
       int gid = txt.groupAffiliation();
@@ -1249,7 +1319,6 @@ void Editor::setText(QString t) {
       }
     }
   }
-  update();
 }
 
 void Editor::setRotation(int rot) {
@@ -1263,12 +1332,14 @@ void Editor::setFlipped(bool f) {
 void Editor::setFontSize(Dim fs) {
   d->props.fs = fs;
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
-    if (obj.isText())
+    if (obj.isText()) {
+      uc();
       obj.asText().fontsize = fs;
+    }
   }
-  update();
 }
 
 QList<int> Editor::breadcrumbs() const {
@@ -1294,7 +1365,7 @@ Point Editor::groupOffset() const {
   return d->layout.root().originOf(d->crumbs);
 }
 
-void Editor::rotateCW() {
+void Editor::rotateCW(bool noundo) {
   Group &here(d->layout.root().subgroup(d->crumbs));
   Point origin(d->layout.root().originOf(d->crumbs));
   Rect box(d->selectionBounds());
@@ -1302,7 +1373,9 @@ void Editor::rotateCW() {
     return;
   Point center = box.center(); //.roundedTo(d->layout.board().grid);
   center -= origin;
-  
+  UndoCreator uc(d);
+  if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
+    uc();
   for (int id: d->selection)
     here.object(id).rotateCW(center);
 
@@ -1334,16 +1407,16 @@ void Editor::rotateCW() {
       newpts << p.rotatedCW(center);
     d->selpts[l] = newpts;
   }
+}
+
+void Editor::rotateCCW(bool noundo) {
+  rotateCW(noundo);
+  rotateCW(true);
+  rotateCW(true);
   update();
 }
 
-void Editor::rotateCCW() {
-  rotateCW();
-  rotateCW();
-  rotateCW();
-}
-
-void Editor::flipH() {
+void Editor::flipH(bool noundo) {
   Group &here(d->layout.root().subgroup(d->crumbs));
   Point origin(d->layout.root().originOf(d->crumbs));
   Rect box(d->selectionBounds());
@@ -1351,7 +1424,10 @@ void Editor::flipH() {
     return;
   Dim center = box.center().x; //.roundedTo(d->layout.board().grid).x;
   center -= origin.x;
-  
+
+  UndoCreator uc(d);
+  if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
+    uc();
   for (int id: d->selection)
     here.object(id).flipLeftRight(center);
 
@@ -1382,13 +1458,13 @@ void Editor::flipH() {
       newpts << p.flippedLeftRight(center);
     d->selpts[l] = newpts;
   }
-  update();
 }
 
 void Editor::flipV() {
   rotateCW();
-  flipH();
-  rotateCCW();
+  flipH(true);
+  rotateCCW(true);
+  update();
 }
 
 EProps &Editor::properties() {
@@ -1399,27 +1475,28 @@ void Editor::formGroup() {
   if (d->selection.isEmpty())
     return;
   Group &here(d->layout.root().subgroup(d->crumbs));
+  UndoCreator uc(d, true);
   here.formSubgroup(d->selection);
   clearSelection();
   emit componentsChanged();
-  update();
 }
 
 void Editor::dissolveGroup() {
   if (d->selection.isEmpty())
     return;
+  UndoCreator uc(d, true);
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) 
     if (here.object(id).isGroup())
       here.dissolveSubgroup(id);
   emit componentsChanged();
   clearSelection();
-  update();
 }
 
 void Editor::deleteSelected() {
   if (d->selection.isEmpty())
     return;
+  UndoCreator uc(d, true);
   Group &here(d->layout.root().subgroup(d->crumbs));
   for (int id: d->selection) {
     if (here.object(id).isGroup()) {
@@ -1435,7 +1512,6 @@ void Editor::deleteSelected() {
     }
   }
   clearSelection();
-  update();
 }
   
 int Editor::selectedComponent(QString *msg) const {
@@ -1495,6 +1571,7 @@ bool Editor::saveComponent(int id, QString fn) {
 bool Editor::insertComponent(QString fn, Point pt) {
   Group &here(d->layout.root().subgroup(d->crumbs));
   Point ori = d->layout.root().originOf(d->crumbs);
+  UndoCreator uc(d, true);
   int gid = here.insertComponent(fn);
   if (!gid)
     return false;
@@ -1556,6 +1633,7 @@ void Editor::dropEvent(QDropEvent *e) {
     QString pv = src->pvText();
     grp.ref = ref;
     grp.setRefTextId(0);
+    UndoCreator uc(d, true);
     Group &here(d->layout.root().subgroup(d->crumbs));
     Point ori = d->layout.root().originOf(d->crumbs);
     Point anch = grp.anchor(); // this should be at droppos
@@ -1607,9 +1685,11 @@ Schem const &Editor::linkedSchematic() const {
 }
 
 void Editor::undo() {
+  qDebug() << "undo : undo #" << d->undostack.size() << "redo #" << d->redostack.size();
   if (d->undostack.isEmpty())
     return;
   { UndoStep s;
+    qDebug() << "root" << d->layout.root();
     s.layout = d->layout;
     s.selection = d->selection;
     s.selpts = d->selpts;
@@ -1617,6 +1697,7 @@ void Editor::undo() {
     d->redostack << s;
   }
   { UndoStep const &s = d->undostack.last();
+    qDebug() << "undostack top" << d->undostack.last().layout.root();
     d->layout = s.layout;
     d->selection = s.selection;
     d->selpts = s.selpts;
@@ -1630,11 +1711,14 @@ void Editor::undo() {
   emit componentsChanged();
   emit boardChanged(d->layout.board());
   emit undoAvailable(!d->undostack.isEmpty());
-  emit redoAvailable(!d->undostack.isEmpty());
+  emit redoAvailable(true);
+  qDebug() << "root" << d->layout.root();
+  qDebug() << "undone : undo #" << d->undostack.size() << "redo #" << d->redostack.size();
   update();
 }
 
 void Editor::redo() {
+  qDebug() << "redo : undo #" << d->undostack.size() << "redo #" << d->redostack.size();
   if (d->redostack.isEmpty())
     return;
   { UndoStep s;
@@ -1657,8 +1741,9 @@ void Editor::redo() {
   emit selectionChanged();
   emit componentsChanged();
   emit boardChanged(d->layout.board());
-  emit undoAvailable(!d->undostack.isEmpty());
-  emit redoAvailable(!d->undostack.isEmpty());
+  emit undoAvailable(true);
+  emit redoAvailable(!d->redostack.isEmpty());
+  qDebug() << "redone : undo #" << d->undostack.size() << "redo #" << d->redostack.size();
   update();
 }
 

@@ -9,7 +9,6 @@ Hole::Hole() {
 Rect Hole::boundingRect() const {
   Dim r = od/2;
   Rect rct(p - Point(r, r), p + Point(r, r));
-  qDebug() << "Hole" << ref << "bbox" << rct;
   return rct;
 }
 

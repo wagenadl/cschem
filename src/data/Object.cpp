@@ -377,6 +377,9 @@ Object Object::translated(Point const &p) const {
 }
   
 void Object::translate(Point const &p) {
+  if (p.isNull())
+    return;
+  d.detach();
   switch (d->typ) {
   case Type::Hole:
     d->hole->p += p;

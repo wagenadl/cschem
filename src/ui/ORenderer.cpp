@@ -95,7 +95,6 @@ void ORenderer::drawHole(Hole const &t, bool selected) {
 }
 
 void ORenderer::drawPad(Pad const &t, bool selected) {
-  qDebug() << "drawpad" << t << selected << layer;
   if (t.layer != layer)
     return;
   

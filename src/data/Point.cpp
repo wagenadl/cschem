@@ -67,3 +67,6 @@ QDebug operator<<(QDebug dbg, Point const &p) {
   return dbg;
 }
 
+bool Point::isNull() const {
+  return x.isNull() && y.isNull();
+}

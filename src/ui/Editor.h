@@ -17,7 +17,7 @@ public:
   Editor(QWidget *parent=0);
   virtual ~Editor();
   bool load(QString);
-  bool save(QString) const; 
+  bool save(QString); 
   Layout const &pcbLayout() const;
   QList<int> breadcrumbs() const; // to currently entered group
   QSet<int> selectedObjects() const; // within currently entered group
@@ -63,9 +63,9 @@ public slots:
   void setFontSize(Dim);
   void setText(QString);
   void setExtent(Arc::Extent);
-  void rotateCW();
-  void rotateCCW();
-  void flipH();
+  void rotateCW(bool noundo=false);
+  void rotateCCW(bool noundo=false);
+  void flipH(bool noundo=false);
   void flipV();
   void setRotation(int); // this is not the way to rotate or flip things
   void setFlipped(bool); // this is not the way to rotate or flip things
