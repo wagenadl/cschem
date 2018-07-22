@@ -79,6 +79,9 @@ public slots:
   bool insertComponent(QString fn, Point pt); // true if OK.
   void undo();
   void redo();
+  void cut();
+  void copy();
+  void paste();
   void markAsSaved();
 signals:
   void boardChanged(Board const &);

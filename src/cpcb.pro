@@ -32,6 +32,8 @@ SOURCES += ui/ORenderer.cpp ui/ElementView.cpp ui/ComponentView.cpp
 HEADERS += ui/MultiCompView.h
 SOURCES += ui/MultiCompView.cpp
 HEADERS += data/UndoStep.h
+HEADERS += data/Clipboard.h
+SOURCES += data/Clipboard.cpp
 
 # From CSCHEM
 HEADERS += circuit/IDFactory.h

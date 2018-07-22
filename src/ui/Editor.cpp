@@ -10,6 +10,7 @@
 #include "ComponentView.h"
 #include "ElementView.h"
 #include "data/UndoStep.h"
+#include "data/Clipboard.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -120,6 +121,10 @@ public:
     if (any) {
       qDebug() << "created undo";
       d->ed->changedFromSaved(d->stepsfromsaved != 0);
+      d->ed->undoAvailable(true);
+      d->ed->redoAvailable(false);
+      d->ed->selectionChanged();
+      d->ed->componentsChanged();
       d->ed->update();
     }
   }
@@ -1762,4 +1767,29 @@ bool Editor::isAsSaved() const {
 
 void Editor::markAsSaved() {
   d->stepsfromsaved = 0;
+}
+
+void Editor::cut() {
+  copy();
+  deleteSelected();
+}
+
+void Editor::copy() {
+  Clipboard &clp(Clipboard::instance());
+  Group const &here(d->layout.root().subgroup(d->crumbs));
+  clp.store(here, d->selection);
+}
+
+void Editor::paste() {
+  Clipboard &clp(Clipboard::instance());
+  if (!clp.isValid())
+    return;
+  UndoCreator uc(d, true);
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  QList<Object> const &lst(clp.retrieve());
+  d->selection.clear();
+  d->selpts.clear();
+  d->purepts.clear();
+  for (Object const &obj: lst)
+    d->selection << here.insert(obj);
 }

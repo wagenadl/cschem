@@ -252,13 +252,19 @@ void MWData::makeMenus() {
   file->addAction("&Quit", []() { QApplication::quit(); });
 
   auto *edit = mb->addMenu("&Edit");
+  edit->addAction("&Cut", [this]() { editor->cut(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_X));
+  edit->addAction("Cop&y", [this]() { editor->copy(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_C));
+  edit->addAction("&Paste", [this]() { editor->paste(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_V));
   edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
                   QKeySequence(Qt::CTRL + Qt::Key_R));
   edit->addAction("Rotate &anticlockwise", [this]() { editor->rotateCCW(); },
                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
   edit->addAction("&Flip left–right", [this]() { editor->flipH(); },
                   QKeySequence(Qt::CTRL + Qt::Key_F));
-  edit->addAction("Flip &up–down", [this]() { editor->flipV(); },
+  edit->addAction("Flip up–down", [this]() { editor->flipV(); },
                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_F));
   edit->addAction("&Group", [this]() { editor->formGroup(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_G));
@@ -268,7 +274,7 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::Key_Delete));
   edit->addAction("&Undo", [this]() { editor->undo(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_Z));
-  edit->addAction("&Redo", [this]() { editor->redo(); },
+  edit->addAction("Redo", [this]() { editor->redo(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
 
   auto *view = mb->addMenu("&View");
