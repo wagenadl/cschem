@@ -31,9 +31,9 @@ HEADERS += ui/ORenderer.h   ui/ElementView.h   ui/ComponentView.h
 SOURCES += ui/ORenderer.cpp ui/ElementView.cpp ui/ComponentView.cpp
 HEADERS += ui/MultiCompView.h
 SOURCES += ui/MultiCompView.cpp
-HEADERS += data/UndoStep.h
-HEADERS += data/Clipboard.h
-SOURCES += data/Clipboard.cpp
+HEADERS += data/UndoStep.h data/LayerPoint.h data/VectorCf.h
+HEADERS += data/Clipboard.h   data/PCBNet.h   data/NodeID.h
+SOURCES += data/Clipboard.cpp data/PCBNet.cpp data/NodeID.cpp
 
 # From CSCHEM
 HEADERS += circuit/IDFactory.h
