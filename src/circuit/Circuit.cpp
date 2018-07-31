@@ -5,15 +5,6 @@
 #include "PinID.h"
 #include "PartNumbering.h"
 
-class CircuitData: public QSharedData {
-public:
-  CircuitData(bool valid=true): valid(valid) { }
-public:
-  QMap<int, Element> elements;
-  QMap<int, Connection> connections;
-  bool valid;
-};  
-
 Circuit::Circuit() {
   valid = true;
 }
@@ -21,7 +12,14 @@ Circuit::Circuit() {
 Circuit::Circuit(Connection const &con): Circuit() {
   insert(con);
 }
-  
+
+int Circuit::elementByName(QString name) const {
+  for (auto it=elements.begin(); it!=elements.end(); ++it)
+    if (it.value().name==name)
+      return it.key();
+  return -1;
+}
+
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
   while (!sr.atEnd()) {
     sr.readNext();

@@ -65,6 +65,8 @@ public:
   bool isEmpty() const;
   bool isValid() const;
   void invalidate();
+  int elementByName(QString) const;
+  /* Returns ID for named element or -1. */
 public:
   SafeMap<int, Element> elements;
   SafeMap<int, Connection> connections;

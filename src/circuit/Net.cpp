@@ -10,35 +10,35 @@
 class NetData: public QSharedData {
 public:
   NetData(Circuit const &circ): circ(circ) { }
-  void add(int con);
-  void add(PinID const &pinid);
+  void addCon(int con);
+  void addPin(PinID const &pinid);
 public:
   Circuit circ;
   QSet<int> connections;
   QSet<PinID> pins;
 };
 
-void NetData::add(int c) {
+void NetData::addCon(int c) {
   if (connections.contains(c))
     return;
   connections << c;
   Connection const &con = circ.connections[c];
-  add(con.from());
-  add(con.to());
+  addPin(con.from());
+  addPin(con.to());
 }
 
-void NetData::add(PinID const &pinid) {
+void NetData::addPin(PinID const &pinid) {
   if (pins.contains(pinid))
     return;
   pins << pinid;
   QSet<int> cc = circ.connectionsOn(pinid.element(), pinid.pin());
   for (int c: cc)
-    add(c);
+    addCon(c);
 }
 
 Net::Net(Circuit const &circ, PinID const &seedpin):
   d(new NetData(circ)) {
-  d->add(seedpin);
+  d->addPin(seedpin);
 }
 
 Net::Net(Circuit const &circ, int seedelt, QString seedpin):
@@ -47,7 +47,7 @@ Net::Net(Circuit const &circ, int seedelt, QString seedpin):
   
 Net::Net(Circuit const &circ, int seedcon):
   d(new NetData(circ)) {
-  d->add(seedcon);
+  d->addCon(seedcon);
 }
 
 Net::~Net() {
