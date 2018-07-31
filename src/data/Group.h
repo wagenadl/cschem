@@ -44,8 +44,9 @@ public:
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
   // only direct children are returned
   NodeID nodeAt(Point p, Dim mrg=Dim()) const;
-  QString pinName(NodeID const &) const;
   // even inside subgroups; return is crumbs from this group
+  QString humanName(NodeID const &) const;
+  QStringList nodeName(NodeID const &) const; // refs for each level
   int formSubgroup(QSet<int> const &);
   QSet<int> dissolveSubgroup(int);
   int ensureRefText(int); // ensure that subgroup has reftext object
@@ -60,7 +61,7 @@ public:
   int insertComponent(QString fn);
   QSet<Point> points() const; // relative to parent
   QSet<Point> points(Layer) const; // relative to parent
-  QStringList pinNames() const;
+  QStringList pinNames() const; // immediate children
   Point pinPosition(QString name) const; // relative to parent
   Point anchor() const; // first named pin, relative to parent
   void insertSegmentedTrace(class Trace const &t);

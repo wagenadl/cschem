@@ -360,7 +360,32 @@ QList<int> Group::objectsAt(Point p, Dim mrg) const {
   return ids;
 }
 
-QString Group::pinName(NodeID const &ids) const {
+QStringList Group::nodeName(NodeID const &ids) const {
+  QStringList res;
+  res << ref;
+  if (ids.isEmpty())
+    return res;
+  int id = ids.first();
+  Object const &obj(object(id));
+  QString name;
+  switch (obj.type()) {
+  case Object::Type::Group:
+    res += obj.asGroup().nodeName(ids.tail());
+    break;
+  case Object::Type::Pad:
+    res << obj.asPad().ref;
+    break;
+  case Object::Type::Hole:
+    res << obj.asHole().ref;
+    break;
+  default:
+    break;
+  }
+  return res;
+}
+
+
+QString Group::humanName(NodeID const &ids) const {
   if (ids.isEmpty())
     return ref;
   int id = ids.first();
@@ -368,7 +393,7 @@ QString Group::pinName(NodeID const &ids) const {
   QString name;
   switch (obj.type()) {
   case Object::Type::Group:
-    name = obj.asGroup().pinName(ids.tail());
+    name = obj.asGroup().humanName(ids.tail());
     break;
   case Object::Type::Pad:
     name = "pin " + obj.asPad().ref;
