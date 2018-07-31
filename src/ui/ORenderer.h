@@ -5,7 +5,8 @@
 #define ORENDERER_H
 
 #include "data/Object.h"
-
+#include "data/NodeID.h"
+#include "data/PCBNet.h"
 #include <QPainter>
 #include <QTransform>
 
@@ -20,13 +21,15 @@ public:
   void setLayer(Layer l);
   void pushOrigin(Point const &origin);
   void popOrigin();
-  void drawObject(Object const &o, bool selected=false);
-  void drawGroup(Group const &g, bool selected=false);
+  void drawObject(Object const &o, bool selected=false,
+		  PCBNet const &subnet=PCBNet());
+  void drawGroup(Group const &g, bool selected=false,
+		 PCBNet const &subnet=PCBNet());
   void drawText(Text const &t, bool selected=false);
-  void drawTrace(Trace const &t, bool selected=false);
+  void drawTrace(Trace const &t, bool selected=false, bool innet=false);
   void drawArc(Arc const &g, bool selected=false);
-  void drawPad(Pad const &g, bool selected=false);
-  void drawHole(Hole const &g, bool selected=false);
+  void drawPad(Pad const &g, bool selected=false, bool innet=false);	       		 
+  void drawHole(Hole const &g, bool selected=false, bool innet=false);
 public:
   static QByteArray objectToSvg(Object const &,
 				  Dim margin=Dim(), Dim minSize=Dim());

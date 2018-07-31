@@ -512,8 +512,12 @@ Point intersectionPoint(Object const &o, Trace const &t, bool *ok) {
     return o.asTrace().intersectionWith(t, ok);
   case Object::Type::Plane:
     break;
-  case Object::Type::Group:
-    return o.asGroup().intersectionWith(t, ok);
+  case Object::Type::Group: {
+    int id;
+    o.asGroup().intersectionWith(t, &id);
+    if (ok)
+      *ok = id>0;
+  } break;
   }
   if (ok)
     *ok = false;

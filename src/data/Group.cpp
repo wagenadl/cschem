@@ -385,19 +385,23 @@ QString Group::pinName(NodeID const &ids) const {
     return name + ref;
 }
 
-NodeID Group::padOrHoleAt(Point p, Dim mrg) const {
+NodeID Group::nodeAt(Point p, Dim mrg) const {
   p -= origin;
   NodeID ids;
   for (int id: d->obj.keys()) {
     Object const &obj(object(id));
     if (obj.touches(p, mrg)) {
       if (obj.isGroup()) {
-	ids = obj.asGroup().padOrHoleAt(p, mrg);
+	ids = obj.asGroup().nodeAt(p, mrg);
 	ids.push_front(id);
 	return ids;
       } else if (obj.isHole() || obj.isPad()) {
+	ids = NodeID();
 	ids << id;
 	return ids;
+      } else if (obj.isTrace() && ids.isEmpty()
+		 && obj.asTrace().layer!=Layer::Silk) {
+	ids << id;
       }
     }
   }
@@ -597,47 +601,71 @@ void Group::insertSegmentedTrace(Trace const &t) {
      newly proposed trace. If so, break the trace into two parts at the
      crossing point (possibly mildly distorting it), and insert both parts
      recursively. Otherwise, simply insert the trace. */
-  /* Do we need to be careful not to go around in circles? Perhaps I should
-     test if the cut parts are actually shorter than the original. */
   // t is specified in terms of parents coords.
   qDebug() << "insertsegmented" << t;
   if (t.p1==t.p2)
     return;
   
-  bool ok;
-  Point p = intersectionWith(t, &ok);
-  if (ok) {
-    Dim len = Point::distance(t.p1, t.p2);
-    qDebug() << "Got len" << len << " p " << p;
-    ok = p.distance(t.p1) < len && p.distance(t.p2) < len
-      && p!=t.p1 && p!=t.p2;
-  }
-  if (ok) {
-    Trace t1(t);
-    t1.p2 = p;
-    Trace t2(t);
-    t2.p1 = p;
-    insertSegmentedTrace(t1);
-    insertSegmentedTrace(t2);
+  int id;
+  Point p = intersectionWith(t, &id);
+  Dim len = Point::distance(t.p1, t.p2);
+  if (id>0 && p.distance(t.p1)<=len && p.distance(t.p2)<=len) {
+    Object const &ocross(object(id));
+    if (ocross.isTrace()) {
+      Trace const &tcross(ocross.asTrace());
+      bool atend = p==t.p1 || p==t.p2;
+      bool atcrossend = p==tcross.p1 || p==tcross.p2;
+      if (!atcrossend) {
+	Trace tc1(tcross);
+	tc1.p2 = p;
+	Trace tc2(tcross);
+	tc2.p1 = p;
+	remove(id);
+	insert(Object(tc1));
+	insert(Object(tc2));
+      }
+      if (!atend) {
+	Trace t1(t);
+	t1.p2 = p;
+	Trace t2(t);
+	t2.p1 = p;
+	insertSegmentedTrace(t1);
+	insertSegmentedTrace(t2);
+      } else {
+	insert(Object(t));
+      }
+    } else {
+      if (p!=t.p1 && p!=t.p2) {
+	Trace t1(t);
+	t1.p2 = p;
+	Trace t2(t);
+	t2.p1 = p;
+	insertSegmentedTrace(t1);
+	insertSegmentedTrace(t2);
+      } else {
+	insert(Object(t));
+      }	  
+    }
   } else {
     insert(Object(t));
   }
 }
 
-Point Group::intersectionWith(class Trace const &t, bool *ok) const {
+Point Group::intersectionWith(class Trace const &t, int *idp) const {
   Trace t1(t);
   t1.p1 = t.p1 - origin;
   t1.p2 = t.p2 - origin;
   bool got = false;
-  for (Object const &obj: d->obj) {
+  for (int id: keys()) {
+    Object const &obj(object(id));
     Point p = intersectionPoint(t1, obj, &got);
     if (got) {
-      if (ok)
-	*ok = true;
+      if (idp)
+	*idp = id;
       return p + origin;
     }
   }
-  if (ok)
-    *ok = false;
+  if (idp)
+    *idp = -1;
   return Point();
 }

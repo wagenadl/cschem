@@ -96,12 +96,9 @@ void Builder::addConnections(Group const &root, Point ori) {
   }
 }
 
-PCBNet::PCBNet() {
-}
-
 PCBNet::PCBNet(Group const &root, NodeID seed) {
   Builder builder(root, seed);
-  net_ = builder.pcbNet();
+  QSet<NodeID>::operator=(builder.pcbNet());
 }
 
   

@@ -77,11 +77,45 @@ bool Trace::onSegment(Point p, Dim mrg) const {
 }
 
 Point Trace::intersectionWith(class Trace const &t, bool *ok) const {
-  /* This is actually a fairly tricky calculation. I don't feel up to that
-     right this minute.
+  if (layer != t.layer) {
+    if (ok)
+      *ok = false;
+    return Point();
+  }
+
+  /* This implementation is really primitive; it ignores trace width */
+  /* Mathematical idea: represent us as p1 + a dp where a in [0, 1] and
+     other trace as p1' + a' dp' (where a' in [0, 1]). Find intersection.
+     We have x = x1 + a dx = x1' + a' dx' and y = y1 + a dy = y1' + a' dy'.
+     Solve for a and a' and check if they are in (0,1).
+     Write as:
+     (1)    dx a - dx' a' = x1' - x1
+     (2)    dy a - dy' a' = y1' - y1
+     Multiply (1) by dy and (2) by dx and subtract:
+            0 - (dx' dy  -  dy' dx) a' = dy (x1' - x1) - dx (y1' - y1)
+     to find a', and multiple (1) by dy' and (2) by dx' and subtract:
+            (dx dy' - dy dx') a = dy' (x1' - x1) - dx' (y1' - y1)
+     to find a.
   */
-  qDebug() << "Trace::intersectionWith(Trace) NYI";
-  if (ok)
-    *ok = false;
-  return Point();
+  
+  double x1 = p1.x.toMils();
+  double y1 = p1.y.toMils();
+  double dx = p2.x.toMils() - x1;
+  double dy = p2.y.toMils() - y1;
+  double x1_ = t.p1.x.toMils();
+  double y1_ = t.p1.y.toMils();
+  double dx_ = t.p2.x.toMils() - x1_;
+  double dy_ = t.p2.y.toMils() - y1_;
+  double a = (dy_*(x1_-x1) - dx_*(y1_-y1)) / (dx*dy_ - dy*dx_);
+  double a_ = -(dy*(x1_-x1) - dx*(y1_-y1)) / (dx_*dy - dy_*dx);
+  qDebug() << "a=" << a << " and a_=" << a_;
+  if (a>=0 && a<=1 && a_>=0 && a_<=1) {
+    if (ok)
+      *ok = true;
+    return Point(Dim::fromMils(x1 + a*dx), Dim::fromMils(y1 + a*dy));
+  } else {
+    if (ok)
+      *ok = false;
+    return Point();
+  }
 }

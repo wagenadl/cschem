@@ -110,6 +110,7 @@ public:
   QList<UndoStep> redostack;
   int stepsfromsaved;
   QString onobject;
+  NodeID onnode;
   PCBNet net;
 };
 
@@ -143,10 +144,11 @@ private:
 bool EData::updateOnWhat() {
   Dim mrg = Dim::fromMils(4/mils2px);
   Group &here(layout.root().subgroup(crumbs));
-  NodeID ids = here.padOrHoleAt(hoverpt, mrg);
-  QString nw = here.pinName(ids);
-  bool isnew = nw != onobject;
-  onobject = nw;
+  NodeID ids = here.nodeAt(hoverpt, mrg);
+  bool isnew = ids != onnode;
+  onnode = ids;
+  if (isnew)
+    onobject = here.pinName(ids);
   if (netsvisible && isnew)
     updateNet(ids);
   return isnew;
@@ -154,7 +156,7 @@ bool EData::updateOnWhat() {
 
 void EData::updateNet(NodeID seed) {
   net = PCBNet(layout.root().subgroup(crumbs), seed);
-  qDebug() << "net: " << net.net();
+  qDebug() << "net: " << net;
 }
  
 void EData::invalidateStuckPoints() const {
@@ -356,8 +358,14 @@ void EData::drawObjects(QPainter &p) const {
   
   auto onelayer = [&](Layer l) {
     rndr.setLayer(l);
-    for (int id: here.keys())
-      rndr.drawObject(here.object(id), selection.contains(id));
+    for (int id: here.keys()) {
+      PCBNet subnet;
+      if (netsvisible)
+	for (NodeID nid: net)
+	  if (!nid.isEmpty() && nid.first()==id)
+	    subnet << nid.tail();
+      rndr.drawObject(here.object(id), selection.contains(id), subnet);
+    }
   };
 
   auto drawplanes = [&](Layer) {
@@ -501,7 +509,7 @@ void EData::pressPickingUp(Point p) {
 
 void EData::pressTracing(Point p) {
   p = p.roundedTo(layout.board().grid);
-  if (p == tracestart) {
+  if (p.distance(tracestart) < Dim::fromMils(4/mils2px)) {
     abortTracing();
     return;
   }
@@ -938,8 +946,11 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
     d->moveMoving(p);
   d->hoverpt = p;
   emit hovering(p);
-  if (d->updateOnWhat())
+  if (d->updateOnWhat()) {
     emit onObject(d->onobject);
+    if (d->netsvisible)
+      update();
+  }
 }
 
 void Editor::mouseReleaseEvent(QMouseEvent *e) {
@@ -1607,6 +1618,7 @@ bool Editor::saveComponent(int id, QString fn) {
 }
 
 bool Editor::insertComponent(QString fn, Point pt) {
+  pt = pt.roundedTo(d->layout.board().grid);
   Group &here(d->layout.root().subgroup(d->crumbs));
   Point ori = d->layout.root().originOf(d->crumbs);
   UndoCreator uc(d, true);
@@ -1614,8 +1626,8 @@ bool Editor::insertComponent(QString fn, Point pt) {
   if (!gid)
     return false;
   Object &obj(here.object(gid));
-  Rect bb = obj.boundingRect();
-  Point delta = pt - ori - bb.center();
+  Point delta = pt - ori - obj.asGroup().anchor();
+  qDebug() << "insertcomponent at" << pt << ori << obj.asGroup().anchor();
   obj.translate(delta);
   int tid = obj.asGroup().refTextId();
   if (here.contains(tid))

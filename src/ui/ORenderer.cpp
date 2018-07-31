@@ -2,9 +2,12 @@
 
 #include "ORenderer.h"
 #include "data/SimpleFont.h"
+#include "data/PCBNet.h"
 
 #include <QSvgGenerator>
 #include <QBuffer>
+
+constexpr double inNetMils = 10;
 
 ORenderer::ORenderer(QPainter *p, Point const &o): p(p), origin(o) {
   toplevel = true;
@@ -44,12 +47,10 @@ void ORenderer::popOrigin() {
   toplevel = originstack.isEmpty();
 }
 
-void ORenderer::drawTrace(Trace const &t, bool selected) {
+void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
   if (t.layer != layer)
     return;
   
-  p->setPen(QPen(layerColor(t.layer, selected), t.width.toMils(),
-		Qt::SolidLine, Qt::RoundCap));
   Point p1 = origin + t.p1;
   Point p2 = origin + t.p2;
   if (toplevel) {
@@ -67,10 +68,17 @@ void ORenderer::drawTrace(Trace const &t, bool selected) {
 	p2 += movingdelta;
     }
   }
+  if (innet) {
+    p->setPen(QPen(layerColor(t.layer, true), t.width.toMils() + inNetMils,
+		   Qt::SolidLine, Qt::RoundCap));
+    p->drawLine(p1.toMils(), p2.toMils());
+  }
+  p->setPen(QPen(layerColor(t.layer, selected), t.width.toMils(),
+		Qt::SolidLine, Qt::RoundCap));
   p->drawLine(p1.toMils(), p2.toMils());
 }
 
-void ORenderer::drawHole(Hole const &t, bool selected) {
+void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   bool inv = layer==Layer::Invalid;
   bool tb = layer==Layer::Bottom || layer==Layer::Top;
   if (!inv && !tb)
@@ -86,6 +94,15 @@ void ORenderer::drawHole(Hole const &t, bool selected) {
     p->drawEllipse(p1.toMils(), id/2, id/2);
   } else {
     double od = t.od.toMils();
+    if (innet) {
+      p->setBrush(layerColor(layer, true));
+      if (t.square)
+	p->drawRect(QRectF(p1.toMils()
+			   - QPointF(od/2+inNetMils/2, od/2+inNetMils/2),
+			   QSizeF(od+inNetMils, od+inNetMils)));
+      else 
+	p->drawEllipse(p1.toMils(), od/2+inNetMils/2, od/2+inNetMils/2);
+    }
     p->setBrush(layerColor(layer, selected));
     if (t.square)
       p->drawRect(QRectF(p1.toMils() - QPointF(od/2, od/2), QSizeF(od, od)));
@@ -94,12 +111,11 @@ void ORenderer::drawHole(Hole const &t, bool selected) {
   }
 }
 
-void ORenderer::drawPad(Pad const &t, bool selected) {
+void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   if (t.layer != layer)
     return;
   
   p->setPen(Qt::NoPen);
-  p->setBrush(layerColor(layer, selected));
 
   QPointF p0 = t.p.toMils();
   if (toplevel && selected)
@@ -107,6 +123,12 @@ void ORenderer::drawPad(Pad const &t, bool selected) {
   
   double w = t.width.toMils();
   double h = t.height.toMils();
+  if (innet) {
+    p->setBrush(layerColor(layer, true));
+    QPointF dp(w+inNetMils, h+inNetMils);
+    p->drawRect(QRectF(p0 - dp/2, p0 + dp/2));
+  }
+  p->setBrush(layerColor(layer, selected));
   p->drawRect(QRectF(p0 - QPointF(w/2,h/2), p0 + QPointF(w/2,h/2)));
 }
 
@@ -137,13 +159,18 @@ void ORenderer::drawArc(Arc const &t, bool selected) {
   }
 }
 
-void ORenderer::drawGroup(Group const &g, bool selected) {
+void ORenderer::drawGroup(Group const &g, bool selected, PCBNet const &net) {
   Point ori = g.origin;
   if (selected && toplevel)
     ori += movingdelta;
   pushOrigin(ori);
-  for (int id: g.keys())
-    drawObject(g.object(id), selected);
+  for (int id: g.keys()) {
+    PCBNet subnet;
+    for (NodeID nid: net) 
+      if (!nid.isEmpty() && nid.first()==id)
+	subnet << nid.tail();
+    drawObject(g.object(id), selected, subnet);
+  }
   popOrigin();
 }
 
@@ -176,29 +203,30 @@ void ORenderer::drawText(Text const &t, bool selected) {
   p->restore();
 }
 
-void ORenderer::drawObject(Object const &o, bool selected) {
+void ORenderer::drawObject(Object const &o, bool selected,
+			   PCBNet const &subnet) {
   /* In toplevel *only*, and only during moves, selected objects are
      translated by the movingdelta and nonselected traces with
      selected endpoints have those endpoints translated.
    */
   switch (o.type()) {
   case Object::Type::Trace:
-    drawTrace(o.asTrace(), selected);
+    drawTrace(o.asTrace(), selected, !subnet.isEmpty());
     break;
   case Object::Type::Text: 
     drawText(o.asText(), selected);
    break;
   case Object::Type::Hole:
-    drawHole(o.asHole(), selected);
+    drawHole(o.asHole(), selected, !subnet.isEmpty());
     break;
   case Object::Type::Pad: 
-    drawPad(o.asPad(), selected);
+    drawPad(o.asPad(), selected, !subnet.isEmpty());
     break;
   case Object::Type::Arc: 
     drawArc(o.asArc(), selected);
     break;
   case Object::Type::Group:
-    drawGroup(o.asGroup(), selected);
+    drawGroup(o.asGroup(), selected, subnet);
     break;
   default:
     break;

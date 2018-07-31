@@ -43,7 +43,7 @@ public:
   Point originOf(QList<int> path) const; // relative to parent
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
   // only direct children are returned
-  NodeID padOrHoleAt(Point p, Dim mrg=Dim()) const;
+  NodeID nodeAt(Point p, Dim mrg=Dim()) const;
   QString pinName(NodeID const &) const;
   // even inside subgroups; return is crumbs from this group
   int formSubgroup(QSet<int> const &);
@@ -64,7 +64,7 @@ public:
   Point pinPosition(QString name) const; // relative to parent
   Point anchor() const; // first named pin, relative to parent
   void insertSegmentedTrace(class Trace const &t);
-  Point intersectionWith(class Trace const &t, bool *ok=0) const;
+  Point intersectionWith(class Trace const &t, int *idp=0) const;
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  
