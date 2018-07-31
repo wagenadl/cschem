@@ -11,6 +11,8 @@ public:
   MainWindow();
   virtual ~MainWindow();
   void open(QString);
+protected:
+  void closeEvent(QCloseEvent *);
 private:
   class MWData *d;
   friend class MWData;

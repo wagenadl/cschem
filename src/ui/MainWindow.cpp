@@ -22,6 +22,7 @@ public:
     mcv = 0;
     mcvdock = 0;
   }
+  void setWindowTitle();
   void about();
   void makeToolbars();
   void makeMenus();
@@ -33,8 +34,8 @@ public:
   void hideParts();
   void fillBars();
   void openDialog();
-  void saveAsDialog();
-  void saveImmediately();
+  bool saveAsDialog();
+  bool saveImmediately();
   void linkSchematicDialog();
   void insertComponentDialog();
   void saveComponentDialog();
@@ -50,6 +51,15 @@ public:
   QString compwd;
   QString filename;
 };
+
+void MWData::setWindowTitle() {
+  QString lbl = "Untitled (cpcb)";
+  if (!filename.isEmpty())
+    lbl = filename;
+  if (editor && !editor->isAsSaved())
+    lbl += " *";
+  mw->setWindowTitle(lbl);
+}
 
 void MWData::showHideParts() {
   if (!mcv)
@@ -85,7 +95,7 @@ void MWData::openDialog() {
     auto *w = editor->pcbLayout().root().isEmpty() ? mw : new MainWindow();
     w->d->filename = fn;
     w->d->pwd = QFileInfo(fn).dir().absolutePath();
-    w->setWindowTitle(fn);
+    w->d->setWindowTitle();
     w->d->editor->load(fn);
     w->show();
   }
@@ -98,15 +108,17 @@ void MainWindow::open(QString fn) {
   d->editor->load(fn);
 }  
 
-void MWData::saveImmediately() {
+bool MWData::saveImmediately() {
   if (filename.isEmpty()) {
-    saveAsDialog();
+    return saveAsDialog();
   } else {
-    if (!editor->save(filename))
+    bool ok = editor->save(filename);
+    if (!ok)
       QMessageBox::warning(mw, "cpcb",
 			   "Could not save pcb as “"
 			   + filename + "”",
 			   QMessageBox::Ok);
+    return ok;
   }
 }
 
@@ -179,25 +191,28 @@ void MWData::linkSchematicDialog() {
 }
 
 
-void MWData::saveAsDialog() {
+bool MWData::saveAsDialog() {
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
   
   QString fn = QFileDialog::getSaveFileName(0, "Save as…",
 					    pwd,
 					    "PCB layouts (*.cpcb)");
+  bool ok = false;
   if (!fn.isEmpty()) {
     if (!fn.endsWith(".cpcb"))
       fn += ".cpcb";
     filename = fn;
     pwd = QFileInfo(fn).dir().absolutePath();
     mw->setWindowTitle(fn);
-    if (!editor->save(fn))
+    ok = editor->save(fn);
+    if (!ok)
       QMessageBox::warning(mw, "cpcb",
 			   "Could not save pcb as “"
 			   + fn + "”",
 			   QMessageBox::Ok);
   }
+  return ok;
 }  
 
 void MWData::about() {
@@ -376,6 +391,10 @@ void MWData::makeConnections() {
 		   propbar, &Propertiesbar::reflectMode);
   QObject::connect(modebar, &Modebar::modeChanged,
 		   editor, &Editor::setMode);
+
+  // Editor to us
+  QObject::connect(editor, &Editor::changedFromSaved,
+		   [this]() { setWindowTitle(); });
 }
 
 void MWData::fillBars() {
@@ -397,4 +416,35 @@ MainWindow::MainWindow(): QMainWindow() {
 
 MainWindow::~MainWindow() {
   delete d;
+}
+
+void MainWindow::closeEvent(QCloseEvent *e) {
+  if (d->editor->isAsSaved()) {
+    e->accept();
+  } else {
+    auto ret
+      = QMessageBox::warning(this, "cpcb",
+			     tr("The layout has been modified.\n"
+				"Do you want to save your changes?"),
+			     QMessageBox::Save
+			     | QMessageBox::Discard
+			     | QMessageBox::Cancel);
+    switch (ret) {
+    case QMessageBox::Save:
+      if (d->saveImmediately())
+	e->accept();
+      else
+	e->ignore();
+      break;
+    case QMessageBox::Cancel:
+      e->ignore();
+      break;
+    case QMessageBox::Discard:
+      e->accept();
+      break;
+    default:
+      e->accept();
+      break;
+    }
+  }
 }
