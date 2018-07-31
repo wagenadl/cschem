@@ -270,6 +270,7 @@ void MWData::makeMenus() {
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
   QObject::connect(editor, &Editor::schematicLinked,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   file->addAction("&Insert component…", [this]() { insertComponentDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_I));
@@ -288,11 +289,13 @@ void MWData::makeMenus() {
 		      QKeySequence(Qt::CTRL + Qt::Key_X));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   a = edit->addAction("Cop&y", [this]() { editor->copy(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_C));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   edit->addAction("&Paste", [this]() { editor->paste(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_V));
@@ -301,49 +304,58 @@ void MWData::makeMenus() {
 		      QKeySequence(Qt::CTRL + Qt::Key_R));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   a = edit->addAction("Rotate &anticlockwise",
 		      [this]() { editor->rotateCCW(); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   a = edit->addAction("&Flip left–right", [this]() { editor->flipH(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_F));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   a = edit->addAction("Flip up–down", [this]() { editor->flipV(); },
                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_F));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
-
+  a->setEnabled(false);
+  
   a = edit->addAction("&Group", [this]() { editor->formGroup(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_G));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   a = edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
   QObject::connect(editor, &Editor::selectionIsGroup,
 		   a, &QAction::setEnabled);
-
+  a->setEnabled(false);
+  
   a = edit->addAction("&Delete selected",
 		      [this]() { editor->deleteSelected(); },
 		      QKeySequence(Qt::Key_Delete));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   a = edit->addAction("&Undo", [this]() { editor->undo(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_Z));
   QObject::connect(editor, &Editor::undoAvailable,
 		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   a = edit->addAction("Redo", [this]() { editor->redo(); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
   QObject::connect(editor, &Editor::redoAvailable,
 		   a, &QAction::setEnabled);
-
+  a->setEnabled(false);
+  
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_0));
