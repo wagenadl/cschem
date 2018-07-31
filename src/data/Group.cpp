@@ -360,6 +360,51 @@ QList<int> Group::objectsAt(Point p, Dim mrg) const {
   return ids;
 }
 
+QString Group::pinName(NodeID const &ids) const {
+  if (ids.isEmpty())
+    return ref;
+  int id = ids.first();
+  Object const &obj(object(id));
+  QString name;
+  switch (obj.type()) {
+  case Object::Type::Group:
+    name = obj.asGroup().pinName(ids.tail());
+    break;
+  case Object::Type::Pad:
+    name = "pin " + obj.asPad().ref;
+    break;
+  case Object::Type::Hole:
+    name = "pin " + obj.asHole().ref;
+    break;
+  default:
+    break;
+  }
+  if (!ref.isEmpty() && !name.isEmpty())
+    return name + " of " + ref;
+  else
+    return name + ref;
+}
+
+NodeID Group::padOrHoleAt(Point p, Dim mrg) const {
+  p -= origin;
+  NodeID ids;
+  for (int id: d->obj.keys()) {
+    Object const &obj(object(id));
+    if (obj.touches(p, mrg)) {
+      if (obj.isGroup()) {
+	ids = obj.asGroup().padOrHoleAt(p, mrg);
+	ids.push_front(id);
+	return ids;
+      } else if (obj.isHole() || obj.isPad()) {
+	ids << id;
+	return ids;
+      }
+    }
+  }
+  return ids;
+}
+  
+
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   if (t.isEmpty()) {
     qDebug() << "Unexpectedly empty group; not writing to xml";
@@ -509,7 +554,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   t.ref = a.value("ref").toString();
   t.notes = a.value("notes").toString();
   t.pkg = a.value("pkg").toString();
-  t.origin = Point::fromString(a.value("o").toString(), &ok);
+  Point ori = Point::fromString(a.value("o").toString(), &ok);
   if (!ok) {
     s.skipCurrentElement();
     return s;
@@ -532,6 +577,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
       qDebug() << "Unexpected entity in group: " << s.tokenType();
     }
   }
+  t.origin = ori;
   if (t.isEmpty())
     qDebug() << "Empty group read from xml";
   // now at end of group element

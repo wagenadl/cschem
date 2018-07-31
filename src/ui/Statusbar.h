@@ -26,6 +26,7 @@ public:
   bool arePlanesVisible() const;
 public slots:
   void setCursorXY(Point);
+  void setObject(QString);
   void hideCursorXY();
   void setGrid(Dim);
   void setBoard(Board const &);
@@ -35,12 +36,16 @@ public slots:
   void showPlanes();
   void resetGridChoices();
 private:
+  void updateCursor();
+private:
   class QLabel *cursorui;
   QMap<Layer, class QToolButton *> layerui;
   QToolButton *planesui;
   class QComboBox *gridui;
   Board board;
   bool noemit;
+  Point p;
+  QString obj;
 };
 
 #endif

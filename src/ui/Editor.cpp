@@ -68,6 +68,7 @@ public:
   void invalidateStuckPoints() const;
   void zoom(double factor);
   void createUndoPoint();
+  bool updateOnWhat();
 public:
   Editor *ed;
   Layout layout;
@@ -104,6 +105,7 @@ public:
   QList<UndoStep> undostack;
   QList<UndoStep> redostack;
   int stepsfromsaved;
+  QString onobject;
 };
 
 class UndoCreator {
@@ -133,6 +135,16 @@ private:
   bool any;
 };    
 
+bool EData::updateOnWhat() {
+  Dim mrg = Dim::fromMils(4/mils2px);
+  Group &here(layout.root().subgroup(crumbs));
+  NodeID ids = here.padOrHoleAt(hoverpt, mrg);
+  QString nw = here.pinName(ids);
+  bool isnew = nw != onobject;
+  onobject = nw;
+  return isnew;
+}
+ 
 void EData::invalidateStuckPoints() const {
   stuckptsvalid = false;
 }
@@ -537,7 +549,7 @@ int EData::visibleObjectAt(Point p, Dim mrg) const {
   auto better = [&prio](Prio p1) { return int(p1) > int(prio); };
   for (int id: ids) {
     Prio p1 = Prio::None;
-    Object const &obj = layout.root().object(id);
+    Object const &obj = here.object(id);
     Layer l = obj.layer();
     switch (obj.type()) {
     case Object::Type::Plane:
@@ -914,6 +926,8 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
     d->moveMoving(p);
   d->hoverpt = p;
   emit hovering(p);
+  if (d->updateOnWhat())
+    emit onObject(d->onobject);
 }
 
 void Editor::mouseReleaseEvent(QMouseEvent *e) {

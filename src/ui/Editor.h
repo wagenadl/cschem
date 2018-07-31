@@ -86,6 +86,7 @@ public slots:
 signals:
   void boardChanged(Board const &);
   void hovering(Point);
+  void onObject(QString);
   void leaving();
   void selectionChanged();
   void componentsChanged(); // emitted when a component has been placed,

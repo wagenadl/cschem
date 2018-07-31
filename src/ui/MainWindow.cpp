@@ -298,6 +298,8 @@ void MWData::makeConnections() {
   // Editor to status bar and v.v.
   QObject::connect(editor, &Editor::hovering,
 		   statusbar, &Statusbar::setCursorXY);
+  QObject::connect(editor, &Editor::onObject,
+		   statusbar, &Statusbar::setObject);
   QObject::connect(editor, &Editor::leaving,
 		   statusbar, &Statusbar::hideCursorXY);
   QObject::connect(editor, &Editor::boardChanged,

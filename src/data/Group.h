@@ -6,6 +6,7 @@
 
 #include "Layer.h"
 #include "Rect.h"
+#include "NodeID.h"
 #include <QList>
 #include <QMap>
 #include <QDebug>
@@ -42,6 +43,9 @@ public:
   Point originOf(QList<int> path) const; // relative to parent
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
   // only direct children are returned
+  NodeID padOrHoleAt(Point p, Dim mrg=Dim()) const;
+  QString pinName(NodeID const &) const;
+  // even inside subgroups; return is crumbs from this group
   int formSubgroup(QSet<int> const &);
   QSet<int> dissolveSubgroup(int);
   int ensureRefText(int); // ensure that subgroup has reftext object

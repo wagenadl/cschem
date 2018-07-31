@@ -15,7 +15,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   auto *w1 = new QLabel;
   w1->setPixmap(QIcon(":icons/Grid.svg").pixmap(cursorui->height()));
   w1->setToolTip("Grid spacing");
-  addWidget(w1);
+  addPermanentWidget(w1);
   gridui = new QComboBox;
   gridui->setToolTip("Grid spacing");
   connect(gridui, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
@@ -28,7 +28,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
 	    }
 	  });
   resetGridChoices();
-  addWidget(gridui);
+  addPermanentWidget(gridui);
 
   auto addlui = [this](Layer l, QString name) {
     auto *w = new QToolButton;
@@ -39,7 +39,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
     w->setChecked(true);
     connect(w, &QToolButton::triggered,
 	    [this, l]() { layerVisibilityEdited(l, layerui[l]->isChecked()); });
-    addWidget(w);
+    addPermanentWidget(w);
   };
   addlui(Layer::Silk, "Silk");
   addlui(Layer::Top, "Top");
@@ -53,7 +53,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   w->setChecked(true);
   connect(w, &QToolButton::triggered,
 	  [this]() { planesVisibilityEdited(planesui->isChecked()); });
-  addWidget(w);
+  addPermanentWidget(w);
   noemit = false;
 }
 
@@ -132,17 +132,31 @@ void Statusbar::showPlanes() {
   planesui->setChecked(true);
 }
 
-void Statusbar::setCursorXY(Point p) {
+void Statusbar::setCursorXY(Point p1) {
+  p = p1;
+  updateCursor();
+}
+
+void Statusbar::setObject(QString obj1) {
+  obj = obj1;
+  updateCursor();
+}
+
+void Statusbar::updateCursor() {
   if (p.x>=Dim() && p.y>=Dim() && p.x<=board.width && p.y<=board.height) {
     bool metric = board.isEffectivelyMetric();
+    QString txt;
     if (metric) 
-      cursorui->setText(QString("X:%1 Y:%2")
-			.arg(p.x.toInch(),5,'f',2, QChar(0x2007))
-			.arg(p.y.toInch(),5,'f',2, QChar(0x2007)));
+      txt = QString("X:%1 Y:%2")
+	.arg(p.x.toInch(),5,'f',2, QChar(0x2007))
+	.arg(p.y.toInch(),5,'f',2, QChar(0x2007));
     else
-      cursorui->setText(QString("X:%1 Y:%2")
-			.arg(p.x.toInch(),0,'f',3)
-			.arg(p.y.toInch(),0,'f',3));
+      txt = QString("X:%1 Y:%2")
+	.arg(p.x.toInch(),0,'f',3)
+	.arg(p.y.toInch(),0,'f',3);
+    if (!obj.isEmpty())
+      txt += " on " + obj;
+    cursorui->setText(txt);
   } else {
     hideCursorXY();
   }
