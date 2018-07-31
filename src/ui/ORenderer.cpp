@@ -69,7 +69,7 @@ void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
     }
   }
   if (innet) {
-    p->setPen(QPen(layerColor(t.layer, true), t.width.toMils() + inNetMils,
+    p->setPen(QPen(layerColor(t.layer, selected), t.width.toMils() + inNetMils,
 		   Qt::SolidLine, Qt::RoundCap));
     p->drawLine(p1.toMils(), p2.toMils());
   }
@@ -95,7 +95,7 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   } else {
     double od = t.od.toMils();
     if (innet) {
-      p->setBrush(layerColor(layer, true));
+      p->setBrush(layerColor(layer, selected));
       if (t.square)
 	p->drawRect(QRectF(p1.toMils()
 			   - QPointF(od/2+inNetMils/2, od/2+inNetMils/2),
@@ -124,7 +124,7 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   double w = t.width.toMils();
   double h = t.height.toMils();
   if (innet) {
-    p->setBrush(layerColor(layer, true));
+    p->setBrush(layerColor(layer, selected));
     QPointF dp(w+inNetMils, h+inNetMils);
     p->drawRect(QRectF(p0 - dp/2, p0 + dp/2));
   }

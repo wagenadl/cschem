@@ -127,7 +127,6 @@ public:
   }
   ~UndoCreator() {
     if (any) {
-      qDebug() << "created undo";
       d->ed->changedFromSaved(d->stepsfromsaved != 0);
       d->ed->undoAvailable(true);
       d->ed->redoAvailable(false);
@@ -156,7 +155,6 @@ bool EData::updateOnWhat() {
 
 void EData::updateNet(NodeID seed) {
   net = PCBNet(layout.root().subgroup(crumbs), seed);
-  qDebug() << "net: " << net;
 }
  
 void EData::invalidateStuckPoints() const {
@@ -1627,7 +1625,6 @@ bool Editor::insertComponent(QString fn, Point pt) {
     return false;
   Object &obj(here.object(gid));
   Point delta = pt - ori - obj.asGroup().anchor();
-  qDebug() << "insertcomponent at" << pt << ori << obj.asGroup().anchor();
   obj.translate(delta);
   int tid = obj.asGroup().refTextId();
   if (here.contains(tid))
@@ -1735,11 +1732,9 @@ Schem const &Editor::linkedSchematic() const {
 }
 
 void Editor::undo() {
-  qDebug() << "undo : undo #" << d->undostack.size() << "redo #" << d->redostack.size();
   if (d->undostack.isEmpty())
     return;
   { UndoStep s;
-    qDebug() << "root" << d->layout.root();
     s.layout = d->layout;
     s.selection = d->selection;
     s.selpts = d->selpts;
@@ -1747,7 +1742,6 @@ void Editor::undo() {
     d->redostack << s;
   }
   { UndoStep const &s = d->undostack.last();
-    qDebug() << "undostack top" << d->undostack.last().layout.root();
     d->layout = s.layout;
     d->selection = s.selection;
     d->selpts = s.selpts;
@@ -1762,13 +1756,10 @@ void Editor::undo() {
   emit boardChanged(d->layout.board());
   emit undoAvailable(!d->undostack.isEmpty());
   emit redoAvailable(true);
-  qDebug() << "root" << d->layout.root();
-  qDebug() << "undone : undo #" << d->undostack.size() << "redo #" << d->redostack.size();
   update();
 }
 
 void Editor::redo() {
-  qDebug() << "redo : undo #" << d->undostack.size() << "redo #" << d->redostack.size();
   if (d->redostack.isEmpty())
     return;
   { UndoStep s;
@@ -1793,7 +1784,6 @@ void Editor::redo() {
   emit boardChanged(d->layout.board());
   emit undoAvailable(true);
   emit redoAvailable(!d->redostack.isEmpty());
-  qDebug() << "redone : undo #" << d->undostack.size() << "redo #" << d->redostack.size();
   update();
 }
 

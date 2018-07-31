@@ -37,7 +37,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
     w->setToolTip(name + " layer visible");
     w->setCheckable(true);
     w->setChecked(true);
-    connect(w, &QToolButton::triggered,
+    connect(w, &QToolButton::toggled,
 	    [this, l]() { layerVisibilityEdited(l, layerui[l]->isChecked()); });
     addPermanentWidget(w);
   };
@@ -51,7 +51,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   w->setToolTip("Planes visible");
   w->setCheckable(true);
   w->setChecked(true);
-  connect(w, &QToolButton::triggered,
+  connect(w, &QToolButton::toggled,
 	  [this]() { planesVisibilityEdited(planesui->isChecked()); });
   addPermanentWidget(w);
 
@@ -61,7 +61,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   w->setToolTip("Nets visible");
   w->setCheckable(true);
   w->setChecked(true);
-  connect(w, &QToolButton::triggered,
+  connect(w, &QToolButton::toggled,
 	  [this]() { netsVisibilityEdited(netsui->isChecked()); });
   addPermanentWidget(w);
 
