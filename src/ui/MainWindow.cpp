@@ -310,6 +310,8 @@ void MWData::makeConnections() {
 		   editor, &Editor::setLayerVisibility);
   QObject::connect(statusbar, &Statusbar::planesVisibilityEdited,
 		   editor, &Editor::setPlanesVisibility);
+  QObject::connect(statusbar, &Statusbar::netsVisibilityEdited,
+		   editor, &Editor::setNetsVisibility);
 
   // Editor to properties bar
   QObject::connect(editor, &Editor::selectionChanged,

@@ -20,10 +20,12 @@ signals:
   void gridEdited(Dim);
   void layerVisibilityEdited(Layer, bool);
   void planesVisibilityEdited(bool);
+  void netsVisibilityEdited(bool);
 public:
   Dim gridSpacing() const;
   bool isLayerVisible(Layer) const;
   bool arePlanesVisible() const;
+  bool areNetsVisible() const;
 public slots:
   void setCursorXY(Point);
   void setObject(QString);
@@ -34,6 +36,8 @@ public slots:
   void showLayer(Layer);
   void hidePlanes();
   void showPlanes();
+  void hideNets();
+  void showNets();
   void resetGridChoices();
 private:
   void updateCursor();
@@ -41,6 +45,7 @@ private:
   class QLabel *cursorui;
   QMap<Layer, class QToolButton *> layerui;
   QToolButton *planesui;
+  QToolButton *netsui;
   class QComboBox *gridui;
   Board board;
   bool noemit;

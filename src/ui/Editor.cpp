@@ -11,6 +11,7 @@
 #include "ElementView.h"
 #include "data/UndoStep.h"
 #include "data/Clipboard.h"
+#include "data/PCBNet.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -32,6 +33,7 @@ public:
     rubberband = 0;
     stuckptsvalid = false;
     stepsfromsaved = false;
+    netsvisible = true;
   }
   void drawBoard(QPainter &) const;
   void drawGrid(QPainter &) const;
@@ -69,6 +71,7 @@ public:
   void zoom(double factor);
   void createUndoPoint();
   bool updateOnWhat();
+  void updateNet(NodeID seed);
 public:
   Editor *ed;
   Layout layout;
@@ -76,6 +79,7 @@ public:
   QTransform widget2mils;
   double mils2px;
   bool autofit;
+  bool netsvisible;
   QList<int> crumbs;
   QSet<int> selection;
   QMap<Layer, QSet<Point> > selpts; // selected points that *are* part
@@ -106,6 +110,7 @@ public:
   QList<UndoStep> redostack;
   int stepsfromsaved;
   QString onobject;
+  PCBNet net;
 };
 
 class UndoCreator {
@@ -142,7 +147,14 @@ bool EData::updateOnWhat() {
   QString nw = here.pinName(ids);
   bool isnew = nw != onobject;
   onobject = nw;
+  if (netsvisible && isnew)
+    updateNet(ids);
   return isnew;
+}
+
+void EData::updateNet(NodeID seed) {
+  net = PCBNet(layout.root().subgroup(crumbs), seed);
+  qDebug() << "net: " << net.net();
 }
  
 void EData::invalidateStuckPoints() const {
@@ -998,6 +1010,13 @@ void Editor::setLayerVisibility(Layer l, bool b) {
     update();
     emit boardChanged(brd);
   }
+}
+
+void Editor::setNetsVisibility(bool b) {
+  d->netsvisible = b;
+  d->onobject = "???";
+  d->updateOnWhat();
+  update();
 }
 
 void Editor::setPlanesVisibility(bool b) {

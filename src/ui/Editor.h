@@ -39,6 +39,7 @@ public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);
   void setPlanesVisibility(bool);
+  void setNetsVisibility(bool);
   void scaleToFit();
   void zoomIn();
   void zoomOut();

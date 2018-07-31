@@ -22,6 +22,8 @@ private:
 };
 
 Builder::Builder(Group const &root, NodeID seed) {
+  if (seed.isEmpty())
+    return;
   addConnections(root, Point());
   buildNetLocations(seed.location(root));
   buildPCBNet(root, NodeID(), Point());
@@ -92,6 +94,9 @@ void Builder::addConnections(Group const &root, Point ori) {
       addConnections(obj.asGroup(), ori);
     }
   }
+}
+
+PCBNet::PCBNet() {
 }
 
 PCBNet::PCBNet(Group const &root, NodeID seed) {

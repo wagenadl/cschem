@@ -54,6 +54,18 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   connect(w, &QToolButton::triggered,
 	  [this]() { planesVisibilityEdited(planesui->isChecked()); });
   addPermanentWidget(w);
+
+  w = new QToolButton;
+  netsui = w;
+  w->setIcon(QIcon(":icons/Nets.svg"));
+  w->setToolTip("Nets visible");
+  w->setCheckable(true);
+  w->setChecked(true);
+  connect(w, &QToolButton::triggered,
+	  [this]() { netsVisibilityEdited(netsui->isChecked()); });
+  addPermanentWidget(w);
+
+  
   noemit = false;
 }
 
@@ -64,12 +76,16 @@ Dim Statusbar::gridSpacing() const {
   return Dim::fromString(gridui->currentData().toString());
 }
 
-bool Statusbar::isLayerVisible(Layer) const {
-  return false;
+bool Statusbar::isLayerVisible(Layer l) const {
+  return layerui.contains(l) ? layerui[l]->isChecked() : true;
 }
 
 bool Statusbar::arePlanesVisible() const {
-  return false;
+  return planesui->isChecked();
+}
+
+bool Statusbar::areNetsVisible() const {
+  return netsui->isChecked();
 }
 
 void Statusbar::setBoard(Board const &b) {
@@ -130,6 +146,14 @@ void Statusbar::hidePlanes() {
 void Statusbar::showPlanes() {
   board.planesvisible = true;
   planesui->setChecked(true);
+}
+
+void Statusbar::hideNets() {
+  netsui->setChecked(false);
+}
+
+void Statusbar::showNets() {
+  netsui->setChecked(true);
 }
 
 void Statusbar::setCursorXY(Point p1) {

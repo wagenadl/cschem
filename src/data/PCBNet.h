@@ -9,6 +9,7 @@
 
 class PCBNet {
 public:
+  PCBNet();
   PCBNet(class Group const &root, NodeID seed);
   QSet<NodeID> net() const { return net_; }
 private:
