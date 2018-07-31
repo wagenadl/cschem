@@ -89,12 +89,14 @@ signals:
   void hovering(Point);
   void onObject(QString);
   void leaving();
-  void selectionChanged();
+  void selectionChanged(bool); // true if selection not empty
   void componentsChanged(); // emitted when a component has been placed,
   // created, removed, or renamed
   void changedFromSaved(bool);
   void undoAvailable(bool);
   void redoAvailable(bool);
+  void schematicLinked(bool);
+  void selectionIsGroup(bool);
 protected:
   void mouseDoubleClickEvent(QMouseEvent *) override;
   void mousePressEvent(QMouseEvent *) override;

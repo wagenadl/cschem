@@ -72,6 +72,7 @@ public:
   void createUndoPoint();
   bool updateOnWhat();
   void updateNet(NodeID seed);
+  void emitSelectionStatus();
 public:
   Editor *ed;
   Layout layout;
@@ -130,8 +131,6 @@ public:
       d->ed->changedFromSaved(d->stepsfromsaved != 0);
       d->ed->undoAvailable(true);
       d->ed->redoAvailable(false);
-      d->ed->selectionChanged();
-      d->ed->componentsChanged();
       d->ed->update();
     }
   }
@@ -651,7 +650,7 @@ void EData::dropFromSelection(int id, Point p, Dim mrg) {
   for (int k: selection)
     selectPointsOf(k);
   ed->update();
-  ed->selectionChanged();
+  emitSelectionStatus();
 }
 
 void EData::startMoveSelection() {
@@ -1080,7 +1079,7 @@ void Editor::select(int id, bool add) {
     d->selectPointsOf(id);
   }
   update();
-  emit selectionChanged();
+  d->emitSelectionStatus();
 }
 
 void Editor::selectPoint(Point p, bool add) {
@@ -1095,7 +1094,7 @@ void Editor::selectPoint(Point p, bool add) {
       if (!d->selpts[l].contains(p))
 	d->purepts[l].insert(p);
   update();
-  emit selectionChanged();
+  d->emitSelectionStatus();
 }
 
 void Editor::deselect(int id) {
@@ -1103,7 +1102,7 @@ void Editor::deselect(int id) {
   if (d->selection.contains(id)) {
     d->selection.remove(id);
     update();
-    emit selectionChanged();
+    d->emitSelectionStatus();
   }
 }
 
@@ -1119,7 +1118,7 @@ void Editor::deselectPoint(Point p) {
   }
   if (any) {
     update();
-    emit selectionChanged();
+    d->emitSelectionStatus();
   }
 }
 
@@ -1131,7 +1130,7 @@ void Editor::selectAll() {
   for (int id: d->selection)
     d->selectPointsOf(id);
   update();
-  emit selectionChanged();
+  d->emitSelectionStatus();
 }
 
 void Editor::clearSelection() {
@@ -1140,7 +1139,7 @@ void Editor::clearSelection() {
   d->selpts.clear();
   d->purepts.clear();
   update();
-  emit selectionChanged();
+  d->emitSelectionStatus();
 }
 
 void Editor::selectArea(Rect r, bool add) {
@@ -1183,7 +1182,7 @@ void Editor::selectArea(Rect r, bool add) {
     }
   }
   update();
-  emit selectionChanged();
+  d->emitSelectionStatus();
 }
 
 void Editor::setExtent(Arc::Extent ext) {
@@ -1518,6 +1517,44 @@ EProps &Editor::properties() {
   return d->props;
 }
 
+void EData::emitSelectionStatus() {
+  if (selection.isEmpty()) {
+    ed->selectionChanged(false);
+    ed->selectionIsGroup(false);
+  } else {
+    ed->selectionChanged(true);
+    int gid = -1;
+    int tid = -1;
+    Group const &here(layout.root().subgroup(crumbs));
+    for (int id: selection) {
+      Object const &obj(here.object(id));
+      if (obj.isGroup()) {
+	if (gid>0 || (tid>0 && obj.asGroup().refTextId()!=tid)) {
+	  // already had group, or mismatching text
+	  ed->selectionIsGroup(false);
+	  return;
+	} else {
+	  gid = id;
+	  tid = obj.asGroup().refTextId();
+	}
+      } else if (obj.isText()) {
+	int g1 = obj.asText().groupAffiliation();
+	if (g1>0 && (gid<0 || gid==g1)) { // matching text
+	  tid = id;
+	} else { // mismatching text
+	  ed->selectionIsGroup(false);
+	  return;
+	}
+      } else { // bad object type
+	ed->selectionIsGroup(false);
+	return;
+      }	
+    }
+    ed->selectionIsGroup(gid>0);
+  }
+}
+
+
 void Editor::formGroup() {
   if (d->selection.isEmpty())
     return;
@@ -1631,6 +1668,7 @@ bool Editor::insertComponent(QString fn, Point pt) {
     here.object(tid).translate(delta);
   select(gid, false);
   select(tid, true);
+  emit componentsChanged();
   return true;
 }
 
@@ -1715,9 +1753,11 @@ bool Editor::linkSchematic(QString fn) {
   d->linkedschematic.link(fn);
   if (d->linkedschematic.isValid()) {
     d->layout.board().linkedschematic = fn;
+    emit schematicLinked(true);
     return true;
   } else {
     d->layout.board().linkedschematic = "";
+    emit schematicLinked(false);
     return false;
   }
 }
@@ -1725,6 +1765,7 @@ bool Editor::linkSchematic(QString fn) {
 void Editor::unlinkSchematic() {
   d->linkedschematic.unlink();
   d->layout.board().linkedschematic = "";
+  emit schematicLinked(false);
 }
 
 Schem const &Editor::linkedSchematic() const {
@@ -1751,7 +1792,7 @@ void Editor::undo() {
   d->undostack.removeLast();
   d->stepsfromsaved--;
   emit changedFromSaved(d->stepsfromsaved != 0);
-  emit selectionChanged();
+  d->emitSelectionStatus();
   emit componentsChanged();
   emit boardChanged(d->layout.board());
   emit undoAvailable(!d->undostack.isEmpty());
@@ -1779,7 +1820,7 @@ void Editor::redo() {
   d->redostack.removeLast();
   d->stepsfromsaved++;
   emit changedFromSaved(d->stepsfromsaved != 0);
-  emit selectionChanged();
+  d->emitSelectionStatus();
   emit componentsChanged();
   emit boardChanged(d->layout.board());
   emit undoAvailable(true);

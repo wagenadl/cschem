@@ -234,48 +234,100 @@ void MWData::makeToolbars() {
 void MWData::makeMenus() {
   auto *mb = mw->menuBar();
 
+  QAction *a;
+  
   auto *file = mb->addMenu("&File");
   file->addAction("&Open…", [this]() { openDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_O));
-  file->addAction("&Save", [this]() { saveImmediately(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_S));		  
+
+  a = file->addAction("&Save", [this]() { saveImmediately(); },
+		      QKeySequence(Qt::CTRL + Qt::Key_S));
+  QObject::connect(editor, &Editor::changedFromSaved,
+		   a, &QAction::setEnabled);
+
   file->addAction("Save &as…", [this]() { saveAsDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
   file->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_L));
-  file->addAction("&Unlink schematic", [this]() { editor->unlinkSchematic(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+
+  a = file->addAction("&Unlink schematic",
+		      [this]() { editor->unlinkSchematic(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+  QObject::connect(editor, &Editor::schematicLinked,
+		   a, &QAction::setEnabled);
+  
   file->addAction("&Insert component…", [this]() { insertComponentDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_I));
-  file->addAction("Save &component…", [this]() { saveComponentDialog(); },
-                  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
+
+  a = file->addAction("Save &component…", [this]() { saveComponentDialog(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
+  QObject::connect(editor, &Editor::selectionIsGroup,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+  
   file->addAction("&Quit", []() { QApplication::quit(); });
 
   auto *edit = mb->addMenu("&Edit");
-  edit->addAction("&Cut", [this]() { editor->cut(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_X));
-  edit->addAction("Cop&y", [this]() { editor->copy(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_C));
+
+  a = edit->addAction("&Cut", [this]() { editor->cut(); },
+		      QKeySequence(Qt::CTRL + Qt::Key_X));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  
+  a = edit->addAction("Cop&y", [this]() { editor->copy(); },
+		      QKeySequence(Qt::CTRL + Qt::Key_C));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  
   edit->addAction("&Paste", [this]() { editor->paste(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_V));
-  edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
-                  QKeySequence(Qt::CTRL + Qt::Key_R));
-  edit->addAction("Rotate &anticlockwise", [this]() { editor->rotateCCW(); },
-                  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
-  edit->addAction("&Flip left–right", [this]() { editor->flipH(); },
-                  QKeySequence(Qt::CTRL + Qt::Key_F));
-  edit->addAction("Flip up–down", [this]() { editor->flipV(); },
+
+  a = edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
+		      QKeySequence(Qt::CTRL + Qt::Key_R));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  
+  a = edit->addAction("Rotate &anticlockwise",
+		      [this]() { editor->rotateCCW(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  
+  a = edit->addAction("&Flip left–right", [this]() { editor->flipH(); },
+		      QKeySequence(Qt::CTRL + Qt::Key_F));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  
+  a = edit->addAction("Flip up–down", [this]() { editor->flipV(); },
                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_F));
-  edit->addAction("&Group", [this]() { editor->formGroup(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_G));
-  edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
-  edit->addAction("&Delete selected", [this]() { editor->deleteSelected(); },
-		  QKeySequence(Qt::Key_Delete));
-  edit->addAction("&Undo", [this]() { editor->undo(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_Z));
-  edit->addAction("Redo", [this]() { editor->redo(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+
+  a = edit->addAction("&Group", [this]() { editor->formGroup(); },
+		      QKeySequence(Qt::CTRL + Qt::Key_G));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  
+  a = edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
+  QObject::connect(editor, &Editor::selectionIsGroup,
+		   a, &QAction::setEnabled);
+
+  a = edit->addAction("&Delete selected",
+		      [this]() { editor->deleteSelected(); },
+		      QKeySequence(Qt::Key_Delete));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  
+  a = edit->addAction("&Undo", [this]() { editor->undo(); },
+		      QKeySequence(Qt::CTRL + Qt::Key_Z));
+  QObject::connect(editor, &Editor::undoAvailable,
+		   a, &QAction::setEnabled);
+  
+  a = edit->addAction("Redo", [this]() { editor->redo(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+  QObject::connect(editor, &Editor::redoAvailable,
+		   a, &QAction::setEnabled);
 
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },
