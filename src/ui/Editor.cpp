@@ -146,7 +146,7 @@ bool EData::updateOnWhat() {
   bool isnew = ids != onnode;
   onnode = ids;
   if (isnew)
-    onobject = here.pinName(ids);
+    onobject = here.humanName(ids);
   if (netsvisible && isnew)
     updateNet(ids);
   return isnew;
