@@ -31,50 +31,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Arc &t) {
   if (ok)
     t.linewidth = Dim::fromString(a.value("lw").toString(), &ok);
   if (ok) {
-    if (a.contains("ext")) {
-      // old style
-      switch (Arc::Extent(a.value("ext").toInt(&ok))) {
-      case Arc::Extent::Full:
-        t.angle = 360;
-        t.rot = 0;
-        break;
-      case Arc::Extent::LeftHalf:
-        t.angle = 180;
-        t.rot = 3;
-        break;
-      case Arc::Extent::RightHalf:
-        t.angle = 180;
-        t.rot = 1;
-        break;
-      case Arc::Extent::TopHalf:
-        t.angle = 180;
-        t.rot = 0;
-        break;
-      case Arc::Extent::BottomHalf:
-        t.angle = 180;
-        t.rot = 2;
-        break;
-      case Arc::Extent::TLQuadrant:
-        t.angle = -90;
-        t.rot = 3;
-        break;
-      case Arc::Extent::TRQuadrant:
-        t.angle = -90;
-        t.rot = 0;
-        break;
-      case Arc::Extent::BRQuadrant:
-        t.angle = -90;
-        t.rot = 1;
-        break;
-      case Arc::Extent::BLQuadrant:
-        t.angle = -90;
-        t.rot = 2;
-        break;
-      default:
-        t.angle = 360;
-        t.rot = 0;
-        break;
-      }
+    if (a.hasAttribute("ext")) {
+      t.setExtent(Arc::Extent(a.value("ext").toInt(&ok)));
     } else {
       t.angle = a.value("ang").toInt(&ok);
       if (ok)
@@ -93,7 +51,7 @@ QDebug operator<<(QDebug d, Arc const &t) {
     << t.radius
     << t.linewidth
     << t.layer
-    << t.ang << r.rot
+    << t.angle << t.rot
     << ")";
   return d;
 }
@@ -125,33 +83,77 @@ void Arc::flipUpDown() {
 }
 
 void Arc::flipLeftRight() {
+  rot &= 3;
   if (angle<0) {
-    xxx
+    rot = 3 - rot;
+  } else {
+    if (rot==1)
+      rot = 3;
+    else if (rot==3)
+      rot = 1;
   }
 }
 
 void Arc::rotateCW() {
-  switch (extent) {
-  case Extent::LeftHalf: extent = Extent::TopHalf; break;
-  case Extent::RightHalf: extent = Extent::BottomHalf; break;
-  case Extent::TopHalf: extent = Extent::RightHalf; break;
-  case Extent::BottomHalf: extent = Extent::LeftHalf; break;
-  case Extent::TLQuadrant: extent = Extent::TRQuadrant; break;
-  case Extent::TRQuadrant: extent = Extent::BRQuadrant; break;
-  case Extent::BLQuadrant: extent = Extent::TLQuadrant; break;
-  case Extent::BRQuadrant: extent = Extent::BLQuadrant; break;
-  default: break;
-  }
+  rot = (rot + 1) & 3;
 }
 
 void Arc::rotateCCW() {
-  rotateCW();
-  rotateCW();
-  rotateCW();
+  rot = (rot - 1) & 3;
 }
 
 void Arc::setLayer(Layer l) {
   if ((l==Layer::Bottom) != (layer==Layer::Bottom))
     flipLeftRight();
   layer = l;
+}
+
+Arc::Extent Arc::extent() const {
+  return Extent::Invalid; // not actually supported...
+}
+
+void Arc::setExtent(Arc::Extent e) {
+  // old style
+  switch (e) {
+  case Arc::Extent::Full:
+    angle = 360;
+    rot = 0;
+    break;
+  case Arc::Extent::LeftHalf:
+    angle = 180;
+    rot = 3;
+    break;
+  case Arc::Extent::RightHalf:
+    angle = 180;
+    rot = 1;
+    break;
+  case Arc::Extent::TopHalf:
+    angle = 180;
+    rot = 0;
+    break;
+  case Arc::Extent::BottomHalf:
+    angle = 180;
+    rot = 2;
+    break;
+  case Arc::Extent::TLQuadrant:
+    angle = -90;
+    rot = 3;
+    break;
+  case Arc::Extent::TRQuadrant:
+    angle = -90;
+    rot = 0;
+    break;
+  case Arc::Extent::BRQuadrant:
+    angle = -90;
+    rot = 1;
+    break;
+  case Arc::Extent::BLQuadrant:
+    angle = -90;
+    rot = 2;
+    break;
+  default:
+    angle = 360;
+    rot = 0;
+    break;
+  }
 }

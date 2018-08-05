@@ -247,12 +247,12 @@ void PBData::getPropertiesFromSelection() {
     Object const &obj(here.object(k));
     if (obj.isArc()) {
       if (got) {
-	if (obj.asArc().extent != ext) {
+	if (obj.asArc().extent() != ext) {
 	  ext = Arc::Extent::Invalid;
 	  break;
 	}
       } else {
-	ext = obj.asArc().extent;
+	ext = obj.asArc().extent();
 	got = true;
       }
     }

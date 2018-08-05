@@ -145,18 +145,18 @@ void ORenderer::drawArc(Arc const &t, bool selected) {
   p->setBrush(Qt::NoBrush);
   double r = t.radius.toMils();
   QRectF rect(c.toMils() - QPointF(r,r), c.toMils() + QPointF(r,r));
-  switch (t.extent) {
-  case Arc::Extent::Invalid: break;
-  case Arc::Extent::Full: p->drawArc(rect, 0, 16*360); break;
-  case Arc::Extent::LeftHalf: p->drawArc(rect, 16*90, 16*180); break;
-  case Arc::Extent::RightHalf: p->drawArc(rect, 16*-90, 16*180); break;;
-  case Arc::Extent::TopHalf: p->drawArc(rect, 0, 16*180); break;
-  case Arc::Extent::BottomHalf: p->drawArc(rect, -16*180, 16*180); break;
-  case Arc::Extent::TLQuadrant: p->drawArc(rect, 16*90, 16*90); break;
-  case Arc::Extent::TRQuadrant: p->drawArc(rect, 0, 16*90); break;
-  case Arc::Extent::BRQuadrant: p->drawArc(rect, -16*90, 16*90); break;
-  case Arc::Extent::BLQuadrant: p->drawArc(rect, 16*180, 16*90); break;
+  // For Painter, 0 = right, 16*90 = top, etc.
+  int start_ang;
+  int span_ang;
+  if (t.angle<0) {
+    start_ang = 90 + t.angle;
+    span_ang = -t.angle;
+  } else {
+    start_ang = 90 - t.angle/2;
+    span_ang = t.angle;
   }
+  start_ang -= 90 * (t.rot&3);
+  p->drawArc(rect, 16*start_ang, 16*span_ang);
 }
 
 void ORenderer::drawGroup(Group const &g, bool selected, PCBNet const &net) {

@@ -468,7 +468,7 @@ void EData::pressArc(Point p) {
   t.center = p;
   t.radius = props.id / 2;
   t.linewidth = props.linewidth;
-  t.extent = props.ext;
+  t.setExtent(props.ext);
   t.layer = props.layer;
   UndoCreator uc(this, true);
   here.insert(Object(t));
@@ -1193,7 +1193,7 @@ void Editor::setExtent(Arc::Extent ext) {
     Object &obj(here.object(id));
     if (obj.isArc()) {
       uc();
-      obj.asArc().extent = ext;
+      obj.asArc().setExtent(ext);
     }
   }
 }
