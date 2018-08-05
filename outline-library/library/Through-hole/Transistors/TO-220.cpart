@@ -1,0 +1,15 @@
+TO<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cpcb-component xmlns="http://www.danielwagenaar.net/cpcb-ns.html">
+  <group o="0 0" ref="Q?">
+    <hole p="381000 330200" id="10160" od="19050" sq="1" ref="1"/>
+    <hole p="406400 330200" id="10160" od="19050" sq="0" ref="2"/>
+    <trace p1="355600 355600" p2="355600 304800" w="2540" l="1"/>
+    <trace p1="457200 317500" p2="457200 355600" w="2540" l="1"/>
+    <trace p1="457200 355600" p2="355600 355600" w="2540" l="1"/>
+    <trace p1="355600 311150" p2="457200 311150" w="2540" l="1"/>
+    <trace p1="457200 304800" p2="457200 317500" w="2540" l="1"/>
+    <trace p1="355600 304800" p2="457200 304800" w="2540" l="1"/>
+    <hole p="431800 330200" id="10160" od="19050" sq="0" ref="3"/>
+  </group>
+  <text p="354330 290830" fs="12700" l="1" ori="0 0" text="Q?"/>
+</cpcb-component>
