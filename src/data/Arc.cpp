@@ -4,7 +4,8 @@
 
 Arc::Arc() {
   layer = Layer::Silk;
-  extent = Extent::Full;
+  angle = 360;
+  rot = 0;
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Arc const &t) {
@@ -13,7 +14,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Arc const &t) {
   s.writeAttribute("r", t.radius.toString());
   s.writeAttribute("lw", t.linewidth.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
-  s.writeAttribute("ext", QString::number(int(t.extent)));
+  s.writeAttribute("ang", QString::number(t.angle));
+  s.writeAttribute("rot", QString::number(t.rot));
   s.writeEndElement();
   return s;
 }
@@ -28,8 +30,57 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Arc &t) {
     t.radius  = Dim::fromString(a.value("r").toString(), &ok);
   if (ok)
     t.linewidth = Dim::fromString(a.value("lw").toString(), &ok);
-  if (ok)
-    t.extent = Arc::Extent(a.value("ext").toInt(&ok));
+  if (ok) {
+    if (a.contains("ext")) {
+      // old style
+      switch (Arc::Extent(a.value("ext").toInt(&ok))) {
+      case Arc::Extent::Full:
+        t.angle = 360;
+        t.rot = 0;
+        break;
+      case Arc::Extent::LeftHalf:
+        t.angle = 180;
+        t.rot = 3;
+        break;
+      case Arc::Extent::RightHalf:
+        t.angle = 180;
+        t.rot = 1;
+        break;
+      case Arc::Extent::TopHalf:
+        t.angle = 180;
+        t.rot = 0;
+        break;
+      case Arc::Extent::BottomHalf:
+        t.angle = 180;
+        t.rot = 2;
+        break;
+      case Arc::Extent::TLQuadrant:
+        t.angle = -90;
+        t.rot = 3;
+        break;
+      case Arc::Extent::TRQuadrant:
+        t.angle = -90;
+        t.rot = 0;
+        break;
+      case Arc::Extent::BRQuadrant:
+        t.angle = -90;
+        t.rot = 1;
+        break;
+      case Arc::Extent::BLQuadrant:
+        t.angle = -90;
+        t.rot = 2;
+        break;
+      default:
+        t.angle = 360;
+        t.rot = 0;
+        break;
+      }
+    } else {
+      t.angle = a.value("ang").toInt(&ok);
+      if (ok)
+        t.rot = a.value("rot").toInt(&ok);
+    }
+  }
   if (ok)
     t.layer = Layer(a.value("l").toInt(&ok));
   s.skipCurrentElement();
@@ -42,57 +93,21 @@ QDebug operator<<(QDebug d, Arc const &t) {
     << t.radius
     << t.linewidth
     << t.layer
-    << int(t.extent)
+    << t.ang << r.rot
     << ")";
   return d;
 }
 
 Rect Arc::boundingRect() const {
-  Point p0(center);
-  Point p1(center);
-  Dim zero;
-  switch (extent) {
-  case Extent::Invalid:
-    break;
-  case Extent::Full:
-    p0 += Point(-radius, -radius);
-    p1 += Point(radius, radius);
-    break;
-  case Extent::LeftHalf:
-    p0 += Point(-radius, -radius);
-    p1 += Point(zero, radius);
-    break;
-  case Extent::RightHalf:
-    p0 += Point(zero, -radius);
-    p1 += Point(radius, radius);
-    break;
-  case Extent::TopHalf:
-    p0 += Point(-radius, -radius);
-    p1 += Point(radius, zero);
-    break;
-  case Extent::BottomHalf:
-    p0 += Point(-radius, zero);
-    p1 += Point(radius, radius);
-    break;
-  case Extent::TLQuadrant:
-    p0 += Point(-radius, -radius);
-    break;
-  case Extent::TRQuadrant:
-    p0 += Point(radius, -radius);
-    break;
-  case Extent::BLQuadrant:
-    p0 += Point(-radius, radius);
-    break;
-  case Extent::BRQuadrant:
-    p0 += Point(radius, radius);
-    break;
-  }
-  Rect rect(p0, p1);
+  // crude implementation
+  qDebug() << "Arc::boundingRect: crudely implemented";
+  Rect rect(center - Point(radius, radius), center + Point(radius, radius));
   rect.grow(linewidth);
   return rect;
 }
 
 bool Arc::onEdge(Point p, Dim mrg) const {
+  qDebug() << "Arc::onEdge: should check angle";
   Rect br(boundingRect());
   br.grow(mrg/2);
   if (!br.contains(p))
@@ -110,14 +125,8 @@ void Arc::flipUpDown() {
 }
 
 void Arc::flipLeftRight() {
-  switch (extent) {
-  case Extent::LeftHalf: extent = Extent::RightHalf; break;
-  case Extent::RightHalf: extent = Extent::LeftHalf; break;
-  case Extent::TLQuadrant: extent = Extent::TRQuadrant; break;
-  case Extent::TRQuadrant: extent = Extent::TLQuadrant; break;
-  case Extent::BLQuadrant: extent = Extent::BRQuadrant; break;
-  case Extent::BRQuadrant: extent = Extent::BLQuadrant; break;
-  default: break;
+  if (angle<0) {
+    xxx
   }
 }
 
