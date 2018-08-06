@@ -296,9 +296,7 @@ void EData::pressHole(Point p) {
   t.id = props.id;
   t.square = props.square;
   UndoCreator uc(this, true);
-  qDebug() << "inserting hole";
   here.insert(Object(t));
-  qDebug() << "done inserting";
 }
 
 
@@ -573,7 +571,6 @@ void EData::releaseMoving(Point p) {
   }
   validateStuckPoints();
   UndoCreator uc(this, true);
-  qDebug() << "ReleaseMoving" << p;
   Group &here(layout.root().subgroup(crumbs));
   for (int id: here.keys()) {
     Object &obj(here.object(id));
@@ -585,10 +582,7 @@ void EData::releaseMoving(Point p) {
         if (!stuckpts[t.layer].contains(t.p2))
           t.p2 += movingdelta;
       } else {
-	qDebug() << "Before translating:" << undostack.last().layout.root();
         obj.translate(movingdelta);
-	qDebug() << "After translating:" << undostack.last().layout.root();
-	qDebug() << undostack.last().layout.root();
       }
     } else if (obj.isTrace()) {
       uc.realize();
@@ -726,7 +720,6 @@ void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
     if (d->mode == Mode::Edit) {
       Dim mrg = Dim::fromMils(4/d->mils2px);
       int fave = d->visibleObjectAt(p, mrg);
-      qDebug() << "fave" << fave << d->crumbs;
       if (fave<0) {
 	leaveGroup();
       } else {
@@ -735,7 +728,6 @@ void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
 	if (fave>=0)
 	  select(fave);
       }
-      qDebug() << "crumbs now" << d->crumbs;
     }
   }
 }

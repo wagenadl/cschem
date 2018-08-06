@@ -614,7 +614,6 @@ void Group::insertSegmentedTrace(Trace const &t) {
      crossing point (possibly mildly distorting it), and insert both parts
      recursively. Otherwise, simply insert the trace. */
   // t is specified in terms of parents coords.
-  qDebug() << "insertsegmented" << t;
   if (t.p1==t.p2)
     return;
   

@@ -108,7 +108,6 @@ Point Trace::intersectionWith(class Trace const &t, bool *ok) const {
   double dy_ = t.p2.y.toMils() - y1_;
   double a = (dy_*(x1_-x1) - dx_*(y1_-y1)) / (dx*dy_ - dy*dx_);
   double a_ = -(dy*(x1_-x1) - dx*(y1_-y1)) / (dx_*dy - dy_*dx);
-  qDebug() << "a=" << a << " and a_=" << a_;
   if (a>=0 && a<=1 && a_>=0 && a_<=1) {
     if (ok)
       *ok = true;
