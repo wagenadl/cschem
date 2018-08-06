@@ -190,32 +190,38 @@ Group const &Object::asGroup() const {
 
 Hole &Object::asHole() {
   d.detach();
-  return as_nonconst(as_const(*this).asHole());
+  Q_ASSERT(isHole());
+  return *d->hole;
 }
 
 Pad &Object::asPad() {
   d.detach();
-  return as_nonconst(as_const(*this).asPad());
+  Q_ASSERT(isPad());
+  return *d->pad;
 }
 
 Arc &Object::asArc() {
   d.detach();
-  return as_nonconst(as_const(*this).asArc());
+  Q_ASSERT(isArc());
+  return *d->arc;
 }
 
 Trace &Object::asTrace() {
   d.detach();
-  return as_nonconst(as_const(*this).asTrace());
+  Q_ASSERT(isTrace());
+  return *d->trace;
 }
 
 Text &Object::asText() {
   d.detach();
-  return as_nonconst(as_const(*this).asText());
+  Q_ASSERT(isText());
+  return *d->text;
 }
 
 Group &Object::asGroup() {
   d.detach();
-  return as_nonconst(as_const(*this).asGroup());
+  Q_ASSERT(isGroup());
+  return *d->group;
 }
 
 QDebug operator<<(QDebug d, Object const &o) {

@@ -1,143 +1,8 @@
 // Editor.cpp
 
 #include "Editor.h"
-#include "data/PCBFileIO.h"
-#include "data/Layout.h"
-#include "data/Orient.h"
-#include "data/Object.h"
-#include "ORenderer.h"
-#include "data/LinkedSchematic.h"
-#include "ComponentView.h"
-#include "ElementView.h"
-#include "data/UndoStep.h"
-#include "data/Clipboard.h"
-#include "data/PCBNet.h"
-
-#include <QTransform>
-#include <QPainter>
-#include <QBrush>
-#include <QPen>
-#include <QRubberBand>
-#include <QInputDialog>
-#include <QMimeData>
-#include <QFileInfo>
-
-class EData {
-public:
-  EData(Editor *ed): ed(ed) {
-    autofit = false;
-    mode = Mode::Edit;
-    tracing = false;
-    moving = false;
-    panning = false;
-    rubberband = 0;
-    stuckptsvalid = false;
-    stepsfromsaved = false;
-    netsvisible = true;
-  }
-  void drawBoard(QPainter &) const;
-  void drawGrid(QPainter &) const;
-  void drawSelectedPoints(QPainter &) const;
-  void drawObjects(QPainter &) const;
-  void drawObject(Object const &o, Layer l, Point const &origin,
-		  QPainter &p, bool selected, bool toplevel=false) const;
-  // only draw parts of object that are part of given layer
-  void drawTracing(QPainter &) const;
-  void pressEdit(Point, Qt::KeyboardModifiers);
-  int visibleObjectAt(Point p, Dim mrg=Dim()) const;
-  void pressPad(Point);
-  void pressArc(Point);
-  void pressHole(Point);
-  void pressText(Point);
-  void pressTracing(Point);
-  void pressPickingUp(Point);
-  void moveTracing(Point);
-  void abortTracing();
-  void moveBanding(Point);
-  void moveMoving(Point);
-  void releaseBanding(Point);
-  void releaseMoving(Point);
-  void pressPanning(QPoint);
-  void movePanning(QPoint);
-  void dropFromSelection(int id, Point p, Dim mrg);
-  void startMoveSelection();
-  void newSelectionUnless(int id, Point p, Dim mrg, bool add);
-  void selectPointsOf(int id);
-  QSet<Point> pointsOf(Object const &obj) const;
-  QSet<Point> pointsOf(Object const &obj, Layer lay) const;
-  Rect selectionBounds() const; // board coordinates
-  void validateStuckPoints() const;
-  void invalidateStuckPoints() const;
-  void zoom(double factor);
-  void createUndoPoint();
-  bool updateOnWhat();
-  void updateNet(NodeID seed);
-  void emitSelectionStatus();
-public:
-  Editor *ed;
-  Layout layout;
-  QTransform mils2widget;
-  QTransform widget2mils;
-  double mils2px;
-  bool autofit;
-  bool netsvisible;
-  QList<int> crumbs;
-  QSet<int> selection;
-  QMap<Layer, QSet<Point> > selpts; // selected points that *are* part
-  // of a selected object, by layer
-  QMap<Layer, QSet<Point> > purepts; // selected points that are *not*
-  // part of any sel. object, by layer
-  mutable bool stuckptsvalid; // indicator: if false, stuckpts needs to be
-  // recalced.
-  mutable QMap<Layer, QSet<Point> > stuckpts; // points that are part of a
-  // selected object but also of a non-trace non-selected object and that
-  // should not move
-  EProps props;
-  Point tracestart;
-  Point tracecurrent;
-  Point presspoint;
-  Point movingstart;
-  Point hoverpt;
-  bool tracing;
-  bool moving;
-  bool panning;
-  Point movingdelta;
-  Mode mode;
-  QRubberBand *rubberband = 0;
-  QTransform pan0;
-  QPoint panstart;
-  LinkedSchematic linkedschematic;
-  QList<UndoStep> undostack;
-  QList<UndoStep> redostack;
-  int stepsfromsaved;
-  QString onobject;
-  NodeID onnode;
-  PCBNet net;
-};
-
-class UndoCreator {
-public:
-  void operator()() {
-    if (!any)
-      d->createUndoPoint();
-    any = true;
-  }
-  UndoCreator(EData *d, bool imm=false): d(d), any(false) {
-    if (imm)
-      (*this)();
-  }
-  ~UndoCreator() {
-    if (any) {
-      d->ed->changedFromSaved(d->stepsfromsaved != 0);
-      d->ed->undoAvailable(true);
-      d->ed->redoAvailable(false);
-      d->ed->update();
-    }
-  }
-private:
-  EData *d;
-  bool any;
-};    
+#include "EData.h"
+#include "UndoCreator.h"
 
 bool EData::updateOnWhat() {
   Dim mrg = Dim::fromMils(4/mils2px);
@@ -707,10 +572,10 @@ void EData::releaseMoving(Point p) {
     return;
   }
   validateStuckPoints();
-  UndoCreator uc(this);
+  UndoCreator uc(this, true);
+  qDebug() << "ReleaseMoving" << p;
   Group &here(layout.root().subgroup(crumbs));
   for (int id: here.keys()) {
-    uc();
     Object &obj(here.object(id));
     if (selection.contains(id)) {
       if (obj.isTrace()) {
@@ -726,7 +591,7 @@ void EData::releaseMoving(Point p) {
 	qDebug() << undostack.last().layout.root();
       }
     } else if (obj.isTrace()) {
-      uc();
+      uc.realize();
       Trace &t = obj.asTrace();
       if ((selpts[t.layer].contains(t.p1)
 	   || purepts[t.layer].contains(t.p1))
@@ -1172,7 +1037,7 @@ void Editor::setArcAngle(int angle) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isArc()) {
-      uc();
+      uc.realize();
       obj.asArc().angle = angle;
     }
   }
@@ -1185,10 +1050,10 @@ void Editor::setLineWidth(Dim l) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isTrace()) {
-      uc();
+      uc.realize();
       obj.asTrace().width = l;
     } else if (obj.isArc()) {
-      uc();
+      uc.realize();
       obj.asArc().linewidth = l;
     }
   }
@@ -1203,19 +1068,19 @@ void Editor::setLayer(Layer l) {
     Object &obj(here.object(id));
     switch (obj.type()) {
     case Object::Type::Trace:
-      uc();
+      uc.realize();
       obj.asTrace().layer = l;
       break;
     case Object::Type::Text:
-      uc();
+      uc.realize();
       obj.asText().setLayer(l);
       break;
     case Object::Type::Pad:
-      uc();
+      uc.realize();
       obj.asPad().layer = l;
       break;
     case Object::Type::Arc:
-      uc();
+      uc.realize();
       obj.asArc().layer = l;
       break;
     default:
@@ -1234,12 +1099,12 @@ void Editor::setID(Dim x) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isHole()) {
-      uc();
+      uc.realize();
       obj.asHole().id = x;
       if (obj.asHole().od < x + Dim::fromInch(.015))
 	obj.asHole().od = x + Dim::fromInch(.015);
     } else if (obj.isArc()) {
-      uc();
+      uc.realize();
       obj.asArc().radius = x/2;
     }
   }
@@ -1255,7 +1120,7 @@ void Editor::setOD(Dim x) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.type()==Object::Type::Hole) {
-      uc();
+      uc.realize();
       obj.asHole().od = x;
       if (obj.asHole().id > x - Dim::fromInch(.015))
 	obj.asHole().id = x - Dim::fromInch(.015);
@@ -1273,7 +1138,7 @@ void Editor::setWidth(Dim x) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.type()==Object::Type::Pad) {
-      uc();
+      uc.realize();
       obj.asPad().width = x;
     }
   }
@@ -1288,7 +1153,7 @@ void Editor::setHeight(Dim x) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.type()==Object::Type::Pad) {
-      uc();
+      uc.realize();
       obj.asPad().height = x;
     }
   }
@@ -1301,7 +1166,7 @@ void Editor::setSquare(bool b) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.type()==Object::Type::Hole) {
-      uc();
+      uc.realize();
       obj.asHole().square = b;
     }
   }
@@ -1313,14 +1178,14 @@ void Editor::setRef(QString t) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isHole()) {
-      uc();
+      uc.realize();
       obj.asHole().ref = t;
     } else if (obj.isGroup()) {
       Group &g(obj.asGroup());
       g.ref = t;
       int tid = g.refTextId();
       if (tid>0 && here.contains(tid)) {
-	uc();
+	uc.realize();
         here.object(tid).asText().text = t;
       }
       emit componentsChanged();
@@ -1335,7 +1200,7 @@ void Editor::setText(QString t) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isText()) {
-      uc();
+      uc.realize();
       Text &txt(obj.asText());
       txt.text = t;
       int gid = txt.groupAffiliation();
@@ -1362,7 +1227,7 @@ void Editor::setFontSize(Dim fs) {
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isText()) {
-      uc();
+      uc.realize();
       obj.asText().fontsize = fs;
     }
   }
@@ -1395,7 +1260,7 @@ void Editor::rotateCW(bool noundo) {
   Point center = box.center(); //.roundedTo(d->layout.board().grid);
   UndoCreator uc(d);
   if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
-    uc();
+    uc.realize();
   for (int id: d->selection)
     here.object(id).rotateCW(center);
 
@@ -1445,7 +1310,7 @@ void Editor::flipH(bool noundo) {
 
   UndoCreator uc(d);
   if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
-    uc();
+    uc.realize();
   for (int id: d->selection)
     here.object(id).flipLeftRight(center);
 
