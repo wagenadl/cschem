@@ -56,16 +56,37 @@ QDebug operator<<(QDebug d, Arc const &t) {
   return d;
 }
 
+int startangle(Arc const &a) {
+  // 0 is +x (right), 90 is +y (down)
+  int a0 = 90 * (a.rot&3) - 90;
+  if (a.angle<0) 
+    return a0;
+  else
+    return a0 - a.angle/2;
+}
+
+int endangle(Arc const &a) {
+  int a0 = 90 * (a.rot&3) - 90;
+  if (a.angle<0)
+    return a0 - a.angle;
+  else
+    return a0 + a.angle/2;
+}
+
 Rect Arc::boundingRect() const {
-  // crude implementation
-  qDebug() << "Arc::boundingRect: crudely implemented";
-  Rect rect(center - Point(radius, radius), center + Point(radius, radius));
+  Rect rect(center, center);
+  int a0 = startangle(*this);
+  int a1 = endangle(*this);
+  constexpr double PI = 4*atan(1);
+  for (int a=a0; a<=a1; a+=15) {
+    double phi = a*PI/180;
+    rect |= center + Point(radius*cos(phi), radius*sin(phi));
+  }
   rect.grow(linewidth);
   return rect;
 }
 
 bool Arc::onEdge(Point p, Dim mrg) const {
-  qDebug() << "Arc::onEdge: should check angle";
   Rect br(boundingRect());
   br.grow(mrg/2);
   if (!br.contains(p))
