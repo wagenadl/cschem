@@ -1301,8 +1301,49 @@ void Editor::rotateCCW(bool noundo) {
   update();
 }
 
-void Editor::flipH(bool noundo) {
+void Editor::translate(Point dp) {
+  if (d->selection.isEmpty() && selectedPoints().isEmpty())
+    return;
+
+  UndoCreator uc(d, true);
+
   Group &here(d->layout.root().subgroup(d->crumbs));
+  
+  for (int id: d->selection)
+    here.object(id).translate(dp);
+
+  Dim mrg = Dim::fromMils(4/d->mils2px);
+  for (Point p: selectedPoints()) {
+    // Translate end points of traces if those end points are in purepts,
+    // but the trace itself is not in selection.
+    for (int id: here.keys()) {
+      if (!d->selection.contains(id)) {
+	Object &obj(here.object(id));
+	if (obj.isTrace()) {
+	  Trace &t(obj.asTrace());
+	  if (t.onP1(p, mrg))
+	    t.p1 += dp;
+	  if (t.onP2(p, mrg))
+	    t.p2 += dp;
+	}
+      }
+    }
+  }
+  
+  // update purepts and selpts  
+  for (Layer l: layers()) {
+    QSet<Point> newpts;
+    for (Point const &p: d->purepts[l])
+      newpts << p + dp;
+    d->purepts[l] = newpts;
+    newpts.clear();
+    for (Point const &p: d->selpts[l])
+      newpts << p + dp;
+    d->selpts[l] = newpts;
+  }
+}
+
+void Editor::flipH(bool noundo) {
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
@@ -1311,6 +1352,9 @@ void Editor::flipH(bool noundo) {
   UndoCreator uc(d);
   if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
     uc.realize();
+
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  
   for (int id: d->selection)
     here.object(id).flipLeftRight(center);
 

@@ -102,18 +102,19 @@ private:
 };
 
 void PBData::fillXY(QSet<Point> const &points) {
-  if (!points.isEmpty()) {
-    x0 = Dim::fromInch(1000);
-    y0 = Dim::fromInch(1000);
-    for (Point const &p: points) {
-      if (p.x<x0)
-	x0 = p.x;
-      if (p.y<y0)
-	y0 = p.y;
-    }
-    x->setValue(x0);
-    y->setValue(y0);
+  if (points.isEmpty())
+    return;
+
+  x0 = Dim::fromInch(1000);
+  y0 = Dim::fromInch(1000);
+  for (Point const &p: points) {
+    if (p.x<x0)
+      x0 = p.x;
+    if (p.y<y0)
+      y0 = p.y;
   }
+  x->setValue(x0);
+  y->setValue(y0);
 }
 
 void PBData::fillLinewidth(QSet<int> const &objects, Group const &here) {
@@ -748,9 +749,17 @@ void PBData::setupUI() {
   xc = makeContainer(xyg);
   makeLabel(xc, "X");
   x = makeDimSpinner(xc, Dim::fromInch(.050));
+  QObject::connect(x, &DimSpinner::valueEdited,
+		   [this](Dim d) {
+		     editor->translate(Point(d - x0, Dim()));
+		     x0 = d; });
   yc = makeContainer(xyg);
   makeLabel(yc, "Y");
   y = makeDimSpinner(yc, Dim::fromInch(.050));
+  QObject::connect(y, &DimSpinner::valueEdited,
+		   [this](Dim d) {
+		     editor->translate(Point(Dim(), d - y0));
+		     y0 = d; });
 
   dimg = makeGroup(&dima);
   linewidthc = makeContainer(dimg);

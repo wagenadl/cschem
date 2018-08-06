@@ -83,6 +83,7 @@ public slots:
   void copy();
   void paste();
   void markAsSaved();
+  void translate(Point);
 signals:
   void boardChanged(Board const &);
   void hovering(Point);
