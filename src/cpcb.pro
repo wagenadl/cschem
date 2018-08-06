@@ -43,6 +43,7 @@ HEADERS += circuit/Element.h
 HEADERS += circuit/Connection.h
 HEADERS += circuit/PartNumbering.h
 HEADERS += circuit/SafeMap.h
+HEADERS += circuit/Net.h
 HEADERS += file/FileIO.h
 HEADERS += svg/XmlElement.h
 HEADERS += svg/XmlNode.h
@@ -60,5 +61,6 @@ SOURCES += svg/XmlNode.cpp
 SOURCES += svg/Symbol.cpp
 SOURCES += svg/SymbolLibrary.cpp
 SOURCES += circuit/SafeMap.cpp
+SOURCES += circuit/Net.cpp
 
 RESOURCES += ui/ui.qrc

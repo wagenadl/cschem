@@ -4,16 +4,26 @@
 
 #define LINKEDSCHEMATIC_H
 
+#include <QObject>
 #include <QString>
 
-class LinkedSchematic {
+#include "../../cschem/src/circuit/Schem.h"
+#include "../../cschem/src/circuit/Circuit.h"
+#include "../../cschem/src/circuit/Net.h"
+
+class LinkedSchematic: public QObject {
+  Q_OBJECT;
 public:
-  LinkedSchematic();
+  LinkedSchematic(QObject *parent=0);
   void link(QString fn);
   void unlink();
   ~LinkedSchematic();
   bool isValid() const;
-  class Schem const &schematic() const;
+  Schem schematic() const;
+  Circuit circuit() const;
+  QList<Net> nets() const;
+signals:
+  void reloaded();
 private:
   LinkedSchematic(LinkedSchematic const &) = delete;
   LinkedSchematic &operator=(LinkedSchematic const &) = delete;

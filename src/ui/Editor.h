@@ -10,6 +10,7 @@
 #include "data/Arc.h"
 #include "Mode.h"
 #include "EProps.h"
+#include "data/LinkedSchematic.h"
 
 class Editor: public QWidget {
   Q_OBJECT;
@@ -29,7 +30,7 @@ public:
   // returns ID if one group, or 0 if none, in which case msg says why
   bool linkSchematic(QString fn);
   void unlinkSchematic();
-  class Schem const &linkedSchematic() const;
+  LinkedSchematic const &linkedSchematic() const;
   Point hoverPoint() const;
   bool isUndoAvailable() const;
   bool isRedoAvailable() const;

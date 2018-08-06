@@ -86,6 +86,7 @@ void PartsListEditor::rebuild() {
     QString ref = elt.name;
     QString pv = elt.value;
     QString notes = elt.cnotes;
+    qDebug () << "PLE" << ref << pv << notes;
     if (ref.isEmpty())
       continue;
     grid->addWidget(reflabels[ref] = new QLabel(ref), ++row, 0);

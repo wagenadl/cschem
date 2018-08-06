@@ -1680,8 +1680,8 @@ void Editor::unlinkSchematic() {
   emit schematicLinked(false);
 }
 
-Schem const &Editor::linkedSchematic() const {
-  return d->linkedschematic.schematic();
+LinkedSchematic const &Editor::linkedSchematic() const {
+  return d->linkedschematic;
 }
 
 void Editor::undo() {

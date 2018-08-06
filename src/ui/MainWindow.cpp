@@ -80,7 +80,7 @@ void MWData::showParts() {
     makeParts();
   mcvdock->show();
   mw->addDockWidget(Qt::LeftDockWidgetArea, mcvdock);
-  mcv->setSchem(editor->linkedSchematic());
+  mcv->setSchem(editor->linkedSchematic().schematic());
   mcv->setRoot(editor->pcbLayout().root());
 }
 
@@ -93,10 +93,7 @@ void MWData::openDialog() {
 					    "PCB layouts (*.cpcb)");
   if (!fn.isEmpty()) {
     auto *w = editor->pcbLayout().root().isEmpty() ? mw : new MainWindow();
-    w->d->filename = fn;
-    w->d->pwd = QFileInfo(fn).dir().absolutePath();
-    w->d->setWindowTitle();
-    w->d->editor->load(fn);
+    w->open(fn);
     w->show();
   }
 }
@@ -106,6 +103,8 @@ void MainWindow::open(QString fn) {
   d->pwd = QFileInfo(fn).dir().absolutePath();
   setWindowTitle(fn);
   d->editor->load(fn);
+  if (d->editor->linkedSchematic().isValid())
+    d->showParts();
 }  
 
 bool MWData::saveImmediately() {
