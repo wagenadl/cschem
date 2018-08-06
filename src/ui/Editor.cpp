@@ -167,7 +167,7 @@ void EData::validateStuckPoints() const {
   // if those points are also in selpts. (Others are irrelevant.)
   stuckpts.clear();
   Group const &here(layout.root().subgroup(crumbs));
-  Point ori = layout.root().originOf(crumbs);
+  Point ori = layout.root().originOf(crumbs) + here.origin;
   auto const &lays(::layers());
   for (int id: here.keys()) {
     if (!selection.contains(id)) {
@@ -184,7 +184,7 @@ void EData::validateStuckPoints() const {
 
 Rect EData::selectionBounds() const {
   Group const &here(layout.root().subgroup(crumbs));
-  Point ori = layout.root().originOf(crumbs);
+  Point ori = layout.root().originOf(crumbs) + here.origin;
   
   Rect r;
   for (int id: selection)
@@ -199,7 +199,6 @@ Rect EData::selectionBounds() const {
 }
   
 void EData::createUndoPoint() {
-  qDebug() << "createundopoint";
   UndoStep s;
   s.layout = layout;
   s.selection = selection;
@@ -211,15 +210,14 @@ void EData::createUndoPoint() {
   ed->undoAvailable(true);
   ed->redoAvailable(false);
   ed->changedFromSaved(stepsfromsaved != 0);
-  qDebug() << "undostack top" << undostack.last().layout.root();
-  qDebug() << "undo #" << undostack.size() << "redo #" << redostack.size();
 }
 
 void EData::selectPointsOf(int id) {
   Group const &here(layout.root().subgroup(crumbs));
+  Point ori = layout.root().originOf(crumbs) + here.origin;
   if (here.contains(id))
     for (Layer l: ::layers())
-      selpts[l] |= pointsOf(here.object(id), layout.root().originOf(crumbs), l);
+      selpts[l] |= pointsOf(here.object(id), ori, l);
 }
 
 QSet<Point> EData::pointsOf(Object const &obj, Point const &ori) const {
@@ -488,7 +486,7 @@ void EData::pressPickingUp(Point p) {
   Object const &obj(here.object(fave));
   if (!obj.isTrace())
     return;
-  Point ori = layout.root().originOf(crumbs);
+  Point ori = layout.root().originOf(crumbs) + here.origin;
   Trace const &t(obj.asTrace());
   Dim d1 = (p-ori).distance(t.p1);
   Dim d2 = (p-ori).distance(t.p2);
@@ -667,7 +665,7 @@ void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
   Group const &here(layout.root().subgroup(crumbs));
   Object const &obj(here.object(id));
   if (obj.isTrace()) {
-    Point ori = layout.root().originOf(crumbs);
+    Point ori = layout.root().originOf(crumbs) + here.origin;
     Trace const &t(obj.asTrace());
     if (t.onP1(p - ori, mrg)) {
       if (purepts[t.layer].contains(t.p1 + ori)) {
@@ -727,7 +725,7 @@ void EData::releaseMoving(Point p) {
   validateStuckPoints();
   UndoCreator uc(this);
   Group &here(layout.root().subgroup(crumbs));
-  Point ori(layout.root().originOf(crumbs));
+  Point ori(layout.root().originOf(crumbs) + here.origin);
   for (int id: here.keys()) {
     uc();
     Object &obj(here.object(id));
@@ -1151,7 +1149,7 @@ void Editor::selectArea(Rect r, bool add) {
     d->purepts.clear();
   }    
   Group const &here(d->layout.root().subgroup(d->crumbs));
-  Point origin(d->layout.root().originOf(d->crumbs));
+  Point origin(d->layout.root().originOf(d->crumbs) + here.origin);
   r = r.translated(-origin);
   for (int id: here.keys()) {
     Object const &obj(here.object(id));
@@ -1414,7 +1412,7 @@ Point Editor::groupOffset() const {
 
 void Editor::rotateCW(bool noundo) {
   Group &here(d->layout.root().subgroup(d->crumbs));
-  Point origin(d->layout.root().originOf(d->crumbs));
+  Point origin(d->layout.root().originOf(d->crumbs) + here.origin);
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
