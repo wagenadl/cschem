@@ -50,7 +50,7 @@ public:
   QWidget *refg;
   QAction *refa;
   QLineEdit *ref;
-  QAction *component; // popup for replacing component
+  //  QAction *component; // popup for replacing component
   
   QWidget *textg;
   QAction *texta;
@@ -60,8 +60,7 @@ public:
   QWidget *arcg;
   QAction *arca;
   QWidget *arcc;
-  QAction *arcfull, *arctop, *arcbot, *arcleft, *arcright;
-  QAction *arctl, *arctr, *arcbl, *arcbr;
+  QAction *arc360, *arc300, *arc210, *arc180, *arc_90;
   
   QWidget *layerg;
   QAction *layera;
@@ -89,14 +88,20 @@ public:
   void hideAndShow(); // hide and show as appropriate
   void hsEdit();
   Layer layer() const;
-  Arc::Extent extent() const;
+  int arcAngle() const;
+private:
+  void fillXY(QSet<Point> const &points);
+  void fillLinewidth(QSet<int> const &objects, Group const &here);
+  void fillWH(QSet<int> const &objects, Group const &here);
+  void fillDiamAndShape(QSet<int> const &objects, Group const &here);
+  void fillRef(QSet<int> const &objects, Group const &here);
+  void fillArcAngle(QSet<int> const &objects, Group const &here);
+  void fillLayer(QSet<int> const &objects, Group const &here);
+  void fillText(QSet<int> const &objects, Group const &here);    
+  void fillFontSize(QSet<int> const &objects, Group const &here);    
 };
 
-void PBData::getPropertiesFromSelection() {
-  QSet<int> objects(editor->selectedObjects());
-  QSet<Point> points(editor->selectedPoints());
-  Group const &here(editor->currentGroup());
-
+void PBData::fillXY(QSet<Point> const &points) {
   if (!points.isEmpty()) {
     x0 = Dim::fromInch(1000);
     y0 = Dim::fromInch(1000);
@@ -109,7 +114,9 @@ void PBData::getPropertiesFromSelection() {
     x->setValue(x0);
     y->setValue(y0);
   }
+}
 
+void PBData::fillLinewidth(QSet<int> const &objects, Group const &here) {
   bool got = false;
   // Set linewidth if we have at least one trace/arc and their widths
   // are all same
@@ -126,10 +133,13 @@ void PBData::getPropertiesFromSelection() {
       }
     } 
   }
+  
   if (linewidth->hasValue())
     editor->properties().linewidth = linewidth->value();
-    
-  got = false;
+}
+
+void PBData::fillWH(QSet<int> const &objects, Group const &here) {
+  bool got = false;
   // Set w (h) if we have at least one pad and their widths (heights) are
   // all same
   for (int k: objects) {
@@ -153,8 +163,10 @@ void PBData::getPropertiesFromSelection() {
     editor->properties().w = w->value();
   if (h->hasValue())
     editor->properties().h = h->value();
+}
 
-  got = false;
+void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
+  bool got = false;
   // Set id (od, square) if we have at least one hole and their id (etc)
   // etc all same
   square->setChecked(false);
@@ -221,8 +233,10 @@ void PBData::getPropertiesFromSelection() {
     editor->properties().square = true;
   if (circle->isChecked())
     editor->properties().square = false;
-  
-  got = false;
+}
+
+void PBData::fillRef(QSet<int> const &objects, Group const &here) {
+  bool got = false;
   // set ref if we have precisely one hole or group, otherwise clear it
   ref->setText("");
   for (int k: objects) {
@@ -239,38 +253,38 @@ void PBData::getPropertiesFromSelection() {
       }
     }
   }
+}
 
-  Arc::Extent ext = Arc::Extent::Invalid;
-  got = false;
-  // set extent if all are same
+void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
+  bool got = false;
+  int arcangle = 0; // "invalid"
+  // set angle if all are same
   for (int k: objects) {
     Object const &obj(here.object(k));
     if (obj.isArc()) {
       if (got) {
-	if (obj.asArc().extent() != ext) {
-	  ext = Arc::Extent::Invalid;
+	if (obj.asArc().angle != arcangle) {
+	  arcangle = 0;
 	  break;
 	}
       } else {
-	ext = obj.asArc().extent();
+	arcangle = obj.asArc().angle;
 	got = true;
       }
     }
   }
-  arcfull->setChecked(ext == Arc::Extent::Full);
-  arcleft->setChecked(ext == Arc::Extent::LeftHalf);  
-  arctop->setChecked(ext == Arc::Extent::TopHalf);  
-  arcbot->setChecked(ext == Arc::Extent::BottomHalf);  
-  arcright->setChecked(ext == Arc::Extent::RightHalf);
-  arctl->setChecked(ext == Arc::Extent::TLQuadrant);    
-  arctr->setChecked(ext == Arc::Extent::TRQuadrant);    
-  arcbr->setChecked(ext == Arc::Extent::BRQuadrant);    
-  arcbl->setChecked(ext == Arc::Extent::BLQuadrant);
-  if (ext != Arc::Extent::Invalid)
-    editor->properties().ext = ext;
+  arc360->setChecked(arcangle==360);
+  arc300->setChecked(arcangle==300);  
+  arc210->setChecked(arcangle==210);  
+  arc180->setChecked(arcangle==180);  
+  arc_90->setChecked(arcangle==-90);
+  if (arcangle!=0)
+    editor->properties().arcangle = arcangle;
+}
 
+void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
   Layer l = Layer::Invalid;
-  got = false;
+  bool got = false;
   // set layer if all are same
   for (int k: objects) {
     Object const &obj(here.object(k));
@@ -318,8 +332,10 @@ void PBData::getPropertiesFromSelection() {
   top->setChecked(l==Layer::Top);
   bottom->setChecked(l==Layer::Bottom);
   editor->properties().layer = l;
+}
 
-  got = false;
+void PBData::fillText(QSet<int> const &objects, Group const &here) {
+  bool got = false;
   // set text if we have precisely one text object, otherwise clear it
   text->setText("");
   for (int k: objects) {
@@ -336,8 +352,10 @@ void PBData::getPropertiesFromSelection() {
   }
   if (text->text() != "")
     editor->properties().text = text->text();
+}
 
-  got = false;
+void PBData::fillFontSize(QSet<int> const &objects, Group const &here) {
+  bool got = false;
   // set fs if we have text, and all are same
   fs->setNoValue();
   for (int k: objects) {
@@ -357,26 +375,35 @@ void PBData::getPropertiesFromSelection() {
     editor->properties().fs = fs->value();  
 }
 
-Arc::Extent PBData::extent() const {
-  if (arcfull->isChecked())
-    return Arc::Extent::Full;
-  else if (arcleft->isChecked())
-    return Arc::Extent::LeftHalf; 
- else if (arctop->isChecked())
-   return Arc::Extent::TopHalf; 
- else if (arcbot->isChecked())
-   return Arc::Extent::BottomHalf; 
- else if (arcright->isChecked())
-   return Arc::Extent::RightHalf;
- else if (arctl->isChecked())
-   return Arc::Extent::TLQuadrant;
- else if (arctr->isChecked())
-   return Arc::Extent::TRQuadrant;   
- else if (arcbr->isChecked())
-   return Arc::Extent::BRQuadrant;   
- else if (arcbl->isChecked())
-   return Arc::Extent::BLQuadrant;
- else return Arc::Extent::Invalid;
+void PBData::getPropertiesFromSelection() {
+  QSet<int> objects(editor->selectedObjects());
+  QSet<Point> points(editor->selectedPoints());
+  Group const &here(editor->currentGroup());
+
+  fillXY(points);
+  fillLinewidth(objects, here);
+  fillWH(objects, here);
+  fillDiamAndShape(objects,  here);
+  fillRef(objects, here);
+  fillArcAngle(objects, here);  
+  fillLayer(objects, here);  
+  fillText(objects, here);
+  fillFontSize(objects, here);    
+}
+
+int PBData::arcAngle() const {
+  if (arc360->isChecked())
+    return 360;
+ else if (arc300->isChecked())
+   return 300;
+ else if (arc210->isChecked())
+   return 210;
+ else if (arc180->isChecked())
+   return 180;
+ else if (arc_90->isChecked())
+   return -90;
+ else
+   return 0; // invalid;
 }
 
 Layer PBData::layer() const {
@@ -445,6 +472,7 @@ void PBData::hideAndShow() {
     texta->setEnabled(true);
     layera->setEnabled(true);
     orienta->setEnabled(true);
+    flipped->setEnabled(true);
     if (!up->isChecked() && !right->isChecked()
 	&& !down->isChecked() && !left->isChecked()) {
       up->setChecked(true);
@@ -454,12 +482,24 @@ void PBData::hideAndShow() {
       silk->setChecked(true);
       editor->properties().layer = Layer::Silk;
     }
+    if (!fs->hasValue()) {
+      Dim fs1 = Dim::fromInch(.050);
+      fs->setValue(fs1);
+      editor->properties().fs = fs1;
+    }
     break;
   case Mode::PlaceArc:
     dima->setEnabled(true);
     linewidthc->setEnabled(true);
     idc->setEnabled(true);
     arca->setEnabled(true);
+    orienta->setEnabled(true);
+    flipped->setEnabled(false);
+    if (!up->isChecked() && !right->isChecked()
+	&& !down->isChecked() && !left->isChecked()) {
+      up->setChecked(true);
+      editor->properties().orient.rot = 0;
+    }
     layera->setEnabled(true);
     if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
       silk->setChecked(true);
@@ -668,7 +708,7 @@ void PBData::setupUI() {
   };
 
   auto makeIconTool = [](QWidget *container, QString icon,
-			 bool chkb=false, bool ae=false) {
+			 bool chkb=false, bool ae=false, QString tip="") {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QToolButton *s = new QToolButton;
@@ -677,6 +717,8 @@ void PBData::setupUI() {
     a->setCheckable(chkb);
     s->setAutoExclusive(ae);
     container->layout()->addWidget(s);
+    if (!tip.isEmpty())
+      a->setToolTip(tip);
     return a;
   };
 
@@ -778,9 +820,9 @@ void PBData::setupUI() {
   ref = makeEdit(c5);
   QObject::connect(ref, &QLineEdit::textEdited,
 		   [this](QString txt) { editor->setRef(txt); });
-  component = makeIconTool(c5, "EditComponent");
-  component->setToolTip("Choose package");
-  component->setCheckable(false);
+  // component = makeIconTool(c5, "EditComponent");
+  // component->setToolTip("Choose package");
+  // component->setCheckable(false);
   
   textg = makeGroup(&texta);
   auto *c1 = makeContainer(textg);
@@ -797,37 +839,24 @@ void PBData::setupUI() {
 
 
   arcg = makeGroup(&arca);
-  QGridLayout *lay;
-  arcc = makeContainerGrid(arcg, &lay);
-  arcfull = makeIconToolGrid(lay, "ArcFull", 0, 0);
-  arcfull->setChecked(true);
-  arcleft = makeIconToolGrid(lay, "ArcLeftHalf", 0, 1);
-  arctop = makeIconToolGrid(lay, "ArcTopHalf", 0, 2);
-  arcright = makeIconToolGrid(lay, "ArcRightHalf", 0, 3);
-  arcbot = makeIconToolGrid(lay, "ArcBottomHalf", 0, 4);
-  arctl = makeIconToolGrid(lay, "ArcLTQuadrant", 1, 1);
-  arctr = makeIconToolGrid(lay, "ArcRTQuadrant", 1, 2);
-  arcbr = makeIconToolGrid(lay, "ArcRBQuadrant", 1, 3);
-  arcbl = makeIconToolGrid(lay, "ArcLBQuadrant", 1, 4);
-  QObject::connect(arcfull, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::Full); });
-  QObject::connect(arcleft, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::LeftHalf); });
-  QObject::connect(arcright, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::RightHalf); });
-  QObject::connect(arctop, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::TopHalf); });
-  QObject::connect(arcbot, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::BottomHalf); });
-  QObject::connect(arctl, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::TLQuadrant); });
-  QObject::connect(arctr, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::TRQuadrant); });
-  QObject::connect(arcbl, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::BLQuadrant); });
-  QObject::connect(arcbr, &QAction::triggered,
-		   [this]() { editor->setExtent(Arc::Extent::BRQuadrant); });
-  
+  arcc = makeContainer(arcg);
+  arc360 = makeIconTool(arcc, "Arc360a", true, true, "Full circle");
+  arc360->setChecked(true);
+  arc300 = makeIconTool(arcc, "Arc300a", true, true, "300° arc");
+  arc210 = makeIconTool(arcc, "Arc210a", true, true, "210° arc");
+  arc180 = makeIconTool(arcc, "Arc180a", true, true, "Half circle");
+  arc_90 = makeIconTool(arcc, "Arc-90a", true, true, "Quarter circle");
+  //  arctl = makeIconToolGrid(lay, "ArcLTQuadrant", 1, 1);
+  QObject::connect(arc360, &QAction::triggered,
+		   [this]() { editor->setArcAngle(360); });
+  QObject::connect(arc300, &QAction::triggered,
+		   [this]() { editor->setArcAngle(300); });
+  QObject::connect(arc210, &QAction::triggered,
+		   [this]() { editor->setArcAngle(210); });
+  QObject::connect(arc180, &QAction::triggered,
+		   [this]() { editor->setArcAngle(180); });
+  QObject::connect(arc_90, &QAction::triggered,
+		   [this]() { editor->setArcAngle(-90); });
   QWidget *x = new QWidget;
   x->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
   parent->addWidget(x);
@@ -948,9 +977,9 @@ void Propertiesbar::reflectMode(Mode m) {
     }
   }
   if (m==Mode::PlaceArc) {
-    if (d->extent()==Arc::Extent::Invalid) {
-      d->arcfull->setChecked(true);
-      d->editor->properties().ext = Arc::Extent::Full;
+    if (d->arcAngle()==0) {
+      d->arc360->setChecked(true);
+      d->editor->properties().arcangle = 360;
     }
   }
   d->hideAndShow();

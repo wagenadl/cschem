@@ -18,7 +18,7 @@ struct EProps {
   QString text;
   Orient orient;
   Dim fs;
-  Arc::Extent ext;
+  int arcangle;
 };
 
 #endif

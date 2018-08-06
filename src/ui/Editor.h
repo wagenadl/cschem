@@ -63,7 +63,7 @@ public slots:
   void setRef(QString);
   void setFontSize(Dim);
   void setText(QString);
-  void setExtent(Arc::Extent);
+  void setArcAngle(int angle);
   void rotateCW(bool noundo=false);
   void rotateCCW(bool noundo=false);
   void flipH(bool noundo=false);

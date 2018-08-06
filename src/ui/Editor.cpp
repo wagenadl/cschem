@@ -468,7 +468,8 @@ void EData::pressArc(Point p) {
   t.center = p;
   t.radius = props.id / 2;
   t.linewidth = props.linewidth;
-  t.setExtent(props.ext);
+  t.angle = props.arcangle;
+  t.rot = props.orient.rot;
   t.layer = props.layer;
   UndoCreator uc(this, true);
   here.insert(Object(t));
@@ -1185,15 +1186,15 @@ void Editor::selectArea(Rect r, bool add) {
   d->emitSelectionStatus();
 }
 
-void Editor::setExtent(Arc::Extent ext) {
-  d->props.ext = ext;
+void Editor::setArcAngle(int angle) {
+  d->props.arcangle = angle;
   Group &here(d->layout.root().subgroup(d->crumbs));
   UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.isArc()) {
       uc();
-      obj.asArc().setExtent(ext);
+      obj.asArc().angle = angle;
     }
   }
 }

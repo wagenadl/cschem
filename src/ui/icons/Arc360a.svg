@@ -15,16 +15,9 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="Arc300a.svg">
+   sodipodi:docname="Arc360a.svg">
   <defs
      id="defs2">
-    <inkscape:perspective
-       sodipodi:type="inkscape:persp3d"
-       inkscape:vp_x="0 : 8.466667 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
-       inkscape:vp_z="16.933333 : 8.466667 : 1"
-       inkscape:persp3d-origin="8.4666665 : 5.6444447 : 1"
-       id="perspective1523" />
     <marker
        inkscape:stockid="Arrow2Send"
        orient="auto"
@@ -61,9 +54,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="23.90625"
-     inkscape:cx="32.271895"
-     inkscape:cy="32"
+     inkscape:zoom="16.904271"
+     inkscape:cx="-25.071723"
+     inkscape:cy="26.78388"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -86,7 +79,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -96,8 +89,8 @@
      id="layer1"
      transform="translate(0,-280.06665)">
     <path
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.58750002;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 5.6885421,293.34518 a 5.5562501,5.5562501 0 0 1 -2.5888004,-6.24992 5.5562501,5.5562501 0 0 1 5.3669256,-4.11818 5.5562501,5.5562501 0 0 1 5.3669257,4.11818 5.5562501,5.5562501 0 0 1 -2.588801,6.24992"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.5875001;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 14.022917,288.53333 a 5.5562501,5.5562501 0 0 1 -5.5562498,5.55625 5.5562501,5.5562501 0 0 1 -5.5562501,-5.55625 5.5562501,5.5562501 0 0 1 5.5562501,-5.55625 5.5562501,5.5562501 0 0 1 5.5562498,5.55625 z"
        id="path855" />
   </g>
 </svg>

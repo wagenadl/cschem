@@ -61,15 +61,15 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="16.904271"
-     inkscape:cx="-7.7684036"
-     inkscape:cy="26.78388"
+     inkscape:zoom="23.90625"
+     inkscape:cx="32.271895"
+     inkscape:cy="32"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
-     inkscape:window-width="3840"
-     inkscape:window-height="2116"
+     inkscape:window-width="3200"
+     inkscape:window-height="1756"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1">
@@ -103,9 +103,9 @@
        sodipodi:cy="288.53333"
        sodipodi:rx="5.5562501"
        sodipodi:ry="5.5562501"
-       sodipodi:start="2.8797933"
-       sodipodi:end="0.26179939"
-       d="m 3.0997417,289.97139 a 5.5562501,5.5562501 0 0 1 2.1799915,-5.98948 5.5562501,5.5562501 0 0 1 6.3738678,0 5.5562501,5.5562501 0 0 1 2.179992,5.98948"
+       sodipodi:start="2.7925268"
+       sodipodi:end="0.34906585"
+       d="m 3.2455,290.43367 a 5.5562501,5.5562501 0 0 1 1.9032047,-6.35714 5.5562501,5.5562501 0 0 1 6.6359253,0 5.5562501,5.5562501 0 0 1 1.903204,6.35714"
        sodipodi:open="true" />
   </g>
 </svg>
