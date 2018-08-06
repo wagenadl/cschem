@@ -17,6 +17,8 @@ public:
   ~Net();
   QSet<int> connections() const;
   QSet<PinID> pins() const;
+  QString name() const;
+  static QList<Net> allNets(class Circuit const &circ);
 private:
   QSharedDataPointer<class NetData> d;
 };
