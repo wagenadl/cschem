@@ -4,6 +4,8 @@
 #include "EData.h"
 #include "UndoCreator.h"
 
+#include <QInputDialog>
+
 bool EData::updateOnWhat(bool force) {
   Dim mrg = Dim::fromMils(4/mils2px);
   Group &here(layout.root().subgroup(crumbs));
@@ -872,14 +874,41 @@ void Editor::setPlanesVisibility(bool b) {
 
 void Editor::doubleClickOn(Point p, int id) {
   Dim mrg = Dim::fromMils(4/d->mils2px);
-  Group &here(d->layout.root().subgroup(d->crumbs));
-  Object &obj(here.object(id));
+  Group const &here(d->layout.root().subgroup(d->crumbs));
+  Object const &obj(here.object(id));
   switch (obj.type()) {
   case Object::Type::Group: {
     enterGroup(id);
     int fave = d->visibleObjectAt(p, mrg);
     if (fave>=0)
       select(fave);
+  } break;
+  case Object::Type::Hole: {
+    QString ref = QInputDialog::getText(this, "Hole properties", "Ref.",
+					QLineEdit::Normal,
+					obj.asHole().ref);
+    select(id);
+    setRef(ref);
+    select(id);
+    update();
+  } break;
+   case Object::Type::Pad: {
+    QString ref = QInputDialog::getText(this, "Pad properties", "Ref.",
+					QLineEdit::Normal,
+					obj.asPad().ref);
+    select(id);
+    setRef(ref);
+    select(id);
+    update();
+  } break;
+   case Object::Type::Text: {
+    QString ref = QInputDialog::getText(this, "Text properties", "Text",
+					QLineEdit::Normal,
+					obj.asText().text);
+    select(id);
+    setText(ref);
+    select(id);
+    update();
   } break;
   default:
     break;
