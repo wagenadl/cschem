@@ -18,8 +18,6 @@ class Group {
      Empty groups are used to reflect "invalid" status.
   */
 public:
-  Point origin; // to be added to all contained coordinates;
-  // relative to parent's origin
   QString ref;
   QString notes;
   QString pkg; // name of component file
@@ -40,7 +38,6 @@ public:
   // Caution: Do NOT change the empty group that may be returned.
   Rect boundingRect() const; // relative to parent
   bool touches(Point p, Dim mrg=Dim()) const;
-  Point originOf(QList<int> path) const; // relative to parent
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
   // only direct children are returned
   NodeID nodeAt(Point p, Dim mrg=Dim()) const;
@@ -50,20 +47,22 @@ public:
   int formSubgroup(QSet<int> const &);
   QSet<int> dissolveSubgroup(int);
   int ensureRefText(int); // ensure that subgroup has reftext object
-  void rotateCCW(Point p); // p is relative to parent
-  void rotateCW(Point p); // p is relative to parent
-  void flipLeftRight(Dim x); // x is relative to parent
-  void flipUpDown(Dim y); // y is relative to parent
+  void rotateCCW(Point p);
+  void rotateCW(Point p);
+  void flipLeftRight(Dim x);
+  void flipUpDown(Dim y);
+  void translate(Point p);
+  Group translated(Point p) const;
   int refTextId() const; // ID (in parent group) of the text object
   // that represents our Ref., or 0 if none.
   void setRefTextId(int);
   bool saveComponent(int id, QString fn); // id must be a subgroup
   int insertComponent(QString fn);
-  QSet<Point> points() const; // relative to parent
-  QSet<Point> points(Layer) const; // relative to parent
+  QSet<Point> points() const;
+  QSet<Point> points(Layer) const;
   QStringList pinNames() const; // immediate children
-  Point pinPosition(QString name) const; // relative to parent
-  Point anchor() const; // first named pin, relative to parent
+  Point pinPosition(QString name) const;
+  Point anchor() const; // first named pin
   void insertSegmentedTrace(class Trace const &t);
   Point intersectionWith(class Trace const &t, int *idp=0) const;
 private:

@@ -29,7 +29,6 @@ Group::~Group() {
 Group::Group(Group const &o) {
   d = o.d;
   ref = o.ref;
-  origin = o.origin;
 }
 
 Group &Group::operator=(Group const &o) {
@@ -37,7 +36,6 @@ Group &Group::operator=(Group const &o) {
     return *this;
   d = o.d;
   ref = o.ref;
-  origin = o.origin;
   return *this;
 }
 
@@ -120,12 +118,10 @@ QSet<int> Group::dissolveSubgroup(int gid) {
     return ids; // error
   d.detach();
   Group const &g(object(gid).asGroup());
-  Point p = g.origin;
   int tid = g.refTextId();
   for (Object const &obj: g.d->obj) {
     int id = insert(obj);
     ids << id;
-    object(id).translate(p);
   }
   if (contains(tid)) {
     Object &obj(object(tid));
@@ -136,10 +132,22 @@ QSet<int> Group::dissolveSubgroup(int gid) {
   return ids;
 }
 
+Group Group::translated(Point p) const {
+  Group res = *this;
+  res.translate(p);
+  return res;
+}
+
+void Group::translate(Point p) {
+  d.detach();
+  d->hasbbox = false;
+  for (Object &o: d->obj)
+    o.translate(p);
+}
+
 void Group::rotateCCW(Point p) {
   d.detach();
   d->hasbbox = false;
-  p -= origin;
   for (Object &o: d->obj)
     o.rotateCCW(p);
 }
@@ -147,7 +155,6 @@ void Group::rotateCCW(Point p) {
 void Group::rotateCW(Point p) {
   d.detach();
   d->hasbbox = false;
-  p -= origin;
   for (Object &o: d->obj)
     o.rotateCW(p);
 }
@@ -155,7 +162,6 @@ void Group::rotateCW(Point p) {
 void Group::flipLeftRight(Dim x) {
   d.detach();
   d->hasbbox = false;
-  x -= origin.x;
   for (Object &o: d->obj)
     o.flipLeftRight(x);
 }
@@ -163,7 +169,6 @@ void Group::flipLeftRight(Dim x) {
 void Group::flipUpDown(Dim y) {
   d.detach();
   d->hasbbox = false;
-  y -= origin.y;
   for (Object &o: d->obj)
     o.flipUpDown(y);
 }
@@ -171,7 +176,7 @@ void Group::flipUpDown(Dim y) {
 int Group::insert(Object const &o) {
   d.detach();
   d->hasbbox = false;
-  d->obj.insert(++d->lastid, o.translated(-origin));
+  d->obj.insert(++d->lastid, o);
   return d->lastid;
 }
 
@@ -206,16 +211,6 @@ QList<int> Group::keys() const {
   return d->obj.keys();
 }
 
-Point Group::originOf(QList<int> path) const {
-  if (path.isEmpty())
-    return Point();
-  Object const &obj = object(path.takeFirst());
-  if (obj.isGroup())
-    return origin + obj.asGroup().originOf(path);
-  else
-    return origin;
-}
-
 Group const &Group::subgroup(QList<int> path) const {
   static Group nil;
   if (path.isEmpty())
@@ -244,20 +239,19 @@ Group &Group::subgroup(QList<int> path) {
 
 Rect Group::boundingRect() const {
   if (d->hasbbox)
-    return d->bbox.translated(origin);
+    return d->bbox;
   Rect r;
   for (Object const &o: d->obj)
     r |= o.boundingRect();
   d->bbox = r;
   d->hasbbox = true;
-  return r.translated(origin);
+  return r;
 }
 
 bool Group::touches(Point p, Dim mrg) const {
   if (!boundingRect().grow(mrg/2).contains(p))
     return false;
   QList<int> ids;
-  p -= origin;
   for (int id: d->obj.keys()) 
     if (object(id).touches(p, mrg))
       return true;
@@ -297,12 +291,12 @@ Point Group::pinPosition(QString name) const {
     case Object::Type::Hole: {
       Hole const &h(obj.asHole());
       if (h.ref==name)
-	return h.p + origin;
+	return h.p;
     } break;
     case Object::Type::Pad: {
       Pad const &h(obj.asPad());
       if (h.ref==name)
-	return h.p + origin;
+	return h.p;
     } break;
     default:
       break;
@@ -318,10 +312,10 @@ QSet<Point> Group::points() const {
     Object const &obj = object(id);
     switch (obj.type()) {
     case Object::Type::Hole:
-      pp << obj.asHole().p + origin;
+      pp << obj.asHole().p;
       break;
     case Object::Type::Pad:
-      pp << obj.asPad().p + origin;
+      pp << obj.asPad().p;
       break;
     default:
       break;
@@ -337,12 +331,12 @@ QSet<Point> Group::points(Layer l) const {
     switch (obj.type()) {
     case Object::Type::Hole:
       if (l==Layer::Top || l==Layer::Bottom)
-	pp << obj.asHole().p + origin;
+	pp << obj.asHole().p;
       break;
     case Object::Type::Pad: {
       Pad const &pad(obj.asPad());
       if (l==pad.layer)
-	pp << pad.p + origin;
+	pp << pad.p;
     } break;
     default:
       break;
@@ -352,7 +346,6 @@ QSet<Point> Group::points(Layer l) const {
 }  
 
 QList<int> Group::objectsAt(Point p, Dim mrg) const {
-  p -= origin;
   QList<int> ids;
   for (int id: d->obj.keys()) 
     if (object(id).touches(p, mrg))
@@ -411,7 +404,6 @@ QString Group::humanName(NodeID const &ids) const {
 }
 
 NodeID Group::nodeAt(Point p, Dim mrg) const {
-  p -= origin;
   NodeID ids;
   for (int id: d->obj.keys()) {
     Object const &obj(object(id));
@@ -440,7 +432,6 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
     return s;
   }
   s.writeStartElement("group");
-  s.writeAttribute("o", t.origin.toString());
   s.writeAttribute("ref", t.ref);
   if (!t.notes.isEmpty())
     s.writeAttribute("notes", t.notes);
@@ -578,16 +569,10 @@ int Group::insertComponent(QString fn) {
 
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   t = Group();
-  bool ok;
   auto a = s.attributes();
   t.ref = a.value("ref").toString();
   t.notes = a.value("notes").toString();
   t.pkg = a.value("pkg").toString();
-  Point ori = Point::fromString(a.value("o").toString(), &ok);
-  if (!ok) {
-    s.skipCurrentElement();
-    return s;
-  }  
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
@@ -606,7 +591,9 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
       qDebug() << "Unexpected entity in group: " << s.tokenType();
     }
   }
-  t.origin = ori;
+  if (a.hasAttribute("o"))
+    t.translate(Point::fromString(a.value("o").toString()));
+
   if (t.isEmpty())
     qDebug() << "Empty group read from xml";
   // now at end of group element
@@ -614,7 +601,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 }
 
 QDebug operator<<(QDebug d, Group const &t) {
-  d << "Group(" << t.ref << " at " << t.origin;
+  d << "Group(" << t.ref;
   for (Object const &o: t.d->obj)
     d << "    " << o << "\n";
   d << ")";
@@ -678,8 +665,8 @@ void Group::insertSegmentedTrace(Trace const &t) {
 
 Point Group::intersectionWith(class Trace const &t, int *idp) const {
   Trace t1(t);
-  t1.p1 = t.p1 - origin;
-  t1.p2 = t.p2 - origin;
+  t1.p1 = t.p1;
+  t1.p2 = t.p2;
   bool got = false;
   for (int id: keys()) {
     Object const &obj(object(id));
@@ -687,7 +674,7 @@ Point Group::intersectionWith(class Trace const &t, int *idp) const {
     if (got) {
       if (idp)
 	*idp = id;
-      return p + origin;
+      return p;
     }
   }
   if (idp)

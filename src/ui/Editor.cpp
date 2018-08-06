@@ -63,8 +63,8 @@ public:
   void startMoveSelection();
   void newSelectionUnless(int id, Point p, Dim mrg, bool add);
   void selectPointsOf(int id);
-  QSet<Point> pointsOf(Object const &obj, Point const &ori) const;
-  QSet<Point> pointsOf(Object const &obj, Point const &ori, Layer lay) const;
+  QSet<Point> pointsOf(Object const &obj) const;
+  QSet<Point> pointsOf(Object const &obj, Layer lay) const;
   Rect selectionBounds() const; // board coordinates
   void validateStuckPoints() const;
   void invalidateStuckPoints() const;
@@ -167,14 +167,13 @@ void EData::validateStuckPoints() const {
   // if those points are also in selpts. (Others are irrelevant.)
   stuckpts.clear();
   Group const &here(layout.root().subgroup(crumbs));
-  Point ori = layout.root().originOf(crumbs) + here.origin;
   auto const &lays(::layers());
   for (int id: here.keys()) {
     if (!selection.contains(id)) {
       Object const &obj(here.object(id));
       if (!obj.isTrace())
 	for (Layer l: lays)
-	  stuckpts[l] |= pointsOf(obj, ori, l);
+	  stuckpts[l] |= pointsOf(obj, l);
     }
   }
   for (Layer l: lays)
@@ -184,12 +183,10 @@ void EData::validateStuckPoints() const {
 
 Rect EData::selectionBounds() const {
   Group const &here(layout.root().subgroup(crumbs));
-  Point ori = layout.root().originOf(crumbs) + here.origin;
   
   Rect r;
   for (int id: selection)
     r |= here.object(id).boundingRect();
-  r = r.translated(ori);
 
   for (Layer l: ::layers()) 
     for (Point p: purepts[l])
@@ -214,34 +211,33 @@ void EData::createUndoPoint() {
 
 void EData::selectPointsOf(int id) {
   Group const &here(layout.root().subgroup(crumbs));
-  Point ori = layout.root().originOf(crumbs) + here.origin;
   if (here.contains(id))
     for (Layer l: ::layers())
-      selpts[l] |= pointsOf(here.object(id), ori, l);
+      selpts[l] |= pointsOf(here.object(id), l);
 }
 
-QSet<Point> EData::pointsOf(Object const &obj, Point const &ori) const {
+QSet<Point> EData::pointsOf(Object const &obj) const {
   QSet<Point> pp;
   switch (obj.type()) {
   case Object::Type::Null:
     break;
   case Object::Type::Hole:
-    pp << obj.asHole().p + ori;
+    pp << obj.asHole().p;
     break;
   case Object::Type::Pad:
-    pp << obj.asPad().p + ori;
+    pp << obj.asPad().p;
     break;
   case Object::Type::Arc:
-    pp << obj.asArc().center + ori;
+    pp << obj.asArc().center;
     break;
   case Object::Type::Text:
     break;
   case Object::Type::Trace:
-    pp << obj.asTrace().p1 + ori << obj.asTrace().p2 + ori;
+    pp << obj.asTrace().p1 << obj.asTrace().p2;
     break;
   case Object::Type::Group:
     for (Point const &p: obj.asGroup().points())
-      pp << p + ori;
+      pp << p;
     break;
   case Object::Type::Plane:
     break;
@@ -249,33 +245,32 @@ QSet<Point> EData::pointsOf(Object const &obj, Point const &ori) const {
   return pp;
 }
 
-QSet<Point> EData::pointsOf(Object const &obj, Point const &ori,
-			    Layer lay) const {
+QSet<Point> EData::pointsOf(Object const &obj, Layer lay) const {
   QSet<Point> pp;
   switch (obj.type()) {
   case Object::Type::Null:
     break;
   case Object::Type::Hole:
     if (lay==Layer::Top || lay==Layer::Bottom)
-      pp << obj.asHole().p + ori;
+      pp << obj.asHole().p;
     break;
   case Object::Type::Pad:
     if (lay==obj.asPad().layer)
-      pp << obj.asPad().p + ori;
+      pp << obj.asPad().p;
     break;
   case Object::Type::Arc:
     if (lay==obj.asArc().layer)
-      pp << obj.asArc().center + ori;
+      pp << obj.asArc().center;
     break;
   case Object::Type::Text:
     break;
   case Object::Type::Trace:
     if (lay==obj.asTrace().layer)
-      pp << obj.asTrace().p1 + ori << obj.asTrace().p2 + ori;
+      pp << obj.asTrace().p1 << obj.asTrace().p2;
     break;
   case Object::Type::Group:
     for (Point const &p: obj.asGroup().points(lay))
-      pp << p + ori;
+      pp << p;
     break;
   case Object::Type::Plane:
     break;
@@ -341,10 +336,9 @@ void EData::drawTracing(QPainter &p) const {
 
 void EData::drawObjects(QPainter &p) const {
   Group const &here(layout.root().subgroup(crumbs));
-  Point origin = layout.root().originOf(crumbs) + here.origin;
   validateStuckPoints();  
 
-  ORenderer rndr(&p, origin);
+  ORenderer rndr(&p);
   if (moving)
     rndr.setMoving(movingdelta);
   rndr.setSelPoints(selpts);
@@ -418,7 +412,6 @@ void EData::pressText(Point p) {
 
   p = p.roundedTo(layout.board().grid);
   Group &here(layout.root().subgroup(crumbs));
-  p -= layout.root().originOf(crumbs);
   Text t;
   t.p = p;
   t.fontsize = props.fs;
@@ -432,7 +425,6 @@ void EData::pressText(Point p) {
 void EData::pressHole(Point p) {
   p = p.roundedTo(layout.board().grid);
   Group &here(layout.root().subgroup(crumbs));
-  p -= layout.root().originOf(crumbs);
   Hole t;
   t.p = p;
   t.od = props.od;
@@ -448,7 +440,6 @@ void EData::pressHole(Point p) {
 void EData::pressPad(Point p) {
   p = p.roundedTo(layout.board().grid);
   Group &here(layout.root().subgroup(crumbs));
-  p -= layout.root().originOf(crumbs);
   Pad t;
   t.p = p;
   t.width = props.w;
@@ -461,7 +452,6 @@ void EData::pressPad(Point p) {
 void EData::pressArc(Point p) {
   p = p.roundedTo(layout.board().grid);
   Group &here(layout.root().subgroup(crumbs));
-  p -= layout.root().originOf(crumbs);
   Arc t;
   t.center = p;
   t.radius = props.id / 2;
@@ -486,16 +476,15 @@ void EData::pressPickingUp(Point p) {
   Object const &obj(here.object(fave));
   if (!obj.isTrace())
     return;
-  Point ori = layout.root().originOf(crumbs) + here.origin;
   Trace const &t(obj.asTrace());
-  Dim d1 = (p-ori).distance(t.p1);
-  Dim d2 = (p-ori).distance(t.p2);
+  Dim d1 = p.distance(t.p1);
+  Dim d2 = p.distance(t.p2);
   if (d1<d2) {
     // pickup p1, leave p2
-    tracestart = t.p2 + ori;
+    tracestart = t.p2;
   } else {
     // pickup p2
-    tracestart = t.p1 + ori;
+    tracestart = t.p1;
   }    
   UndoCreator uc(this, true);
   here.remove(fave);
@@ -511,10 +500,9 @@ void EData::pressTracing(Point p) {
   }
   if (tracing) {
     Group &here(layout.root().subgroup(crumbs));
-    Point ori(layout.root().originOf(crumbs));
     Trace t;
-    t.p1 = tracestart - ori;
-    t.p2 = p - ori;
+    t.p1 = tracestart;
+    t.p2 = p;
     t.width = props.linewidth;
     t.layer = props.layer;
     UndoCreator uc(this, true);
@@ -550,8 +538,6 @@ enum class Prio {
 
 int EData::visibleObjectAt(Point p, Dim mrg) const {
   Group const &here(layout.root().subgroup(crumbs));
-  Point ori(layout.root().originOf(crumbs));
-  p -= ori;
   QList<int> ids = here.objectsAt(p, mrg);
   /* Now, we want to select one item that P is on.
      We prioritize higher layers over lower layers, ignore pads, text, traces
@@ -638,7 +624,6 @@ void EData::dropFromSelection(int id, Point p, Dim mrg) {
 
   Object const &obj(layout.root().subgroup(crumbs).object(id));
   if (obj.isTrace()) {
-    p -= layout.root().originOf(crumbs);
     Trace const &t(obj.asTrace());
     if (t.onP1(p, mrg)) 
       purepts[t.layer].remove(t.p1);
@@ -665,21 +650,20 @@ void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
   Group const &here(layout.root().subgroup(crumbs));
   Object const &obj(here.object(id));
   if (obj.isTrace()) {
-    Point ori = layout.root().originOf(crumbs) + here.origin;
     Trace const &t(obj.asTrace());
-    if (t.onP1(p - ori, mrg)) {
-      if (purepts[t.layer].contains(t.p1 + ori)) {
+    if (t.onP1(p, mrg)) {
+      if (purepts[t.layer].contains(t.p1)) {
 	if (add)
-	  ed->deselectPoint(t.p1 + ori);
+	  ed->deselectPoint(t.p1);
       } else {
-	ed->selectPoint(t.p1 + ori, add);
+	ed->selectPoint(t.p1, add);
       }
-    } else if (t.onP2(p - ori, mrg)) {
-      if (purepts[t.layer].contains(t.p2 + ori)) {
+    } else if (t.onP2(p, mrg)) {
+      if (purepts[t.layer].contains(t.p2)) {
 	if (add)
-	  ed->deselectPoint(t.p2 + ori);
+	  ed->deselectPoint(t.p2);
       } else {
-	ed->selectPoint(t.p2 + ori, add);
+	ed->selectPoint(t.p2, add);
       }
     } else {
       ed->select(id, add);
@@ -725,16 +709,15 @@ void EData::releaseMoving(Point p) {
   validateStuckPoints();
   UndoCreator uc(this);
   Group &here(layout.root().subgroup(crumbs));
-  Point ori(layout.root().originOf(crumbs) + here.origin);
   for (int id: here.keys()) {
     uc();
     Object &obj(here.object(id));
     if (selection.contains(id)) {
       if (obj.isTrace()) {
         Trace &t = obj.asTrace();
-        if (!stuckpts[t.layer].contains(t.p1+ori))
+        if (!stuckpts[t.layer].contains(t.p1))
           t.p1 += movingdelta;
-        if (!stuckpts[t.layer].contains(t.p2+ori))
+        if (!stuckpts[t.layer].contains(t.p2))
           t.p2 += movingdelta;
       } else {
 	qDebug() << "Before translating:" << undostack.last().layout.root();
@@ -745,13 +728,13 @@ void EData::releaseMoving(Point p) {
     } else if (obj.isTrace()) {
       uc();
       Trace &t = obj.asTrace();
-      if ((selpts[t.layer].contains(t.p1 + ori)
-	   || purepts[t.layer].contains(t.p1 + ori))
-          && !stuckpts[t.layer].contains(t.p1+ori))
+      if ((selpts[t.layer].contains(t.p1)
+	   || purepts[t.layer].contains(t.p1))
+          && !stuckpts[t.layer].contains(t.p1))
 	t.p1 += movingdelta;
-      if ((selpts[t.layer].contains(t.p2 + ori)
-	   || purepts[t.layer].contains(t.p2 + ori))
-          && !stuckpts[t.layer].contains(t.p2+ori))
+      if ((selpts[t.layer].contains(t.p2)
+	   || purepts[t.layer].contains(t.p2))
+          && !stuckpts[t.layer].contains(t.p2))
 	t.p2 += movingdelta;
     }
   }
@@ -1149,8 +1132,6 @@ void Editor::selectArea(Rect r, bool add) {
     d->purepts.clear();
   }    
   Group const &here(d->layout.root().subgroup(d->crumbs));
-  Point origin(d->layout.root().originOf(d->crumbs) + here.origin);
-  r = r.translated(-origin);
   for (int id: here.keys()) {
     Object const &obj(here.object(id));
     if (!d->selection.contains(id)) {
@@ -1406,18 +1387,12 @@ Group const &Editor::currentGroup() const {
   return d->layout.root().subgroup(d->crumbs);
 }
 
-Point Editor::groupOffset() const {
-  return d->layout.root().originOf(d->crumbs);
-}
-
 void Editor::rotateCW(bool noundo) {
   Group &here(d->layout.root().subgroup(d->crumbs));
-  Point origin(d->layout.root().originOf(d->crumbs) + here.origin);
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
   Point center = box.center(); //.roundedTo(d->layout.board().grid);
-  center -= origin;
   UndoCreator uc(d);
   if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
     uc();
@@ -1433,9 +1408,9 @@ void Editor::rotateCW(bool noundo) {
 	Object &obj(here.object(id));
 	if (obj.isTrace()) {
 	  Trace &t(obj.asTrace());
-	  if (t.onP1(p - origin, mrg))
+	  if (t.onP1(p, mrg))
 	    t.p1.rotateCW(center);
-	  if (t.onP2(p - origin, mrg))
+	  if (t.onP2(p, mrg))
 	    t.p2.rotateCW(center);
 	}
       }
@@ -1463,12 +1438,10 @@ void Editor::rotateCCW(bool noundo) {
 
 void Editor::flipH(bool noundo) {
   Group &here(d->layout.root().subgroup(d->crumbs));
-  Point origin(d->layout.root().originOf(d->crumbs));
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
   Dim center = box.center().x; //.roundedTo(d->layout.board().grid).x;
-  center -= origin.x;
 
   UndoCreator uc(d);
   if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
@@ -1485,9 +1458,9 @@ void Editor::flipH(bool noundo) {
 	Object &obj(here.object(id));
 	if (obj.isTrace()) {
 	  Trace &t(obj.asTrace());
-	  if (t.onP1(p - origin, mrg))
+	  if (t.onP1(p, mrg))
 	    t.p1.flipLeftRight(center);
-	  if (t.onP2(p - origin, mrg))
+	  if (t.onP2(p, mrg))
 	    t.p2.flipLeftRight(center);
 	}
       }
@@ -1654,13 +1627,12 @@ bool Editor::saveComponent(int id, QString fn) {
 bool Editor::insertComponent(QString fn, Point pt) {
   pt = pt.roundedTo(d->layout.board().grid);
   Group &here(d->layout.root().subgroup(d->crumbs));
-  Point ori = d->layout.root().originOf(d->crumbs);
   UndoCreator uc(d, true);
   int gid = here.insertComponent(fn);
   if (!gid)
     return false;
   Object &obj(here.object(gid));
-  Point delta = pt - ori - obj.asGroup().anchor();
+  Point delta = pt - obj.asGroup().anchor();
   obj.translate(delta);
   int tid = obj.asGroup().refTextId();
   if (here.contains(tid))
@@ -1719,9 +1691,7 @@ void Editor::dropEvent(QDropEvent *e) {
     grp.setRefTextId(0);
     UndoCreator uc(d, true);
     Group &here(d->layout.root().subgroup(d->crumbs));
-    Point ori = d->layout.root().originOf(d->crumbs);
     Point anch = grp.anchor(); // this should be at droppos
-    droppos -= ori; // convert to current group coords
     Object obj(grp);
     obj.translate(droppos - anch);
     int gid = here.insert(obj);

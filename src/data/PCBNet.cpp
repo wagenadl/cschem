@@ -13,8 +13,8 @@ public:
   Builder(Group const &root, NodeID seed);
   QSet<NodeID> const &pcbNet() const { return net; }
   void buildNetLocations(LayerPoint p);
-  void addConnections(Group const &root, Point ori);
-  void buildPCBNet(Group const &root, NodeID pfx, Point ori);
+  void addConnections(Group const &root);
+  void buildPCBNet(Group const &root, NodeID pfx);
 private:
   QMultiMap<LayerPoint, LayerPoint> connections;
   QSet<LayerPoint> in;
@@ -24,35 +24,34 @@ private:
 Builder::Builder(Group const &root, NodeID seed) {
   if (seed.isEmpty())
     return;
-  addConnections(root, Point());
+  addConnections(root);
   buildNetLocations(seed.location(root));
-  buildPCBNet(root, NodeID(), Point());
+  buildPCBNet(root, NodeID());
 }
 
-void Builder::buildPCBNet(Group const &root, NodeID pfx, Point ori) {
-  ori += root.origin;
+void Builder::buildPCBNet(Group const &root, NodeID pfx) {
   for (int id: root.keys()) {
     Object const &obj(root.object(id));
     if (obj.isTrace()) {
       Trace const &h(obj.asTrace());
-      LayerPoint lp1(h.layer, ori + h.p1);
-      LayerPoint lp2(h.layer, ori + h.p2);
+      LayerPoint lp1(h.layer, h.p1);
+      LayerPoint lp2(h.layer, h.p2);
       if (in.contains(lp1) || in.contains(lp2))
 	net << pfx.plus(id);
     } else if (obj.isHole()) {
       Hole const &h(obj.asHole());
-      LayerPoint lp1(Layer::Top, ori + h.p);
-      LayerPoint lp2(Layer::Bottom, ori + h.p);
+      LayerPoint lp1(Layer::Top, h.p);
+      LayerPoint lp2(Layer::Bottom, h.p);
       if (in.contains(lp1) || in.contains(lp2))
 	net << pfx.plus(id);
     } else if (obj.isPad()) {
       Pad const &h(obj.asPad());
-      LayerPoint lp1(h.layer, ori + h.p);
+      LayerPoint lp1(h.layer, h.p);
       if (in.contains(lp1))
 	net << pfx.plus(id);
     } else if (obj.isGroup()) {
       Group const &h(obj.asGroup());
-      buildPCBNet(h, pfx.plus(id), ori);
+      buildPCBNet(h, pfx.plus(id));
     }
   }
 }
@@ -74,24 +73,23 @@ void Builder::buildNetLocations(LayerPoint p1) {
   }
 }
 
-void Builder::addConnections(Group const &root, Point ori) {
-  ori += root.origin;
+void Builder::addConnections(Group const &root) {
   for (int id: root.keys()) {
     Object const &obj(root.object(id));
     if (obj.isHole()) {
       Hole const &h(obj.asHole());
-      LayerPoint lp1(Layer::Top, ori + h.p);
-      LayerPoint lp2(Layer::Bottom, ori + h.p);
+      LayerPoint lp1(Layer::Top, h.p);
+      LayerPoint lp2(Layer::Bottom, h.p);
       connections.insert(lp1, lp2);
       connections.insert(lp2, lp1);
     } else if (obj.isTrace()) {
       Trace const &h(obj.asTrace());
-      LayerPoint lp1(h.layer, ori + h.p1);
-      LayerPoint lp2(h.layer, ori + h.p2);
+      LayerPoint lp1(h.layer, h.p1);
+      LayerPoint lp2(h.layer, h.p2);
       connections.insert(lp1, lp2);
       connections.insert(lp2, lp1);
     }	else if (obj.isGroup()) {
-      addConnections(obj.asGroup(), ori);
+      addConnections(obj.asGroup());
     }
   }
 }

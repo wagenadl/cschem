@@ -13,7 +13,7 @@ public:
   bool operator==(NodeID const &x) const { return vectorEq(*this, x); }
   bool operator<(NodeID const &x) const { return vectorLt(*this, x); }
   class Object const &deref(class Group const &root) const;
-  LayerPoint location(class Group const &root, Point ori=Point()) const;
+  LayerPoint location(class Group const &root) const;
   NodeID plus(int x) const { NodeID res(*this); res << x; return res; }
   NodeID tail() const { NodeID res(*this); res.removeFirst(); return res; }
 };

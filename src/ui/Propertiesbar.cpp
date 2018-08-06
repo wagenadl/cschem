@@ -636,19 +636,19 @@ void PBData::setupUI() {
     return container;
   };
 
-  auto makeContainerGrid = [](QWidget *group, QGridLayout **layp) {
-    Q_ASSERT(group);
-    Q_ASSERT(group->layout());
-    QWidget *container = new QWidget(group);
-    auto *lay = new QGridLayout;
-    lay->setSpacing(4);
-    lay->setContentsMargins(0, 0, 0, 0);
-    container->setLayout(lay);
-    group->layout()->addWidget(container);
-    if (layp)
-      *layp = lay;
-    return container;
-  };
+  //auto makeContainerGrid = [](QWidget *group, QGridLayout **layp) {
+  //  Q_ASSERT(group);
+  //  Q_ASSERT(group->layout());
+  //  QWidget *container = new QWidget(group);
+  //  auto *lay = new QGridLayout;
+  //  lay->setSpacing(4);
+  //  lay->setContentsMargins(0, 0, 0, 0);
+  //  container->setLayout(lay);
+  //  group->layout()->addWidget(container);
+  //  if (layp)
+  //    *layp = lay;
+  //  return container;
+  //};
   
   auto makeDimSpinner = [](QWidget *container,
 			   Dim step=Dim::fromInch(.005)) {
@@ -722,17 +722,17 @@ void PBData::setupUI() {
     return a;
   };
 
-  auto makeIconToolGrid = [](QGridLayout *container, QString icon, int r, int c,
-			     bool chkb=true, bool ae=true) {
-    Q_ASSERT(container);
-    QToolButton *s = new QToolButton;
-    QAction *a = new QAction(QIcon(":icons/" + icon + ".svg"), icon);
-    s->setDefaultAction(a);
-    a->setCheckable(chkb);
-    s->setAutoExclusive(ae);
-    container->addWidget(s, r, c);
-    return a;
-  };
+  //auto makeIconToolGrid = [](QGridLayout *container, QString icon, int r, int c,
+  //			     bool chkb=true, bool ae=true) {
+  //  Q_ASSERT(container);
+  //  QToolButton *s = new QToolButton;
+  //  QAction *a = new QAction(QIcon(":icons/" + icon + ".svg"), icon);
+  //  s->setDefaultAction(a);
+  //  a->setCheckable(chkb);
+  //  s->setAutoExclusive(ae);
+  //  container->addWidget(s, r, c);
+  //  return a;
+  //};
   
   /*
     auto makeCheckBox = [](QWidget *container, QString text) {

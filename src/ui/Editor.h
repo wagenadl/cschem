@@ -24,7 +24,6 @@ public:
   QSet<Point> selectedPoints() const; // not including those in subgroups
   // in absolute board coordinates
   Group const &currentGroup() const;
-  Point groupOffset() const;
   EProps &properties(); // for Propertiesbar to directly affect
   int selectedComponent(QString *msg=0) const;
   // returns ID if one group, or 0 if none, in which case msg says why

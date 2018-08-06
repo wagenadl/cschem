@@ -395,7 +395,7 @@ void Object::translate(Point const &p) {
     d->trace->p2 += p;
     break;
   case Type::Group:
-    d->group->origin += p;
+    d->group->translate(p);
     break;
   case Type::Arc:
     d->arc->center += p;

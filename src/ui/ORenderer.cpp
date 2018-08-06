@@ -160,7 +160,7 @@ void ORenderer::drawArc(Arc const &t, bool selected) {
 }
 
 void ORenderer::drawGroup(Group const &g, bool selected, PCBNet const &net) {
-  Point ori = g.origin;
+  Point ori;
   if (selected && toplevel)
     ori += movingdelta;
   pushOrigin(ori);
