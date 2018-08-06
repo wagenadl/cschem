@@ -42,6 +42,7 @@ public slots:
   void scaleToFit();
   void zoomIn();
   void zoomOut();
+  void doubleClickOn(Point p, int id);
   bool enterGroup(int sub); // sub is from current level; returns true if OK
   bool leaveGroup(); // returns true unless already at top
   bool leaveAllGroups();

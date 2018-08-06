@@ -76,7 +76,7 @@ public:
   void invalidateStuckPoints() const;
   void zoom(double factor);
   void createUndoPoint();
-  bool updateOnWhat();
+  bool updateOnWhat(bool force=false);
   void updateNet(NodeID seed);
   void emitSelectionStatus();
 public:

@@ -4,15 +4,15 @@
 #include "EData.h"
 #include "UndoCreator.h"
 
-bool EData::updateOnWhat() {
+bool EData::updateOnWhat(bool force) {
   Dim mrg = Dim::fromMils(4/mils2px);
   Group &here(layout.root().subgroup(crumbs));
   NodeID ids = here.nodeAt(hoverpt, mrg);
   bool isnew = ids != onnode;
   onnode = ids;
-  if (isnew)
+  if (isnew || force)
     onobject = here.humanName(ids);
-  if (netsvisible && isnew)
+  if (netsvisible && (isnew || force))
     updateNet(ids);
   return isnew;
 }
@@ -720,14 +720,10 @@ void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
     if (d->mode == Mode::Edit) {
       Dim mrg = Dim::fromMils(4/d->mils2px);
       int fave = d->visibleObjectAt(p, mrg);
-      if (fave<0) {
+      if (fave<0) 
 	leaveGroup();
-      } else {
-	enterGroup(fave);
-	fave = d->visibleObjectAt(p, mrg);
-	if (fave>=0)
-	  select(fave);
-      }
+      else 
+	doubleClickOn(p, fave);
     }
   }
 }
@@ -861,8 +857,7 @@ void Editor::setLayerVisibility(Layer l, bool b) {
 
 void Editor::setNetsVisibility(bool b) {
   d->netsvisible = b;
-  d->onobject = "???";
-  d->updateOnWhat();
+  d->updateOnWhat(true);
   update();
 }
 
@@ -875,11 +870,28 @@ void Editor::setPlanesVisibility(bool b) {
   }
 }
 
+void Editor::doubleClickOn(Point p, int id) {
+  Dim mrg = Dim::fromMils(4/d->mils2px);
+  Group &here(d->layout.root().subgroup(d->crumbs));
+  Object &obj(here.object(id));
+  switch (obj.type()) {
+  case Object::Type::Group: {
+    enterGroup(id);
+    int fave = d->visibleObjectAt(p, mrg);
+    if (fave>=0)
+      select(fave);
+  } break;
+  default:
+    break;
+  }
+}
+
 bool Editor::enterGroup(int sub) {
   clearSelection();
   Group const &here(d->layout.root().subgroup(d->crumbs));
   if (here.contains(sub) && here.object(sub).isGroup()) {
     d->crumbs << sub;
+    d->updateOnWhat(true);
     update();
     return true;
   } else {
@@ -892,6 +904,7 @@ bool Editor::leaveGroup() {
   if (d->crumbs.isEmpty())
     return false;
   d->crumbs.takeLast();
+  d->updateOnWhat(true);
   update();
   return true;
 }
