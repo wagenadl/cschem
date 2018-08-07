@@ -299,7 +299,7 @@ void EData::drawSelectedPoints(QPainter &p) const {
   if (pts.isEmpty())
     return;
   p.setPen(QPen(Qt::NoPen));
-  p.setBrush(QColor(200, 200, 200));
+  p.setBrush(QColor(255, 255, 255, 128));
   for (Point pt: pts) {
     if (moving)
       pt += movingdelta;
