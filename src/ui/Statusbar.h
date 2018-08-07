@@ -44,6 +44,7 @@ private:
   void updateCursor();
 private:
   class QLabel *cursorui;
+  class QToolButton *missingui;
   QMap<Layer, class QToolButton *> layerui;
   QToolButton *planesui;
   QToolButton *netsui;
@@ -52,7 +53,6 @@ private:
   bool noemit;
   Point p;
   QString obj;
-  QStringList mis;
 };
 
 #endif

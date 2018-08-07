@@ -9,8 +9,13 @@
 Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   noemit = true;
   cursorui = new QLabel();
+  missingui = new QToolButton();
+  missingui->setIcon(style()->standardIcon(QStyle::SP_MessageBoxWarning));
+  missingui->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
   hideCursorXY();
+  missingui->hide();
   addWidget(cursorui);
+  addWidget(missingui);
 
   auto *w1 = new QLabel;
   w1->setPixmap(QIcon(":icons/Grid.svg").pixmap(cursorui->height()));
@@ -167,8 +172,12 @@ void Statusbar::setObject(QString obj1) {
 }
 
 void Statusbar::setMissing(QStringList mis1) {
-  mis = mis1;
-  updateCursor();
+  if (mis1.isEmpty()) {
+    missingui->hide();
+  } else {
+    missingui->setText("Missing " + mis1.join(", "));
+    missingui->show();
+  }
 }
 
 void Statusbar::updateCursor() {
@@ -185,8 +194,6 @@ void Statusbar::updateCursor() {
 	.arg(p.y.toInch(),0,'f',3);
     if (!obj.isEmpty())
       txt += " on " + obj;
-    if (!mis.isEmpty())
-      txt += " — Missing " + mis.join(", ");
     cursorui->setText(txt);
   } else {
     hideCursorXY();
