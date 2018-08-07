@@ -29,6 +29,35 @@ public:
   Geometry geom;
 };
 
+double svgFontSize(bool script=false) {
+  return Style::annotationFont().pixelSize()*(script ? .7 : 1);
+}
+
+QString svgFontStyle(bool italic=false, bool script=false) {
+  return QString("fill:#000000;"
+		 "stroke:none;"
+		 "text-anchor:middle;"
+		 "font-family:%1;"
+		 "font-style:%2;"
+		 "font-size:%3px")
+    .arg(Style::annotationFont().family())
+    .arg(italic ? "italic" : "normal")
+    .arg(svgFontSize(script));
+}
+
+QPointF svgFontDelta() {
+  return QPointF(0, svgFontSize() * .3);
+}
+
+void testCircle(QXmlStreamWriter &sw, QPointF p0) {
+  // Use this to test positioning. It places a tiny red circle at the given point
+  sw.writeStartElement("circle");
+  sw.writeAttribute("style", "font-style:normal;font-variant:normal;font-weight:normal;opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ff0000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
+  sw.writeAttribute("cx", QString::number(p0.x()));
+  sw.writeAttribute("cy", QString::number(p0.y()));
+  sw.writeAttribute("r", "2");
+  sw.writeEndElement();
+}
 
 void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   QString sym = elt.symbol();
@@ -54,28 +83,20 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   symbol.writeSvg(sw);
   sw.writeEndElement(); // g
 
-  // origin for labels
-  QPointF po = symbol.shiftedBBox().center();
-  QTransform xf;
-  xf.rotate(elt.rotation*-90);
-  if (elt.flipped)
-    xf.scale(-1, 1);
-  po = xf.map(po);
-  
   if (elt.nameVisible) {
-    QPointF p = elt.namePosition + po;
+    QString txt = elt.name;
+    bool isLetterPlusNumber = txt.mid(1).toDouble()>0;
+    QPointF p = elt.namePosition + svgFontDelta();
     sw.writeStartElement("text");
-    sw.writeAttribute("style", "fill:#000000;stroke:none;font-style:italic");
+    sw.writeAttribute("style", svgFontStyle(isLetterPlusNumber, false));
     sw.writeAttribute("x", QString("%1").arg(p.x()));
     sw.writeAttribute("y", QString("%1").arg(p.y()));
-    QString txt = elt.name;
-    if (txt.mid(1).toDouble()>0) {
+    if (isLetterPlusNumber) {
       // letter + number
       sw.writeCharacters(txt.left(1));
       sw.writeStartElement("tspan");
       sw.writeAttribute("dy", "5");
-      sw.writeAttribute("style", QString("font-style:normal;font-size:%1")
-			.arg(Style::annotationFont().pointSize()*2));
+      sw.writeAttribute("style", svgFontStyle(false, true));
       sw.writeCharacters(txt.mid(1));
       sw.writeEndElement(); // tspan
     } else {
@@ -84,9 +105,9 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
     sw.writeEndElement();
   }
   if (elt.valueVisible) {
-    QPointF p = elt.valuePosition + po;
+    QPointF p = elt.valuePosition + svgFontDelta();
     sw.writeStartElement("text");
-    sw.writeAttribute("style", "fill:#000000;stroke:none");
+    sw.writeAttribute("style", svgFontStyle(false, false));
     sw.writeAttribute("x", QString("%1").arg(p.x()));
     sw.writeAttribute("y", QString("%1").arg(p.y()));
     QString txt = elt.value;
@@ -96,7 +117,8 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   sw.writeEndElement(); // g
 }
 
-void SvgExporterData::writeConnection(QXmlStreamWriter &sw, Connection const &con) {
+void SvgExporterData::writeConnection(QXmlStreamWriter &sw,
+				      Connection const &con) {
   QPolygon pp(geom.connectionPath(con));
   sw.writeStartElement("path");
   sw.writeAttribute("id", QString("con%1").arg(con.id));
@@ -152,9 +174,6 @@ bool SvgExporter::exportSvg(QString const &fn) {
     style += "stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;";
     style += "stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;";
     style += "font-style:normal;font-variant:normal;font-weight:normal;";
-    style += QString("font-size:%1px;font-family:%2;")
-      .arg(Style::annotationFont().pointSize()*2.62)
-      .arg(Style::annotationFont().family());
     sw.writeAttribute("style", style);
     
     for (Element const &elt: d->circ.elements)
