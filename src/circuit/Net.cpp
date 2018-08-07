@@ -49,11 +49,13 @@ void NetData::determineName() {
   for (PinID const &id: pins) {
     if (circ.elements.contains(id.element())) {
       Element const &elt = circ.elements[id.element()];
-      if (!elt.name.isEmpty()) {
-	if (elt.type == Element::Type::Port)
+      if (elt.type == Element::Type::Port) {
+	if (elt.name.isEmpty())
+	  ports << elt.symbol().split(":").last();
+	else
 	  ports << elt.name;
-	else if (elt.type == Element::Type::Component)
-	  alts << elt.name + ":" + id.pin();
+      } else if (elt.type == Element::Type::Component && !elt.name.isEmpty()) {
+	alts << elt.name + ":" + id.pin();
       }
     }
   }
