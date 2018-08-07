@@ -166,6 +166,11 @@ void Statusbar::setObject(QString obj1) {
   updateCursor();
 }
 
+void Statusbar::setMissing(QStringList mis1) {
+  mis = mis1;
+  updateCursor();
+}
+
 void Statusbar::updateCursor() {
   if (p.x>=Dim() && p.y>=Dim() && p.x<=board.width && p.y<=board.height) {
     bool metric = board.isEffectivelyMetric();
@@ -180,6 +185,8 @@ void Statusbar::updateCursor() {
 	.arg(p.y.toInch(),0,'f',3);
     if (!obj.isEmpty())
       txt += " on " + obj;
+    if (!mis.isEmpty())
+      txt += " — Missing " + mis.join(", ");
     cursorui->setText(txt);
   } else {
     hideCursorXY();

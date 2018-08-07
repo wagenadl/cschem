@@ -7,9 +7,9 @@
 #include <QObject>
 #include <QString>
 
-#include "../../cschem/src/circuit/Schem.h"
-#include "../../cschem/src/circuit/Circuit.h"
-#include "../../cschem/src/circuit/Net.h"
+#include "circuit/Schem.h"
+#include "circuit/Circuit.h"
+#include "LinkedNet.h"
 
 class LinkedSchematic: public QObject {
   Q_OBJECT;
@@ -21,7 +21,7 @@ public:
   bool isValid() const;
   Schem schematic() const;
   Circuit circuit() const;
-  QList<Net> nets() const;
+  QList<LinkedNet> nets() const;
 signals:
   void reloaded();
 private:

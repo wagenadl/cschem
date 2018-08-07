@@ -8,12 +8,18 @@
 #include <QBuffer>
 
 constexpr double inNetMils = 10;
+constexpr double overrideMils = 30;
 
 ORenderer::ORenderer(QPainter *p, Point const &o): p(p), origin(o) {
   toplevel = true;
+  overr = Override::None;
 }
 
 ORenderer::~ORenderer() {
+}
+
+void ORenderer::setOverride(Override ovr) {
+  overr = ovr;
 }
 
 void ORenderer::setLayer(Layer l) {
@@ -45,6 +51,17 @@ void ORenderer::pushOrigin(Point const &o1) {
 void ORenderer::popOrigin() {
   origin = originstack.takeLast();
   toplevel = originstack.isEmpty();
+}
+
+QColor ORenderer::overrideColor(QColor const &c) const {
+  switch (overr) {
+  case Override::None:
+    return c;
+  case Override::WronglyIn:
+    return QColor(255, 100, 255);
+  case Override::Missing:
+    return QColor(20, 200, 255);
+  }
 }
 
 void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
@@ -81,6 +98,13 @@ void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
 void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   bool inv = layer==Layer::Invalid;
   bool tb = layer==Layer::Bottom || layer==Layer::Top;
+  if (overr != Override::None) {
+    // easiest way to enforce override is to simply tweak the flags
+    // elegant? no. effective? yes.
+    inv = false; tb = true;
+    innet = true; selected = false;
+  }
+    
   if (!inv && !tb)
     return;
   
@@ -95,25 +119,32 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   } else {
     double od = t.od.toMils();
     if (innet) {
-      p->setBrush(layerColor(layer, selected));
+      const double extramils = overr==Override::None ? inNetMils : overrideMils;
+      p->setBrush(overrideColor(layerColor(layer, selected)));
       if (t.square)
 	p->drawRect(QRectF(p1.toMils()
-			   - QPointF(od/2+inNetMils/2, od/2+inNetMils/2),
-			   QSizeF(od+inNetMils, od+inNetMils)));
+			   - QPointF(od/2+extramils/2, od/2+extramils/2),
+			   QSizeF(od+extramils, od+extramils)));
       else 
-	p->drawEllipse(p1.toMils(), od/2+inNetMils/2, od/2+inNetMils/2);
+	p->drawEllipse(p1.toMils(), od/2+extramils/2, od/2+extramils/2);
+    } else {
+      p->setBrush(layerColor(layer, selected));
+      if (t.square)
+	p->drawRect(QRectF(p1.toMils() - QPointF(od/2, od/2), QSizeF(od, od)));
+      else 
+	p->drawEllipse(p1.toMils(), od/2, od/2);
     }
-    p->setBrush(layerColor(layer, selected));
-    if (t.square)
-      p->drawRect(QRectF(p1.toMils() - QPointF(od/2, od/2), QSizeF(od, od)));
-    else 
-      p->drawEllipse(p1.toMils(), od/2, od/2);
   }
 }
 
 void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
-  if (t.layer != layer)
-    return;
+  if (overr == Override::None) {
+    if (t.layer != layer)
+      return;
+  } else {
+    selected = false;
+    innet = true;
+  }
   
   p->setPen(Qt::NoPen);
 
@@ -124,12 +155,14 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   double w = t.width.toMils();
   double h = t.height.toMils();
   if (innet) {
-    p->setBrush(layerColor(layer, selected));
-    QPointF dp(w+inNetMils, h+inNetMils);
+    const double extramils = overr==Override::None ? inNetMils : overrideMils;
+    p->setBrush(overrideColor(layerColor(layer, selected)));
+    QPointF dp(w+extramils, h+extramils);
     p->drawRect(QRectF(p0 - dp/2, p0 + dp/2));
+  } else {
+    p->setBrush(layerColor(layer, selected));
+    p->drawRect(QRectF(p0 - QPointF(w/2,h/2), p0 + QPointF(w/2,h/2)));
   }
-  p->setBrush(layerColor(layer, selected));
-  p->drawRect(QRectF(p0 - QPointF(w/2,h/2), p0 + QPointF(w/2,h/2)));
 }
 
 void ORenderer::drawArc(Arc const &t, bool selected) {
@@ -159,14 +192,15 @@ void ORenderer::drawArc(Arc const &t, bool selected) {
   p->drawArc(rect, 16*start_ang, 16*span_ang);
 }
 
-void ORenderer::drawGroup(Group const &g, bool selected, PCBNet const &net) {
+void ORenderer::drawGroup(Group const &g, bool selected,
+			  QSet<NodeID> const &net) {
   Point ori;
   if (selected && toplevel)
     ori += movingdelta;
   pushOrigin(ori);
   for (int id: g.keys()) {
-    PCBNet subnet;
-    for (NodeID nid: net) 
+    QSet<NodeID> subnet;
+    for (NodeID const &nid: net) 
       if (!nid.isEmpty() && nid.first()==id)
 	subnet << nid.tail();
     drawObject(g.object(id), selected, subnet);
@@ -204,7 +238,7 @@ void ORenderer::drawText(Text const &t, bool selected) {
 }
 
 void ORenderer::drawObject(Object const &o, bool selected,
-			   PCBNet const &subnet) {
+			   QSet<NodeID> const &subnet) {
   /* In toplevel *only*, and only during moves, selected objects are
      translated by the movingdelta and nonselected traces with
      selected endpoints have those endpoints translated.

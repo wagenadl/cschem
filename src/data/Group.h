@@ -7,6 +7,7 @@
 #include "Layer.h"
 #include "Rect.h"
 #include "NodeID.h"
+#include "Nodename.h"
 #include <QList>
 #include <QMap>
 #include <QDebug>
@@ -42,8 +43,10 @@ public:
   // only direct children are returned
   NodeID nodeAt(Point p, Dim mrg=Dim()) const;
   // even inside subgroups; return is crumbs from this group
+  NodeID findNodeByName(Nodename name) const;
   QString humanName(NodeID const &) const;
-  QStringList nodeName(NodeID const &) const; // refs for each level
+  QStringList nodePath(NodeID const &) const; // refs for each level
+  Nodename nodeName(NodeID const &) const;
   int formSubgroup(QSet<int> const &);
   QSet<int> dissolveSubgroup(int);
   int ensureRefText(int); // ensure that subgroup has reftext object

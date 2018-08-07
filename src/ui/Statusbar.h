@@ -29,6 +29,7 @@ public:
 public slots:
   void setCursorXY(Point);
   void setObject(QString);
+  void setMissing(QStringList);
   void hideCursorXY();
   void setGrid(Dim);
   void setBoard(Board const &);
@@ -51,6 +52,7 @@ private:
   bool noemit;
   Point p;
   QString obj;
+  QStringList mis;
 };
 
 #endif

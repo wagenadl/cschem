@@ -94,10 +94,38 @@ void Builder::addConnections(Group const &root) {
   }
 }
 
-PCBNet::PCBNet(Group const &root, NodeID seed) {
-  Builder builder(root, seed);
-  QSet<NodeID>::operator=(builder.pcbNet());
+PCBNet::PCBNet(): somenode("", "") {
 }
 
+PCBNet::PCBNet(Group const &root, NodeID seed): root_(root), seed_(seed),
+						somenode("", "") {
+  Builder builder(root, seed);
+  nodes_ = builder.pcbNet();
+  havesomenode = false;
+}
+
+Nodename PCBNet::someNode() const {
+  if (havesomenode)
+    return somenode;
+
+  somenode = root_.nodeName(seed_);
+  if (!somenode.isValid()) {
+    for (NodeID const &n: nodes_) {
+      somenode = root_.nodeName(n);
+      if (somenode.isValid())
+	break;
+    }
+  }
+
+  havesomenode = true;
+  return somenode;
+}
   
-  
+void PCBNet::report() const {
+  QStringList mine;
+  for (NodeID n: nodes_)
+    mine << root_.nodeName(n).toString();
+  qDebug() << "PCBNet" << mine
+	   << "from" << root_.nodeName(seed_).toString()
+	   << "rep" << someNode().toString();
+}

@@ -21,8 +21,29 @@ bool EData::updateOnWhat(bool force) {
 
 void EData::updateNet(NodeID seed) {
   net = PCBNet(layout.root().subgroup(crumbs), seed);
+
+  linkednet = LinkedNet();
+  if (linkedschematic.isValid() && !net.nodes().isEmpty() && crumbs.isEmpty()) {
+    Nodename seed = net.someNode();
+    for (LinkedNet const &lnet: linkedschematic.nets()) {
+      if (lnet.containsMatch(seed)) {
+	linkednet = lnet;
+	break;
+      }
+    }
+  }
+
+  if (linkedschematic.isValid() && crumbs.isEmpty()) 
+    netmismatch.recalculate(net, linkednet, layout.root());
+  else
+    netmismatch.reset();
+
+  qDebug() << "NOW ON";
+  net.report();
+  linkednet.report();
+  netmismatch.report(layout.root());
 }
- 
+
 void EData::invalidateStuckPoints() const {
   stuckptsvalid = false;
 }
@@ -215,9 +236,9 @@ void EData::drawObjects(QPainter &p) const {
   auto onelayer = [&](Layer l) {
     rndr.setLayer(l);
     for (int id: here.keys()) {
-      PCBNet subnet;
+      QSet<NodeID> subnet;
       if (netsvisible)
-	for (NodeID nid: net)
+	for (NodeID nid: net.nodes())
 	  if (!nid.isEmpty() && nid.first()==id)
 	    subnet << nid.tail();
       rndr.drawObject(here.object(id), selection.contains(id), subnet);
@@ -248,7 +269,27 @@ void EData::drawObjects(QPainter &p) const {
   }
   if (brd.layervisible[Layer::Silk])
     onelayer(Layer::Silk);
+
+  if (netsvisible && crumbs.isEmpty())
+    drawNetMismatch(rndr);
+
   onelayer(Layer::Invalid); // magic to punch holes
+}
+
+void EData::drawNetMismatch(ORenderer &rndr) const {
+  rndr.setOverride(ORenderer::Override::WronglyIn);
+  for (NodeID const &nid: netmismatch.wronglyInNet) {
+    Object const &obj(nid.deref(layout.root()));
+    qDebug() << "render w.in" << nid << obj;
+    rndr.drawObject(obj);
+  }
+  rndr.setOverride(ORenderer::Override::Missing);
+  for (NodeID const &nid: netmismatch.missingFromNet) {
+    Object const &obj(nid.deref(layout.root()));
+    qDebug() << "render w.out" << nid << obj;
+    rndr.drawObject(obj);
+  }
+  rndr.setOverride(ORenderer::Override::None);
 }
 
 void EData::drawSelectedPoints(QPainter &p) const {
@@ -635,6 +676,7 @@ Editor::~Editor() {
 
 void Editor::setMode(Mode m) {
   d->mode = m;
+  d->abortTracing();
   clearSelection();
 }
 
@@ -770,6 +812,7 @@ void Editor::mousePressEvent(QMouseEvent *e) {
 
 void Editor::mouseMoveEvent(QMouseEvent *e) {
   Point p = Point::fromMils(d->widget2mils.map(e->pos()));
+
   if (d->panning)
     d->movePanning(e->pos());
   else if (d->tracing)
@@ -778,12 +821,21 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
     d->moveBanding(p);
   else if (d->moving)
     d->moveMoving(p);
+
   d->hoverpt = p;
   emit hovering(p);
-  if (d->updateOnWhat()) {
-    emit onObject(d->onobject);
-    if (d->netsvisible)
-      update();
+
+  if (!d->moving && !d->tracing) {
+    if (d->updateOnWhat()) {
+      emit onObject(d->onobject);
+      QStringList mis;
+      for (Nodename const &n: d->netmismatch.missingEntirely)
+	mis << n.humanName();
+      mis.sort();
+      emit missingNodes(mis);
+      if (d->netsvisible)
+	update();
+    }
   }
 }
 

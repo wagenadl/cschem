@@ -32,8 +32,10 @@ SOURCES += ui/ORenderer.cpp ui/ElementView.cpp ui/ComponentView.cpp
 HEADERS += ui/MultiCompView.h
 SOURCES += ui/MultiCompView.cpp
 HEADERS += data/UndoStep.h data/LayerPoint.h data/VectorCf.h
-HEADERS += data/Clipboard.h   data/PCBNet.h   data/NodeID.h
-SOURCES += data/Clipboard.cpp data/PCBNet.cpp data/NodeID.cpp
+HEADERS += data/Clipboard.h   data/PCBNet.h   data/NodeID.h   data/LinkedNet.h
+SOURCES += data/Clipboard.cpp data/PCBNet.cpp data/NodeID.cpp data/LinkedNet.cpp
+HEADERS += data/Nodename.h   data/NetMismatch.h
+SOURCES += data/Nodename.cpp data/NetMismatch.cpp
 
 # From CSCHEM
 HEADERS += circuit/IDFactory.h

@@ -1,8 +1,8 @@
 // LinkedSchematic.cpp
 
 #include "LinkedSchematic.h"
-#include "../../cschem/src/circuit/Schem.h"
-#include "../../cschem/src/file/FileIO.h"
+#include "circuit/Schem.h"
+#include "file/FileIO.h"
 
 #include <QFileSystemWatcher>
 
@@ -17,7 +17,7 @@ public:
   QString fn;
   Schem schem;
   QFileSystemWatcher *watcher;
-  mutable QList<Net> nets;
+  mutable QList<LinkedNet> nets;
   mutable bool havenets;
 };
 
@@ -29,7 +29,10 @@ void LSData::invalidateNets() {
 void LSData::validateNets() {
   if (havenets)
     return;
-  nets = Net::allNets(schem.circuit());
+  Circuit const &circ(schem.circuit());
+  nets.clear();
+  for (Net const &net: Net::allNets(schem.circuit()))
+    nets << LinkedNet(circ, net);
   havenets = true;
 }
 
@@ -78,7 +81,7 @@ Circuit LinkedSchematic::circuit() const {
   return d->schem.circuit();
 }
 
-QList<Net> LinkedSchematic::nets() const {
+QList<LinkedNet> LinkedSchematic::nets() const {
   d->validateNets();
   return d->nets;
 }

@@ -17,7 +17,8 @@
 #include "data/UndoStep.h"
 #include "data/Clipboard.h"
 #include "data/PCBNet.h"
-
+#include "data/LinkedNet.h"
+#include "data/NetMismatch.h"
 
 #include <QTransform>
 #include <QPainter>
@@ -48,6 +49,7 @@ public:
   void drawObject(Object const &o, Layer l, Point const &origin,
 		  QPainter &p, bool selected, bool toplevel=false) const;
   // only draw parts of object that are part of given layer
+  void drawNetMismatch(class ORenderer &) const;
   void drawTracing(QPainter &) const;
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
@@ -119,6 +121,8 @@ public:
   QString onobject;
   NodeID onnode;
   PCBNet net;
+  LinkedNet linkednet;
+  NetMismatch netmismatch;
 };
 
 

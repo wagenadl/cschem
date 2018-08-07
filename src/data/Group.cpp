@@ -353,7 +353,7 @@ QList<int> Group::objectsAt(Point p, Dim mrg) const {
   return ids;
 }
 
-QStringList Group::nodeName(NodeID const &ids) const {
+QStringList Group::nodePath(NodeID const &ids) const {
   QStringList res;
   res << ref;
   if (ids.isEmpty())
@@ -363,7 +363,7 @@ QStringList Group::nodeName(NodeID const &ids) const {
   QString name;
   switch (obj.type()) {
   case Object::Type::Group:
-    res += obj.asGroup().nodeName(ids.tail());
+    res += obj.asGroup().nodePath(ids.tail());
     break;
   case Object::Type::Pad:
     res << obj.asPad().ref;
@@ -377,6 +377,18 @@ QStringList Group::nodeName(NodeID const &ids) const {
   return res;
 }
 
+Nodename Group::nodeName(NodeID const &ids) const {
+  QStringList sum;
+  for (QString const &x: nodePath(ids))
+    if (!x.isEmpty())
+      sum << x;
+  if (sum.isEmpty())
+    return Nodename("", "");
+  else if (sum.size()==1)
+    return Nodename(sum.first(), "");
+  else
+    return Nodename(sum[sum.size()-2], sum.last());
+}
 
 QString Group::humanName(NodeID const &ids) const {
   if (ids.isEmpty())
@@ -679,4 +691,50 @@ Point Group::intersectionWith(class Trace const &t, int *idp) const {
   if (idp)
     *idp = -1;
   return Point();
+}
+
+NodeID Group::findNodeByName(Nodename name) const {
+  for (int id: d->obj.keys()) {
+    Object const &obj(d->obj[id]);
+    if (obj.isGroup()) {
+      Group const &grp(obj.asGroup());
+      if (grp.ref.isEmpty()) {
+	NodeID nid = grp.findNodeByName(name);
+	if (!nid.isEmpty()) {
+	  nid.push_front(id);
+	  return nid;
+	}
+      } else if (grp.ref==name.component()) {
+	Nodename subn("", name.pin());
+	NodeID nid = grp.findNodeByName(subn);
+	if (!nid.isEmpty()) {
+	  nid.push_front(id);
+	  return nid;
+	}
+      }
+    } else if (obj.isPad() || obj.isHole()) {
+      QString objref = obj.isPad() ? obj.asPad().ref : obj.asHole().ref;
+      QString n2 = name.component();
+      if (n2.isEmpty())
+	n2 = name.pin();
+      else if (!name.pin().isEmpty())
+	continue;
+      bool got = objref==n2;
+      if (!got) {
+	for (QString n: n2.split("/")) {
+	  if (objref==n) {
+	    got = true;
+	    break;
+	  }
+	}
+      }
+      if (got) {
+	NodeID nid;
+	nid << id;
+	return nid;
+      }
+    }
+  }
+
+  return NodeID();
 }

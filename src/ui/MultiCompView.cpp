@@ -29,7 +29,8 @@ public:
 void MCVData::rebuild() {
   QMap<QString, Element> newelts;
   for (Element const &elt: schem.circuit().elements)
-    newelts[elt.name] = elt;
+    if (elt.type==Element::Type::Component)
+      newelts[elt.name] = elt;
   QSet<QString> newused;
   for (int k: root.keys()) {
     Object const &obj(root.object(k));
@@ -43,6 +44,7 @@ void MCVData::rebuild() {
     }
   }
   newelts.remove("");
+  qDebug() << "newelts" << newelts;
   for (QString ref: newelts.keys()) {
     if (!newused.contains(ref)) {
       if (!evs.contains(ref)) {

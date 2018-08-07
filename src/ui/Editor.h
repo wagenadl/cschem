@@ -90,6 +90,7 @@ signals:
   void boardChanged(Board const &);
   void hovering(Point);
   void onObject(QString);
+  void missingNodes(QStringList);
   void leaving();
   void selectionChanged(bool); // true if selection not empty
   void componentsChanged(); // emitted when a component has been placed,
