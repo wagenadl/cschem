@@ -46,6 +46,7 @@ public:
     else
       return Dim(((2*(d%o.d) >= o.d) ? (d/o.d+1) : (d/o.d)) * o.d);
   }
+  int raw() const { return d; }
 public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }
   static Dim fromMils(float x) { return Dim(int(std::round(PerMil*x))); }

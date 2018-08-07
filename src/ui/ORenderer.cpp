@@ -61,6 +61,8 @@ QColor ORenderer::overrideColor(QColor const &c) const {
     return QColor(255, 100, 255);
   case Override::Missing:
     return QColor(20, 200, 255);
+  default:
+    return c;
   }
 }
 
@@ -217,7 +219,7 @@ void ORenderer::drawText(Text const &t, bool selected) {
   if (selected && toplevel)
     pt += movingdelta;
   p->save();
-  p->setPen(QPen(QColor(255,255,255), 4));
+  p->setPen(QPen(QColor(255,255,255), sf.baseLinewidth()));
   p->translate(pt.toMils());
   p->rotate(90*t.orient.rot);
   int xflip = ((t.layer==Layer::Bottom) ^ t.orient.flip) ? -1 : 1;

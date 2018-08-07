@@ -36,6 +36,10 @@ double SimpleFont::baseSize() const {
   return 20;
 }
 
+double SimpleFont::baseLinewidth() const {
+  return 4;
+}
+
 double SimpleFont::dx() const {
   return 18;
 }
