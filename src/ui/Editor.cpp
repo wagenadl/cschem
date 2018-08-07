@@ -309,6 +309,7 @@ void EData::drawSelectedPoints(QPainter &p) const {
 
 void EData::abortTracing() {
   tracing = false;
+  ed->updateOnNet();
   ed->update();
 }
 
@@ -400,7 +401,7 @@ void EData::pressPickingUp(Point p) {
 
 void EData::pressTracing(Point p) {
   p = p.roundedTo(layout.board().grid);
-  if (p.distance(tracestart) < Dim::fromMils(4/mils2px)) {
+  if (tracing && p.distance(tracestart) < Dim::fromMils(4/mils2px)) {
     abortTracing();
     return;
   }
@@ -808,6 +809,7 @@ void Editor::mousePressEvent(QMouseEvent *e) {
     }
   }
   QWidget::mousePressEvent(e);
+  updateOnNet();
 }
 
 void Editor::mouseMoveEvent(QMouseEvent *e) {
@@ -825,17 +827,20 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
   d->hoverpt = p;
   emit hovering(p);
 
-  if (!d->moving && !d->tracing) {
-    if (d->updateOnWhat()) {
-      emit onObject(d->onobject);
-      QStringList mis;
-      for (Nodename const &n: d->netmismatch.missingEntirely)
-	mis << n.humanName();
-      mis.sort();
-      emit missingNodes(mis);
-      if (d->netsvisible)
-	update();
-    }
+  if (!d->moving && !d->tracing)
+    updateOnNet();
+}
+
+void Editor::updateOnNet() {
+  if (d->updateOnWhat()) {
+    emit onObject(d->onobject);
+    QStringList mis;
+    for (Nodename const &n: d->netmismatch.missingEntirely)
+      mis << n.humanName();
+    mis.sort();
+    emit missingNodes(mis);
+    if (d->netsvisible)
+      update();
   }
 }
 
