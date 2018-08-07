@@ -123,16 +123,17 @@ void SceneAnnotation::backspace() {
 
 void SceneAnnotation::setCenter(QPointF p) {
   QRectF me = boundingRect();
-  setPos(p - QPointF(me.width()/2, me.height()/2));
-}
+  double xcenter = me.width() / 2;
 
-//void SceneAnnotation::setBaseline(QPointF p) {
-//  QTextLayout *lay = document()->firstBlock().layout();
-//  QPointF p0 = lay->position();
-//  QTextLine line = lay->lineAt(0);
-//  QPointF p1 = line.position();
-//  setPos(p - p0 - p1 - QPointF(0, line.ascent()));
-//}
+  QTextLayout *lay = document()->firstBlock().layout();
+  QPointF p0 = lay->position();
+  QTextLine line = lay->lineAt(0);
+  QPointF p1 = line.position();
+  double ybase = p0.y() + p1.y() + line.ascent();
+  double ycenter = ybase - Style::annotationFont().pixelSize() * .3;
+  // When changing the math here, don't forget SvgExporter!
+  setPos(p - QPointF(xcenter, ycenter));
+}
 
 void SceneAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
   auto *ef = new QGraphicsColorizeEffect;
