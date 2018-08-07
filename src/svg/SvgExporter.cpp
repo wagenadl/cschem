@@ -79,7 +79,7 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   xform += QString(" translate(%1,%2)").arg(-p1.x()).arg(-p1.y());
   sw.writeStartElement("g");
   sw.writeAttribute("transform", xform);
-  qDebug() << "writing " << sym << symbol.isValid();
+
   symbol.writeSvg(sw);
   sw.writeEndElement(); // g
 
@@ -156,7 +156,6 @@ SvgExporter::~SvgExporter() {
 }
 
 bool SvgExporter::exportSvg(QString const &fn) {
-  qDebug() << "symbol names" << d->lib.symbolNames();
   QFile file(fn);
   if (file.open(QFile::WriteOnly)) {
     QXmlStreamWriter sw(&file);

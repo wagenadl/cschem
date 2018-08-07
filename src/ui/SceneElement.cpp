@@ -157,7 +157,6 @@ void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
 }
 
 void SceneElement::mousePressEvent(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "element press";
   d->dragmoved = false;
   Circuit const &circ = d->scene->circuit();
   SymbolLibrary const &lib = d->scene->library();
@@ -387,6 +386,5 @@ void SceneElement::setSelected(bool s) {
 }
 
 bool SceneElement::isSelected() const {
-  qDebug() << "isselected" << this << d->selected;
   return d->selected;
 }
