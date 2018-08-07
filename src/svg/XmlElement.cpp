@@ -86,10 +86,8 @@ void XmlElement::writeStartElement(QXmlStreamWriter &dst) const {
   dst.writeAttributes(d->attributes);
   for (auto nsd: d->namespaceDeclarations) {
     if (nsd.prefix()=="") {
-      qDebug() << "writing default namespace" << nsd.namespaceUri();
       dst.writeDefaultNamespace(nsd.namespaceUri().toString());
     } else {
-      qDebug() << "writing namespace" << nsd.prefix() << nsd.namespaceUri();
       dst.writeNamespace(nsd.namespaceUri().toString(), nsd.prefix().toString());
     }
   }
