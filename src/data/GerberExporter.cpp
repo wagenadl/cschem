@@ -15,37 +15,6 @@ public:
     return t.fontsize * sf.baseLinewidth() / sf.baseSize();
   }
 public:
-  struct CircKey {
-    explicit CircKey(Dim d): diam(d) { }
-    Dim diam;
-    bool operator<(CircKey const &ck) {
-      return diam<ck.diam;
-    }
-  };
-  struct HoleKey {
-    HoleKey(Dim id, Dim od): id(id), od(od) { }
-    Dim id;
-    Dim od;
-    bool operator<(HoleKey const &hk) const {
-      return (id==hk.id) ? od<hk.od : id<hk.id;
-    }
-  };
-  struct RectKey {
-    RectKey(Dim w, Dim h): w(w), h(h) { }
-    Dim w;
-    Dim h;
-    bool operator<(RectKey const &rk) const {
-      return (w==rk.w) ? h<rk.h : w<rk.w;
-    }
-  };
-  struct SqHoleKey {
-    SqHoleKey(Dim id, Dim wh): id(id), wh(wh) { }
-    Dim id;
-    Dim wh;
-    bool operator<(SqHoleKey const &rk) const {
-      return (wh==rk.wh) ? id<rk.id : wh<rk.wh;
-    }
-  };
 public:
   GEData(QTextStream &output): output(output) {
     apidx = 10;
@@ -56,6 +25,10 @@ public:
   void ensureAperture(HoleKey);
   void ensureAperture(SqHoleKey);
   void ensureCharacter(char c);
+  void selectAperture(CircKey);
+  void selectAperture(RectKey);
+  void selectAperture(HoleKey);
+  void selectAperture(SqHoleKey);
 public:
   QTextStream &output;
   int apidx;
@@ -65,6 +38,26 @@ public:
   QMap<SqHoleKey, int> apSqHole;
   QMap<char, int> amChar;
 };
+
+void GEData::selectAperture(CircKey k) {
+  Q_ASSERT(apCirc.contains(k));
+  output << "%D" << apCirc[k] << "*%\n";
+}
+
+void GEData::selectAperture(HoleKey k) {
+  Q_ASSERT(apHole.contains(k));
+  output << "%D" << apHole[k] << "*%\n";
+}
+
+void GEData::selectAperture(RectKey k) {
+  Q_ASSERT(apRect.contains(k));
+  output << "%D" << apRect[k] << "*%\n";
+}
+
+void GEData::selectAperture(SqHoleKey k) {
+  Q_ASSERT(apSqHole.contains(k));
+  output << "%D" << apSqHole[k] << "*%\n";
+}
 
 void GEData::ensureAperture(CircKey k) {
   if (apCirc.contains(k))
@@ -100,8 +93,31 @@ void GEData::ensureChar(char c) {
     return;
   apChar[c] = ++apidx;
   static SimpleFont const &sf(SimpleFont::instance());
-  ensureAperture(sf.baseLineWidth());
-  // now draw the character into a macro
+  ensureAperture(CircKey(sf.baseLineWidth()));
+  output << "G04 character " << QString::number(int(c)) << " *\n";
+  output << "%ABD" << apidx << "*%\n";
+  output << "G01*\n"; // linear interpolation
+  selectAperture(CircKey(sf.baseLineWidth()));
+  // now draw the character
+  QVector<QPolygonF> strokes = sf.character(c);
+  for (QPolygonF const &pp: strokes) {
+    int K = pp.size();
+    if (K>=2) {
+      output << "X" << mil2mm(pp[0].x) << "Y" << mil2mm(pp[0].y) << "D02*\n";
+      for (int k=1; k<K; k++)
+	output << "X" << mil2mm(pp[k].x) << "Y" << mil2mm(pp[k].y) << "D01*\n";
+    }
+  }
+  output << "%AB*%\n";
+}
+
+void EData::ensureCharacters(QString s) {
+  int N = s.size();
+  for (int n=0; n<N; n++) {
+    int c = s[n];
+    if (c>=32 && c<=126)
+      ensureChar(c);
+  }
 }
   
 void GEData::collectApertures(Group const &grp) {
@@ -142,6 +158,8 @@ void GerberExporter::writeComment(QString text) {
 void GerberExporter::writeLayout(Layout const &layout) {
   d->output << "%FSLAX35Y35*%\n"; // specifies 5 digits past mm
   d->output << "%MOMM*%\n";
+
   d->collectApertures(layout.root());
-  d->outputApertures();
+
+  
 }
