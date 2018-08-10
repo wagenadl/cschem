@@ -1,8 +1,8 @@
-// Aperture.h
+// Apertures.h
 
-#ifndef APERTURE_H
+#ifndef APERTURES_H
 
-#define APERTURE_H
+#define APERTURES_H
 
 #include "data/Dim.h"
 #include <QMap>
@@ -12,7 +12,7 @@ namespace Gerber {
   struct Circ {
     explicit Circ(Dim d): diam(d) { }
     Dim diam;
-    bool operator<(Circ const &ck) {
+    bool operator<(Circ const &ck) const {
       return diam<ck.diam;
     }
   };
@@ -41,10 +41,21 @@ namespace Gerber {
     }
   };
 
-  class Aperture {
+  class Apertures {
   public:
-    Aperture();
-    void write(QTextStream &output);
+    enum class Func {
+      Invalid,
+      Conductor,
+      Profile,
+      ComponentDrill,
+    };
+    static QString funcName(Func);
+  public:
+    Apertures(Func func=Func::Invalid, int firstidx=100);
+    Func func() const;
+    int nextIndex() const { return apidx; }
+    int firstIndex() const;
+    void write(QTextStream &output) const;
     void ensure(Circ);
     void ensure(Rect);
     void ensure(Hole);
@@ -54,12 +65,15 @@ namespace Gerber {
     QString select(Hole) const;
     QString select(SqHole) const;
   private:
+    Func func_;
     int apidx;
     QMap<Circ, int> apCirc;
     QMap<Rect, int> apRect;
     QMap<Hole, int> apHole;
     QMap<SqHole, int> apSqHole;
   };
+
+  QTextStream &operator<<(QTextStream &ts, Apertures &ap);
 
 };
 

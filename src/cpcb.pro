@@ -36,6 +36,11 @@ HEADERS += data/Clipboard.h   data/PCBNet.h   data/NodeID.h   data/LinkedNet.h
 SOURCES += data/Clipboard.cpp data/PCBNet.cpp data/NodeID.cpp data/LinkedNet.cpp
 HEADERS += data/Nodename.h   data/NetMismatch.h
 SOURCES += data/Nodename.cpp data/NetMismatch.cpp
+HEADERS += gerber/Apertures.h   gerber/Font.h   gerber/Gerber.h
+SOURCES += gerber/Apertures.cpp gerber/Font.cpp gerber/GerberFile.cpp
+HEADERS += gerber/Collector.h   gerber/GerberFile.h gerber/GerberWriter.h
+SOURCES += gerber/Collector.cpp gerber/Gerber.cpp   gerber/GerberWriter.cpp
+
 
 # From CSCHEM
 HEADERS += circuit/IDFactory.h

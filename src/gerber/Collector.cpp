@@ -1,19 +1,24 @@
 // Collector.cpp
 
 #include "Collector.h"
+#include "data/Board.h"
+#include <QList>
+#include <QMap>
 
 class ColData {
 public:
+  Dim mirrory;
   QMap<Dim, QSet<Point>> holes;
   QMap<Dim, QSet<Point>> roundHolePads;
   QMap<Dim, QSet<Point>> squareHolePads;
   QMap<Layer, QMap<Point, QSet<Point>>> smdPads;
-  QMap<Layer, QMap<Dim, QList<Trace>> traces;
-  QMap<Layer, QMap<Dim, QList<Arc>> arcs;
-  QMap<Layer, QMap<Dim, QList<Text>> texts;
+  QMap<Layer, QMap<Dim, QList<Trace>>> traces;
+  QMap<Layer, QMap<Dim, QList<Arc>>> arcs;
+  QMap<Layer, QMap<Dim, QList<Text>>> texts;
 };
   
-Collector::Collector(): d(new ColData) {
+Collector::Collector(Board const &brd): d(new ColData()) {
+  d->mirrory = brd.height/2;
 }
 
 Collector::~Collector() {
@@ -29,27 +34,32 @@ void Collector::collect(Group const &grp) {
       break;
     case Object::Type::Hole: {
       Hole const &hole(obj.asHole());
-      holes[hole.id] << hole.p;
+      d->holes[hole.id] << hole.p.flippedUpDown(d->mirrory);
       if (hole.square)
-	squareHolePads[hole.od] << hole.p;
+	d->squareHolePads[hole.od] << hole.p.flippedUpDown(d->mirrory);
       else
-	roundHolePads[hole.od] << hole.p;
+	d->roundHolePads[hole.od] << hole.p.flippedUpDown(d->mirrory);
     } break;
     case Object::Type::Pad: {
       Pad const &pad(obj.asPad());
-      smdPads[pad.layer][Point(pad.w, pad.h)] << pad.p;
+      d->smdPads[pad.layer][Point(pad.width, pad.height)]
+	<< pad.p.flippedUpDown(d->mirrory);
     } break;
     case Object::Type::Trace: {
-      Trace const &trace(obj.asTrace());
-      traces[trace.layer][trace.linewidth] << trace;
+      Trace trace(obj.asTrace());
+      trace.p1 = trace.p1.flippedUpDown(d->mirrory);
+      trace.p2 = trace.p2.flippedUpDown(d->mirrory);
+      d->traces[trace.layer][trace.width] << trace;
     } break;
     case Object::Type::Text: {
-      Text const &text(obj.asText());
-      texts[text.layer][text.fontsize] << text;
+      Text text(obj.asText());
+      text.flipUpDown(d->mirrory);
+      d->texts[text.layer][text.fontsize] << text;
     } break;
     case Object::Type::Arc: {
-      Arc const &arc(obj.asArc());
-      arcs[arc.layer][arc.linewidth] << arc;
+      Arc arc(obj.asArc());
+      arc.flipUpDown(d->mirrory);
+      d->arcs[arc.layer][arc.linewidth] << arc;
     } break;
     default:
       qDebug() << "unknown type in collect";

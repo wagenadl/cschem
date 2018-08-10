@@ -40,6 +40,7 @@ public:
   Point &rotateCCW(Point const &p=Point());
   inline static Dim distance(Point const &a, Point const &b) {
     return a.distance(b); }
+  bool operator<(Point const &o) const { return y==o.y ? x<o.x : y<o.y; }
 };
 
 

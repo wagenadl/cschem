@@ -7,6 +7,7 @@
 #include "Editor.h"
 #include "MultiCompView.h"
 #include "data/Paths.h"
+#include "gerber/GerberWriter.h"
 
 #include <QMessageBox>
 #include <QMenu>
@@ -34,6 +35,7 @@ public:
   void hideParts();
   void fillBars();
   void openDialog();
+  bool exportAsDialog();
   bool saveAsDialog();
   bool saveImmediately();
   void linkSchematicDialog();
@@ -189,6 +191,26 @@ void MWData::linkSchematicDialog() {
                          + "”. Could the file be damaged?");
 }
 
+bool MWData::exportAsDialog() {
+  if (pwd.isEmpty())
+    pwd = Paths::defaultLocation();
+  
+  QString fn = QFileDialog::getSaveFileName(0, "Export as…",
+					    pwd,
+					    "Zip files (*.zip)");
+  if (fn.isEmpty())
+    return false;
+  if (!fn.endsWith(".zip"))
+    fn += ".zip";
+  if (GerberWriter::write(editor->pcbLayout(), fn))
+    return true;
+
+  QMessageBox::warning(mw, "cpcb",
+		       "Could not export pcb as “"
+		       + fn + "”",
+		       QMessageBox::Ok);
+  return false;
+}
 
 bool MWData::saveAsDialog() {
   if (pwd.isEmpty())
@@ -197,21 +219,23 @@ bool MWData::saveAsDialog() {
   QString fn = QFileDialog::getSaveFileName(0, "Save as…",
 					    pwd,
 					    "PCB layouts (*.cpcb)");
-  bool ok = false;
-  if (!fn.isEmpty()) {
-    if (!fn.endsWith(".cpcb"))
-      fn += ".cpcb";
-    filename = fn;
-    pwd = QFileInfo(fn).dir().absolutePath();
-    mw->setWindowTitle(fn);
-    ok = editor->save(fn);
-    if (!ok)
-      QMessageBox::warning(mw, "cpcb",
-			   "Could not save pcb as “"
-			   + fn + "”",
-			   QMessageBox::Ok);
-  }
-  return ok;
+  if (fn.isEmpty())
+    return false;
+
+  if (!fn.endsWith(".cpcb"))
+    fn += ".cpcb";
+  filename = fn;
+  pwd = QFileInfo(fn).dir().absolutePath();
+  mw->setWindowTitle(fn);
+
+  if (editor->save(fn))
+    return true;
+
+  QMessageBox::warning(mw, "cpcb",
+		       "Could not save pcb as “"
+		       + fn + "”",
+		       QMessageBox::Ok);
+  return false;
 }  
 
 void MWData::about() {
@@ -261,6 +285,11 @@ void MWData::makeMenus() {
 
   file->addAction("Save &as…", [this]() { saveAsDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
+
+  file->addAction("&Export Gerber…", [this]() { exportAsDialog(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_E));
+
+  
   file->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_L));
 

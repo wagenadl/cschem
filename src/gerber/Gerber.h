@@ -5,6 +5,7 @@
 #define GERBER_H
 
 #include "data/Dim.h"
+#include "data/Point.h"
 #include <QString>
 
 namespace Gerber {
@@ -15,14 +16,16 @@ namespace Gerber {
     BottomSolderMask,
     TopCopper,
     TopSolderMask,
-    TopSilk
+    TopSilk          
   };
   enum class Polarity {
     Positive,
     Negative
   };
+  constexpr int PERUM = 100; // assuming 5 digits past mm
   QString coord(Dim);
-  QString real(Dim);
+  QString point(Point); // include "X" and "Y" prefixes
+  QString real(Dim); // in millimeters
   QString layerInfix(Layer);
 };
 

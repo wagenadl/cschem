@@ -4,12 +4,13 @@
 
 #define GERBERFONT_H
 
-#include "Aperture.h"
+#include "Apertures.h"
+#include "data/SimpleFont.h"
 
 namespace Gerber {
   class Font {
   public:
-    Font(Aperture &ap);
+    Font(Apertures &ap);
     void writeFont(QTextStream &output);
     void ensure(char);
     void ensure(QString);
@@ -17,8 +18,8 @@ namespace Gerber {
     void writeString(QTextStream &output, QString);
   private:
     QSet<char> got;
-    Aperture const &ap;
-    class SimpleFont const &sf;
+    Apertures const &ap;
+    SimpleFont const &sf;
   };
 };
 

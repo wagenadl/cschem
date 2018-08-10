@@ -103,6 +103,11 @@ void Arc::flipUpDown() {
   rotateCW();
 }
 
+void Arc::flipUpDown(Dim y) {
+  flipUpDown();
+  center = center.flippedUpDown(y);
+}
+
 void Arc::flipLeftRight() {
   rot &= 3;
   if (angle<0) {

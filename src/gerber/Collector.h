@@ -10,7 +10,7 @@
 
 class Collector {
 public:
-  Collector();
+  Collector(class Board const &);
   ~Collector();
   void collect(Group const &root);
 public:

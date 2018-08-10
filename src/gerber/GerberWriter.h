@@ -6,8 +6,6 @@
 
 #include "data/Layout.h"
 #include "Gerber.h"
-#include "data/Layer.h"
-#include "Collector.h"
 
 class GerberWriter {
 public:

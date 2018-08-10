@@ -5,9 +5,12 @@
 using namespace Gerber;
 
 GerberFile::GerberFile(QDir dir, Gerber::Layer layer):
-  f(dir.absoluteFilePath(dir.name() + "-" + layerInfix(layer) + ".gbr")) {
-  if (!f.open(QFile::ReadOnly))
+  f(dir.absoluteFilePath(dir.dirName() + "-" + layerInfix(layer) + ".gbr")) {
+  nextap = 200;
+  if (!f.open(QFile::WriteOnly)) {
+    qDebug() << "Could not create file" << f.fileName();
     return;
+  }
   setDevice(&f);
   *this << "G04 " << dir.absolutePath() << " - " << layerInfix(layer) << " *\n";
   *this << "%TF.GenerationSoftware,cpcb,DanielWagenaar*%\n";
@@ -28,10 +31,29 @@ void GerberFile::writeBoilerplate(QString uuid, Polarity polarity) {
   *this << "%TF.SameCoordinates," << uuid << "*%\n";
 }
     
-
-GerberFile::~GerberFile() {
+bool GerberFile::isValid() const {
+  qDebug() << "GerberFile::isValid?" << device();
+  return device() != 0;
 }
 
-bool GerberFile::isValid() const {
-  return device() != 0;
+Gerber::Apertures &GerberFile::newApertures(Gerber::Apertures::Func func) {
+  Q_ASSERT(!aps.contains(func));
+  aps.insert(func, Gerber::Apertures(func, nextap));
+  return aps[func];
+}
+
+Gerber::Apertures const &GerberFile::apertures(Gerber::Apertures::Func func) {
+  Q_ASSERT(aps.contains(func));
+  return aps[func];
+}
+
+void GerberFile::writeApertures(Gerber::Apertures::Func func) {
+  Q_ASSERT(aps.contains(func));
+  writeApertures(aps[func]);
+}
+
+void GerberFile::writeApertures(Gerber::Apertures const &ap) {
+  Q_ASSERT(ap.firstIndex() >= nextap);
+  ap.write(*this);
+  nextap = ap.nextIndex();
 }

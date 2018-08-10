@@ -3,23 +3,25 @@
 #include "Gerber.h"
 
 namespace Gerber {
-  QString coord(Dim d) {
+  QString real(Dim d) {
     return QString::number(d.toMM());
   }
-  QString real(Dim d) {
-    constexpr int PERUM = 100;
+  QString coord(Dim d) {
     constexpr int FACTOR = PERUM / Dim::PerUM;
     return QString::number(d.raw()*FACTOR);
   }
+  QString point(Point p) {
+    return "X" + coord(p.x) + "Y" + coord(p.y);
+  }
   QString layerInfix(Layer l) {
     switch (l) {
-    case BoardOutline: return "Profile";
-    case ThroughHoles: return "Drill";
-    case BottomCopper: return "Bottom";
-    case BottomSolderMask: return "BottomMask";
-    case TopCopper: return "Top";
-    case TopSolderMask: return "TopMask";
-    case TopSilk: return "Silk";
+    case Gerber::Layer::BoardOutline: return "Profile";
+    case Gerber::Layer::ThroughHoles: return "Drill";
+    case Gerber::Layer::BottomCopper: return "Bottom";
+    case Gerber::Layer::BottomSolderMask: return "BottomMask";
+    case Gerber::Layer::TopCopper: return "Top";
+    case Gerber::Layer::TopSolderMask: return "TopMask";
+    case Gerber::Layer::TopSilk: return "Silk";
     default: return "";
     }
   }

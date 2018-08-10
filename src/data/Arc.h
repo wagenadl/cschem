@@ -37,7 +37,8 @@ public:
   void rotateCW();
   void rotateCCW();
   void flipLeftRight();
-  void flipUpDown();
+  void flipUpDown(); // around our center
+  void flipUpDown(Dim y); // around y
   void setLayer(Layer);
   Rect boundingRect() const;
   bool onEdge(Point p, Dim mrg) const;
