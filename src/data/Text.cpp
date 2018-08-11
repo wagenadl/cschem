@@ -20,14 +20,17 @@ Rect Text::boundingRect() const {
   Dim w(fontsize*sf.width(text)/sf.baseSize());
   Dim asc(fontsize*sf.ascent()/sf.baseSize());
   Dim desc(fontsize*sf.descent()/sf.baseSize());
+  Dim dy = asc/2;
+  asc -= dy;
+  desc += dy;
   bool efflip = orient.flip ^ (layer==Layer::Bottom);
   if (efflip)
     w = -w;
   switch (orient.rot & 3) {
   case 0: return Rect(p + Point(Dim(), desc), p + Point(w, -asc));
-  case 1: return Rect(p + Point(asc, Dim()), p + Point(desc, w));
+  case 1: return Rect(p + Point(asc, Dim()), p + Point(-desc, w));
   case 2: return Rect(p + Point(Dim(), -desc), p + Point(-w, asc));
-  case 3: return Rect(p + Point(-asc, Dim()), p + Point(-desc, -w));
+  case 3: return Rect(p + Point(-asc, Dim()), p + Point(desc, -w));
   }
   return Rect(); // not executed 
 }

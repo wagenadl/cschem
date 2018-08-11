@@ -5,8 +5,9 @@
 using namespace Gerber;
 
 GerberFile::GerberFile(QDir dir, Gerber::Layer layer):
-  f(dir.absoluteFilePath(dir.dirName() + "-" + layerInfix(layer) + ".gbr")) {
-  nextap = 200;
+  f(dir.absoluteFilePath(dir.dirName() + "-" + layerInfix(layer) + ".gbr")),
+  nextap(Gerber::Font::FirstSafeAperture),
+  font_(newApertures(Gerber::Apertures::Func::NonConductor)) {
   if (!f.open(QFile::WriteOnly)) {
     qDebug() << "Could not create file" << f.fileName();
     return;
@@ -57,3 +58,8 @@ void GerberFile::writeApertures(Gerber::Apertures const &ap) {
   ap.write(*this);
   nextap = ap.nextIndex();
 }
+
+Gerber::Font &GerberFile::font() {
+  return font_;
+}
+    

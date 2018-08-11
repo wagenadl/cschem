@@ -46,12 +46,18 @@ namespace Gerber {
     enum class Func {
       Invalid,
       Conductor,
+      NonConductor,
       Profile,
       ComponentDrill,
+      ComponentPad,
+      SMDPad,
+      // HeatsinkPad,
+      // ViaDrill,
+      // ViaPad,
     };
     static QString funcName(Func);
   public:
-    Apertures(Func func=Func::Invalid, int firstidx=100);
+    Apertures(Func func=Func::Invalid, int firstidx=10);
     Func func() const;
     int nextIndex() const { return apidx; }
     int firstIndex() const;

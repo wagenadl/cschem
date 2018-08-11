@@ -5,10 +5,12 @@
 #define GERBERFILE_H
 
 #include "Gerber.h"
+#include "Font.h"
+#include "Apertures.h"
+
 #include <QTextStream>
 #include <QDir>
 #include <QFile>
-#include "Apertures.h"
 
 class GerberFile: public QTextStream {
 public:
@@ -21,10 +23,12 @@ public:
   Gerber::Apertures const &apertures(Gerber::Apertures::Func);
   void writeApertures(Gerber::Apertures::Func);
   void writeApertures(Gerber::Apertures const &);
+  Gerber::Font &font();
 private:
   QFile f;
   int nextap;
   QMap<Gerber::Apertures::Func, Gerber::Apertures> aps;
+  Gerber::Font font_;
 };
 
 #endif

@@ -451,6 +451,7 @@ void Object::flipLeftRight(Dim x0) {
   case Type::Null:
     break;
   case Type::Hole:
+    asHole().p.flipLeftRight(x0);
     break;
   case Type::Pad:
     asPad().p.flipLeftRight(x0);

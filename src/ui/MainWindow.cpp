@@ -9,6 +9,7 @@
 #include "data/Paths.h"
 #include "gerber/GerberWriter.h"
 
+#include <QProcess>
 #include <QMessageBox>
 #include <QMenu>
 #include <QMenuBar>
@@ -200,10 +201,18 @@ bool MWData::exportAsDialog() {
 					    "Zip files (*.zip)");
   if (fn.isEmpty())
     return false;
-  if (!fn.endsWith(".zip"))
-    fn += ".zip";
-  if (GerberWriter::write(editor->pcbLayout(), fn))
-    return true;
+  if (fn.endsWith(".zip"))
+    fn=fn.left(fn.size()-4);
+  if (GerberWriter::write(editor->pcbLayout(), fn)) {
+    QString zipfn = fn + ".zip";
+    QStringList args;
+    args << "-r" << zipfn <<fn;
+    QDir::root().remove(zipfn);
+    if (QProcess::execute("zip", args)==0) {
+      // rm the folder
+      return true;
+    }
+  }
 
   QMessageBox::warning(mw, "cpcb",
 		       "Could not export pcb as “"

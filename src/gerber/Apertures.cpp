@@ -7,8 +7,11 @@ namespace Gerber {
   QString Apertures::funcName(Apertures::Func func) {
     switch (func) {
     case Apertures::Func::Conductor: return "Conductor";
+    case Apertures::Func::NonConductor: return "NonConductor";
     case Apertures::Func::Profile: return "Profile";
     case Apertures::Func::ComponentDrill: return "ComponentDrill";
+    case Apertures::Func::ComponentPad: return "ComponentPad";
+    case Apertures::Func::SMDPad: return "SMDPad,CuDef";
     case Apertures::Func::Invalid: break;
     }
     qDebug() << "Apertures::funcName(Invalid)";
@@ -35,7 +38,7 @@ namespace Gerber {
 	     << "C," << real(k.diam) << "*%\n";
     for (Rect const &k: apRect.keys())
       output << "%ADD" << apRect[k]
-	     << "R," << real(k.w) << "," << real(k.h) << "*%\n";
+	     << "R," << real(k.w) << "X" << real(k.h) << "*%\n";
     for (Hole const &k: apHole.keys())
       output << "%ADD" << apHole[k]
 	     << "C," << real(k.od) << "," << real(k.id) << "*%\n";

@@ -221,7 +221,12 @@ void ORenderer::drawText(Text const &t, bool selected) {
   p->save();
   p->setPen(QPen(QColor(255,255,255), sf.baseLinewidth()));
   p->translate(pt.toMils());
+
+  p->setPen(QPen(QColor(255,255,255), 2));
+  p->drawEllipse(QPointF(0,0), 5,5);
+
   p->rotate(90*t.orient.rot);
+  p->translate(0, sf.ascent()*t.fontsize.toMils()/sf.baseSize()/2);
   int xflip = ((t.layer==Layer::Bottom) ^ t.orient.flip) ? -1 : 1;
   p->scale(xflip*t.fontsize.toMils()/sf.baseSize(),
 	  -t.fontsize.toMils()/sf.baseSize());
