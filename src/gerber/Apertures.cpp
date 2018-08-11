@@ -32,6 +32,9 @@ namespace Gerber {
   }
   
   void Apertures::write(QTextStream &output) const {
+    if (apCirc.isEmpty() && apRect.isEmpty()
+	&& apHole.isEmpty() && apSqHole.isEmpty())
+      return;
     output << "%TA.AperFunction," << funcName(func()) << "*%\n";    
     for (Circ const &k: apCirc.keys())
       output << "%ADD" << apCirc[k]

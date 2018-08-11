@@ -20,6 +20,7 @@ namespace Gerber {
   private:
     Apertures const *ap;
     FontSpec spec;
+    double scl;
     Dim lw;
     SimpleFont const *sf;
   };

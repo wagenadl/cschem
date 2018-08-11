@@ -42,7 +42,7 @@ Dim SimpleFont::fontSize() const {
 }
 
 Dim SimpleFont::lineWidth() const {
-  return Dim::fromMils(4);
+  return Dim::fromMils(3);
 }
 
 Dim SimpleFont::dx() const {
@@ -64,3 +64,22 @@ Dim SimpleFont::ascent() const {
 Dim SimpleFont::descent() const {
   return Dim::fromMils(9) + baselineShift();
 }
+
+/*
+QVector<QPolygonF> const &SimpleFont::sizedCharacter(char c, Dim fs) const {
+  if (sizedchars[fs].contains(c))
+    return sizedchars[fs][c];
+  double scl = scaleFactor(fs);
+  QVector<QPolygonF> glyphs;
+  QVector<Polyline> const &src = character(c);
+  for (Polyline const  &pp0: src) {
+    QPolygonF pp;
+    for (Point const &p0: pp0)
+      pp << p0.toMils()*scl;
+    glyphs << pp;
+  }
+  sizedchars[fs][c] = glyphs;
+  auto it = sizedchars[fs].find(c);
+  return *it;
+}
+*/

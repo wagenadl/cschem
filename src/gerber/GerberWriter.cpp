@@ -251,9 +251,6 @@ bool GWData::writeText(GerberFile &out, Layer layer,
 	font.writeText(out, txt);
     }
   }
-  out << "%LMN*%\n";
-  out << "%LS1.0*%\n";
-  out << "%LR0*%\n";
   return true;
 }
 
@@ -278,7 +275,8 @@ bool GWData::writeTracksAndPads(GerberFile &out, Layer layer,
     }
   }
 
-  { // Output all the component pads
+  if (layer==Layer::Top || layer==Layer::Bottom) {
+    // Output all the component pads
     Gerber::Apertures const &aps(out
 		 .apertures(Gerber::Apertures::Func::ComponentPad));
     out << "G01*\n"; // linear
