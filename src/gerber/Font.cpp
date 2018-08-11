@@ -43,8 +43,8 @@ namespace Gerber {
   }
 
   void Font::writeText(QTextStream &output, Text const &txt) const {
-    ap->select(Circ(lw));
     output << "G01*\n"; // select linear interpolation
+    output << ap->select(Circ(lw));
     double scl = sf->scaleFactor(txt.fontsize);
     Dim dx = sf->dx() * scl;
     Point dxy;
