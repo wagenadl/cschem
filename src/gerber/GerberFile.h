@@ -20,15 +20,16 @@ public:
   void writeBoilerplate(QString uuid,
 			Gerber::Polarity polarity=Gerber::Polarity::Positive);
   Gerber::Apertures &newApertures(Gerber::Apertures::Func);
-  Gerber::Apertures const &apertures(Gerber::Apertures::Func);
+  Gerber::Apertures const &apertures(Gerber::Apertures::Func) const;
   void writeApertures(Gerber::Apertures::Func);
   void writeApertures(Gerber::Apertures const &);
-  Gerber::Font &font();
+  Gerber::Font &ensureFont(Gerber::FontSpec);
+  Gerber::Font const &font(Gerber::FontSpec) const;
 private:
   QFile f;
   int nextap;
   QMap<Gerber::Apertures::Func, Gerber::Apertures> aps;
-  Gerber::Font font_;
+  QMap<Gerber::FontSpec, Gerber::Font> fonts;
 };
 
 #endif

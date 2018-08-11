@@ -5,6 +5,7 @@
 #define COLLECTOR_H
 
 #include "data/Object.h"
+#include "FontSpec.h"
 #include <QMap>
 #include <QList>
 
@@ -20,7 +21,7 @@ public:
   QMap<Point, QSet<Point>> const &smdPads(Layer) const; // key is (W,H)
   QMap<Dim, QList<Trace>> const &traces(Layer) const; // key is LW
   QMap<Dim, QList<Arc>> const &arcs(Layer) const; // key is LW
-  QMap<Dim, QList<Text>> const &texts(Layer) const; // key is FS
+  QMap<Gerber::FontSpec, QList<Text>> const &texts(Layer) const;
 private:
   class ColData *d;
 };

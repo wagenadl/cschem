@@ -14,7 +14,7 @@ public:
   QMap<Layer, QMap<Point, QSet<Point>>> smdPads;
   QMap<Layer, QMap<Dim, QList<Trace>>> traces;
   QMap<Layer, QMap<Dim, QList<Arc>>> arcs;
-  QMap<Layer, QMap<Dim, QList<Text>>> texts;
+  QMap<Layer, QMap<Gerber::FontSpec, QList<Text>>> texts;
 };
   
 Collector::Collector(Board const &brd): d(new ColData()) {
@@ -54,7 +54,8 @@ void Collector::collect(Group const &grp) {
     case Object::Type::Text: {
       Text text(obj.asText());
       text.flipUpDown(d->mirrory);
-      d->texts[text.layer][text.fontsize] << text;
+      Gerber::FontSpec fs(text.fontsize, text.orient.rot, text.orient.flip);
+      d->texts[text.layer][fs] << text;
     } break;
     case Object::Type::Arc: {
       Arc arc(obj.asArc());
@@ -93,7 +94,7 @@ QMap<Dim, QList<Arc>> const &Collector::arcs(Layer l) const {
   return d->arcs[l];
 }
 
-QMap<Dim, QList<Text>> const &Collector::texts(Layer l) const {
+QMap<Gerber::FontSpec, QList<Text>> const &Collector::texts(Layer l) const {
   return d->texts[l];
 }
 

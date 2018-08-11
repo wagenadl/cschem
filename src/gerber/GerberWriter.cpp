@@ -202,14 +202,12 @@ void GWData::collectApertures(GerberFile &out, Layer layer,
   if (isneg)
     return; // for now, since we have no filled planes yet
 
-  { // Apertures and characters for fonts
-    // This MUST be first, because GerberFile has started the NonConductor Aps.
-    Gerber::Font &font(out.font());
-    for (auto const &lst: collector.texts(layer)) 
-      for (Text const &txt: lst) 
-	font.ensure(txt.text);
-    out.writeApertures(Gerber::Apertures::Func::NonConductor);
-    font.writeFont(out);
+  { // Apertures for fonts (and other non-conductors?)
+    Gerber::Apertures
+      &aps(out.newApertures(Gerber::Apertures::Func::NonConductor));
+    for (Gerber::FontSpec spec: collector.texts(layer).keys()) 
+      out.ensureFont(spec);
+    out.writeApertures(aps);
   }
   
   { // Apertures for traces
@@ -245,14 +243,13 @@ bool GWData::writeText(GerberFile &out, Layer layer,
   if (isneg)
     return true; // for now, since we have no filled planes yet
   { // Output all text
-    Gerber::Apertures const &aps(out
-	 .apertures(Gerber::Apertures::Func::NonConductor));
-    Gerber::Font const &font(out.font());
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive
-    for (Dim fs: collector.texts(layer).keys())
-      for (Text const &txt: collector.texts(layer)[fs])
+    for (Gerber::FontSpec spec: collector.texts(layer).keys()) {
+      Gerber::Font const &font(out.font(spec));
+      for (Text const &txt: collector.texts(layer)[spec])
 	font.writeText(out, txt);
+    }
   }
   out << "%LMN*%\n";
   out << "%LS1.0*%\n";
