@@ -18,21 +18,37 @@ public:
   // Following return true if OK
   bool writeBoardOutline();
   bool writeThroughHoles();
-  bool writeCopper(Layer);
-  bool writeSolderMask(Layer);
+  bool writeCopper(Gerber::Layer);
+  bool writeSolderMask(Gerber::Layer);
   bool writeSilk();
+  static Layer mapLayer(Gerber::Layer l);
 private:
-  bool writeFilledPlanes(GerberFile &out, Layer);
-  bool writeTracksAndPads(GerberFile &out, Layer, Gerber::Polarity);
-  // negative polarity means to draw clearance, with appropriate widths
-  bool writeText(GerberFile &out, Layer, Gerber::Polarity);
-  void collectApertures(GerberFile &out, Layer, Gerber::Polarity);
+  bool writeFilledPlanes(GerberFile &out, Gerber::Layer);
+  bool writeTracksAndPads(GerberFile &out, Gerber::Layer);
+  bool writeText(GerberFile &out, Gerber::Layer);
+  bool writeTrackAndPadClearance(GerberFile &out, Gerber::Layer);
+  bool writeTextClearance(GerberFile &out, Gerber::Layer);
+  void collectNonCopperApertures(GerberFile &out, Gerber::Layer);
+  void collectCopperApertures(GerberFile &out, Gerber::Layer);
+  void collectCopperClearanceApertures(GerberFile &out, Gerber::Layer);
 public:
   Layout layout;
   QDir dir;
   QString uuid;
   Collector collector;
 };
+
+Layer GWData::mapLayer(Gerber::Layer l) {
+  switch (l) {
+  case Gerber::Layer::TopSilk: return Layer::Silk;
+  case Gerber::Layer::TopCopper: return Layer::Top;
+  case Gerber::Layer::TopSolderMask: return Layer::Top;
+  case Gerber::Layer::BottomCopper: return Layer::Bottom;
+  case Gerber::Layer::BottomSolderMask: return Layer::Bottom;
+  default: return Layer::Invalid;
+  }
+}
+
 
 GerberWriter::GerberWriter(Layout const &layout, QString outputdir):
   d(new GWData(layout, outputdir)) {
@@ -73,11 +89,9 @@ bool GerberWriter::writeLayer(Gerber::Layer layer) {
    case Gerber::Layer::ThroughHoles:
      return d->writeThroughHoles();
   case Gerber::Layer::BottomCopper: case Gerber::Layer::TopCopper:
-    return d->writeCopper(layer==Gerber::Layer::BottomCopper
-			  ? Layer::Bottom : Layer::Top);
+    return d->writeCopper(layer);
   case Gerber::Layer::BottomSolderMask: case Gerber::Layer::TopSolderMask:
-    return d->writeSolderMask(layer==Gerber::Layer::BottomSolderMask
-			      ? Layer::Bottom : Layer::Top);
+    return d->writeSolderMask(layer);
   case Gerber::Layer::TopSilk:
     return d->writeSilk();
   default:
@@ -131,8 +145,16 @@ bool GWData::writeThroughHoles() {
   return true;
 }
 
-bool GWData::writeSolderMask(Layer /*layer*/) {
-  qDebug() << "writeSolderMask NYI";
+bool GWData::writeSolderMask(Gerber::Layer layer) {
+  GerberFile out(dir, layer, uuid);
+  if (!out.isValid())
+    return false;
+
+  collectNonCopperApertures(out, layer);
+  if (!writeTracksAndPads(out, layer))
+    return false;
+
+  out << "M02*\n";
   return true;
 }
 
@@ -141,145 +163,239 @@ bool GWData::writeSilk() {
   if (!out.isValid())
     return false;
 
-  collectApertures(out, Layer::Silk, Gerber::Polarity::Positive);
-  if (!writeTracksAndPads(out, Layer::Silk, Gerber::Polarity::Positive))
+  collectNonCopperApertures(out, Gerber::Layer::TopSilk);
+  if (!writeTracksAndPads(out, Gerber::Layer::TopSilk))
     return false;
-  if (!writeText(out, Layer::Silk, Gerber::Polarity::Positive))
-    return false;
-  
-  return true;
-}
-
-bool GWData::writeCopper(Layer layer) {
-  GerberFile out(dir,
-		 layer==Layer::Top
-		 ? Gerber::Layer::TopCopper
-		 : Gerber::Layer::BottomCopper,
-		 uuid);
-  if (!out.isValid())
-    return false;
-
-  collectApertures(out, layer, Gerber::Polarity::Negative);
-  collectApertures(out, layer, Gerber::Polarity::Positive);
-  
-  if (!writeFilledPlanes(out, layer))
-    return false;
-
-  if (!writeTracksAndPads(out, layer, Gerber::Polarity::Negative))
-    return false;
-
-  if (!writeTracksAndPads(out, layer, Gerber::Polarity::Positive))
-    return false;
-
-  if (!writeText(out, layer, Gerber::Polarity::Positive))
+  if (!writeText(out, Gerber::Layer::TopSilk))
     return false;
   
   out << "M02*\n";
   return true;
 }
 
-bool GWData::writeFilledPlanes(GerberFile &/*out*/, Layer /*layer*/) {
+bool GWData::writeCopper(Gerber::Layer layer) {
+  GerberFile out(dir, layer, uuid);
+  if (!out.isValid())
+    return false;
+
+  collectCopperClearanceApertures(out, layer);
+  collectCopperApertures(out, layer);
+  
+  if (!writeFilledPlanes(out, layer))
+    return false;
+  if (!writeTrackAndPadClearance(out, layer))
+    return false;
+  if (!writeTextClearance(out, layer))
+    return false;
+  if (!writeTracksAndPads(out, layer))
+    return false;
+  if (!writeText(out, layer))
+    return false;
+  
+  out << "M02*\n";
+  return true;
+}
+
+bool GWData::writeFilledPlanes(GerberFile &/*out*/, Gerber::Layer /*layer*/) {
   qDebug() << "GWData::writeFilledPlanes NYI";
   return true; // safe until filled planes are implemented elsewhere
 }
 
-void GWData::collectApertures(GerberFile &out, Layer layer,
-			      Gerber::Polarity pol) {
-  bool isneg = pol==Gerber::Polarity::Negative;
-  if (isneg)
-    return; // for now, since we have no filled planes yet
+void GWData::collectNonCopperApertures(GerberFile &out, Gerber::Layer layer) {
+  Gerber::Apertures
+    &aps(out.newApertures(Gerber::Apertures::Func::Material));
 
-  bool issilk = layer==Layer::Silk;
-  { // Apertures for fonts (and other non-conductors)
-    Gerber::Apertures
-      &aps(out.newApertures(Gerber::Apertures::Func::NonConductor));
-    for (Gerber::FontSpec spec: collector.texts(layer).keys()) 
-      out.ensureFont(spec);
+  for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys()) 
+    out.ensureFont(spec);
 
-    if (issilk) {
-      // collect traces and SMD pads as non-conductors too
-      for (Dim lw: collector.traces(layer).keys())
-	aps.ensure(Gerber::Circ(lw));
-      for (Point p: collector.smdPads(layer).keys())
-	aps.ensure(Gerber::Rect(p.x, p.y));
+  switch (layer) {
+  case Gerber::Layer::TopSilk:
+    for (Dim lw: collector.traces(mapLayer(layer)).keys())
+      aps.ensure(Gerber::Circ(lw));
+    for (Point p: collector.smdPads(mapLayer(layer)).keys())
+      aps.ensure(Gerber::Rect(p.x, p.y));
+    break;
+  case Gerber::Layer::TopSolderMask:
+  case Gerber::Layer::BottomSolderMask:
+    for (Dim lw: collector.traces(mapLayer(layer)).keys()) {
+      Dim mrg = 2*layout.board().maskMargin(lw);
+      aps.ensure(Gerber::Circ(lw + mrg));
     }
-    out.writeApertures(aps);
+    for (Dim od: collector.roundHolePads().keys()) {
+      Dim mrg = 2*layout.board().maskMargin(od);
+      aps.ensure(Gerber::Circ(od + mrg));
+    }
+    for (Dim od: collector.squareHolePads().keys()) {
+      Dim mrg = 2*layout.board().maskMargin(od);
+      aps.ensure(Gerber::Rect(od + mrg, od + mrg));
+    }
+    for (Point p: collector.smdPads(mapLayer(layer)).keys()) {
+      Dim mrg = 2*layout.board().maskMargin(p.x, p.y);
+      aps.ensure(Gerber::Rect(p.x + mrg, p.y + mrg));
+    }
+    break;
+  default:
+    break;
   }
-  
-  if (!issilk) { // Apertures for traces
+  out.writeApertures(aps);
+}
+
+void GWData::collectCopperClearanceApertures(GerberFile &out,
+					     Gerber::Layer layer) {
+  Gerber::Apertures
+    &aps(out.newApertures(Gerber::Apertures::Func::AntiPad));
+  for (Dim lw: collector.traces(mapLayer(layer)).keys())
+    aps.ensure(Gerber::Circ(lw + 2*layout.board().clearance(lw)));
+  for (Dim od: collector.roundHolePads().keys())
+    aps.ensure(Gerber::Circ(od + 2*layout.board().clearance(od)));
+  for (Dim od: collector.squareHolePads().keys()) {
+    Dim mrg(2*layout.board().clearance(od));
+    aps.ensure(Gerber::Rect(od + mrg, od + mrg));
+  }
+  for (Point p: collector.smdPads(mapLayer(layer)).keys()) {
+    Dim mrg(2*layout.board().clearance(p.x, p.y));
+    aps.ensure(Gerber::Rect(p.x, p.y));
+  }
+  out.writeApertures(aps);
+}
+
+void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
+  { // Apertures for traces
     Gerber::Apertures
-      &aps(out.newApertures(layer==Layer::Silk
-			    ? Gerber::Apertures::Func::NonConductor
-			    : Gerber::Apertures::Func::Conductor));
-    for (Dim lw: collector.traces(layer).keys())
+      &aps(out.newApertures(Gerber::Apertures::Func::Conductor));
+    for (Dim lw: collector.traces(mapLayer(layer)).keys())
       aps.ensure(Gerber::Circ(lw));
     out.writeApertures(aps);
   }
 
-  if (layer==Layer::Top || layer==Layer::Bottom) {
-    // Apertures for component pads
-    Gerber::Apertures &aps(out.
-			   newApertures(Gerber::Apertures::Func::ComponentPad));
+  { // Apertures for component pads
+    Gerber::Apertures
+      &aps(out.newApertures(Gerber::Apertures::Func::ComponentPad));
     for (Dim od: collector.roundHolePads().keys())
       aps.ensure(Gerber::Circ(od));
     for (Dim od: collector.squareHolePads().keys())
       aps.ensure(Gerber::Rect(od, od));
     out.writeApertures(aps);
   }
-
-  if (!issilk) { // Apertures for SMD pads
-    Gerber::Apertures &aps(out.newApertures(Gerber::Apertures::Func::SMDPad));
-    for (Point p: collector.smdPads(layer).keys())
+  
+  { // Apertures for SMD pads
+    Gerber::Apertures
+      &aps(out.newApertures(Gerber::Apertures::Func::SMDPad));
+    for (Point p: collector.smdPads(mapLayer(layer)).keys())
       aps.ensure(Gerber::Rect(p.x, p.y));
     out.writeApertures(aps);
   }
 }
 
-bool GWData::writeText(GerberFile &out, Layer layer,
-				Gerber::Polarity pol) {
-  bool isneg = pol==Gerber::Polarity::Negative;
-  if (isneg)
-    return true; // for now, since we have no filled planes yet
+bool GWData::writeTextClearance(GerberFile &out, Gerber::Layer layer) {
+  auto const &txts = collector.texts(mapLayer(layer));
+  SimpleFont const &sf(SimpleFont::instance());
+  out << "G01*\n"; // linear
+  out << "%LPC*%\n"; // negative
+  for (Gerber::FontSpec spec: txts.keys()) {
+    Dim mrg = layout.board().clearance(sf.scaleFactor(spec.fs)
+				       *sf.lineWidth());
+    Gerber::Font const &font(out.font(spec));
+    for (Text const &txt: txts[spec]) {
+      Rect r(txt.boundingRect());
+      r.grow(mrg);
+      out << "G36*\n";
+      out << Gerber::point(Point(r.left, r.top)) << "D02*\n";
+      out << "G01*\n";
+      out << "X" << Gerber::coord(r.right()) << "D01*\n";
+      out << "Y" << Gerber::coord(r.bottom()) << "D01*\n";
+      out << "X" << Gerber::coord(r.left) << "D01*\n";
+      out << "Y" << Gerber::coord(r.top) << "D01*\n";
+      out << "G37*\n";
+    }
+  }
+  return true;
+}
+
+bool GWData::writeText(GerberFile &out, Gerber::Layer layer) {
   { // Output all text
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive
-    for (Gerber::FontSpec spec: collector.texts(layer).keys()) {
+    auto const &txts = collector.texts(mapLayer(layer));
+    for (Gerber::FontSpec spec: txts.keys()) {
       Gerber::Font const &font(out.font(spec));
-      for (Text const &txt: collector.texts(layer)[spec])
+      for (Text const &txt: txts[spec])
 	font.writeText(out, txt);
     }
   }
   return true;
 }
 
-bool GWData::writeTracksAndPads(GerberFile &out, Layer layer,
-				Gerber::Polarity pol) {
-  bool isneg = pol==Gerber::Polarity::Negative;
-  if (isneg)
-    return true; // for now, since we have no filled planes yet
+bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
+  Gerber::Apertures const
+    &aps(out.apertures(Gerber::Apertures::Func::AntiPad));
+  out << "G01*\n"; // linear
+  out << "%LPC*%\n"; // negative
 
-  bool issilk = layer==Layer::Silk;
+  // Traces
+  auto const &trcs(collector.traces(mapLayer(layer)));
+  for (Dim lw: trcs.keys()) {
+    Dim mrg = 2*layout.board().clearance(lw);
+    out << aps.select(Gerber::Circ(lw + mrg));
+    for (Trace const &trc: trcs[lw]) {
+      out << Gerber::point(trc.p1) << "D02*\n";
+      out << Gerber::point(trc.p2) << "D01*\n";
+    }
+  }
+
+  // Through-hole component pads
+  for (Dim od: collector.roundHolePads().keys()) {
+    Dim mrg = 2*layout.board().clearance(od);
+    out << aps.select(Gerber::Circ(od + mrg));
+    for (Point const &p: collector.roundHolePads()[od])
+      out << Gerber::point(p) << "D03*\n";
+  }
+  for (Dim od: collector.squareHolePads().keys()) {
+    Dim mrg = 2*layout.board().clearance(od);
+    out << aps.select(Gerber::Rect(od + mrg, od + mrg));
+    for (Point const &p: collector.squareHolePads()[od])
+      out << Gerber::point(p) << "D03*\n";
+  }
+
+  // SMD pads
+  auto const &pads(collector.smdPads(mapLayer(layer)));
+  for (Point p: pads.keys()) {
+    Dim mrg = 2*layout.board().clearance(p.x, p.y);
+    out << aps.select(Gerber::Rect(p.x + mrg, p.y + mrg));
+    for (Point const &p: pads[p])
+      out << Gerber::point(p) << "D03*\n";
+  }
+
+  return true;
+}
+
+bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
+  bool iscopper = layer==Gerber::Layer::TopCopper
+    || layer==Gerber::Layer::BottomCopper;
+  bool ismask = layer==Gerber::Layer::TopSolderMask
+    || layer==Gerber::Layer::BottomSolderMask;
   
-  { // Output all traces
+  if (!ismask) { // Output all traces
     Gerber::Apertures const
-      &aps(out.apertures(issilk 
-			 ? Gerber::Apertures::Func::NonConductor
-			 : Gerber::Apertures::Func::Conductor));
+      &aps(out.apertures(iscopper 
+			 ? Gerber::Apertures::Func::Conductor
+			 : Gerber::Apertures::Func::Material));
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive
-    for (Dim lw: collector.traces(layer).keys()) {
+    auto const &trcs(collector.traces(mapLayer(layer)));
+    for (Dim lw: trcs.keys()) {
       out << aps.select(Gerber::Circ(lw));
-      for (Trace const &trc: collector.traces(layer)[lw]) {
+      for (Trace const &trc: trcs[lw]) {
 	out << Gerber::point(trc.p1) << "D02*\n";
 	out << Gerber::point(trc.p2) << "D01*\n";
       }
     }
   }
 
-  if (layer==Layer::Top || layer==Layer::Bottom) {
+  if (iscopper) {
     // Output all the component pads
-    Gerber::Apertures const &aps(out
-		 .apertures(Gerber::Apertures::Func::ComponentPad));
+    Gerber::Apertures const
+      &aps(out.apertures(Gerber::Apertures::Func::ComponentPad));
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive
     for (Dim od: collector.roundHolePads().keys()) {
@@ -292,18 +408,36 @@ bool GWData::writeTracksAndPads(GerberFile &out, Layer layer,
       for (Point const &p: collector.squareHolePads()[od])
 	out << Gerber::point(p) << "D03*\n";
     }
+  } else if (ismask) {
+    Gerber::Apertures const
+      &aps(out.apertures(Gerber::Apertures::Func::Material));
+    out << "G01*\n"; // linear
+    out << "%LPD*%\n"; // positive, because whole file is negative
+    for (Dim od: collector.roundHolePads().keys()) {
+      Dim mrg = 2*layout.board().maskMargin(od);
+      out << aps.select(Gerber::Circ(od + mrg));
+      for (Point const &p: collector.roundHolePads()[od])
+	out << Gerber::point(p) << "D03*\n";
+    }
+    for (Dim od: collector.squareHolePads().keys()) {
+      Dim mrg = 2*layout.board().maskMargin(od);
+      out << aps.select(Gerber::Rect(od + mrg, od + mrg));
+      for (Point const &p: collector.squareHolePads()[od])
+	out << Gerber::point(p) << "D03*\n";
+    }
   }
 
   { // Output all the SMD pads
     Gerber::Apertures const
-      &aps(out.apertures(issilk
-			 ? Gerber::Apertures::Func::NonConductor
-			 : Gerber::Apertures::Func::SMDPad));
+      &aps(out.apertures(iscopper ? Gerber::Apertures::Func::SMDPad
+			 : Gerber::Apertures::Func::Material));
     out << "G01*\n"; // linear
-    out << "%LPD*%\n"; // positive
-    for (Point p: collector.smdPads(layer).keys()) {
-      out << aps.select(Gerber::Rect(p.x, p.y));
-      for (Point const &p: collector.smdPads(layer)[p])
+    out << "%LPD*%\n"; // positive (even in mask layers!)
+    auto const &pads(collector.smdPads(mapLayer(layer)));
+    for (Point p: pads.keys()) {
+      Dim mrg = ismask ? 2*layout.board().maskMargin(p.x, p.y) : Dim();
+      out << aps.select(Gerber::Rect(p.x + mrg, p.y + mrg));
+      for (Point const &p: pads[p])
 	out << Gerber::point(p) << "D03*\n";
     }
   }

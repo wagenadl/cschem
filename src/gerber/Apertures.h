@@ -45,12 +45,14 @@ namespace Gerber {
   public:
     enum class Func {
       Invalid,
+      Material,
       Conductor,
       NonConductor,
       Profile,
       ComponentDrill,
       ComponentPad,
       SMDPad,
+      AntiPad,
       // HeatsinkPad,
       // ViaDrill,
       // ViaPad,

@@ -51,9 +51,9 @@ QString GerberFile::fileFunction(Gerber::Layer layer) {
   case Gerber::Layer::BoardOutline: return "Profile,NP";
   case Gerber::Layer::ThroughHoles: return "Plated,1,2,PTH,Drill";
   case Gerber::Layer::BottomCopper: return "Copper,L2,Bottom";
-  case Gerber::Layer::BottomSolderMask: return "";
+  case Gerber::Layer::BottomSolderMask: return "SolderMask,Bottom";
   case Gerber::Layer::TopCopper: return "Copper,L1,Top";
-  case Gerber::Layer::TopSolderMask: return "";
+  case Gerber::Layer::TopSolderMask: return "SolderMask,Top";
   case Gerber::Layer::TopSilk: return "Legend,Top";
   default: return "XXX";
   }

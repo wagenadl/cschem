@@ -6,12 +6,14 @@
 namespace Gerber {
   QString Apertures::funcName(Apertures::Func func) {
     switch (func) {
+    case Apertures::Func::Material: return "Material";
     case Apertures::Func::Conductor: return "Conductor";
     case Apertures::Func::NonConductor: return "NonConductor";
     case Apertures::Func::Profile: return "Profile";
     case Apertures::Func::ComponentDrill: return "ComponentDrill";
     case Apertures::Func::ComponentPad: return "ComponentPad";
     case Apertures::Func::SMDPad: return "SMDPad,CuDef";
+    case Apertures::Func::AntiPad: return "AntiPad";
     case Apertures::Func::Invalid: break;
     }
     qDebug() << "Apertures::funcName(Invalid)";

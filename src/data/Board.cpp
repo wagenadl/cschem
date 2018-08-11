@@ -69,7 +69,15 @@ Dim Board::clearance(Dim) const {
   return Dim::fromMils(10);
 }
 
+Dim Board::clearance(Dim, Dim) const {
+  return Dim::fromMils(10);
+}
+
 Dim Board::maskMargin(Dim) const {
+  return Dim::fromMils(10);
+}  
+
+Dim Board::maskMargin(Dim, Dim) const {
   return Dim::fromMils(10);
 }  
 
