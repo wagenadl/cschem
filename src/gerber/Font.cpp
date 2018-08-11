@@ -6,7 +6,7 @@
 namespace Gerber {
   Font::Font(Apertures *ap0, FontSpec spec):
     ap(ap0), spec(spec), sf(&SimpleFont::instance()) {
-    lw  = spec.fs * sf->baseLinewidth()/sf->baseSize();
+    lw  = sf->scaleFactor(spec.fs) * sf->lineWidth();
     ap0->ensure(Circ(lw));
   }
 
@@ -14,8 +14,8 @@ namespace Gerber {
     if (c<=32 || c>126)
       return; // nothing to draw (note: space doesn't need to be drawn)
 
-    QVector<QPolygonF> strokes = sf->character(c);
-    for (QPolygonF const &pp: strokes) {
+    QVector<Polyline> strokes = sf->character(c);
+    for (Polyline const &pp: strokes) {
       int K = pp.size();
       if (K<2)
 	continue;
@@ -29,8 +29,8 @@ namespace Gerber {
   void Font::writeText(QTextStream &output, Text const &txt) const {
     ap->select(Circ(lw));
     output << "G01*\n"; // select linear interpolation
-    double scl = txt.fontsize.toMils() / sf->baseSize();
-    Dim dx = Dim::fromMils(sf->dx() * scl);
+    double scl = sf->scaleFactor(txt.fontsize);
+    Dim dx = sf->dx() * scl;
     Point dxy;
     int sgn = txt.orient.flip ? -1 : 1;
     switch (txt.orient.rot & 3) {

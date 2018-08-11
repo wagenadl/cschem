@@ -6,14 +6,15 @@
 
 SimpleFont::SimpleFont() {
   font const &ft = simpleFont();
+  Dim dy = baselineShift();
   for (char c: ft.keys()) {
-    QVector<QPolygonF> w;
+    QVector<Polyline> w;
     for (polyline v: ft[c]) {
-      QPolygonF pp;
+      Polyline pp;
       while (!v.isEmpty()) {
 	int x = v.takeFirst();
 	int y = v.takeFirst();
-	pp << QPointF(x,y);
+	pp << Point(Dim::fromMils(x), Dim::fromMils(y) - dy);
       }
       w << pp;
     }
@@ -21,8 +22,8 @@ SimpleFont::SimpleFont() {
   }
 }
 
-QVector<QPolygonF> const &SimpleFont::character(char c) const {
-  static QVector<QPolygonF> nul;
+QVector<Polyline> const &SimpleFont::character(char c) const {
+  static QVector<Polyline> nul;
   auto it(chars.find(c));
   return it == chars.end() ? nul : *it;
 }
@@ -32,28 +33,34 @@ SimpleFont const &SimpleFont::instance() {
   return font;
 }
 
-double SimpleFont::baseSize() const {
-  return 20;
+double SimpleFont::scaleFactor(Dim fs) const {
+  return fs.toMils() / fontSize().toMils();
 }
 
-double SimpleFont::baseLinewidth() const {
-  return 4;
+Dim SimpleFont::fontSize() const {
+  return Dim::fromMils(20);
 }
 
-double SimpleFont::dx() const {
-  return 18;
+Dim SimpleFont::lineWidth() const {
+  return Dim::fromMils(4);
 }
 
-double SimpleFont::width(QString s) const {
+Dim SimpleFont::dx() const {
+  return Dim::fromMils(18);
+}
+
+Dim SimpleFont::width(QString s) const {
   return dx()*s.size();
 }
 
-double SimpleFont::ascent() const {
-  return 20;
+Dim SimpleFont::baselineShift() const {
+  return Dim::fromMils(20/2);
 }
 
-double SimpleFont::descent() const {
-  return 9;
+Dim SimpleFont::ascent() const {
+  return Dim::fromMils(20) - baselineShift();
 }
 
-
+Dim SimpleFont::descent() const {
+  return Dim::fromMils(9) + baselineShift();
+}

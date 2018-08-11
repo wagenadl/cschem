@@ -215,31 +215,35 @@ void ORenderer::drawText(Text const &t, bool selected) {
     return;
   
   SimpleFont const &sf(SimpleFont::instance());
+  double scl = sf.scaleFactor(t.fontsize);
   Point pt = origin + t.p;
   if (selected && toplevel)
     pt += movingdelta;
   p->save();
-  p->setPen(QPen(QColor(255,255,255), sf.baseLinewidth()));
+  p->setPen(QPen(QColor(255,255,255), sf.lineWidth().toMils()));
   p->translate(pt.toMils());
 
-  p->setPen(QPen(QColor(255,255,255), 2));
-  p->drawEllipse(QPointF(0,0), 5,5);
+  //  p->setPen(QPen(QColor(255,255,255), 2));
+  //  p->drawEllipse(QPointF(0,0), 5,5);
 
   p->rotate(90*t.orient.rot);
-  p->translate(0, sf.ascent()*t.fontsize.toMils()/sf.baseSize()/2);
+
   int xflip = ((t.layer==Layer::Bottom) ^ t.orient.flip) ? -1 : 1;
-  p->scale(xflip*t.fontsize.toMils()/sf.baseSize(),
-	  -t.fontsize.toMils()/sf.baseSize());
-  p->setPen(QPen(layerColor(t.layer, selected), 2,
+  p->scale(xflip*scl, -scl);
+  p->setPen(QPen(layerColor(t.layer, selected), sf.lineWidth().toMils(),
 		Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
   for (int k=0; k<t.text.size(); k++) {
-    QVector<QPolygonF> const &glyph = sf.character(t.text[k].unicode());
-    for (auto const &pp: glyph) 
+    QVector<Polyline> const &glyph = sf.character(t.text[k].unicode());
+    for (auto const &pp0: glyph) {
+      QPolygonF pp;
+      for (Point const &p0: pp0)
+	pp << p0.toMils();
       if (pp.size()==1)
 	p->drawPoint(pp[0]);
       else
 	p->drawPolyline(pp);
-    p->translate(sf.dx(),0);
+    }
+    p->translate(sf.dx().toMils(), 0);
   }
   p->restore();
 }

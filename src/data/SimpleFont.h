@@ -4,24 +4,26 @@
 
 #define SIMPLEFONT_H
 
+#include "Polyline.h"
 #include <QVector>
-#include <QPolygonF>
 #include <QMap>
 
 class SimpleFont {
 public:
   SimpleFont();
-  QVector<QPolygonF> const &character(char) const;
+  QVector<Polyline> const &character(char) const;
   static SimpleFont const &instance();
-  double baseSize() const; // design size in mils
-  double baseLinewidth() const; // design linewidth in mils
-  double dx() const; // design horizontal step between characters (mils)
-  double width(QString) const;
-  double ascent() const; // design ascent (mils)
-  double descent() const; // design descent (mils)
-  
+  Dim fontSize() const; // nominal font size
+  Dim lineWidth() const;
+  Dim dx() const; // horizontal step between characters
+  Dim width(QString) const;
+  Dim ascent() const; // ascent - note that our baseline is the middle of "X".
+  Dim descent() const; // descent (as a positive number)
+  Dim baselineShift() const; // (positive) distance between nominal baseline and
+                             // bottom of "X".
+  double scaleFactor(Dim altFontSize) const;
 private:
-  QMap<char, QVector<QPolygonF> > chars;
+  QMap<char, QVector<Polyline>> chars;
 };
 
 #endif

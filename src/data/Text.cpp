@@ -17,12 +17,10 @@ int Text::groupAffiliation() const {
 
 Rect Text::boundingRect() const {
   SimpleFont const &sf(SimpleFont::instance());
-  Dim w(fontsize*sf.width(text)/sf.baseSize());
-  Dim asc(fontsize*sf.ascent()/sf.baseSize());
-  Dim desc(fontsize*sf.descent()/sf.baseSize());
-  Dim dy = asc/2;
-  asc -= dy;
-  desc += dy;
+  double scl = sf.scaleFactor(fontsize);
+  Dim w(scl*sf.width(text));
+  Dim asc(scl*sf.ascent());
+  Dim desc(scl*sf.descent());
   bool efflip = orient.flip ^ (layer==Layer::Bottom);
   if (efflip)
     w = -w;
