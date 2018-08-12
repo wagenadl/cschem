@@ -280,46 +280,19 @@ QDebug &operator<<(QDebug &dbg, Circuit const &circ) {
   return dbg;
 }
 
-QStringList Circuit::conflictingNames() const {
-  QMap<QString, int> name2container;
-  QMap<QString, int> name2contents;
-  QSet<QString> conflicted;
-  for (Element const &elt: elements) {
-    int id = elt.id;
-    QString name = elt.name;
-    bool isc = elt.isContainer();
-    if (isc) {
-      if (name2container.contains(name))
-	conflicted << name;
-      name2container[name] = id;
-    } else {
-      if (name2contents.contains(name))
-	conflicted << name;
-      name2contents[name] = id;
-    }
-  }
-  return conflicted.toList();
-}
-
-
 QSet<int> Circuit::containedElements(int id) const {
   QSet<int> ids;
   if (!elements.contains(id))
     return ids;
   Element const &elt = elements[id];
-  if (!elt.isContainer())
+  if (!elt.isNameWellFormed() || !elt.isContainer())
     return ids;
   QString name = elt.name;
   for (Element const &e: elements) {
     if (e.id==id)
       continue;
-    if (e.name==name) {
+    if (e.cname()==name) 
       ids << e.id;
-    } else {
-      int idx = e.name.indexOf(".");
-      if (idx>0 && e.name.left(idx)==name)
-	ids << e.id;
-    }
   }
   return ids;
 }
@@ -328,131 +301,14 @@ int Circuit::containerOf(int id) const {
   if (!elements.contains(id))
     return -1;
   Element const &elt = elements[id];
-  QString name = elt.name;
-  int idx = name.indexOf(".");
-  QString cname = idx>0 ? name.left(idx) : name;
+  if (!elt.isNameWellFormed())
+    return -1;
+  QString cname = elt.cname();
   for (Element const &e: elements) {
-    if (e.id!=id)
-      continue;
-    if (e.name == cname && e.isContainer())
+    if (e.id==id)
+      continue; // don't return self
+    if (e.name==cname && e.isContainer())
       return e.id;
   }
   return -1;
-}  
-
-bool Circuit::resolveConflictingNames(QList<int> &affected_ids_out) {
-  QMap<QString, QList<int>> name2container;
-  QMap<QString, QList<int>> name2contents;
-  for (Element const &elt: elements) {
-    int id = elt.id;
-    QString name = elt.name;
-    bool isc = elt.isContainer();
-    if (isc) 
-      name2container[name] << id;
-    else
-      name2contents[name] << id;
-  }
-  
-  for (QString name: name2container.keys()) {
-    if (name2container[name].size()>=2) {
-      for (int id: name2container[name])
-	if (!containedElements(id).isEmpty())
-	  return false; // cannot automatically renumber nonempty containers
-    } else {
-      name2container.remove(name);
-    }
-  }
-
-  for (QString name: name2contents.keys()) {
-    if (name2contents[name].size()>=2) {
-      for (int id: name2contents[name])
-	if (containerOf(id)>0)
-	  return false; // cannot automatically renumber contained elements
-    } else {
-      name2contents.remove(name);
-    }
-  }
-
-  affected_ids_out.clear();
-
-  if (name2container.isEmpty() && name2contents.isEmpty())
-    return true; // easy
-
-  QRegularExpression re_dig("\\d");  
-
-  for (QString name: name2container.keys())
-    if (name.indexOf(re_dig)<0)
-      return false; // must have a number to renumber
-  for (QString name: name2contents.keys())
-    if (name.indexOf(re_dig)<0)
-      return false; // must have a number to renumber
-
-  QMap<QString, QSet<int>> usedNumbers;
-  for (Element const &e: elements) {
-    QString name = e.name;
-    int numidx = name.indexOf(re_dig);
-    if (numidx<0)
-      continue;
-    QString pfx = name.left(numidx);
-    QString numbit = name.mid(numidx);
-    int dotidx = numbit.indexOf(".");
-    if (dotidx<0)
-      usedNumbers[pfx] << numbit.toInt();
-    else
-      usedNumbers[pfx] << numbit.left(dotidx).toInt();
-  }
-  
-  auto firstFree = [&](QString pfx) {
-    QSet<int> const &used(usedNumbers[pfx]);
-    int first = 1;
-    while (used.contains(first))
-      first ++;
-    usedNumbers[pfx] << first;
-    return first;
-  };
-
-  for (QString name: name2container.keys()) {
-    QList<int> ids = name2container[name];
-    ids.removeFirst();
-    int numidx = name.indexOf(re_dig);
-    QString pfx = name.left(numidx);
-    for (int id: ids) {
-      int newnum = firstFree(pfx);
-      elements[id].name = pfx + QString::number(newnum);
-      affected_ids_out << id;
-      QSet<int> ids = containedElements(id);
-      for (int id1: ids) {
-	int idx = elements[id1].name.indexOf(".");
-	if (idx>0)
-	  elements[id1].name = pfx + QString::number(newnum)
-	    + elements[id1].name.mid(idx);
-	else
-	  elements[id1].name = pfx + QString::number(newnum);
-	affected_ids_out << id1;
-      }
-    }
-  }
-
-  for (QString name: name2contents.keys()) {
-    QList<int> ids = name2contents[name];
-    ids.removeFirst();
-    int numidx = name.indexOf(re_dig);
-    QString pfx = name.left(numidx);
-    int dotidx = name.indexOf(".", numidx);
-    QString sfx;
-    if (dotidx>0)
-      sfx = name.mid(dotidx);
-    for (int id: ids) {
-      int newnum = firstFree(pfx);
-      elements[id].name = pfx + QString::number(newnum) + sfx;
-      affected_ids_out << id;
-      int id1 = containerOf(id);
-      if (id1>0) {
-	elements[id1].name = pfx + QString::number(newnum);
-	affected_ids_out << id1;
-      }
-    }
-  }
-
-  return true;
-}
+} 

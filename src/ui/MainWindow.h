@@ -40,6 +40,7 @@ public slots:
   void exportPartListAction();
   void circuitToClipboardAction();
   void partListToClipboardAction();
+  void resolveConflictsAction();
 public:
   void load(QString filename);
   void create(class Schem const &schem);

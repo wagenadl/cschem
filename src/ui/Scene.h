@@ -35,7 +35,7 @@ public:
   /* This can change name, value, info, and position and visibility of labels,
      but *not* element type, position, etc. It also affects annotation in
      other elements that are related by containership. */
-  void simplyUpdateName(Element const &);
+  void renumber(QMap<int, QString> const &map); // renumber some elements
   void copyToClipboard(bool cut=false);
   void pasteFromClipboard();
   void undo();

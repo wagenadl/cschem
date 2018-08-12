@@ -24,6 +24,7 @@
 #include  <QClipboard>
 #include <QItemSelectionModel>
 #include "HoverManager.h"
+#include "circuit/NumberConflicts.h"
 
 class MWData {
 public:
@@ -225,6 +226,14 @@ void MainWindow::createActions() {
   act->setStatusTip(tr("Cleanup circuit by removing dangling connections"));
   connect(act, &QAction::triggered, this, &MainWindow::removeDanglingAction);
   menu->addAction(act);
+
+  act = new QAction(tr("Check for &numbering conflicts"), this);
+  act->setStatusTip(tr("Check whether any circuit elements improperly share "
+		       "the same names, and if so, offer to renumber them"));
+  connect(act, &QAction::triggered, this, &MainWindow::resolveConflictsAction);
+  menu->addAction(act);
+
+  
 
   menu = menuBar()->addMenu(tr("&View"));
 
@@ -616,3 +625,33 @@ void MainWindow::selectionFromPartList() {
   d->recursedepth --;
 }
 
+void MainWindow::resolveConflictsAction() {
+  NumberConflicts nc(d->scene->circuit());
+  if (nc.conflictingNames().isEmpty()) {
+    QMessageBox::information(this, Style::programName(),
+			     "No part numbering conflicts found.");
+    return;
+  }
+
+  if (!nc.canResolve()) {
+    QMessageBox
+      ::information(this, Style::programName(),
+		    "The following part numbering conflicts were found:\n\n"
+		    + nc.conflictingNames().join(", ") + "\n\n"
+		    "Unfortunately, this cannot be automatically resolved.");
+    // Really, of course, we should report exactly what must be manually
+    // resolved.
+    return;
+  }
+
+  auto b = QMessageBox
+    ::question(this, Style::programName(),
+	       "The following part numbering conflicts were found:\n\n"
+	       + nc.conflictingNames().join(", ") + "\n\n"
+	       "Would you like to automatically renumber elements as needed"
+	       " to resolve the conflict?",
+	       QMessageBox::Yes | QMessageBox::No);
+  if (b==QMessageBox::Yes) {
+    d->scene->renumber(nc.newNames());
+  }
+}
