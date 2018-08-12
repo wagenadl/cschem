@@ -3,3 +3,6 @@
 build
 index.json
 toc.json
+test/test
+test/Makefile
+
