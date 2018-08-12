@@ -6,22 +6,28 @@
 #include <QItemSelectionModel>
 #include <QSet>
 #include <QDebug>
+#include <QSortFilterProxyModel>
 
 PartListView::PartListView(QWidget *parent): QTableView(parent) {
   HtmlDelegate *delegate = new HtmlDelegate(this);
   setItemDelegateForColumn(int(PartList::Column::Name), delegate);
   setSelectionBehavior(SelectRows);
+  sortProxy = new QSortFilterProxyModel(this);
+  pl = 0;
 }
 
 PartListView::~PartListView() {
 }
 
-void PartListView::setModel(class PartList *pl) {
-  QTableView::setModel(pl);
+void PartListView::setModel(PartList *pl0) {
+  pl = pl0;
+  sortProxy->setSourceModel(pl);
+  QTableView::setModel(sortProxy);
+  sortByColumn(1, Qt::AscendingOrder);
 }
 
 PartList *PartListView::model() const {
-  return dynamic_cast<PartList *>(QTableView::model());
+  return pl;
 }
 
 void PartListView::showEvent(QShowEvent *e) {
