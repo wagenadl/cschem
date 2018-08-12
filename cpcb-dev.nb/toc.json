@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-06-16T20:33:54",
-  "mod": "2018-06-28T06:55:58",
+  "mod": "2018-08-11T21:54:22",
   "uuid": "ebd324bb",
   "cc": [
     { "typ": "entry",
@@ -32,12 +32,21 @@
     },
     { "typ": "entry",
       "cre": "2018-06-28T06:46:12",
-      "mod": "2018-06-28T06:55:58",
-      "seen": "2018-06-28T06:46:12",
+      "mod": "2018-08-11T18:26:30",
+      "seen": "2018-08-11T18:26:30",
       "sheetCount": 2,
       "startPage": 6,
       "title": "Graphical parts list",
       "uuid": "11d963c3"
+    },
+    { "typ": "entry",
+      "cre": "2018-08-11T18:26:31",
+      "mod": "2018-08-11T21:54:22",
+      "seen": "2018-08-11T18:26:31",
+      "sheetCount": 2,
+      "startPage": 8,
+      "title": "Next steps for linking schematics",
+      "uuid": "4cbbc9b2"
     }
   ]
 }

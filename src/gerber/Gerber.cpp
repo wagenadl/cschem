@@ -15,13 +15,13 @@ namespace Gerber {
   }
   QString layerInfix(Layer l) {
     switch (l) {
-    case Gerber::Layer::BoardOutline: return "Profile";
-    case Gerber::Layer::ThroughHoles: return "Drill";
-    case Gerber::Layer::BottomCopper: return "Bottom";
-    case Gerber::Layer::BottomSolderMask: return "BottomMask";
-    case Gerber::Layer::TopCopper: return "Top";
-    case Gerber::Layer::TopSolderMask: return "TopMask";
-    case Gerber::Layer::TopSilk: return "Silk";
+    case Gerber::Layer::BoardOutline: return "0-Profile";
+    case Gerber::Layer::ThroughHoles: return "1-Drill";
+    case Gerber::Layer::BottomCopper: return "5-Bottom";
+    case Gerber::Layer::BottomSolderMask: return "6-BottomMask";
+    case Gerber::Layer::TopCopper: return "3-Top";
+    case Gerber::Layer::TopSolderMask: return "4-TopMask";
+    case Gerber::Layer::TopSilk: return "2-Silk";
     default: return "";
     }
   }
