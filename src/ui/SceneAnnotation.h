@@ -32,6 +32,8 @@ protected:
   void focusOutEvent(QFocusEvent *) override;
   void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;
   void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
+private slots:
+  void updateCenter();
 private:
   class SAData *d;
 };

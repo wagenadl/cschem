@@ -21,7 +21,7 @@ public:
   double movestep;
   QPointF sp_press; // scene position of mouse button press
   QPointF p_orig; // my position before moving
-  QPointF p_center; // center position when gaining focus
+  QPointF p_center; // officially requested center position
   bool pressing;
   bool moving;
   QString origtext;
@@ -33,6 +33,8 @@ SceneAnnotation::SceneAnnotation(double movestep, QGraphicsItem *parent):
   setTextInteractionFlags(Qt::TextEditorInteraction);
   setFlags(ItemIsFocusable);
   setAcceptHoverEvents(true);
+  connect(document(), &QTextDocument::contentsChange,
+	  this, &SceneAnnotation::updateCenter, Qt::QueuedConnection);
 }
 
 SceneAnnotation::~SceneAnnotation() {
@@ -42,13 +44,11 @@ SceneAnnotation::~SceneAnnotation() {
 void SceneAnnotation::focusOutEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusOutEvent(e);
   emit returnPressed(); // hmmm..
-  emit moved(boundingRect().center() - d->p_center);
 }
 
 void SceneAnnotation::focusInEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusInEvent(e);
   setGraphicsEffect(0);
-  d->p_center = boundingRect().center();
 }
  
 void SceneAnnotation::keyPressEvent(QKeyEvent *e) {
@@ -78,7 +78,7 @@ void SceneAnnotation::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   if (e->button() == Qt::LeftButton && d->movestep > 0) {
     d->sp_press = e->scenePos();
     d->pressing = true;
-    d->p_orig = pos();
+    d->p_orig = d->p_center;
     e->accept();
   } else {
     QGraphicsTextItem::mousePressEvent(e);
@@ -98,7 +98,7 @@ void SceneAnnotation::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     }      
     if (d->moving) {
       QPoint d0 = (delta / d->movestep).toPoint();
-      setPos(d->p_orig + QPointF(d0) * d->movestep);
+      setCenter(d->p_orig + QPointF(d0) * d->movestep);
     }
   } else {
     QGraphicsTextItem::mouseMoveEvent(e);
@@ -109,7 +109,7 @@ void SceneAnnotation::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   if (d->pressing) {
     d->pressing = false;
     if (d->moving) {
-      emit moved(pos() - d->p_orig);
+      emit moved(d->p_center - d->p_orig);
       d->moving = false;
     }
   } else {
@@ -122,6 +122,11 @@ void SceneAnnotation::backspace() {
 }
 
 void SceneAnnotation::setCenter(QPointF p) {
+  d->p_center = p;
+  updateCenter();
+}
+
+void SceneAnnotation::updateCenter() {
   QRectF me = boundingRect();
   double xcenter = me.width() / 2;
 
@@ -132,7 +137,7 @@ void SceneAnnotation::setCenter(QPointF p) {
   double ybase = p0.y() + p1.y() + line.ascent();
   double ycenter = ybase - Style::annotationFont().pixelSize() * .3;
   // When changing the math here, don't forget SvgExporter!
-  setPos(p - QPointF(xcenter, ycenter));
+  setPos(d->p_center - QPointF(xcenter, ycenter));
 }
 
 void SceneAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
