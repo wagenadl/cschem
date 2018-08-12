@@ -50,6 +50,7 @@ public:
   void translate(QPoint delta);
   void autoSetVisibility();
   void copyAnnotationsFrom(Element const &);
+  bool operator==(Element const &) const;
 public:
   Element::Type type;
   QPoint position;
