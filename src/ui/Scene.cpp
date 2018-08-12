@@ -14,6 +14,7 @@
 #include "SceneAnnotation.h"
 #include "FloatingSymbol.h"
 #include "PartList.h"
+#include "circuit/PartNumbering.h"
 
 class SceneData {
 public:
@@ -720,6 +721,16 @@ void Scene::renumber(QMap<int, QString> const &map) {
   update();
 }
 
+
+static QString stripFraction(QString s) {
+  if (s.startsWith("½") || s.startsWith("⅓")
+      || s.startsWith("¼") || s.startsWith("⅙")
+      || s.startsWith("⅛"))
+    return s.mid(1,1)==" " ? s.mid(2) : s.mid(1);
+  else
+    return s;
+}
+
 void Scene::modifyElementAnnotations(Element const &elt) {
   int id = elt.id;
   if (!elements().contains(id))
@@ -730,11 +741,30 @@ void Scene::modifyElementAnnotations(Element const &elt) {
   Element elt0 = d->circ().elements[id];
   QString oldname = elt0.name;
   elt0.copyAnnotationsFrom(elt);
+
+  if (!elt.value.isEmpty()) {
+    // Add fraction prefix to value if appropriate
+    int cid = d->circ().containerOf(id);
+    if (cid>0) {
+      Q_ASSERT(d->circ().elements.contains(cid));
+      Element const &cont(d->circ().elements[cid]);
+      Symbol const &symbol = library().symbol(cont.symbol());
+      if (symbol.isValid()) {
+	int nSlots = symbol.isValid() ? symbol.slotCount() : 1;
+	QString pfx = Symbol::prefixForSlotCount(nSlots);
+	QString val = pfx + stripFraction(elt.value);
+	if (val != elt.value) {
+	  qDebug() << "mucking" << val << elt.value;
+	  elt0.value = val;
+	}
+      }
+    }
+  }
+  
   d->circ().insert(elt0);
   if (d->elts.contains(id))
     d->elts[id]->rebuild();
 
-  qDebug() << "modeltann" << elt.name << elt.id;
   if (elt0.isContainer()) {
     d->modifyContents(elt0, oldname);
   } else {
@@ -746,19 +776,11 @@ void Scene::modifyElementAnnotations(Element const &elt) {
   emitCircuitChanged();
 }
 
-static QString stripFraction(QString s) {
-  if (s.startsWith("½") || s.startsWith("⅓")
-      || s.startsWith("¼") || s.startsWith("⅙")
-      || s.startsWith("⅛"))
-    return s.mid(1,1)==" " ? s.mid(2) : s.mid(1);
-  else
-    return s;
-}
-
 void SceneData::modifyContainerAndSiblings(Element const &elt, QString oldname) {
-  int containerid = -1;
-  int idx = oldname.indexOf(".");
-  QString cname = idx>0 ? oldname.left(idx) : oldname;
+  int containerid = -1; // this crazy way of finding it ourselves
+  // prevents an infinite recursion. I should be able to break
+  // that in another way, but not today.
+  QString cname = PartNumbering::cname(oldname);
   for (Element const &e: circ().elements) {
     if (e.id==elt.id)
       continue;
