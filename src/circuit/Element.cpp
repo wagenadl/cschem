@@ -171,3 +171,6 @@ QDebug &operator<<(QDebug &dbg, Element const &elt) {
   return dbg;
 }
 
+bool Element::isContainer() const {
+  return symbol().split(":").contains("container");
+}

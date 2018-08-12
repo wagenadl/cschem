@@ -38,6 +38,7 @@ public:
   QMap<QString, QRectF> annotationBBox;
   QMap<QString, Qt::Alignment> annotationAlign;
   QMap<QString, QRectF> shAnnotationBBox;
+  QMap<int, QSet<QString>> cpins;
 };
 
 QPointF Symbol::svgOrigin() const {
@@ -69,7 +70,7 @@ void Symbol::writeNamespaces(QXmlStreamWriter &sr) {
 }
 
 void SymbolData::writeSvg(QXmlStreamWriter &sw, bool withpins) const {
-  static QSet<QString> skip{"pin", "annotation"};
+  static QSet<QString> skip{"pin", "annotation", "cp"};
   elt.writeStartElement(sw);
   for (auto &c: elt.children()) {
     if (!withpins && c.type()==XmlNode::Type::Element
@@ -203,6 +204,17 @@ void SymbolData::scanPins(XmlElement const &elt) {
       double y = elt.attributes().value("cy").toDouble();
       pins[name] = QPointF(x, y);
       pinIds[name] = elt.attributes().value("id").toString();
+    } else if (label.startsWith("cp")) {
+      QString name = label.mid(3);
+      int sidx = name.indexOf("/");
+      int didx = name.indexOf(".");
+      qDebug() << "cpin" << name << sidx << didx << " in " << this->name;
+      if (sidx>0 && didx>sidx) {
+	int n = name.mid(sidx+1,didx-sidx-1).toInt();
+	QString sub = name.mid(didx+1);
+	qDebug() << "  " << n << sub;
+	cpins[n] << sub;
+      }
     }
   } else if (elt.qualifiedName()=="rect") {
     QString label = elt.title();
@@ -320,3 +332,21 @@ Qt::Alignment Symbol::annotationAlignment(QString id) const {
     : (Qt::AlignLeft | Qt::AlignVCenter);
 }
   
+int Symbol::slotCount() const {
+  int sc = 1;
+  for (int s: d->cpins.keys())
+    if (s>sc)
+      sc = s;
+  return sc;
+}
+
+QString Symbol::prefixForSlotCount(int sc) {
+  switch (sc) {
+  case 2: return "½ ";
+  case 3: return "⅓ ";
+  case 4: return "¼ ";
+  case 6: return "⅙ ";
+  case 8: return "⅛ ";
+  }
+  return "";
+}

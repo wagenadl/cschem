@@ -21,6 +21,7 @@ public:
   QString name() const;
   QPointF bbPinPosition(QString pinname) const; // relative to TL of bbox
   QStringList pinNames() const; // sorted
+  QStringList containedPinNames() const; // sorted
   QPointF bbOrigin() const; // position of first pin relative to TL of bbox
   bool isValid() const;
   QRectF svgBBox() const; // in original svg
@@ -35,6 +36,8 @@ public:
   QSharedPointer<class QSvgRenderer> renderer() const;
   QRectF shiftedAnnotationBBox(QString id) const;
   Qt::Alignment annotationAlignment(QString id) const;
+  int slotCount() const; // number of slots in a container symbol or 1
+  static QString prefixForSlotCount(int);
 private:
   QSharedDataPointer<class SymbolData> d;
 };

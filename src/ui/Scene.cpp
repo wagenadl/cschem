@@ -54,6 +54,8 @@ public:
   QPointF moveDragIn(QPointF sp);
   void hideDragIn();
   bool importAndPlonk(QString filename, QPointF sp, bool merge=true);
+  void modifyContents(Element const &container, QString oldname, int sibid=-1);
+  void modifyContainerAndSiblings(Element const &container, QString oldname);
 public:
   inline Circuit const &circ() const { return schem.circuit(); }
   inline Circuit &circ() { return schem.circuit(); }
@@ -711,13 +713,102 @@ void Scene::modifyElementAnnotations(Element const &elt) {
   d->preact();
   
   Element elt0 = d->circ().elements[id];
+  QString oldname = elt0.name;
   elt0.copyAnnotationsFrom(elt);
   d->circ().insert(elt0);
   if (d->elts.contains(id))
     d->elts[id]->rebuild();
+
+  qDebug() << "modeltann" << elt.name << elt.id;
+  if (elt0.isContainer()) {
+    d->modifyContents(elt0, oldname);
+  } else {
+    // search for container and modify it and any siblings
+    d->modifyContainerAndSiblings(elt0, oldname);
+  }
+  
   d->partlist->rebuild();
   emitCircuitChanged();
 }
+
+static QString stripFraction(QString s) {
+  if (s.startsWith("½") || s.startsWith("⅓")
+      || s.startsWith("¼") || s.startsWith("⅙")
+      || s.startsWith("⅛"))
+    return s.mid(1,1)==" " ? s.mid(2) : s.mid(1);
+  else
+    return s;
+}
+
+void SceneData::modifyContainerAndSiblings(Element const &elt, QString oldname) {
+  int containerid = -1;
+  int idx = oldname.indexOf(".");
+  QString cname = idx>0 ? oldname.left(idx) : oldname;
+  for (Element const &e: circ().elements) {
+    if (e.id==elt.id)
+      continue;
+    if (e.name==cname) {
+      containerid = e.id;
+      break;
+    }
+  }
+  if (containerid<0)
+    return;
+
+  Element e = circ().elements[containerid];
+  if (!elt.name.isEmpty()) {
+    int idx = elt.name.indexOf(".");
+    e.name = idx > 0 ? elt.name.left(idx) : elt.name;
+  }
+  if (!elt.value.isEmpty()) 
+    e.value = stripFraction(elt.value);
+  if (!elt.notes.isEmpty())
+    e.notes = elt.notes;
+  circ().insert(e);
+  if (elts.contains(e.id))
+    elts[e.id]->rebuild();
+  modifyContents(e, cname, elt.id);
+}
+
+void SceneData::modifyContents(Element const &elt, QString oldname, int sibid) {
+  // modify any contained elements as well
+  QList<Element> affectedelts;
+  for (Element const &e: circ().elements) {
+    if (e.id==elt.id || e.id==sibid)
+      continue;
+    bool affected = e.name==oldname;
+    if (!affected) {
+      int idx = e.name.indexOf(".");
+      if (idx>0 && e.name.left(idx)==oldname)
+	affected = true;
+    }
+    if (affected) {
+      qDebug() << "affected" << e.name << e.id;
+      affectedelts << e;
+    }
+  }
+  for (Element e: affectedelts) {
+    qDebug() << "affected now" << e.name << e.id;
+    if (!elt.name.isEmpty()) {
+      int idx = e.name.indexOf(".");
+      if (idx>0) 
+	e.name = elt.name + "." + e.name.mid(idx+1);
+      else
+	e.name = elt.name;
+    }
+    Symbol const &symbol = schem.library().symbol(elt.symbol());
+    int nSlots = symbol.isValid() ? symbol.slotCount() : 1;
+    QString pfx = Symbol::prefixForSlotCount(nSlots);
+    if (!elt.value.isEmpty())
+      e.value = pfx + elt.value;
+    if (!e.notes.isEmpty())
+      e.notes = e.notes;
+    circ().insert(e);
+    if (elts.contains(e.id))
+      elts[e.id]->rebuild();
+  }
+}
+
 
 void Scene::modifyConnection(int id, QPolygonF newpath) {
   if (!connections().contains(id))
@@ -989,15 +1080,58 @@ void Scene::focusOutEvent(QFocusEvent *e) {
 }
 
 void Scene::updateFromPartList(Element const &elt) {
-  int id = elt.id;
-  if (d->circ().elements.contains(id)) {
-    Element &e(d->circ().elements[id]);
-    e.name = elt.name;
-    e.value = elt.value;
-    e.notes = elt.notes;
+  if (!d->circ().elements.contains(elt.id)) {
+    qDebug() << "Request to update unknown element"
+	     << elt.id << "(" << elt.name << ")";
+    return;
   }
-  if (d->elts.contains(id))
-    d->elts[id]->rebuild();
+  
+  Element &e(d->circ().elements[elt.id]);
+  QString oldname = e.name;
+  e.name = elt.name;
+  e.value = elt.value;
+  e.notes = elt.notes;
+
+  QSet<int> affectedids;
+  if (e.isContainer()) {
+    // Also update other elements that relate to this
+    for (Element const &e: d->circ().elements) {
+      if (e.id==elt.id || elt.name.isEmpty())
+	continue;
+      bool affect = e.name==oldname;
+      if (!affect) {
+	int idx = e.name.indexOf(".");
+	if (idx>0 && e.name.left(idx) == oldname)
+	  affect = true;
+      }
+      if (affect) 
+	affectedids << e.id;
+    }
+
+    if (!affectedids.isEmpty()) {
+      // See if container could house multiple things, and adapt part/value
+      // accordingly
+      Symbol const &symbol = d->schem.library().symbol(e.symbol());
+      int nSlots =  symbol.isValid() ? symbol.slotCount() : 1;
+      QString pfx = Symbol::prefixForSlotCount(nSlots);
+      for (int id: affectedids) {
+	Q_ASSERT(d->circ().elements.contains(id));
+	Element &e = d->circ().elements[id];
+	int idx = e.name.indexOf(".");
+	if (idx>0) // update name but don't lose any existing suffix
+	  e.name = elt.name + "." + e.name.mid(idx+1);
+	else
+	  e.name = elt.name;
+	e.value = pfx + elt.value;
+	e.notes = elt.notes;
+      }
+    }
+  }
+
+  affectedids << elt.id;
+  for (int id: affectedids)
+    if (d->elts.contains(id))
+      d->elts[id]->rebuild();
   emitCircuitChanged();
 }
 
