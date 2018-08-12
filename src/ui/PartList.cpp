@@ -132,12 +132,40 @@ int PartList::rowCount(QModelIndex const &parent) const {
 
 void PartList::rebuild() {
   // Regrab circuit from scene, update rows as needed.
-  // Let's first see what we simply need to drop
-  QMap<int, Element> newmap = d->scene->circuit().elements;
-  for (int n: newmap.keys())
-    if (newmap[n].type != Element::Type::Component)
+
+  //// Let's first see what we simply need to drop
+  // Find collection of putatively meritorious elements in updated circuit
+  QMap<int, Element> newmap = d->scene->circuit().elements; // id to element
+  QMap<QString, int> refmap; // ref/name to id
+  for (int n: newmap.keys()) {
+    if (newmap[n].type == Element::Type::Component) {
+      QString ref = newmap[n].name;
+      if (refmap.contains(ref)) {
+	// arbitrate: overwrite if this element is a container
+	if (newmap[n].isContainer())
+	  refmap[ref] = n;
+      } else {
+	refmap[ref] = n;
+      }
+    } else {
       newmap.remove(n);
-  
+    }
+  }
+
+  // Drop elements that have refs like "A3.7" iff there is also a corresponding
+  // ref like "A3". Also drop duplicates
+  for (int n: newmap.keys()) {
+    QString ref = newmap[n].name;
+    if (refmap[ref] == n) {
+      int idx = ref.indexOf(".");
+      if (idx>0 && ref.mid(idx+1).toInt()>0 && refmap.contains(ref.left(idx)))
+	newmap.remove(n);
+    } else {
+      newmap.remove(n);
+    }
+  }
+
+  //// Compare our old list to the new list and remove debris
   int N = d->elements.size();
   int n = 0;
   while (n<N) {
@@ -154,11 +182,13 @@ void PartList::rebuild() {
     }
   }
 
+  //// Update elements that already existed
   QMap<int, int> oldmap;
   N = d->elements.size();
   for (int n=0; n<N; n++)
     oldmap[d->elements[n].id] = n;
 
+  // Drop entries from newmap to mark that they have been processed
   for (int id: newmap.keys()) {
     if (oldmap.contains(id)) {
       // modify existing row
@@ -169,7 +199,8 @@ void PartList::rebuild() {
     }
   }
 
-  // any remaining keys must be added
+  //// Insert new elements
+  // any keys remaining in newmap must be added
   if (newmap.isEmpty())
     return;
   

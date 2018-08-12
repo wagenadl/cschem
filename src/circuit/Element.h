@@ -36,6 +36,7 @@ public:
   bool isValid() const;
   QString tag() const; // "component"/"port"/"junction"
   QString symbol() const; // e.g., "part:passive:resistor"
+  bool isContainer() const;
   Element translated(QPoint delta) const;
 public:
   void translate(QPoint delta);
