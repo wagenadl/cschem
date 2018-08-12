@@ -151,3 +151,7 @@ void SceneAnnotation::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
   setGraphicsEffect(0);
   emit hovering(false);
 }
+
+void SceneAnnotation::setPos(QPointF const &p) {
+  QGraphicsTextItem::setPos(p);
+}
