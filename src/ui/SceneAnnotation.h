@@ -35,6 +35,8 @@ protected:
 private slots:
   void updateCenter();
 private:
+  void setPos(QPointF const &); // use setCenter instead!
+private:
   class SAData *d;
 };
 
