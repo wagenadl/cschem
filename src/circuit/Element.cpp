@@ -199,3 +199,13 @@ QString Element::cname() const {
 QString Element::csuffix() const {
   return PartNumbering::csuffix(name);
 }
+
+bool Element::operator==(Element const &o) const {
+  return type==o.type && position==o.position && subtype==o.subtype
+    && value==o.value && name==o.name && notes==o.notes
+    && id==o.id && rotation==o.rotation && flipped==o.flipped
+    && valuePosition==o.valuePosition && namePosition==o.namePosition
+    && valueVisible==o.valueVisible && nameVisible==o.nameVisible;
+}
+
+    
