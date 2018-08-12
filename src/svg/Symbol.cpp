@@ -38,7 +38,8 @@ public:
   QMap<QString, QRectF> annotationBBox;
   QMap<QString, Qt::Alignment> annotationAlign;
   QMap<QString, QRectF> shAnnotationBBox;
-  QMap<int, QSet<QString>> cpins;
+  QMap<int, QMap<QString, QString>> cpins;
+  // maps subelement number to map of pin name to physical pin number
 };
 
 QPointF Symbol::svgOrigin() const {
@@ -208,12 +209,10 @@ void SymbolData::scanPins(XmlElement const &elt) {
       QString name = label.mid(3);
       int sidx = name.indexOf("/");
       int didx = name.indexOf(".");
-      qDebug() << "cpin" << name << sidx << didx << " in " << this->name;
       if (sidx>0 && didx>sidx) {
 	int n = name.mid(sidx+1,didx-sidx-1).toInt();
 	QString sub = name.mid(didx+1);
-	qDebug() << "  " << n << sub;
-	cpins[n] << sub;
+	cpins[n][sub] = name.left(sidx);
       }
     }
   } else if (elt.qualifiedName()=="rect") {
@@ -332,14 +331,6 @@ Qt::Alignment Symbol::annotationAlignment(QString id) const {
     : (Qt::AlignLeft | Qt::AlignVCenter);
 }
   
-int Symbol::slotCount() const {
-  int sc = 1;
-  for (int s: d->cpins.keys())
-    if (s>sc)
-      sc = s;
-  return sc;
-}
-
 QString Symbol::prefixForSlotCount(int sc) {
   switch (sc) {
   case 2: return "½ ";
@@ -349,4 +340,20 @@ QString Symbol::prefixForSlotCount(int sc) {
   case 8: return "⅛ ";
   }
   return "";
+}
+
+QList<int> Symbol::containerSlots() const {
+  return d->cpins.keys();
+}
+
+int Symbol::slotCount() const {
+  int sc = containerSlots().count();
+  return sc > 1 ? sc : 1;
+}
+
+QMap<QString, QString> Symbol::containedPins(int slot) const {
+  if (d->cpins.contains(slot))
+    return d->cpins[slot];
+  else
+    return QMap<QString, QString>();
 }

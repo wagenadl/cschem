@@ -25,6 +25,7 @@
 #include <QItemSelectionModel>
 #include "HoverManager.h"
 #include "circuit/NumberConflicts.h"
+#include "circuit/ContainerConflicts.h"
 
 class MWData {
 public:
@@ -626,17 +627,27 @@ void MainWindow::selectionFromPartList() {
 }
 
 void MainWindow::resolveConflictsAction() {
+  ContainerConflicts cc(d->scene->circuit(), d->scene->library());
   NumberConflicts nc(d->scene->circuit());
-  if (nc.conflictingNames().isEmpty()) {
+  if (cc.conflicts().isEmpty() && nc.conflictingNames().isEmpty()) {
     QMessageBox::information(this, Style::programName(),
 			     "No part numbering conflicts found.");
+    return;
+  }
+
+  if (!cc.conflicts().isEmpty()) {
+    QMessageBox
+      ::information(this, Style::programName(),
+		    "The following part numbering conflicts were found:\n\n"
+		    + cc.conflicts().join(";\n") + ".\n\n"
+		    "Unfortunately, this cannot be automatically resolved.");
     return;
   }
 
   if (!nc.canResolve()) {
     QMessageBox
       ::information(this, Style::programName(),
-		    "The following part numbering conflicts were found:\n\n"
+		    "The following part numbers occur more than once:\n\n"
 		    + nc.conflictingNames().join(", ") + "\n\n"
 		    "Unfortunately, this cannot be automatically resolved.");
     // Really, of course, we should report exactly what must be manually
@@ -646,7 +657,7 @@ void MainWindow::resolveConflictsAction() {
 
   auto b = QMessageBox
     ::question(this, Style::programName(),
-	       "The following part numbering conflicts were found:\n\n"
+	       "The following part numbers occur more than once:\n\n"
 	       + nc.conflictingNames().join(", ") + "\n\n"
 	       "Would you like to automatically renumber elements as needed"
 	       " to resolve the conflict?",
