@@ -66,7 +66,7 @@ void SceneElementData::nameTextToWidget() {
   Element const &elt(circ.elements[id]);
   QString txt = elt.name;
   if (txt.isEmpty()) {
-    name->setHtml("<i>Ref.</i>");
+    name->setHtml("<i>Ref</i>");
     name->setDefaultTextColor(Style::faintColor());
   } else {
     name->setHtml(PartNumbering::nameToHtml(txt));
@@ -81,7 +81,7 @@ void SceneElementData::nameTextToCircuit() {
   // Called when return pressed
   Element elt(scene->circuit().elements[id]);
   QString txt = name->toPlainText();
-  if (txt == "Ref.")
+  if (txt == "Ref")
     txt = "";
   if (txt.isEmpty())
     txt = scene->circuit().autoName(elt.symbol());
@@ -95,7 +95,7 @@ void SceneElementData::valueTextToWidget() {
   // Copy value from circuit to widget
   QString txt = scene->circuit().elements[id].value;
   if (txt.isEmpty()) {
-    value->setHtml("<i>Part/Value</i>");
+    value->setHtml("<i>P/V</i>");
     value->setDefaultTextColor(Style::faintColor());
   } else {
     value->setPlainText(txt);
@@ -109,7 +109,7 @@ void SceneElementData::valueTextToCircuit() {
   // Copy value from widget to circuit
   Element elt(scene->circuit().elements[id]);
   QString txt = value->toPlainText();
-  if (txt == "Part/Value")
+  if (txt == "P/V")
     txt = "";
   txt = PartNumbering::prettyValue(txt, elt.name);
   if (txt != elt.value) { // prevent recursion

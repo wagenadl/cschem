@@ -42,13 +42,9 @@ bool PartNumbering::initiallyShowName(QString symbol) {
 
 
 QString PartNumbering::nameToHtml(QString name) {
-  if (name.mid(1).toDouble()>0)
-    return "<i>" + name.left(1) + "</i>"
-      + "<sub>" + name.mid(1) + "</sub>";
-  int idx = name.indexOf("_");
-  if (idx>0)
-    return "<i>" + name.left(idx) + "</i>"
-      + "<sub>" + name.mid(idx+1) + "</sub>";
+  if (isNameWellFormed(name))
+    return "<i>" + prefix(name) + "</i>"
+      + "<sub>" + QString::number(number(name)) + csuffix(name) + "</sub>";
   return name;
 }
 
