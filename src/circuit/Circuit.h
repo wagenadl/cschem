@@ -67,6 +67,12 @@ public:
   void invalidate();
   int elementByName(QString) const;
   /* Returns ID for named element or -1. */
+  QStringList conflictingNames() const;
+  bool resolveConflictingNames(QList<int> &affected_ids_out);
+  // true if successful. (We cannot do it if there are conflicting nonempty
+  // containers.)
+  QSet<int> containedElements(int containerId) const;
+  int containerOf(int elt) const; // or -1
 public:
   SafeMap<int, Element> elements;
   SafeMap<int, Connection> connections;

@@ -705,6 +705,18 @@ QMap<int, class SceneConnection *> const &Scene::connections() const {
   return d->conns;
 }
 
+void Scene::simplyUpdateName(Element const &elt) {
+  int id = elt.id;
+  if (!elements().contains(id))
+    return;
+
+  Element elt0 = d->circ().elements[id];
+  elt0.name = elt.name;
+  d->circ().insert(elt0);
+  if (d->elts.contains(id))
+    d->elts[id]->rebuild();
+}
+
 void Scene::modifyElementAnnotations(Element const &elt) {
   int id = elt.id;
   if (!elements().contains(id))

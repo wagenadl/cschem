@@ -17,6 +17,9 @@ public:
   QSet<int> selectedElements() const;
   void selectElements(QSet<int> const &);
   void resetWidth();
+private:
+  class QSortFilterProxyModel *sortProxy;
+  class PartList *pl;
 };
 
 #endif
