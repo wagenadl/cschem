@@ -37,6 +37,9 @@ public:
   QRectF shiftedAnnotationBBox(QString id) const;
   Qt::Alignment annotationAlignment(QString id) const;
   int slotCount() const; // number of slots in a container symbol or 1
+  QList<int> containerSlots() const; // numbers assigned to slots, usu. 1...N
+  QMap<QString, QString> containedPins(int slot) const; // for a given slot,
+  // return a map of pin names to physical pin numbers on our device
   static QString prefixForSlotCount(int);
 private:
   QSharedDataPointer<class SymbolData> d;
