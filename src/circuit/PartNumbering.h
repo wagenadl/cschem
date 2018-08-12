@@ -15,6 +15,15 @@ public:
   static QString htmlToSvg(QString html);
   static bool initiallyShowValue(QString symbol);
   static bool initiallyShowName(QString symbol);
+  static QString prefix(QString name); // "R" part of "R3"
+  static int number(QString name); // 3 part of "A3.2"
+  static int subNumber(QString name); // 2 part of "A3.2"
+  static QString cname(QString name); // "A3" part of "A3.2"
+  static QString csuffix(QString name); // ".2" part of "A3.2"
+  static bool isNameWellFormed(QString name);
+  // a well formed name starts with one or more letters followed
+  // optionally by one or more digits followed optionnaly by "." and
+  // more digits.
 };
 
 #endif

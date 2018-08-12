@@ -38,6 +38,14 @@ public:
   QString symbol() const; // e.g., "part:passive:resistor"
   bool isContainer() const;
   Element translated(QPoint delta) const;
+  /* Following are convenience interfaces to the corresponding functions
+     in PartNumbering. */
+  QString prefix() const;
+  int number() const; 
+  int subNumber() const;
+  QString cname() const;
+  QString csuffix() const;
+  bool isNameWellFormed() const;
 public:
   void translate(QPoint delta);
   void autoSetVisibility();

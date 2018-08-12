@@ -4,6 +4,7 @@
 #include "IDFactory.h"
 #include <QPoint>
 #include "PartNumbering.h"
+#include <QRegularExpression>
 
 Element::Element() {
   id = IDFactory::instance().newId();
@@ -173,4 +174,28 @@ QDebug &operator<<(QDebug &dbg, Element const &elt) {
 
 bool Element::isContainer() const {
   return symbol().split(":").contains("container");
+}
+
+bool Element::isNameWellFormed() const {
+  return PartNumbering::isNameWellFormed(name);
+}
+
+QString Element::prefix() const {
+  return PartNumbering::prefix(name);
+}
+
+int Element::number() const {
+  return PartNumbering::number(name);
+}
+
+int Element::subNumber() const {
+  return PartNumbering::subNumber(name);
+}
+
+QString Element::cname() const {
+  return PartNumbering::cname(name);
+}
+
+QString Element::csuffix() const {
+  return PartNumbering::csuffix(name);
 }

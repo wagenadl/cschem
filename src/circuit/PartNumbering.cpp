@@ -4,6 +4,7 @@
 #include <QStringList>
 #include <QSet>
 #include <QObject>
+#include <QRegularExpression>
 
 QString PartNumbering::abbreviation(QString symbol) {
   static QStringList map{
@@ -76,3 +77,29 @@ QString PartNumbering::htmlToSvg(QString html) {
   return html;
 }
  
+static QRegularExpression wfn("^([A-Za-z]+)((\\d+)(.(\\d+))?)?$");
+
+bool PartNumbering::isNameWellFormed(QString name) {
+  return wfn.match(name).hasMatch();
+}
+
+QString PartNumbering::prefix(QString name) {
+  return wfn.match(name).captured(1);
+}
+
+int PartNumbering::number(QString name) {
+  return wfn.match(name).captured(3).toInt();
+}
+
+int PartNumbering::subNumber(QString name) {
+  return wfn.match(name).captured(5).toInt();
+}
+
+QString PartNumbering::cname(QString name) {
+  auto m(wfn.match(name));
+  return m.captured(1) + m.captured(3);
+}
+
+QString PartNumbering::csuffix(QString name) {
+  return wfn.match(name).captured(4);
+}
