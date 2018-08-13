@@ -39,7 +39,7 @@ void SymbolLibrary::merge(QXmlStreamReader &sr) {
     return;
   }
   if (symbolNames().size() == nOld)
-    qDebug() << "No symbols loaded";
+    qDebug() << "(No symbols loaded)";
 }
 
 SymbolLibrary::~SymbolLibrary() {
