@@ -21,7 +21,6 @@ public:
   QString name() const;
   QPointF bbPinPosition(QString pinname) const; // relative to TL of bbox
   QStringList pinNames() const; // sorted
-  QStringList containedPinNames() const; // sorted
   QPointF bbOrigin() const; // position of first pin relative to TL of bbox
   bool isValid() const;
   QRectF svgBBox() const; // in original svg
@@ -41,6 +40,7 @@ public:
   QMap<QString, QString> containedPins(int slot) const; // for a given slot,
   // return a map of pin names to physical pin numbers on our device
   static QString prefixForSlotCount(int);
+  int totalPinCount() const;
 private:
   QSharedDataPointer<class SymbolData> d;
 };

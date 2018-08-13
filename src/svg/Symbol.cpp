@@ -39,6 +39,7 @@ public:
   QMap<QString, Qt::Alignment> annotationAlign;
   QMap<QString, QRectF> shAnnotationBBox;
   QMap<int, QMap<QString, QString>> cpins;
+  int ncpins;
   // maps subelement number to map of pin name to physical pin number
 };
 
@@ -138,6 +139,7 @@ Symbol::Symbol(XmlElement const &elt, QString name): Symbol() {
     d->name = elt.label();
   else
     d->name = name;
+  d->ncpins = 0;
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
       d->scanPins(e.element());
@@ -208,11 +210,18 @@ void SymbolData::scanPins(XmlElement const &elt) {
     } else if (label.startsWith("cp")) {
       QString name = label.mid(3);
       int sidx = name.indexOf("/");
-      int didx = name.indexOf(".");
-      if (sidx>0 && didx>sidx) {
-	int n = name.mid(sidx+1,didx-sidx-1).toInt();
-	QString sub = name.mid(didx+1);
-	cpins[n][sub] = name.left(sidx);
+      qDebug() << name << sidx;
+      if (sidx>0 && name.mid(sidx+1)=="nc") {
+	ncpins ++;
+      } else {
+	int didx = name.indexOf(".");
+	if (sidx>0 && didx>sidx) {
+	  int n = name.mid(sidx+1,didx-sidx-1).toInt();
+	  if (n<=0)
+	    qDebug() << "Symbol: Nonpositive slot??";
+	  QString sub = name.mid(didx+1);
+	  cpins[n][sub] = name.left(sidx);
+	}
       }
     }
   } else if (elt.qualifiedName()=="rect") {
@@ -356,4 +365,12 @@ QMap<QString, QString> Symbol::containedPins(int slot) const {
     return d->cpins[slot];
   else
     return QMap<QString, QString>();
+}
+
+int Symbol::totalPinCount() const {
+  int npins = pinNames().size();
+  for (int n: containerSlots())
+    npins += containedPins(n).size();
+  npins += d->ncpins;
+  return npins;
 }
