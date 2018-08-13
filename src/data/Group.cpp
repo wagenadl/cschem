@@ -457,9 +457,12 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
         s << t.object(id);
       s << o;
       s.writeEndElement();
-    } else if (o.isText() && o.asText().groupAffiliation()>0) {
-      // let the group handle this item
-    } else {
+    } else if (o.isText()
+	       && (o.asText().groupAffiliation()>0 // let the group handle this
+		   || o.asText().text.isEmpty()) // drop invisible empty texts
+	       ) {
+      // do nothing
+    } else { // are there other case sthat should be dropped?
       s << o;
     }
   }

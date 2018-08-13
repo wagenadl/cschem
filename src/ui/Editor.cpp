@@ -8,9 +8,17 @@
 #include <QResizeEvent>
 #include <QTimer>
 
+Group const &EData::currentGroup() const {
+  return layout.root().subgroup(crumbs);
+}
+
+Group &EData::currentGroup() {
+  return layout.root().subgroup(crumbs);
+}
+
 bool EData::updateOnWhat(bool force) {
   Dim mrg = Dim::fromMils(4/mils2px);
-  Group &here(layout.root().subgroup(crumbs));
+  Group &here(currentGroup());
   NodeID ids = here.nodeAt(hoverpt, mrg);
   bool isnew = ids != onnode;
   onnode = ids;
@@ -51,7 +59,7 @@ void EData::validateStuckPoints() const {
   // stuckpts will be the | of all points of nonselected nontraces, but only
   // if those points are also in selpts. (Others are irrelevant.)
   stuckpts.clear();
-  Group const &here(layout.root().subgroup(crumbs));
+  Group const &here(currentGroup());
   auto const &lays(::layers());
   for (int id: here.keys()) {
     if (!selection.contains(id)) {
@@ -67,7 +75,7 @@ void EData::validateStuckPoints() const {
 }
 
 Rect EData::selectionBounds() const {
-  Group const &here(layout.root().subgroup(crumbs));
+  Group const &here(currentGroup());
   
   Rect r;
   for (int id: selection)
@@ -95,7 +103,7 @@ void EData::createUndoPoint() {
 }
 
 void EData::selectPointsOf(int id) {
-  Group const &here(layout.root().subgroup(crumbs));
+  Group const &here(currentGroup());
   if (here.contains(id))
     for (Layer l: ::layers())
       selpts[l] |= pointsOf(here.object(id), l);
@@ -220,7 +228,7 @@ void EData::drawTracing(QPainter &p) const {
 }
 
 void EData::drawObjects(QPainter &p) const {
-  Group const &here(layout.root().subgroup(crumbs));
+  Group const &here(currentGroup());
   validateStuckPoints();  
 
   ORenderer rndr(&p);
@@ -315,7 +323,7 @@ void EData::pressText(Point p) {
     return;
 
   p = p.roundedTo(layout.board().grid);
-  Group &here(layout.root().subgroup(crumbs));
+  Group &here(currentGroup());
   Text t;
   t.p = p;
   t.fontsize = props.fs;
@@ -328,7 +336,7 @@ void EData::pressText(Point p) {
 
 void EData::pressHole(Point p) {
   p = p.roundedTo(layout.board().grid);
-  Group &here(layout.root().subgroup(crumbs));
+  Group &here(currentGroup());
   Hole t;
   t.p = p;
   t.od = props.od;
@@ -341,7 +349,7 @@ void EData::pressHole(Point p) {
 
 void EData::pressPad(Point p) {
   p = p.roundedTo(layout.board().grid);
-  Group &here(layout.root().subgroup(crumbs));
+  Group &here(currentGroup());
   Pad t;
   t.p = p;
   t.width = props.w;
@@ -353,7 +361,7 @@ void EData::pressPad(Point p) {
 
 void EData::pressArc(Point p) {
   p = p.roundedTo(layout.board().grid);
-  Group &here(layout.root().subgroup(crumbs));
+  Group &here(currentGroup());
   Arc t;
   t.center = p;
   t.radius = props.id / 2;
@@ -374,7 +382,7 @@ void EData::pressPickingUp(Point p) {
   int fave = visibleObjectAt(p, mrg);
   if (fave<0)
     return;
-  Group &here(layout.root().subgroup(crumbs));
+  Group &here(currentGroup());
   Object const &obj(here.object(fave));
   if (!obj.isTrace())
     return;
@@ -401,7 +409,7 @@ void EData::pressTracing(Point p) {
     return;
   }
   if (tracing) {
-    Group &here(layout.root().subgroup(crumbs));
+    Group &here(currentGroup());
     Trace t;
     t.p1 = tracestart;
     t.p2 = p;
@@ -439,7 +447,11 @@ enum class Prio {
 };
 
 int EData::visibleObjectAt(Point p, Dim mrg) const {
-  Group const &here(layout.root().subgroup(crumbs));
+  Group const &here(currentGroup());
+  return visibleObjectAt(here, p, mrg);
+}
+
+int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
   QList<int> ids = here.objectsAt(p, mrg);
   /* Now, we want to select one item that P is on.
      We prioritize higher layers over lower layers, ignore pads, text, traces
@@ -549,7 +561,7 @@ void EData::startMoveSelection() {
 
 void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
   // does not clear purepts if on a purept
-  Group const &here(layout.root().subgroup(crumbs));
+  Group const &here(currentGroup());
   Object const &obj(here.object(id));
   if (obj.isTrace()) {
     Trace const &t(obj.asTrace());
@@ -610,7 +622,7 @@ void EData::releaseMoving(Point p) {
   }
   validateStuckPoints();
   UndoCreator uc(this, true);
-  Group &here(layout.root().subgroup(crumbs));
+  Group &here(currentGroup());
   for (int id: here.keys()) {
     Object &obj(here.object(id));
     if (selection.contains(id)) {
@@ -951,41 +963,71 @@ void Editor::setPlanesVisibility(bool b) {
 
 void Editor::doubleClickOn(Point p, int id) {
   Dim mrg = Dim::fromMils(4/d->mils2px);
-  Group const &here(d->layout.root().subgroup(d->crumbs));
+  Group const &here(d->currentGroup());
   Object const &obj(here.object(id));
   switch (obj.type()) {
   case Object::Type::Group: {
-    enterGroup(id);
-    int fave = d->visibleObjectAt(p, mrg);
-    if (fave>=0)
-      select(fave);
+    Group const &group(obj.asGroup());
+    int fave = d->visibleObjectAt(group, p, mrg);
+    if (fave>0 && group.object(fave).isHole()) {
+      bool ok;
+      QString ref = QInputDialog::getText(this, "Hole properties", "Ref.",
+					  QLineEdit::Normal,
+					  group.object(fave).asHole().ref, &ok);
+      if (ok) {
+	UndoCreator uc(d, true);
+	d->currentGroup().object(id).asGroup().object(fave).asHole().ref = ref;
+      }
+    } else if (fave>0 && group.object(fave).isPad()) {
+      bool ok;
+      QString ref = QInputDialog::getText(this, "Pad properties", "Ref.",
+					  QLineEdit::Normal,
+					  group.object(fave).asPad().ref, &ok);
+      if (ok) {
+	UndoCreator uc(d, true);
+	d->currentGroup().object(id).asGroup().object(fave).asPad().ref = ref;
+      }
+    } else {
+      enterGroup(id);
+      if (fave>=0)
+	select(fave);
+    }
   } break;
   case Object::Type::Hole: {
+    bool ok;
     QString ref = QInputDialog::getText(this, "Hole properties", "Ref.",
 					QLineEdit::Normal,
-					obj.asHole().ref);
-    select(id);
-    setRef(ref);
-    select(id);
-    update();
+					obj.asHole().ref, &ok);
+    if (ok) {
+      select(id);
+      setRef(ref);
+      select(id);
+      update();
+    }
   } break;
-   case Object::Type::Pad: {
+  case Object::Type::Pad: {
+    bool ok;
     QString ref = QInputDialog::getText(this, "Pad properties", "Ref.",
 					QLineEdit::Normal,
-					obj.asPad().ref);
-    select(id);
-    setRef(ref);
-    select(id);
-    update();
+					obj.asPad().ref, &ok);
+    if (ok) {
+      select(id);
+      setRef(ref);
+      select(id);
+      update();
+    }
   } break;
-   case Object::Type::Text: {
+  case Object::Type::Text: {
+    bool ok;
     QString ref = QInputDialog::getText(this, "Text properties", "Text",
 					QLineEdit::Normal,
-					obj.asText().text);
-    select(id);
-    setText(ref);
-    select(id);
-    update();
+					obj.asText().text, &ok);
+    if (ok) {
+      select(id);
+      setText(ref);
+      select(id);
+      update();
+    }
   } break;
   default:
     break;
@@ -994,7 +1036,7 @@ void Editor::doubleClickOn(Point p, int id) {
 
 bool Editor::enterGroup(int sub) {
   clearSelection();
-  Group const &here(d->layout.root().subgroup(d->crumbs));
+  Group const &here(d->currentGroup());
   if (here.contains(sub) && here.object(sub).isGroup()) {
     d->crumbs << sub;
     d->updateOnWhat(true);
@@ -1026,7 +1068,7 @@ bool Editor::leaveAllGroups() {
 
 void Editor::select(int id, bool add) {
   d->invalidateStuckPoints();
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   if (!add) {
     d->selection.clear();
     d->selpts.clear();
@@ -1082,7 +1124,7 @@ void Editor::deselectPoint(Point p) {
 
 void Editor::selectAll() {
   d->invalidateStuckPoints();
-  Group const &here(d->layout.root().subgroup(d->crumbs));
+  Group const &here(d->currentGroup());
   d->selection = QSet<int>::fromList(here.keys());
   d->purepts.clear();
   for (int id: d->selection)
@@ -1107,7 +1149,7 @@ void Editor::selectArea(Rect r, bool add) {
     d->selpts.clear();
     d->purepts.clear();
   }    
-  Group const &here(d->layout.root().subgroup(d->crumbs));
+  Group const &here(d->currentGroup());
   for (int id: here.keys()) {
     Object const &obj(here.object(id));
     if (!d->selection.contains(id)) {
@@ -1143,7 +1185,7 @@ void Editor::selectArea(Rect r, bool add) {
 
 void Editor::setArcAngle(int angle) {
   d->props.arcangle = angle;
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
@@ -1156,7 +1198,7 @@ void Editor::setArcAngle(int angle) {
 
 void Editor::setLineWidth(Dim l) {
   d->props.linewidth = l;
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
@@ -1173,7 +1215,7 @@ void Editor::setLineWidth(Dim l) {
 void Editor::setLayer(Layer l) {
   d->props.layer = l;
 
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
@@ -1205,7 +1247,7 @@ void Editor::setID(Dim x) {
     x = Dim::fromInch(.005);
   d->props.id = x;
 
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
@@ -1227,7 +1269,7 @@ void Editor::setOD(Dim x) {
   d->props.od = x;
   UndoCreator uc(d);
 
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.type()==Object::Type::Hole) {
@@ -1244,7 +1286,7 @@ void Editor::setWidth(Dim x) {
     x = Dim::fromInch(.01);
   d->props.w = x;
 
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
@@ -1260,7 +1302,7 @@ void Editor::setHeight(Dim x) {
     x = Dim::fromInch(.01);
   d->props.h = x;
   UndoCreator uc(d);
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.type()==Object::Type::Pad) {
@@ -1273,7 +1315,7 @@ void Editor::setHeight(Dim x) {
 void Editor::setSquare(bool b) {
   d->props.square = b;
   UndoCreator uc(d);
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   for (int id: d->selection) {
     Object &obj(here.object(id));
     if (obj.type()==Object::Type::Hole) {
@@ -1284,43 +1326,60 @@ void Editor::setSquare(bool b) {
 }
 
 void Editor::setRef(QString t) {
-  Group &here(d->layout.root().subgroup(d->crumbs));
   UndoCreator uc(d);
+  Group const &here(d->currentGroup());
+  bool cchg = false;
   for (int id: d->selection) {
-    Object &obj(here.object(id));
+    Object const &obj(here.object(id));
     if (obj.isHole()) {
       uc.realize();
-      obj.asHole().ref = t;
+      d->currentGroup().object(id).asHole().ref = t;
+    } else if (obj.isPad()) {
+      uc.realize();
+      d->currentGroup().object(id).asPad().ref = t;
     } else if (obj.isGroup()) {
-      Group &g(obj.asGroup());
+      uc.realize();
+      Group &here(d->currentGroup()); // this is needed, because any reference
+      // taken *before* uc.realize() can inappropriately affect the undo copy
+      Group &g(here.object(id).asGroup());
       g.ref = t;
-      int tid = g.refTextId();
+      int tid = here.ensureRefText(id);
       if (tid>0 && here.contains(tid)) {
-	uc.realize();
         here.object(tid).asText().text = t;
       }
-      emit componentsChanged();
+      cchg = true;
     }
   }
+  if (cchg)
+    emit componentsChanged();
 }
 
 void Editor::setText(QString t) {
   d->props.text = t;
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  bool cchg = false;
+  Group const &here(d->currentGroup());
   UndoCreator uc(d);
   for (int id: d->selection) {
-    Object &obj(here.object(id));
+    Object const &obj(here.object(id));
     if (obj.isText()) {
       uc.realize();
-      Text &txt(obj.asText());
-      txt.text = t;
-      int gid = txt.groupAffiliation();
+      int gid;
+      { Text &txt(d->currentGroup().object(id).asText());
+	gid = txt.groupAffiliation();
+	txt.text = t;
+      } /* make sure reference goes out of scope before it becomes toxic
+	   by removal from the group */
+      if (t.isEmpty())
+	d->currentGroup().remove(id);
       if (gid>0 && here.contains(gid)) {
-        here.object(gid).asGroup().ref = t;
-	emit componentsChanged();
+	d->currentGroup().object(gid).asGroup().ref = t;
+	cchg = true;
       }
     }
   }
+  if (cchg)
+    emit componentsChanged();
+  
 }
 
 void Editor::setRotation(int rot) {
@@ -1333,7 +1392,7 @@ void Editor::setFlipped(bool f) {
 
 void Editor::setFontSize(Dim fs) {
   d->props.fs = fs;
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   UndoCreator uc(d);
   for (int id: d->selection) {
     Object &obj(here.object(id));
@@ -1364,7 +1423,7 @@ Group const &Editor::currentGroup() const {
 }
 
 void Editor::rotateCW(bool noundo) {
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
@@ -1418,7 +1477,7 @@ void Editor::translate(Point dp) {
 
   UndoCreator uc(d, true);
 
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   
   for (int id: d->selection)
     here.object(id).translate(dp);
@@ -1464,7 +1523,7 @@ void Editor::flipH(bool noundo) {
   if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
     uc.realize();
 
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   
   for (int id: d->selection)
     here.object(id).flipLeftRight(center);
@@ -1517,7 +1576,7 @@ void EData::emitSelectionStatus() {
     ed->selectionChanged(true);
     int gid = -1;
     int tid = -1;
-    Group const &here(layout.root().subgroup(crumbs));
+    Group const &here(currentGroup());
     for (int id: selection) {
       Object const &obj(here.object(id));
       if (obj.isGroup()) {
@@ -1550,7 +1609,7 @@ void EData::emitSelectionStatus() {
 void Editor::formGroup() {
   if (d->selection.isEmpty())
     return;
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   UndoCreator uc(d, true);
   here.formSubgroup(d->selection);
   clearSelection();
@@ -1561,7 +1620,7 @@ void Editor::dissolveGroup() {
   if (d->selection.isEmpty())
     return;
   UndoCreator uc(d, true);
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   for (int id: d->selection) 
     if (here.object(id).isGroup())
       here.dissolveSubgroup(id);
@@ -1573,7 +1632,7 @@ void Editor::deleteSelected() {
   if (d->selection.isEmpty())
     return;
   UndoCreator uc(d, true);
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   bool compchg = false;
   for (int id: d->selection) {
     if (here.object(id).isGroup()) {
@@ -1595,7 +1654,7 @@ void Editor::deleteSelected() {
 }
   
 int Editor::selectedComponent(QString *msg) const {
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   int gid = 0;
   int tid = 0;
   QString m = "Nothing selected";
@@ -1650,7 +1709,7 @@ bool Editor::saveComponent(int id, QString fn) {
 
 bool Editor::insertComponent(QString fn, Point pt) {
   pt = pt.roundedTo(d->layout.board().grid);
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   UndoCreator uc(d, true);
   int gid = here.insertComponent(fn);
   if (!gid)
@@ -1714,7 +1773,7 @@ void Editor::dropEvent(QDropEvent *e) {
     grp.ref = ref;
     grp.setRefTextId(0);
     UndoCreator uc(d, true);
-    Group &here(d->layout.root().subgroup(d->crumbs));
+    Group &here(d->currentGroup());
     Point anch = grp.anchor(); // this should be at droppos
     Object obj(grp);
     obj.translate(droppos - anch);
@@ -1845,7 +1904,7 @@ void Editor::cut() {
 
 void Editor::copy() {
   Clipboard &clp(Clipboard::instance());
-  Group const &here(d->layout.root().subgroup(d->crumbs));
+  Group const &here(d->currentGroup());
   clp.store(here, d->selection);
 }
 
@@ -1854,7 +1913,7 @@ void Editor::paste() {
   if (!clp.isValid())
     return;
   UndoCreator uc(d, true);
-  Group &here(d->layout.root().subgroup(d->crumbs));
+  Group &here(d->currentGroup());
   QList<Object> const &lst(clp.retrieve());
   d->selection.clear();
   d->selpts.clear();

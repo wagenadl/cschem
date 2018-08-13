@@ -54,6 +54,7 @@ public:
   void drawTracing(QPainter &) const;
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
+  int visibleObjectAt(Group const &grp, Point p, Dim mrg) const;
   void pressPad(Point);
   void pressArc(Point);
   void pressHole(Point);
@@ -83,6 +84,8 @@ public:
   void updateNet(NodeID seed);
   void emitSelectionStatus();
   void perhapsRefit();
+  Group const &currentGroup() const;
+  Group &currentGroup();
 public:
   Editor *ed;
   Layout layout;
