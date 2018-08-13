@@ -8,6 +8,7 @@
 
 namespace Paths {
   QString componentRoot();
+  QString recentSymbolsLocation();
   QString defaultLocation();
 };
 

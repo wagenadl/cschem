@@ -6,9 +6,13 @@
 #include "ElementView.h"
 #include "data/Group.h"
 #include "data/Object.h"
+#include "data/Paths.h"
 #include "circuit/Schem.h"
 #include "svg/Symbol.h"
 #include "svg/SymbolLibrary.h"
+#include <QRegularExpression>
+#include <QDir>
+#include <QScrollBar>
 
 class MCVData {
 public:
@@ -20,9 +24,11 @@ public:
     mcv->setWidget(new QWidget);
     mcv->setWidgetResizable(true);
     mcv->widget()->setLayout(lay);
-    mcv->setMinimumWidth(200);
+    mcv->setMinimumWidth(100);
   }
   void rebuild();
+  void perhapsSaveDefault(QString);
+  void setMinWidth();
 public:
   MultiCompView *mcv;
   Schem schem;
@@ -31,12 +37,59 @@ public:
   QBoxLayout *lay;
 };
 
+static QString simplifiedSymbol(QString pv) {
+  pv.replace("part:", "");
+  pv.replace("container:", "");
+  pv.replace("diode:", "");
+  pv.replace("transistor:", "");
+  return pv;
+}
+
+static QString cleansedFilename(QString fn) {
+  QRegularExpression re("[^A-Za-z0-9]");
+  fn.replace(re, "-");
+  return fn;
+}
+
+void MCVData::perhapsSaveDefault(QString ref) {
+  QString sym;
+  for (Element const &elt: schem.circuit().elements)
+    if (elt.name==ref)
+      if (sym.isEmpty() || elt.isContainer())
+	sym = elt.symbol();
+  if (evs.contains(ref)) {
+    Group const &grp = evs[ref]->group();
+    if (!grp.isEmpty()) {
+      Group root;
+      int id = root.insert(Object(grp));
+      QDir::root().mkpath(Paths::recentSymbolsLocation());
+      root.saveComponent(id, Paths::recentSymbolsLocation() + "/"
+			 + cleansedFilename(sym) + ".svg");
+    }
+  }
+}
+
+void MCVData::setMinWidth() {
+  int mw = 100;
+  for (auto *ev: evs) {
+    int w1 = ev->sizeHint().width();
+    if (w1>mw)
+      mw = w1;
+  }
+  auto *sb = mcv->verticalScrollBar();
+  if (sb)
+    mw += sb->width();
+  mw += 10; // a little extra margin
+  mcv->setMinimumWidth(mw);
+}
+
 void MCVData::rebuild() {
+  qDebug() << "mcv rebuild";
   QMap<QString, Element> newelts;
   for (Element const &elt: schem.circuit().elements)
     if (elt.type==Element::Type::Component)
       newelts[elt.name] = elt;
-  QSet<QString> newused;
+  QSet<QString> newused; // i.e., already in pcb layout
   for (int k: root.keys()) {
     Object const &obj(root.object(k));
     if (obj.isGroup())
@@ -49,34 +102,45 @@ void MCVData::rebuild() {
     }
   }
   newelts.remove("");
-  qDebug() << "newelts" << newelts;
   for (QString ref: newelts.keys()) {
     if (!newused.contains(ref)) {
-      if (!evs.contains(ref)) {
+      bool trulynew = !evs.contains(ref);
+      if (trulynew) {
 	evs[ref] = new ElementView;
 	int idx = evs.keys().indexOf(ref);
 	lay->insertWidget(idx, evs[ref]);
+	QObject::connect(evs[ref], &ElementView::changed,
+			 [this, ref]() { perhapsSaveDefault(ref); });
       }
       evs[ref]->setRefText(ref);
       QString pv = newelts[ref].value;
       if (pv.isEmpty())
-	pv = "<i>" + newelts[ref].symbol() + "</i>";
-      pv.replace("part:", "");
+	pv = "<i>" + simplifiedSymbol(newelts[ref].symbol()) + "</i>";
       evs[ref]->setPVText(pv);
-      Symbol const &symbol(schem.library().symbol(newelts[ref].symbol()));
+      QString sym = newelts[ref].symbol();
+      Symbol const &symbol(schem.library().symbol(sym));
       if (symbol.isValid()) {
-	int npins = symbol.pinNames().size();
-	for (int n: symbol.containerSlots())
-	  npins += symbol.containedPins(n).size();
+	int npins = symbol.totalPinCount();
 	QString pin = npins==1 ? "pin" : "pins";
+	evs[ref]->setPinCount(npins);
 	evs[ref]->setFallbackText("(" + QString::number(npins)
 				  + " " + pin + ")");
       } else {
 	evs[ref]->setFallbackText("??");
       }
-      qDebug() <<"now, set default package";
+      if (trulynew) {
+	QDir dir(Paths::recentSymbolsLocation());
+	QString fn = cleansedFilename(sym) + ".svg";
+	if (dir.exists(fn)) {
+	  Group root;
+	  int id = root.insertComponent(dir.absoluteFilePath(fn));
+	  if (id>0)
+	    evs[ref]->setGroup(root.object(id).asGroup());
+	}
+      }
     }
   }
+  setMinWidth();
 }
 
 MultiCompView::MultiCompView(QWidget *parent):
@@ -105,3 +169,8 @@ void MultiCompView::setRoot(Group const &g) {
   d->rebuild();
 }
 
+void MultiCompView::setScale(double pxPerMil) {
+  for (auto ev: d->evs)
+    ev->setScale(pxPerMil);
+  d->setMinWidth();
+}

@@ -7,10 +7,12 @@
 #include <QDrag>
 #include <QMimeData>
 #include "ElementView.h"
+#include  <QFontMetricsF>
 
 ComponentView::ComponentView(QWidget *parent): QWidget(parent) {
   id_ = idgen();
   mil2px = 0.2;
+  npins = 0;
   setAcceptDrops(true);
   setFocusPolicy(Qt::StrongFocus);
   setPalette(QPalette(QColor(0,0,0)));
@@ -77,25 +79,25 @@ void ComponentView::setScale(double pxPerMil) {
 
 QSize ComponentView::sizeHint() const {
   QSizeF mil = grp.boundingRect().toMils().size();
-  if (mil.width() < 700)
-    mil.setWidth(700);
-  if (mil.height() < 500)
-    mil.setHeight(500);
+  if (mil.width() < 300)
+    mil.setWidth(300);
+  if (mil.height() < 200)
+    mil.setHeight(200);
   mil.setWidth(mil.width() + 50);
   mil.setHeight(mil.height() + 50);
   QSizeF px = mil2px * mil;
-  qDebug() << "sh" << mil << px;
+  QFontMetricsF fm(font());
+  QSizeF fs(fm.boundingRect("XXXXXXXX").size());
+  if (px.width() < fs.width())
+    px.setWidth(fs.width());
+  if (px.height() < 3.4*fs.height())
+    px.setHeight(3.4*fs.height());
   return px.toSize();
 }
 
 QSize ComponentView::minimumSizeHint() const {
   QSizeF mil = grp.boundingRect().toMils().size();
-  if (mil.width() < 500)
-    mil.setWidth(500);
-  if (mil.height() < 400)
-    mil.setHeight(400);
   QSizeF px = mil2px * mil;
-  qDebug() << "msh" << mil << px;
   return px.toSize();
 }
 
@@ -200,25 +202,28 @@ void ComponentView::dropEvent(QDropEvent *e) {
     Group g0;
     int gid = g0.insertComponent(fn);
     if (gid) {
-      setGroup(g0.object(gid).asGroup());
-      emit edited();
-      e->accept();
-    } else {
-      e->ignore();
+      Group const &g1(g0.object(gid).asGroup());
+      if (npins==0 || g1.pinNames().size()==npins) {
+	setGroup(g1);
+	emit edited();
+	e->accept();
+	return;
+      }
     }
   } else if (md->hasFormat(dndformat)) {
     int id = QString(md->data(dndformat)).toInt();
     ElementView const *src = ElementView::instance(id);
     if (src) {
-      setGroup(src->group());
-      emit edited();
-      e->accept();
-    } else {
-      e->ignore();
+      Group const &g1 = src->group();
+      if (npins==0 || g1.pinNames().size()==npins) {
+	setGroup(src->group());
+	emit edited();
+	e->accept();
+	return;
+      }
     }
-  } else {
-    e->ignore();
   }
+  e->ignore();
 }
 
 QPoint ComponentView::mapWidgetToDraggable(QPixmap const &drg,
@@ -274,4 +279,8 @@ int ComponentView::id() const {
 void ComponentView::setFallbackText(QString s) {
   fbtxt = s;
   update();
+}
+
+void ComponentView::setPinCount(int n) {
+  npins = n;
 }

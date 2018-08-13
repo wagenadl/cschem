@@ -41,6 +41,7 @@ public:
     stuckptsvalid = false;
     stepsfromsaved = false;
     netsvisible = true;
+    resizeTimer = 0;
   }
   void drawBoard(QPainter &) const;
   void drawGrid(QPainter &) const;
@@ -81,6 +82,7 @@ public:
   bool updateOnWhat(bool force=false);
   void updateNet(NodeID seed);
   void emitSelectionStatus();
+  void perhapsRefit();
 public:
   Editor *ed;
   Layout layout;
@@ -123,6 +125,8 @@ public:
   PCBNet net;
   LinkedNet linkednet;
   NetMismatch netmismatch;
+  QSize lastsize;
+  QTimer *resizeTimer;
 };
 
 

@@ -5,6 +5,8 @@
 #include "UndoCreator.h"
 
 #include <QInputDialog>
+#include <QResizeEvent>
+#include <QTimer>
 
 bool EData::updateOnWhat(bool force) {
   Dim mrg = Dim::fromMils(4/mils2px);
@@ -37,11 +39,6 @@ void EData::updateNet(NodeID seed) {
     netmismatch.recalculate(net, linkednet, layout.root());
   else
     netmismatch.reset();
-
-  qDebug() << "NOW ON";
-  net.report();
-  linkednet.report();
-  netmismatch.report(layout.root());
 }
 
 void EData::invalidateStuckPoints() const {
@@ -280,13 +277,11 @@ void EData::drawNetMismatch(ORenderer &rndr) const {
   rndr.setOverride(ORenderer::Override::WronglyIn);
   for (NodeID const &nid: netmismatch.wronglyInNet) {
     Object const &obj(nid.deref(layout.root()));
-    qDebug() << "render w.in" << nid << obj;
     rndr.drawObject(obj);
   }
   rndr.setOverride(ORenderer::Override::Missing);
   for (NodeID const &nid: netmismatch.missingFromNet) {
     Object const &obj(nid.deref(layout.root()));
-    qDebug() << "render w.out" << nid << obj;
     rndr.drawObject(obj);
   }
   rndr.setOverride(ORenderer::Override::None);
@@ -709,6 +704,10 @@ Layout const &Editor::pcbLayout() const {
   return d->layout;
 }
 
+double Editor::pixelsPerMil() const {
+  return d->mils2px;
+}
+
 void Editor::scaleToFit() {
   int ww = width();
   int wh = height();
@@ -727,6 +726,7 @@ void Editor::scaleToFit() {
   d->widget2mils = d->mils2widget.inverted();
   d->autofit = true;
   update();
+  emit scaleChanged();
 }
 
 void Editor::zoomIn() {
@@ -747,15 +747,35 @@ void EData::zoom(double factor) {
   mils2px = mils2widget.m11(); // *= factor;
   widget2mils = mils2widget.inverted();
   ed->update();
+  ed->scaleChanged();
 }
 
 void Editor::wheelEvent(QWheelEvent *e) {
   d->zoom(pow(2, e->angleDelta().y()/240.));
 }
 
-void Editor::resizeEvent(QResizeEvent *) {
-  if (d->autofit)
-    scaleToFit();
+void Editor::resizeEvent(QResizeEvent *e) {
+  qDebug() << "editor::resizeevent" << e->oldSize() << e->size();
+  if (!d->autofit)
+    return;
+  if (!d->resizeTimer) {
+    d->resizeTimer = new QTimer(this);
+    d->resizeTimer->setInterval(10);
+    d->resizeTimer->setSingleShot(true);
+    connect(d->resizeTimer, &QTimer::timeout,
+	    [this]() { d->perhapsRefit(); });
+  }
+  d->resizeTimer->start();
+}
+
+void EData::perhapsRefit() {
+  QSize s = ed->size();
+  if (abs(s.width() - lastsize.width()) < 3
+      && abs(s.height() - lastsize.height()) < 3)
+    return;
+  if (autofit)
+    ed->scaleToFit();
+  lastsize = s;
 }
 
 void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
@@ -1554,8 +1574,10 @@ void Editor::deleteSelected() {
     return;
   UndoCreator uc(d, true);
   Group &here(d->layout.root().subgroup(d->crumbs));
+  bool compchg = false;
   for (int id: d->selection) {
     if (here.object(id).isGroup()) {
+      compchg = true;
       int tid = here.object(id).asGroup().refTextId();
       if (tid>0)
         here.remove(tid);
@@ -1567,6 +1589,8 @@ void Editor::deleteSelected() {
       here.remove(id);
     }
   }
+  if (compchg)
+    emit componentsChanged();
   clearSelection();
 }
   

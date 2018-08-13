@@ -281,7 +281,6 @@ void ORenderer::drawObject(Object const &o, bool selected,
 QByteArray ORenderer::objectToSvg(Object const &obj,
 				  Dim margin, Dim minSize) {
   Rect br = obj.boundingRect();
-  qDebug() << "obj bbox" << br;
   br.grow(margin);
   Dim dx = minSize - br.width;
   if (dx.isPositive()) {
@@ -293,8 +292,6 @@ QByteArray ORenderer::objectToSvg(Object const &obj,
     br.top -= dy/2;
     br.height += dy;
   }
-
-  qDebug() << "svg bbox" << br;
 
   QBuffer output;
   output.open(QIODevice::WriteOnly);

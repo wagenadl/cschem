@@ -35,6 +35,7 @@ public:
   bool isUndoAvailable() const;
   bool isRedoAvailable() const;
   bool isAsSaved() const;
+  double pixelsPerMil() const;
 public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);
@@ -101,6 +102,7 @@ signals:
   void redoAvailable(bool);
   void schematicLinked(bool);
   void selectionIsGroup(bool);
+  void scaleChanged();
 protected:
   void mouseDoubleClickEvent(QMouseEvent *) override;
   void mousePressEvent(QMouseEvent *) override;

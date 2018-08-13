@@ -29,6 +29,8 @@ public slots:
   void flipUpDown();
   void setScale(double pxPerMil);
   void setFallbackText(QString);
+  void setPinCount(int); // drags with mismatching pincount will
+  // not be accepted. 0 means unconstrained
 signals:
   void edited(); // user has rotated, flipped, or changed the group by dropping
   // not emitted upon setGroup, setRotation, or setFlipped.
@@ -52,6 +54,7 @@ private:
   QPoint presspt;
   int id_;
   QString fbtxt;
+  int npins;
 private:
   static int idgen();
 };
