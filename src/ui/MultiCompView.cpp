@@ -7,6 +7,8 @@
 #include "data/Group.h"
 #include "data/Object.h"
 #include "circuit/Schem.h"
+#include "svg/Symbol.h"
+#include "svg/SymbolLibrary.h"
 
 class MCVData {
 public:
@@ -15,7 +17,10 @@ public:
     lay->setContentsMargins(4, 4, 4, 4);
     lay->setSpacing(4);
     lay->addStretch(1);
-    mcv->setLayout(lay);
+    mcv->setWidget(new QWidget);
+    mcv->setWidgetResizable(true);
+    mcv->widget()->setLayout(lay);
+    mcv->setMinimumWidth(200);
   }
   void rebuild();
 public:
@@ -58,7 +63,18 @@ void MCVData::rebuild() {
 	pv = "<i>" + newelts[ref].symbol() + "</i>";
       pv.replace("part:", "");
       evs[ref]->setPVText(pv);
-      // now, set default package?
+      Symbol const &symbol(schem.library().symbol(newelts[ref].symbol()));
+      if (symbol.isValid()) {
+	int npins = symbol.pinNames().size();
+	for (int n: symbol.containerSlots())
+	  npins += symbol.containedPins(n).size();
+	QString pin = npins==1 ? "pin" : "pins";
+	evs[ref]->setFallbackText("(" + QString::number(npins)
+				  + " " + pin + ")");
+      } else {
+	evs[ref]->setFallbackText("??");
+      }
+      qDebug() <<"now, set default package";
     }
   }
 }

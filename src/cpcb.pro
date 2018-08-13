@@ -70,4 +70,4 @@ SOURCES += svg/SymbolLibrary.cpp
 SOURCES += circuit/SafeMap.cpp
 SOURCES += circuit/Net.cpp
 
-RESOURCES += ui/ui.qrc
+RESOURCES += ui/ui.qrc cpcb.qrc

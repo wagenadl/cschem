@@ -14,6 +14,7 @@ ComponentView::ComponentView(QWidget *parent): QWidget(parent) {
   setAcceptDrops(true);
   setFocusPolicy(Qt::StrongFocus);
   setPalette(QPalette(QColor(0,0,0)));
+  setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
 
 int ComponentView::idgen() {
@@ -76,19 +77,25 @@ void ComponentView::setScale(double pxPerMil) {
 
 QSize ComponentView::sizeHint() const {
   QSizeF mil = grp.boundingRect().toMils().size();
-  if (mil.width() < 300)
-    mil.setWidth(300);
-  if (mil.height() < 300)
-    mil.setHeight(300);
+  if (mil.width() < 700)
+    mil.setWidth(700);
+  if (mil.height() < 500)
+    mil.setHeight(500);
   mil.setWidth(mil.width() + 50);
   mil.setHeight(mil.height() + 50);
   QSizeF px = mil2px * mil;
+  qDebug() << "sh" << mil << px;
   return px.toSize();
 }
 
 QSize ComponentView::minimumSizeHint() const {
   QSizeF mil = grp.boundingRect().toMils().size();
+  if (mil.width() < 500)
+    mil.setWidth(500);
+  if (mil.height() < 400)
+    mil.setHeight(400);
   QSizeF px = mil2px * mil;
+  qDebug() << "msh" << mil << px;
   return px.toSize();
 }
 
@@ -247,14 +254,24 @@ void ComponentView::paintEvent(QPaintEvent *) {
   p.setPen(QPen(Qt::NoPen));
   p.setBrush(QBrush(QColor(0,0,0)));
   p.drawRect(QRect(QPoint(0,0), size()));
-  p.translate(width()/2, height()/2);
-  p.scale(mil2px, mil2px);
-  QRectF r = grp.boundingRect().toMils();
-  QPointF c = r.center();
-  p.translate(-c.x(), -c.y());
-  ORenderer::render(grp, &p);
+  if (grp.isEmpty()) {
+    p.setPen(QPen(QColor(255,255,255)));
+    p.drawText(QRect(QPoint(0,0), size()), Qt::AlignCenter, fbtxt);
+  } else {
+      p.translate(width()/2, height()/2);
+    p.scale(mil2px, mil2px);
+    QRectF r = grp.boundingRect().toMils();
+    QPointF c = r.center();
+    p.translate(-c.x(), -c.y());
+    ORenderer::render(grp, &p);
+  }
 }
 
 int ComponentView::id() const {
   return id_;
+}
+
+void ComponentView::setFallbackText(QString s) {
+  fbtxt = s;
+  update();
 }

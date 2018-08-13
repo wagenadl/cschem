@@ -28,6 +28,7 @@ public slots:
   void flipLeftRight();
   void flipUpDown();
   void setScale(double pxPerMil);
+  void setFallbackText(QString);
 signals:
   void edited(); // user has rotated, flipped, or changed the group by dropping
   // not emitted upon setGroup, setRotation, or setFlipped.
@@ -50,6 +51,7 @@ private:
   double mil2px;
   QPoint presspt;
   int id_;
+  QString fbtxt;
 private:
   static int idgen();
 };
