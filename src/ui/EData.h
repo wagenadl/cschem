@@ -31,6 +31,9 @@
 
 class EData {
 public:
+  static constexpr int MOVETHRESHOLD_PIX = 4;
+  static constexpr int MARGIN_PIX = 4;
+public:
   EData(Editor *ed): ed(ed) {
     autofit = false;
     mode = Mode::Edit;
@@ -86,6 +89,8 @@ public:
   void perhapsRefit();
   Group const &currentGroup() const;
   Group &currentGroup();
+  bool isMoveSignificant(Point p);
+  Dim pressMargin() const;
 public:
   Editor *ed;
   Layout layout;
@@ -114,6 +119,7 @@ public:
   bool tracing;
   bool moving;
   bool panning;
+  bool significantmove;
   Point movingdelta;
   Mode mode;
   QRubberBand *rubberband = 0;

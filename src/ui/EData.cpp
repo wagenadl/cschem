@@ -1,0 +1,765 @@
+// EData.cpp
+
+#include "EData.h"
+#include "Editor.h"
+#include "UndoCreator.h"
+
+Dim EData::pressMargin() const {
+  return Dim::fromMils(MARGIN_PIX/mils2px);
+}
+
+Group const &EData::currentGroup() const {
+  return layout.root().subgroup(crumbs);
+}
+
+Group &EData::currentGroup() {
+  return layout.root().subgroup(crumbs);
+}
+
+bool EData::updateOnWhat(bool force) {
+  Dim mrg = pressMargin();
+  Group &here(currentGroup());
+  NodeID ids = here.nodeAt(hoverpt, mrg);
+  bool isnew = ids != onnode;
+  onnode = ids;
+  if (isnew || force)
+    onobject = here.humanName(ids);
+  if (netsvisible && (isnew || force))
+    updateNet(ids);
+  return isnew;
+}
+
+void EData::updateNet(NodeID seed) {
+  net = PCBNet(layout.root().subgroup(crumbs), seed);
+
+  linkednet = LinkedNet();
+  if (linkedschematic.isValid() && !net.nodes().isEmpty() && crumbs.isEmpty()) {
+    Nodename seed = net.someNode();
+    for (LinkedNet const &lnet: linkedschematic.nets()) {
+      if (lnet.containsMatch(seed)) {
+	linkednet = lnet;
+	break;
+      }
+    }
+  }
+
+  if (linkedschematic.isValid() && crumbs.isEmpty()) 
+    netmismatch.recalculate(net, linkednet, layout.root());
+  else
+    netmismatch.reset();
+}
+
+void EData::invalidateStuckPoints() const {
+  stuckptsvalid = false;
+}
+
+void EData::validateStuckPoints() const {
+  if (stuckptsvalid)
+    return;
+  // stuckpts will be the | of all points of nonselected nontraces, but only
+  // if those points are also in selpts. (Others are irrelevant.)
+  stuckpts.clear();
+  Group const &here(currentGroup());
+  auto const &lays(::layers());
+  for (int id: here.keys()) {
+    if (!selection.contains(id)) {
+      Object const &obj(here.object(id));
+      if (!obj.isTrace())
+	for (Layer l: lays)
+	  stuckpts[l] |= pointsOf(obj, l);
+    }
+  }
+  for (Layer l: lays)
+    stuckpts[l] &= selpts[l];
+  stuckptsvalid = true;
+}
+
+Rect EData::selectionBounds() const {
+  Group const &here(currentGroup());
+  
+  Rect r;
+  for (int id: selection)
+    r |= here.object(id).boundingRect();
+
+  for (Layer l: ::layers()) 
+    for (Point p: purepts[l])
+      r |= p;
+
+  return r;
+}
+  
+void EData::createUndoPoint() {
+  UndoStep s;
+  s.layout = layout;
+  s.selection = selection;
+  s.selpts = selpts;
+  s.purepts = purepts;
+  undostack << s;
+  redostack.clear();
+  stepsfromsaved ++;
+  ed->undoAvailable(true);
+  ed->redoAvailable(false);
+  ed->changedFromSaved(stepsfromsaved != 0);
+}
+
+void EData::selectPointsOf(int id) {
+  Group const &here(currentGroup());
+  if (here.contains(id))
+    for (Layer l: ::layers())
+      selpts[l] |= pointsOf(here.object(id), l);
+}
+
+QSet<Point> EData::pointsOf(Object const &obj) const {
+  QSet<Point> pp;
+  switch (obj.type()) {
+  case Object::Type::Null:
+    break;
+  case Object::Type::Hole:
+    pp << obj.asHole().p;
+    break;
+  case Object::Type::Pad:
+    pp << obj.asPad().p;
+    break;
+  case Object::Type::Arc:
+    pp << obj.asArc().center;
+    break;
+  case Object::Type::Text:
+    break;
+  case Object::Type::Trace:
+    pp << obj.asTrace().p1 << obj.asTrace().p2;
+    break;
+  case Object::Type::Group:
+    for (Point const &p: obj.asGroup().points())
+      pp << p;
+    break;
+  case Object::Type::Plane:
+    break;
+  }
+  return pp;
+}
+
+QSet<Point> EData::pointsOf(Object const &obj, Layer lay) const {
+  QSet<Point> pp;
+  switch (obj.type()) {
+  case Object::Type::Null:
+    break;
+  case Object::Type::Hole:
+    if (lay==Layer::Top || lay==Layer::Bottom)
+      pp << obj.asHole().p;
+    break;
+  case Object::Type::Pad:
+    if (lay==obj.asPad().layer)
+      pp << obj.asPad().p;
+    break;
+  case Object::Type::Arc:
+    if (lay==obj.asArc().layer)
+      pp << obj.asArc().center;
+    break;
+  case Object::Type::Text:
+    break;
+  case Object::Type::Trace:
+    if (lay==obj.asTrace().layer)
+      pp << obj.asTrace().p1 << obj.asTrace().p2;
+    break;
+  case Object::Type::Group:
+    for (Point const &p: obj.asGroup().points(lay))
+      pp << p;
+    break;
+  case Object::Type::Plane:
+    break;
+  }
+  return pp;
+}
+
+void EData::drawBoard(QPainter &p) const {
+  p.setBrush(QBrush(QColor(0,0,0)));
+  double lw = layout.board().width.toMils();
+  double lh = layout.board().height.toMils();
+  p.drawRect(QRectF(QPointF(0,0), QPointF(lw, lh)));
+}
+
+void EData::drawGrid(QPainter &p) const {
+  // draw dots at either 0.1” or 2 mm intervals
+  // and larger markers at either 0.5" or 10 mm intervals
+  bool metric = layout.board().grid.isNull()
+    ? layout.board().metric
+    : layout.board().grid.isMetric();
+  double lgrid = metric ? 2000/25.4 : 100;
+  double wgdx = lgrid;
+  double wgdy = lgrid;
+  double wx0 = 0;
+  double wx1 = layout.board().width.toMils();
+  double wy0 = 0;
+  double wy1 = layout.board().height.toMils();
+  constexpr int major = 5;
+  p.setPen(QPen(QColor(255, 255, 255), 1.0/mils2px));
+  QPointF dpx(2,0);
+  QPointF dpy(0,2);
+  if (wgdy*mils2px >= 10 && wgdy*mils2px >= 10) {
+    // draw everything
+    for (int i=0; wx0+wgdx*i<=wx1; i++) {
+      for (int j=0; wy0+wgdy*j<=wy1; j++) {
+	QPointF p0(wx0+wgdx*i, wy0+wgdy*j);
+	if (i%major || j%major) {
+	  p.drawPoint(p0);
+	} else {
+	  p.drawLine(QLineF(p0 - dpx, p0 + dpx));
+	  p.drawLine(QLineF(p0 - dpy, p0 + dpy));
+	}
+      }
+    }
+  } else {
+    for (int i=0; wx0+wgdx*i<=wx1; i+=major) {
+      for (int j=0; wy0+wgdy*j<=wy1; j+=major) {
+	QPointF p0(wx0+wgdx*i, wy0+wgdy*j);
+	p.drawLine(QLineF(p0 - dpx, p0 + dpx));
+	p.drawLine(QLineF(p0 - dpy, p0 + dpy));
+      }
+    }
+  }  
+}
+
+void EData::drawTracing(QPainter &p) const {
+  if (!tracing)
+    return;
+  p.setPen(QPen(layerColor(props.layer), props.linewidth.toMils(),
+		Qt::SolidLine, Qt::RoundCap));
+  p.drawLine(tracestart.toMils(), tracecurrent.toMils());
+}
+
+void EData::drawObjects(QPainter &p) const {
+  Group const &here(currentGroup());
+  validateStuckPoints();  
+
+  ORenderer rndr(&p);
+  if (moving)
+    rndr.setMoving(movingdelta);
+  rndr.setSelPoints(selpts);
+  rndr.setPurePoints(purepts);
+  rndr.setStuckPoints(stuckpts);
+  
+  auto onelayer = [&](Layer l) {
+    rndr.setLayer(l);
+    for (int id: here.keys()) {
+      QSet<NodeID> subnet;
+      if (netsvisible)
+	for (NodeID nid: net.nodes())
+	  if (!nid.isEmpty() && nid.first()==id)
+	    subnet << nid.tail();
+      rndr.drawObject(here.object(id), selection.contains(id), subnet);
+    }
+  };
+
+  auto drawplanes = [&](Layer) {
+    // Bottom filled plane is easy.
+    // Top filled plane is tricky because holes should let bottom shine through.
+    // The full solution is to render the plane into a pixmap first, then
+    // copy to the widget.
+    // An alternative is to ADD the plane to the widget, then SUBTRACT
+    // the holes, using appropriate color scheme. That would let bottom traces
+    // shine through, but I am OK with that.
+  };
+  
+  Board const &brd = layout.board();
+
+  if (brd.layervisible[Layer::Bottom]) {
+    if (brd.planesvisible)
+      drawplanes(Layer::Bottom);
+    onelayer(Layer::Bottom);
+  }
+  if (brd.layervisible[Layer::Top]) {
+    if (brd.planesvisible)
+      drawplanes(Layer::Top);
+    onelayer(Layer::Top);
+  }
+  if (brd.layervisible[Layer::Silk])
+    onelayer(Layer::Silk);
+
+  if (netsvisible && crumbs.isEmpty())
+    drawNetMismatch(rndr);
+
+  onelayer(Layer::Invalid); // magic to punch holes
+}
+
+void EData::drawNetMismatch(ORenderer &rndr) const {
+  rndr.setOverride(ORenderer::Override::WronglyIn);
+  for (NodeID const &nid: netmismatch.wronglyInNet) {
+    Object const &obj(nid.deref(layout.root()));
+    rndr.drawObject(obj);
+  }
+  rndr.setOverride(ORenderer::Override::Missing);
+  for (NodeID const &nid: netmismatch.missingFromNet) {
+    Object const &obj(nid.deref(layout.root()));
+    rndr.drawObject(obj);
+  }
+  rndr.setOverride(ORenderer::Override::None);
+}
+
+void EData::drawSelectedPoints(QPainter &p) const {
+  QSet<Point> pts;
+  for (Layer l: layers())
+    pts |= purepts[l];
+  if (pts.isEmpty())
+    return;
+  p.setPen(QPen(Qt::NoPen));
+  p.setBrush(QColor(255, 255, 255, 128));
+  for (Point pt: pts) {
+    if (moving)
+      pt += movingdelta;
+    p.drawEllipse(pt.toMils(), 25, 25);
+  }
+}
+
+void EData::abortTracing() {
+  tracing = false;
+  ed->updateOnNet();
+  ed->update();
+}
+
+void EData::pressText(Point p) {
+  if (props.text.isEmpty())
+    props.text = QInputDialog::getText(ed, "Place text", "Text:");
+  if (props.text.isEmpty())
+    return;
+
+  p = p.roundedTo(layout.board().grid);
+  Group &here(currentGroup());
+  Text t;
+  t.p = p;
+  t.fontsize = props.fs;
+  t.orient = props.orient;
+  t.text = props.text;
+  t.layer = props.layer;
+  UndoCreator uc(this, true);
+  here.insert(Object(t));
+} 
+
+void EData::pressHole(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  Group &here(currentGroup());
+  Hole t;
+  t.p = p;
+  t.od = props.od;
+  t.id = props.id;
+  t.square = props.square;
+  UndoCreator uc(this, true);
+  here.insert(Object(t));
+}
+
+
+void EData::pressPad(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  Group &here(currentGroup());
+  Pad t;
+  t.p = p;
+  t.width = props.w;
+  t.height = props.h;
+  t.layer = props.layer;
+  UndoCreator uc(this, true);
+  here.insert(Object(t));
+}
+
+void EData::pressArc(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  Group &here(currentGroup());
+  Arc t;
+  t.center = p;
+  t.radius = props.id / 2;
+  t.linewidth = props.linewidth;
+  t.angle = props.arcangle;
+  t.rot = props.orient.rot;
+  t.layer = props.layer;
+  UndoCreator uc(this, true);
+  here.insert(Object(t));
+}
+
+void EData::pressPickingUp(Point p) {
+  if (tracing) {
+    pressTracing(p);
+    return;
+  }
+  Dim mrg = pressMargin();
+  int fave = visibleObjectAt(p, mrg);
+  if (fave<0)
+    return;
+  Group &here(currentGroup());
+  Object const &obj(here.object(fave));
+  if (!obj.isTrace())
+    return;
+  Trace const &t(obj.asTrace());
+  Dim d1 = p.distance(t.p1);
+  Dim d2 = p.distance(t.p2);
+  if (d1<d2) {
+    // pickup p1, leave p2
+    tracestart = t.p2;
+  } else {
+    // pickup p2
+    tracestart = t.p1;
+  }    
+  UndoCreator uc(this, true);
+  here.remove(fave);
+  tracecurrent = p;
+  tracing = true;
+}
+
+void EData::pressTracing(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  if (tracing && p.distance(tracestart) < pressMargin()) {
+    abortTracing();
+    return;
+  }
+  if (tracing) {
+    Group &here(currentGroup());
+    Trace t;
+    t.p1 = tracestart;
+    t.p2 = p;
+    t.width = props.linewidth;
+    t.layer = props.layer;
+    UndoCreator uc(this, true);
+    here.insertSegmentedTrace(t);
+  } else {
+    tracing = true;
+  }
+  tracestart = p;
+  tracecurrent = p;
+  ed->update();
+}
+
+bool EData::isMoveSignificant(Point p) {
+  if (significantmove)
+    return true;
+
+  significantmove = (mils2widget.map(p.toMils())
+		     - mils2widget.map(presspoint.toMils()))
+    .manhattanLength() > MOVETHRESHOLD_PIX;
+  return significantmove;
+}
+
+void EData::moveMoving(Point p) {
+  if (isMoveSignificant(p)) {
+    movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+    ed->update();
+  }
+}
+
+void EData::moveTracing(Point p) {
+  tracecurrent = p.roundedTo(layout.board().grid);
+  ed->update();
+}
+
+enum class Prio {
+  None,
+  BottomPlane,
+  TopPlane,
+  BottomTrace,
+  BottomObject,
+  TopTrace,
+  TopObject,
+  Silk
+};
+
+int EData::visibleObjectAt(Point p, Dim mrg) const {
+  Group const &here(currentGroup());
+  return visibleObjectAt(here, p, mrg);
+}
+
+int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
+  QList<int> ids = here.objectsAt(p, mrg);
+  /* Now, we want to select one item that P is on.
+     We prioritize higher layers over lower layers, ignore pads, text, traces
+     on hidden layers, prioritize holes, pads, groups [components], text over
+     traces, which are prioritized over planes.
+     If P is on an endpoint of a segment, we need to know about that as well.
+  */
+  int fave = -1;
+  Prio prio = Prio::None;
+  Board const &brd = layout.board();
+  auto better = [&prio](Prio p1) { return int(p1) > int(prio); };
+  for (int id: ids) {
+    Prio p1 = Prio::None;
+    Object const &obj = here.object(id);
+    Layer l = obj.layer();
+    switch (obj.type()) {
+    case Object::Type::Plane:
+      if (brd.layervisible[l])
+	p1 = l==Layer::Bottom ? Prio::BottomPlane : Prio::TopPlane;
+    break;
+    case Object::Type::Trace:
+      if (brd.layervisible[l])
+	p1 = l==Layer::Bottom ? Prio::BottomTrace
+	  : l==Layer::Top ? Prio::TopTrace
+	  : Prio::Silk;
+      break;
+    case Object::Type::Text: case Object::Type::Pad: case Object::Type::Arc:
+      if (brd.layervisible[l])
+	p1 = l==Layer::Bottom ? Prio::BottomObject
+	  : l==Layer::Top ? Prio::TopObject
+	  : Prio::Silk;
+      break;
+    case Object::Type::Hole:
+      if (brd.layervisible[Layer::Top])
+	p1 = Prio::TopObject;
+      else if (brd.layervisible[Layer::Bottom])
+	p1 = Prio::BottomObject;
+      break;
+    case Object::Type::Group:
+      p1 = Prio::Silk;
+      break;
+    default:
+      break;
+    }
+    if (better(p1)) {
+      prio = p1;
+      fave = id;
+    }
+  }
+  return fave;
+}
+
+void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
+  Dim mrg = pressMargin();
+  int fave = visibleObjectAt(p, mrg);
+  bool add = m & Qt::ShiftModifier;
+  if (fave < 0) {
+    // not on anything -> start rectangle select
+    if (!add)
+      ed->clearSelection();
+    if (!rubberband)
+      rubberband = new QRubberBand(QRubberBand::Rectangle, ed);
+    rubberband->show();
+    rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
+			    .toRect());
+  } else {
+    if (selection.contains(fave)) {
+      if (add) {
+	dropFromSelection(fave, p, mrg);
+      } else {
+	startMoveSelection(fave);
+      }
+    } else {
+      newSelectionUnless(fave, p, mrg, add);
+      startMoveSelection(fave);
+    }
+  }
+}
+
+void EData::dropFromSelection(int id, Point p, Dim mrg) {
+  // throw ID out of selection, then recollect SELPTS.
+  selection.remove(id);
+  selpts.clear();
+
+  Object const &obj(layout.root().subgroup(crumbs).object(id));
+  if (obj.isTrace()) {
+    Trace const &t(obj.asTrace());
+    if (t.onP1(p, mrg)) 
+      purepts[t.layer].remove(t.p1);
+    if (t.onP2(p, mrg)) 
+      purepts[t.layer].remove(t.p2);
+  }
+  
+  for (int k: selection)
+    selectPointsOf(k);
+  ed->update();
+  emitSelectionStatus();
+}
+
+void EData::startMoveSelection(int fave) {
+  moving = true;
+  movingstart = presspoint.roundedTo(layout.board().grid);
+  if (fave>0) {
+    // if clicked on a pin (directly or in a component), align that pin
+    // with the grid.
+    Object const &obj = currentGroup().object(fave);
+    if (obj.isHole()) {
+      movingstart = obj.asHole().p;
+    } else if (obj.isPad()) {
+      movingstart = obj.asPad().p;
+    } else if (obj.isGroup()) {
+      Group const &grp(obj.asGroup());
+      Dim mrg = pressMargin();
+      fave = visibleObjectAt(grp, presspoint, mrg);
+      if (fave>0) {
+	Object const &obj = grp.object(fave);
+	if (obj.isHole()) {
+	  movingstart = obj.asHole().p;
+	} else if (obj.isPad()) {
+	  movingstart = obj.asPad().p;
+	}
+      }
+    }
+  }
+  movingdelta = Point();
+}
+
+void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
+  // does not clear purepts if on a purept
+  Group const &here(currentGroup());
+  Object const &obj(here.object(id));
+  if (obj.isTrace()) {
+    Trace const &t(obj.asTrace());
+    if (t.onP1(p, mrg)) {
+      if (purepts[t.layer].contains(t.p1)) {
+	if (add)
+	  ed->deselectPoint(t.p1);
+      } else {
+	ed->selectPoint(t.p1, add);
+      }
+    } else if (t.onP2(p, mrg)) {
+      if (purepts[t.layer].contains(t.p2)) {
+	if (add)
+	  ed->deselectPoint(t.p2);
+      } else {
+	ed->selectPoint(t.p2, add);
+      }
+    } else {
+      ed->select(id, add);
+    }
+  } else {
+    ed->select(id, add);
+    if (obj.isGroup())
+      ed->select(obj.asGroup().refTextId(), true);
+  }
+}
+
+
+void EData::moveBanding(Point p) {
+  if (!rubberband)
+    return;
+  rubberband->setGeometry(QRectF(mils2widget.map(presspoint.toMils()),
+				 mils2widget.map(p.toMils())).normalized()
+			  .toRect());
+}
+
+void EData::pressPanning(QPoint p) {
+  autofit = false;
+  pan0 = mils2widget;
+  panstart = p;
+  panning = true;
+}
+
+void EData::movePanning(QPoint p) {
+  QPoint delta = p - panstart;
+  mils2widget = pan0;
+  mils2widget.translate(delta.x()/mils2px, delta.y()/mils2px);
+  widget2mils = mils2widget.inverted();
+  ed->update();
+}
+
+void EData::releaseMoving(Point p) {
+  movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+  if (movingdelta.isNull() || !isMoveSignificant(p)) {
+    moving = false;
+    ed->update();
+    return;
+  }
+  validateStuckPoints();
+  UndoCreator uc(this, true);
+  Group &here(currentGroup());
+  for (int id: here.keys()) {
+    Object &obj(here.object(id));
+    if (selection.contains(id)) {
+      if (obj.isTrace()) {
+        Trace &t = obj.asTrace();
+        if (!stuckpts[t.layer].contains(t.p1))
+          t.p1 += movingdelta;
+        if (!stuckpts[t.layer].contains(t.p2))
+          t.p2 += movingdelta;
+      } else {
+        obj.translate(movingdelta);
+      }
+    } else if (obj.isTrace()) {
+      uc.realize();
+      Trace &t = obj.asTrace();
+      if ((selpts[t.layer].contains(t.p1)
+	   || purepts[t.layer].contains(t.p1))
+          && !stuckpts[t.layer].contains(t.p1))
+	t.p1 += movingdelta;
+      if ((selpts[t.layer].contains(t.p2)
+	   || purepts[t.layer].contains(t.p2))
+          && !stuckpts[t.layer].contains(t.p2))
+	t.p2 += movingdelta;
+    }
+  }
+
+  for (Layer l: ::layers()) {
+    QSet<Point> newsel;
+    for (Point const &pt: selpts[l])
+      newsel << pt + movingdelta;
+    selpts[l] = newsel;
+    QSet<Point> newpure;
+    for (Point const &pt: purepts[l])
+      newpure << pt + movingdelta;
+    purepts[l] = newpure;
+  }
+  
+  moving = false;
+  ed->update();
+}
+
+void EData::releaseBanding(Point p) {
+  delete rubberband;
+  rubberband = 0;
+  Rect r(presspoint, p);
+  ed->selectArea(r, true);
+}
+
+void EData::zoom(double factor) {
+  autofit = false;
+  QPointF xy0m = hoverpt.toMils();
+  QPointF xy0 = mils2widget.map(xy0m); // where do we project now?
+  mils2widget.scale(factor, factor);
+  QPointF xy1m = mils2widget.inverted().map(xy0);
+  mils2widget.translate(xy1m.x()-xy0m.x(), xy1m.y()-xy0m.y());
+  mils2px = mils2widget.m11(); // *= factor;
+  widget2mils = mils2widget.inverted();
+  ed->update();
+  ed->scaleChanged();
+}
+
+void EData::perhapsRefit() {
+  QSize s = ed->size();
+  if (abs(s.width() - lastsize.width()) < 3
+      && abs(s.height() - lastsize.height()) < 3)
+    return;
+  if (autofit)
+    ed->scaleToFit();
+  lastsize = s;
+}
+
+void EData::emitSelectionStatus() {
+  if (selection.isEmpty()) {
+    ed->selectionChanged(false);
+    ed->selectionIsGroup(false);
+  } else {
+    ed->selectionChanged(true);
+    int gid = -1;
+    int tid = -1;
+    Group const &here(currentGroup());
+    for (int id: selection) {
+      Object const &obj(here.object(id));
+      if (obj.isGroup()) {
+	if (gid>0 || (tid>0 && obj.asGroup().refTextId()!=tid)) {
+	  // already had group, or mismatching text
+	  ed->selectionIsGroup(false);
+	  return;
+	} else {
+	  gid = id;
+	  tid = obj.asGroup().refTextId();
+	}
+      } else if (obj.isText()) {
+	int g1 = obj.asText().groupAffiliation();
+	if (g1>0 && (gid<0 || gid==g1)) { // matching text
+	  tid = id;
+	} else { // mismatching text
+	  ed->selectionIsGroup(false);
+	  return;
+	}
+      } else { // bad object type
+	ed->selectionIsGroup(false);
+	return;
+      }	
+    }
+    ed->selectionIsGroup(gid>0);
+  }
+}
+
