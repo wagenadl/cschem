@@ -20,6 +20,11 @@ public:
   QString name;
 };
 
+void Net::merge(Net const &net) {
+  d->connections |= net.d->connections;
+  d->pins |= net.d->pins;
+}
+
 void NetData::addCon(int c) {
   if (connections.contains(c))
     return;
@@ -68,6 +73,9 @@ void NetData::determineName() {
   } else {
     name = "";
   }
+}
+
+Net::Net(): d(new NetData(Circuit())) {
 }
 
 Net::Net(Circuit const &circ, PinID const &seedpin):

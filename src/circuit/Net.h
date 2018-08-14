@@ -13,12 +13,14 @@ public:
   Net(class Circuit const &circ, int seedelt, QString seedpin);
   Net(class Circuit const &circ, int seedcon);
   Net(Net const &);
+  Net();
   Net &operator=(Net const &);
   ~Net();
   QSet<int> connections() const;
   QSet<PinID> pins() const;
   QString name() const;
   static QList<Net> allNets(class Circuit const &circ);
+  void merge(Net const &);
 private:
   QSharedDataPointer<class NetData> d;
 };
