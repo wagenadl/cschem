@@ -522,11 +522,11 @@ void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
       if (add) {
 	dropFromSelection(fave, p, mrg);
       } else {
-	startMoveSelection();
+	startMoveSelection(fave);
       }
     } else {
       newSelectionUnless(fave, p, mrg, add);
-      startMoveSelection();
+      startMoveSelection(fave);
     }
   }
 }
@@ -551,11 +551,31 @@ void EData::dropFromSelection(int id, Point p, Dim mrg) {
   emitSelectionStatus();
 }
 
-void EData::startMoveSelection() {
+void EData::startMoveSelection(int fave) {
   moving = true;
   movingstart = presspoint.roundedTo(layout.board().grid);
-  // If presspoint is on a hole or point, movingstart should actually be
-  // shifted by distance of that point to the nearest grid intersection.
+  if (fave>0) {
+    // if clicked on a pin (directly or in a component), align that pin
+    // with the grid.
+    Object const &obj = currentGroup().object(fave);
+    if (obj.isHole()) {
+      movingstart = obj.asHole().p;
+    } else if (obj.isPad()) {
+      movingstart = obj.asPad().p;
+    } else if (obj.isGroup()) {
+      Group const &grp(obj.asGroup());
+      Dim mrg = Dim::fromMils(4/mils2px);
+      fave = visibleObjectAt(grp, presspoint, mrg);
+      if (fave>0) {
+	Object const &obj = grp.object(fave);
+	if (obj.isHole()) {
+	  movingstart = obj.asHole().p;
+	} else if (obj.isPad()) {
+	  movingstart = obj.asPad().p;
+	}
+      }
+    }
+  }
   movingdelta = Point();
 }
 
