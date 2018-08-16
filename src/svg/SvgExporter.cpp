@@ -7,6 +7,7 @@
 #include "circuit/Circuit.h"
 #include "circuit/Element.h"
 #include "circuit/Connection.h"
+#include "circuit/Textual.h"
 #include "XmlElement.h"
 #include <QXmlStreamWriter>
 #include <QDebug>
@@ -23,6 +24,7 @@ public:
   void writeBBox(QXmlStreamWriter &sw);
   void writeElement(QXmlStreamWriter &sw, Element const &elt);
   void writeConnection(QXmlStreamWriter &sw, Connection const &elt);
+  void writeTextual(QXmlStreamWriter &sw, Textual const &txt);
 public:
   Circuit circ;
   SymbolLibrary const &lib;
@@ -33,16 +35,17 @@ double svgFontSize(bool script=false) {
   return Style::annotationFont().pixelSize()*(script ? .7 : 1);
 }
 
-QString svgFontStyle(bool italic=false, bool script=false) {
+QString svgFontStyle(bool italic=false, bool script=false, bool left=false) {
   return QString("fill:#000000;"
 		 "stroke:none;"
-		 "text-anchor:middle;"
+		 "text-anchor:%4;"
 		 "font-family:%1;"
 		 "font-style:%2;"
 		 "font-size:%3px")
     .arg(Style::annotationFont().family())
     .arg(italic ? "italic" : "normal")
-    .arg(svgFontSize(script));
+    .arg(svgFontSize(script))
+    .arg(left ? "left" : "middle");
 }
 
 QPointF svgFontDelta() {
@@ -117,6 +120,17 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   sw.writeEndElement(); // g
 }
 
+void SvgExporterData::writeTextual(QXmlStreamWriter &sw,
+				   Textual const &txt) {
+  QPointF p = lib.upscale(txt.position) + svgFontDelta();
+  sw.writeStartElement("text");
+  sw.writeAttribute("style", svgFontStyle(false, false, true));
+  sw.writeAttribute("x", QString("%1").arg(p.x()));
+  sw.writeAttribute("y", QString("%1").arg(p.y()));
+  sw.writeCharacters(txt.text);
+  sw.writeEndElement();
+}
+
 void SvgExporterData::writeConnection(QXmlStreamWriter &sw,
 				      Connection const &con) {
   QPolygon pp(geom.connectionPath(con));
@@ -177,9 +191,12 @@ bool SvgExporter::exportSvg(QString const &fn) {
     
     for (Element const &elt: d->circ.elements)
       d->writeElement(sw, elt);
-
     for (Connection const &con: d->circ.connections)
       d->writeConnection(sw, con);
+    for (Textual const &txt: d->circ.textuals)
+      d->writeTextual(sw, txt);
+
+    
     sw.writeEndElement(); // g
     sw.writeEndElement(); // svg
     sw.writeEndDocument();
