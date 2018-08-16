@@ -34,6 +34,10 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
 	Connection con;
 	sr >> con;
 	c.connections.insert(con.id, con);
+      } else if (n=="text") {
+	Textual txt;
+	sr >> txt;
+	c.textuals.insert(txt.id, txt);
       } else {
 	qDebug() << "Unexpected element in circuit: " << sr.name();
 	c.invalidate();
@@ -57,6 +61,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
     sr << c;
   for (auto const &c: c.connections)
     sr << c;
+  for (auto const &c: c.textuals)
+    sr << c;
   sr.writeEndElement();
   return sr;
 }
@@ -73,6 +79,10 @@ void Circuit::insert(Connection const &c) {
     qDebug() << "Inserting invalid connection";
   }
   connections.insert(c.id, c);
+}
+
+void Circuit::insert(Textual const &c) {
+  textuals.insert(c.id, c);
 }
 
 void Circuit::removeElementWithConnections(int id) {
@@ -195,6 +205,15 @@ int Circuit::renumber(int start, QMap<int, int> *mapout) {
     }
   }
 
+  QList<Textual> txts = textuals.values();
+  for (Textual txt: txts) {
+    int oldid = txt.id;
+    txt.id = start;
+    textuals.remove(oldid);
+    textuals.insert(start, txt);
+    start ++;
+  }
+  
   if (mapout)
     *mapout = eltmap;
   
@@ -236,6 +255,9 @@ int Circuit::maxId() const {
   for (int id: connections.keys())
     if (id>mx)
       mx = id;
+  for (int id: textuals.keys())
+    if (id>mx)
+      mx = id;
   return mx;
 }
 
@@ -244,6 +266,8 @@ void Circuit::merge(Circuit const &o) {
     elements.insert(elt.id, elt);
   for (auto con: o.connections)
     connections.insert(con.id, con);
+  for (auto txt: o.textuals)
+    textuals.insert(txt.id, txt);
 }
   
 int Circuit::availableNumber(QString pfx) const {
@@ -276,6 +300,9 @@ QDebug &operator<<(QDebug &dbg, Circuit const &circ) {
     dbg << "  " << e << "\n";
   dbg << "Connections:\n";
   for (auto const &c: circ.connections)
+    dbg << "  " << c << "\n";
+  dbg << "Textuals:\n";
+  for (auto const &c: circ.textuals)
     dbg << "  " << c << "\n";
   return dbg;
 }

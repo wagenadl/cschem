@@ -7,6 +7,7 @@
 #include <QXmlStreamReader>
 #include "Element.h"
 #include "Connection.h"
+#include "Textual.h"
 #include <QMap>
 #include <QPoint>
 #include "SafeMap.h"
@@ -19,6 +20,7 @@ public:
 public:
   void insert(Element const &);
   void insert(Connection const &);
+  void insert(Textual const &);
   void removeElementWithConnections(int id);
   /* Removes an element. Connections to/from the element are also deleted. */
   QSet<int> connectionsTo(QSet<int> ids) const;
@@ -35,7 +37,7 @@ public:
   /* Connections that either start or end at given pin of given element */
   void translate(QSet<int> eltids, QPoint delta);
   /* Does not take care of edge connections */
-  void translate(QPoint dleta);
+  void translate(QPoint delta);
   /* Translates entire circuit */
   int maxId() const;
   /* Returns the largest ID number in use in this circuit. */
@@ -72,6 +74,7 @@ public:
 public:
   SafeMap<int, Element> elements;
   SafeMap<int, Connection> connections;
+  SafeMap<int, Textual> textuals;
 private:
   bool valid;
 };
