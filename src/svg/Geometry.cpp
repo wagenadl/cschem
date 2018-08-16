@@ -136,9 +136,9 @@ QPoint GeometryData::pinPosition(int eltid, QString pin) const {
   return pinPosition(circ.elements[eltid], pin);
 }
 
-QRect Geometry::boundingRect(int elt) const {
+QRect Geometry::boundingRect(int elt, bool withAnnots) const {
   if (d)
-    return boundingRect(d->circ.elements[elt]);
+    return boundingRect(d->circ.elements[elt], withAnnots);
   else
     return QRect();
 }
@@ -181,22 +181,46 @@ QRectF Geometry::defaultAnnotationSvgBoundingRect(Element const &elt,
   }
 }
 
-QRect Geometry::boundingRect(Element const &elt) const {
+QRect annotationBox(QPoint p, QString txt) {
+  // really crude!
+  return QRect(p - QPoint(1+txt.size()/2, 1), p + QPoint(1+txt.size()/2, 1));
+}
+
+QRect textualBox(QPoint p, QString txt) {
+  // really crude!
+  return QRect(p - QPoint(0, 1), p + QPoint(1+txt.size(), 1));
+}
+
+QRect Geometry::boundingRect(Element const &elt, bool withAnnots) const {
   if (!d)
     return QRect();
   Symbol const &prt(d->lib.symbol(elt.symbol()));
   QRectF bb = prt.shiftedBBox();
   QTransform xf = d->symbolToCircuitTransformation(elt);
   bb = xf.mapRect(bb);
+  if (withAnnots) {
+    if (elt.nameVisible)
+      bb |= annotationBox(elt.position
+			  + d->lib.downscale(QPointF(elt.namePosition)),
+			  elt.name);
+    if (elt.valueVisible)
+      bb |= annotationBox(elt.position
+			  + d->lib.downscale(QPointF(elt.valuePosition)),
+			  elt.value);
+  }
   bb.adjust(-0.5, -0.5, 0.5, 0.5);
   return bb.toRect();
 }
 
-QRect Geometry::boundingRect() const {
+QRect Geometry::boundingRect(bool withTexts) const {
   QRect r;
-  if (d)
+  if (d) {
     for (Element const &elt: d->circ.elements)
-      r |= boundingRect(elt);
+      r |= boundingRect(elt, withTexts);
+    if (withTexts)
+      for (Textual const &txt: d->circ.textuals)
+	r |= textualBox(txt.position, txt.text);
+  }
   return r;
 }
 

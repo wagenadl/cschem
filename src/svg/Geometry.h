@@ -29,10 +29,10 @@ public:
   bool isZeroLength(int con) const;
   bool isZeroLength(class Connection const &con) const;
   /* Invalid connections are zero length by definition. */
-  QRect boundingRect(int elt) const;
-  QRect boundingRect(class Element const &elt) const;
-  QRect boundingRect() const; // for whole circuit
-  /* boundingRect ignores annotations */
+  QRect boundingRect(int elt, bool withAnnot=false) const;
+  QRect boundingRect(class Element const &elt, bool withAnnot=false) const;
+  QRect boundingRect(bool withTexts=true) const; // for whole circuit
+  /* boundingRect is very naive about annotations and textuals */
   QRectF svgBoundingRect(class Element const &elt) const;
   /* Bounding box of (rotated and flipped) symbol relative to its first pin. */
   QRectF defaultAnnotationSvgBoundingRect(class Element const &elt,
