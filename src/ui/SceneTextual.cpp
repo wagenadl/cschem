@@ -164,3 +164,9 @@ void SceneTextual::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
     QGraphicsTextItem::mouseReleaseEvent(e);
   }
 }
+
+void SceneTextual::focusOutEvent(QFocusEvent *e) {
+  QGraphicsTextItem::focusOutEvent(e);
+  if (d->txt.text.isEmpty())
+    d->scene->dropTextual(id());
+}

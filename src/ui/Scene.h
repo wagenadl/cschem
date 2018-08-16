@@ -53,6 +53,7 @@ public:
   void perhapsEmitSelectionChange();
   void repositionTextual(int id, QPoint p);
   void storeTextualText(int id, QString t);
+  void dropTextual(int id);
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;
