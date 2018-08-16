@@ -29,6 +29,7 @@ public:
   bool onConnection() const;
   bool onPin() const;
   bool onFakePin() const;
+  bool onNothing() const;
   int element() const; // -1 if none
   QString pin() const; // NOPIN if none
   int connection() const; // -1 if none
