@@ -51,12 +51,15 @@ public:
   class HoverManager *hoverManager() const;
   void clearSelection();
   void perhapsEmitSelectionChange();
+  void repositionTextual(int id, QPoint p);
+  void storeTextualText(int id, QString t);
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void keyReleaseEvent(QKeyEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) override;
   void dragEnterEvent(QGraphicsSceneDragDropEvent *) override;
   void dragLeaveEvent(QGraphicsSceneDragDropEvent *) override;
   void dragMoveEvent(QGraphicsSceneDragDropEvent *) override;
