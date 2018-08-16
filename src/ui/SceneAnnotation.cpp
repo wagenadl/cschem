@@ -79,6 +79,7 @@ void SceneAnnotation::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     d->sp_press = e->scenePos();
     d->pressing = true;
     d->p_orig = d->p_center;
+    QGraphicsTextItem::mousePressEvent(e);
     e->accept();
   } else {
     QGraphicsTextItem::mousePressEvent(e);

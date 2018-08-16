@@ -451,6 +451,10 @@ void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
+  QGraphicsItem *item_at = itemAt(e->scenePos(), QTransform());
+  QGraphicsItem *item_focus = focusItem();
+  if (item_focus && item_at !=item_focus)
+    item_focus->clearFocus();
   d->mousexy = e->scenePos();
   d->hovermanager->setPrimaryPurpose((d->connbuilder ||
                                       e->modifiers() & Qt::ControlModifier)
@@ -485,7 +489,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     d->rbstart = e->scenePos();
   } else if (d->hovermanager->onConnection()) {
     QGraphicsScene::mousePressEvent(e); // pass on to items
-  } else if (itemAt(e->scenePos(), QTransform())) {
+  } else if (item_at) {
     QGraphicsScene::mousePressEvent(e); // pass on to items
   } else {
     if (!(e->modifiers() & Qt::ShiftModifier))
