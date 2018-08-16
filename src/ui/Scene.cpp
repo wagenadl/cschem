@@ -15,6 +15,7 @@
 #include "FloatingSymbol.h"
 #include "PartList.h"
 #include "circuit/PartNumbering.h"
+#include "SceneTextual.h"
 
 class SceneData {
 public:
@@ -57,6 +58,7 @@ public:
   bool importAndPlonk(QString filename, QPointF sp, bool merge=true);
   void modifyContents(Element const &container, QString oldname, int sibid=-1);
   void modifyContainerAndSiblings(Element const &container, QString oldname);
+  void newTextual(QPointF);
 public:
   inline Circuit const &circ() const { return schem.circuit(); }
   inline Circuit &circ() { return schem.circuit(); }
@@ -67,6 +69,7 @@ public:
   Schem schem;
   QMap<int, class SceneElement *> elts;
   QMap<int, class SceneConnection *> conns;
+  QMap<int, class SceneTextual *> textuals;
   QPointF mousexy;
   HoverManager *hovermanager;
   QList<Circuit> undobuffer;
@@ -177,6 +180,16 @@ void SceneData::startConnectionFromConnection(QPointF pos) {
   connbuilder->startFromConnection(pos,
                                    hovermanager->connection(),
                                    hovermanager->segment());
+}
+
+void SceneData::newTextual(QPointF pos) {
+  preact();
+  Textual txt;
+  txt.position = lib().downscale(pos);
+  circ().insert(txt);
+  textuals[txt.id] = new SceneTextual(scene, txt);
+  textuals[txt.id]->setFocus();
+  scene->emitCircuitChanged();
 }
 
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
@@ -297,12 +310,19 @@ void SceneData::rebuild() {
   for (auto i: conns)
     delete i;
   conns.clear();
+  for (auto i: textuals)
+    delete i;
+  textuals.clear();
 
   for (auto const &c: circ().elements) 
     elts[c.id] = new SceneElement(scene, c);
   
   for (auto const &c: circ().connections)
     conns[c.id] = new SceneConnection(scene, c);
+
+  qDebug() << "#text" << circ().textuals.size();
+  for (auto const &c: circ().textuals)
+    textuals[c.id] = new SceneTextual(scene, c);
 
   resetSceneRect();
   partlist->rebuild();
@@ -418,6 +438,15 @@ void Scene::moveSelection(QPoint delta, bool nomagnet) {
       d->elts[id]->rebuild();
     for (int id: internalcons + fromcons + tocons)
       d->conns[id]->rebuild();
+  }
+}
+
+void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
+  if (d->hovermanager->onNothing()) {
+    qDebug() << "Double click in space" << e->scenePos();
+    d->newTextual(e->scenePos());
+  } else {
+    QGraphicsScene::mouseDoubleClickEvent(e);
   }
 }
 
@@ -1240,4 +1269,26 @@ void Scene::clearSelection() {
 void Scene::perhapsEmitSelectionChange() {
   if (d->postpone<=0)
     emit selectionChanged();
+}
+
+
+
+void Scene::storeTextualText(int id, QString t) {
+  if (!d->circ().textuals.contains(id))
+    return;
+  d->preact();
+  Textual &txt(d->circ().textuals[id]);
+  txt.text = t;
+  emit circuitChanged();
+}
+
+void Scene::repositionTextual(int id, QPoint p) {
+  if (!d->circ().textuals.contains(id))
+    return;
+  d->preact();
+  Textual &txt(d->circ().textuals[id]);
+  txt.position = p;
+  if (d->textuals.contains(id))
+    d->textuals[id]->setTextual(txt);
+  emit circuitChanged();
 }

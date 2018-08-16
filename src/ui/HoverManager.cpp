@@ -209,7 +209,7 @@ bool HoverManagerData::onConnection() const {
     return con>0; // hmm.
   }
   return false; // not executed
-}    
+}
 
 void HoverManagerData::update() {
   auto const &elts = scene->elements();
@@ -399,6 +399,10 @@ bool HoverManager::onPin() const {
 
 bool HoverManager::onFakePin() const {
   return onConnection() && d->fakepin;
+}
+
+bool HoverManager::onNothing() const {
+  return !onElement() && !onConnection();
 }
 
 int HoverManager::element() const {
