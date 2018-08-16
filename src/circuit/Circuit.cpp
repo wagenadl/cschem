@@ -62,7 +62,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
   for (auto const &c: c.connections)
     sr << c;
   for (auto const &c: c.textuals)
-    sr << c;
+    if (!c.text.isEmpty())
+      sr << c;
   sr.writeEndElement();
   return sr;
 }
