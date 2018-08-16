@@ -1296,3 +1296,17 @@ void Scene::repositionTextual(int id, QPoint p) {
     d->textuals[id]->setTextual(txt);
   emit circuitChanged();
 }
+
+void Scene::dropTextual(int id) {
+  qDebug() << "droptextual" << id;
+  if (!d->circ().textuals.contains(id))
+    return;
+  d->preact();
+  d->circ().textuals.remove(id);
+  if (d->textuals.contains(id)) {
+    SceneTextual *st = d->textuals[id];
+    d->textuals.remove(id);
+    st->deleteLater();
+  }
+  emit circuitChanged();
+}
