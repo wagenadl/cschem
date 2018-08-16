@@ -1,0 +1,57 @@
+{ "typ": "page",
+  "cre": "2018-08-15T12:07:33",
+  "mod": "2018-08-15T12:09:18",
+  "cui": "8f0965e4d69e7e64",
+  "stampTime": 0,
+  "startPage": 45,
+  "unlocked": false,
+  "uuid": "90051f49",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-08-15T12:07:33",
+      "mod": "2018-08-15T12:07:33",
+      "uuid": "f7428d30"
+    },
+    { "typ": "title",
+      "cre": "2018-08-15T12:07:33",
+      "mod": "2018-08-15T12:07:38",
+      "uuid": "0a577a7e",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-15T12:07:33",
+          "mod": "2018-08-15T12:07:38",
+          "lines": [
+            0
+          ],
+          "text": "Text comments",
+          "uuid": "490a69f9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-15T12:07:38",
+      "mod": "2018-08-15T12:09:18",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ec4c6055",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-15T12:07:38",
+          "mod": "2018-08-15T12:09:18",
+          "lines": [
+            0,
+            63,
+            125,
+            186,
+            245
+          ],
+          "text": "It must be possible to add text (notes) to schematics. Perhaps the simplest UI would be to couple this to double click. Text could be simple QGraphicsTextItem, movable by drag, editable by click. Removable by losing focus when empty. For now, I don’t think font choices are needed.",
+          "uuid": "90be1505"
+        }
+      ]
+    }
+  ]
+}
