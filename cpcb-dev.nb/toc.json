@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-06-16T20:33:54",
-  "mod": "2018-08-12T10:26:07",
+  "mod": "2018-08-15T09:38:41",
   "uuid": "ebd324bb",
   "cc": [
     { "typ": "entry",
@@ -47,6 +47,15 @@
       "startPage": 8,
       "title": "Next steps for linking schematics",
       "uuid": "4cbbc9b2"
+    },
+    { "typ": "entry",
+      "cre": "2018-08-14T11:00:40",
+      "mod": "2018-08-15T09:38:41",
+      "seen": "2018-08-15T09:38:41",
+      "sheetCount": 2,
+      "startPage": 10,
+      "title": "Better way to do pin mapping",
+      "uuid": "23d5620a"
     }
   ]
 }
