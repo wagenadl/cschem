@@ -4,6 +4,7 @@
 #include "PCBNet.h"
 #include "LinkedNet.h"
 #include "Group.h"
+#include "PinMapper.h"
 
 NetMismatch::NetMismatch() {
 }

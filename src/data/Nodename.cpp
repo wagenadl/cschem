@@ -30,16 +30,29 @@ bool Nodename::operator==(Nodename const &o) const {
 }
 
 bool Nodename::matches(Nodename const &o) const {
+  return matchQuality(o) != MatchQuality::None;
+}
+
+
+MatchQuality Nodename::matchQuality(Nodename const &o) const {
   if (comp_ != o.comp_)
-    return false;
+    return MatchQuality::None;
   
-  if (pin_.isEmpty() && o.pin_.isEmpty())
-    return true;
+  if (pin_ == o.pin_) // including the case where both are empty
+    return MatchQuality::Perfect;
   
   QSet<QString> theirPins = QSet<QString>::fromList(o.pin_.split("/"));
-  for (QString const &p: pin_.split("/"))
-    if (theirPins.contains(p))
-      return true;
-  return false;
+  MatchQuality mq = MatchQuality::None;
+  for (QString const &p: pin_.split("/")) {
+    if (theirPins.contains(p) && !p.isEmpty()) {
+      if (p[0].isDigit()) {
+	if (mq<MatchQuality::Number)
+	  mq = MatchQuality::Number;
+	else if (mq<MatchQuality::Name)
+	  mq = MatchQuality::Name;
+      }
+    }
+  }
+  return mq;
 }
 

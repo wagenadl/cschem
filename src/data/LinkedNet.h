@@ -14,6 +14,7 @@ public:
   LinkedNet(Circuit const &circ, Net const &net);
   LinkedNet() { }
   bool containsMatch(Nodename const &) const;
+  MatchQuality matchQuality(Nodename const &n) const;
   QString name;
   QList<Nodename> nodes;
   void report();
