@@ -74,7 +74,7 @@ PMData::PMData(QString ref, QStringList cc, QStringList pp):
     QStringList ss = s.split("/");
     for (QString p: ss) {
       if (p.size()>0) {
-	if (p[0].isDigit())
+	if (p.toInt()>0)
 	  pcbnumberpart2full[p] = s;
 	else
 	  pcbalphapart2full[p] = s;
@@ -208,7 +208,7 @@ bool PMData::setcirc2pcb(QString circ, QString pcb) {
   // find the best way to refer to the circuit name
   QString bestname;
   for (QString p: circ.split("/"))
-    if (bestname.isEmpty() || (!p.isEmpty() && !p[0].isDigit()))
+    if (bestname.isEmpty() || (!p.isEmpty() && p.toInt()<=0))
       bestname = p;
 
   QString pcbref = pcb.split("/").first();

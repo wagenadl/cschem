@@ -44,27 +44,29 @@ bool Nodename::matches(Nodename const &o) const {
 
 bool Nodename::hasPinName() const {
   for (QString s: pin_.split("/"))
-    if (!s.isEmpty() && !s[0].isDigit())
+    if (!s.isEmpty() && s.toInt()<=0)
       return true;
 }
 
 bool Nodename::hasPinNumber() const {
   for (QString s: pin_.split("/"))
-    if (!s.isEmpty() && s[0].isDigit())
+    if (s.toInt()>0)
       return true;
 }
 
 QString Nodename::pinName() const {
   for (QString s: pin_.split("/"))
-    if (!s.isEmpty() && !s[0].isDigit())
+    if (!s.isEmpty() && s.toInt()<=0)
       return s;
   return "";
 }
 
 int Nodename::pinNumber() const {
-  for (QString s: pin_.split("/"))
-    if (!s.isEmpty() && s[0].isDigit())
-      return s.toInt();
+  for (QString s: pin_.split("/")) {
+    int k = s.toInt();
+    if (k>0)
+      return k;
+  }
   return 0;
 }
 

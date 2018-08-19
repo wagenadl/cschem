@@ -11,7 +11,7 @@ SignalNameCombo::SignalNameCombo(Symbol const &sym, QWidget *parent):
     QStringList bits = p.split("/");
     QString best;
     for (QString b: bits) {
-      if (best.isEmpty() || (!b.isEmpty() && !b[0].isDigit()))
+      if (best.isEmpty() || (!b.isEmpty() && b.toInt()<=0))
 	best = b;
     }
     pins << best;
