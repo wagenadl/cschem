@@ -30,29 +30,41 @@ bool Nodename::operator==(Nodename const &o) const {
 }
 
 bool Nodename::matches(Nodename const &o) const {
-  return matchQuality(o) != MatchQuality::None;
+  if (comp_ != o.comp_)
+    return false;
+  else if (pin_ == o.pin_)
+    return true;
+  if (hasPinName() && o.hasPinName()) 
+    return pinName() == o.pinName();
+  else if (hasPinNumber() && o.hasPinNumber())
+    return pinNumber() == o.pinNumber();
+  else
+   return false;
 }
 
+bool Nodename::hasPinName() const {
+  for (QString s: pin_.split("/"))
+    if (!s.isEmpty() && !s[0].isDigit())
+      return true;
+}
 
-MatchQuality Nodename::matchQuality(Nodename const &o) const {
-  if (comp_ != o.comp_)
-    return MatchQuality::None;
-  
-  if (pin_ == o.pin_) // including the case where both are empty
-    return MatchQuality::Perfect;
-  
-  QSet<QString> theirPins = QSet<QString>::fromList(o.pin_.split("/"));
-  MatchQuality mq = MatchQuality::None;
-  for (QString const &p: pin_.split("/")) {
-    if (theirPins.contains(p) && !p.isEmpty()) {
-      if (p[0].isDigit()) {
-	if (mq<MatchQuality::Number)
-	  mq = MatchQuality::Number;
-	else if (mq<MatchQuality::Name)
-	  mq = MatchQuality::Name;
-      }
-    }
-  }
-  return mq;
+bool Nodename::hasPinNumber() const {
+  for (QString s: pin_.split("/"))
+    if (!s.isEmpty() && s[0].isDigit())
+      return true;
+}
+
+QString Nodename::pinName() const {
+  for (QString s: pin_.split("/"))
+    if (!s.isEmpty() && !s[0].isDigit())
+      return s;
+  return "";
+}
+
+int Nodename::pinNumber() const {
+  for (QString s: pin_.split("/"))
+    if (!s.isEmpty() && s[0].isDigit())
+      return s.toInt();
+  return 0;
 }
 

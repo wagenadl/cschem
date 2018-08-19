@@ -2,7 +2,7 @@
 
 #include "SignalNameCombo.h"
 
-#include "circuit/Symbol.h"
+#include "svg/Symbol.h"
 
 SignalNameCombo::SignalNameCombo(Symbol const &sym, QWidget *parent):
   QComboBox(parent) {
