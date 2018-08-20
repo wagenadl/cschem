@@ -22,6 +22,8 @@ public:
   Circuit &circuit();
   class SymbolLibrary const &library() const;
   class SymbolLibrary &library();
+  class Symbol const &symbolForElement(int eltid) const;
+  class Symbol const &symbolForNamedElement(QString name) const;
 public:
   void saveSymbolLibrary(QXmlStreamWriter &dst,
                          bool onlySaveUsedSymbols=true) const;

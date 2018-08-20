@@ -118,3 +118,18 @@ bool Schem::isEmpty() const {
 bool Schem::isValid() const {
   return d->valid;
 }
+
+Symbol const &Schem::symbolForElement(int eltid) const {
+  static Symbol nil;
+  if (!circuit().elements.contains(eltid))
+    return nil;
+  Element const &elt(circuit().elements[eltid]);
+  QString sym(elt.symbol());
+  if (sym.isEmpty())
+    return nil;
+  return library().symbol(sym);
+}
+
+Symbol const &Schem::symbolForNamedElement(QString name) const {
+  return symbolForElement(circuit().elementByName(name));
+}

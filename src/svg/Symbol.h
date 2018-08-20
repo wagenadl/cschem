@@ -39,7 +39,7 @@ public:
   QList<int> containerSlots() const; // numbers assigned to slots, usu. 1...N
   QMap<QString, QString> containedPins(int slot) const; // for a given slot,
   // return a map of pin names to physical pin numbers on our device
-  static QString prefixForSlotCount(int);
+  static QString prefixForSlotCount(int); // returns a fraction like "½ ".
   int totalPinCount() const;
 private:
   QSharedDataPointer<class SymbolData> d;
