@@ -20,17 +20,6 @@ bool LinkedNet::containsMatch(Nodename const &n) const {
   return false;
 }
 
-MatchQuality LinkedNet::matchQuality(Nodename const &n) const {
-  MatchQuality mq = MatchQuality::None;
-  for (Nodename const &x: nodes) {
-    MatchQuality mq1 = x.matchQuality(n);
-    if (mq1>mq)
-      mq = mq1;
-  }
-  return mq;
-}
-  
-
 void LinkedNet::report() {
   QStringList pins;
   for (Nodename n: nodes)
