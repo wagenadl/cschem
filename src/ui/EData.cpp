@@ -3,6 +3,8 @@
 #include "EData.h"
 #include "Editor.h"
 #include "UndoCreator.h"
+#include "PinNameEditor.h"
+#include "svg/Symbol.h"
 
 Dim EData::pressMargin() const {
   return Dim::fromMils(MARGIN_PIX/mils2px);
@@ -763,3 +765,33 @@ void EData::emitSelectionStatus() {
   }
 }
 
+void EData::editPinName(int groupid, int hole_pad_id) {
+  Group const &grp(currentGroup().object(groupid).asGroup());
+  Object const &obj(grp.object(hole_pad_id));
+  QString group_ref = grp.ref;
+  bool ishole = obj.isHole();
+  bool ispad = obj.isPad();
+  Q_ASSERT(ishole || ispad);
+  QString pin_ref = ishole ? obj.asHole().ref : obj.asPad().ref;
+  bool ok = false;
+  Symbol const &sym(linkedschematic.schematic()
+		    .symbolForNamedElement(group_ref));
+  if (sym.isValid()) {
+    PinNameEditor pne(group_ref, pin_ref, sym);
+    ok = pne.exec();
+    if (ok)
+      pin_ref = pne.pinRef();
+  } else {
+    pin_ref = QInputDialog::getText(ed, "Hole properties", "Ref.",
+				    QLineEdit::Normal,
+				    pin_ref, &ok);
+  }
+  if (ok) {
+    UndoCreator uc(this, true);
+    Object &obj(currentGroup().object(groupid).asGroup().object(hole_pad_id));
+    if (ishole)
+      obj.asHole().ref = pin_ref;
+    else
+      obj.asPad().ref = pin_ref;
+  }
+}

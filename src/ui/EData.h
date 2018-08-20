@@ -91,6 +91,7 @@ public:
   Group &currentGroup();
   bool isMoveSignificant(Point p);
   Dim pressMargin() const;
+  void editPinName(int groupid, int hole_pad_id);
 public:
   Editor *ed;
   Layout layout;

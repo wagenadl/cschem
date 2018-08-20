@@ -284,24 +284,8 @@ void Editor::doubleClickOn(Point p, int id) {
   case Object::Type::Group: {
     Group const &group(obj.asGroup());
     int fave = d->visibleObjectAt(group, p, mrg);
-    if (fave>0 && group.object(fave).isHole()) {
-      bool ok;
-      QString ref = QInputDialog::getText(this, "Hole properties", "Ref.",
-					  QLineEdit::Normal,
-					  group.object(fave).asHole().ref, &ok);
-      if (ok) {
-	UndoCreator uc(d, true);
-	d->currentGroup().object(id).asGroup().object(fave).asHole().ref = ref;
-      }
-    } else if (fave>0 && group.object(fave).isPad()) {
-      bool ok;
-      QString ref = QInputDialog::getText(this, "Pad properties", "Ref.",
-					  QLineEdit::Normal,
-					  group.object(fave).asPad().ref, &ok);
-      if (ok) {
-	UndoCreator uc(d, true);
-	d->currentGroup().object(id).asGroup().object(fave).asPad().ref = ref;
-      }
+    if (fave>0 && (group.object(fave).isHole() || group.object(fave).isPad())) {
+      d->editPinName(id, fave);
     } else {
       enterGroup(id);
       if (fave>=0)

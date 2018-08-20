@@ -40,8 +40,8 @@ HEADERS += gerber/Apertures.h   gerber/Font.h   gerber/Gerber.h
 SOURCES += gerber/Apertures.cpp gerber/Font.cpp gerber/GerberFile.cpp
 HEADERS += gerber/Collector.h   gerber/GerberFile.h gerber/GerberWriter.h
 SOURCES += gerber/Collector.cpp gerber/Gerber.cpp   gerber/GerberWriter.cpp
-HEADERS += ui/SignalNameCombo.h
-SOURCES += ui/SignalNameCombo.cpp
+HEADERS += ui/SignalNameCombo.h   ui/PinNameEditor.h
+SOURCES += ui/SignalNameCombo.cpp ui/PinNameEditor.cpp
 
 # From CSCHEM
 HEADERS += circuit/IDFactory.h
