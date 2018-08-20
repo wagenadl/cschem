@@ -46,12 +46,14 @@ bool Nodename::hasPinName() const {
   for (QString s: pin_.split("/"))
     if (!s.isEmpty() && s.toInt()<=0)
       return true;
+  return false;
 }
 
 bool Nodename::hasPinNumber() const {
   for (QString s: pin_.split("/"))
     if (s.toInt()>0)
       return true;
+  return false;
 }
 
 QString Nodename::pinName() const {
