@@ -72,11 +72,13 @@ bool SymbolLibrary::contains(QString name) const {
   return symbols_.contains(name);
 }
 
-Symbol SymbolLibrary::symbol(QString name) const {
-  if (symbols_.contains(name))
-    return symbols_[name];
+Symbol const &SymbolLibrary::symbol(QString name) const {
+  static Symbol nil;
+  auto it = symbols_.find(name);
+  if (it == symbols_.end())
+    return nil;
   else
-    return Symbol();
+    return *it;
 }
 
 int SymbolLibrary::scale() const {
