@@ -295,7 +295,7 @@ bool GWData::writeTextClearance(GerberFile &out, Gerber::Layer layer) {
   for (Gerber::FontSpec spec: txts.keys()) {
     Dim mrg = layout.board().clearance(sf.scaleFactor(spec.fs)
 				       *sf.lineWidth());
-    Gerber::Font const &font(out.font(spec));
+    //    Gerber::Font const &font(out.font(spec));
     for (Text const &txt: txts[spec]) {
       Rect r(txt.boundingRect());
       r.grow(mrg);

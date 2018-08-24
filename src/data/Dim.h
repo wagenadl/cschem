@@ -14,6 +14,7 @@ struct Dim {
   static constexpr qint64 PerMil = 254;
   static constexpr qint64 PerMM = PerUM*1000;
   static constexpr qint64 PerInch = PerMil*1000;
+  static constexpr qint64 Infinity = PerInch*1000*1000*1000;
 public:
   Dim(): d(0) { }
   Dim &operator+=(Dim const &x) { d+=x.d; return *this; }
@@ -54,6 +55,7 @@ public:
   static Dim fromString(QString x, bool *ok=0) { return Dim(x.toInt(ok)); }
   static Dim quadrature(Dim const &a, Dim const &b) {
     return sqrt(a.d*a.d + b.d*b.d); }
+  static Dim infinity() { return Dim(Infinity); }
 private:
   Dim(qint64 d): d(d) { }
   friend Dim operator*(double, Dim const &);

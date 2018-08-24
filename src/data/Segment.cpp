@@ -62,8 +62,33 @@ Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
   double y1_ = t.p1.y.toMils();
   double dx_ = t.p2.x.toMils() - x1_;
   double dy_ = t.p2.y.toMils() - y1_;
-  double a = (dy_*(x1_-x1) - dx_*(y1_-y1)) / (dx*dy_ - dy*dx_);
-  double a_ = -(dy*(x1_-x1) - dx*(y1_-y1)) / (dx_*dy - dy_*dx);
+  double nrm = dx*dy_ - dy*dx_;
+  if (fabs(nrm<1e-6)) {
+    // parallel; "intersects" iff directly overlapping
+    if (onSegment(t.p1, Dim::fromMM(.001))) {
+      if (ok)
+	*ok = true;
+      return t.p1;
+    } else if (onSegment(t.p2, Dim::fromMM(.001))) {
+      if (ok)
+	*ok = true;
+      return t.p2;
+    } else if (t.onSegment(p1, Dim::fromMM(.001))) {
+      if (ok)
+	*ok = true;
+      return p1;
+    } else if (t.onSegment(p2, Dim::fromMM(.001))) {
+      if (ok)
+	*ok = true;
+      return p2;
+    } else {
+      if (ok)
+	*ok = false;
+      return Point();
+    }
+  }
+  double a = (dy_*(x1_-x1) - dx_*(y1_-y1)) / nrm;
+  double a_ = (dy*(x1_-x1) - dx*(y1_-y1)) / nrm;
   if (a>=0 && a<=1 && a_>=0 && a_<=1) {
     if (ok)
       *ok = true;

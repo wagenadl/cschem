@@ -12,6 +12,7 @@ public:
   static Polyline fromString(QString, bool *ok=0);
   QString toString() const;
   QPolygonF toMils() const;
+  bool contains(Point p, Dim mrg=Dim()) const;
 };
 
 #endif
