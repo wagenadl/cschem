@@ -32,14 +32,14 @@ void LSData::validateNets() {
   Circuit const &circ(schem.circuit());
   nets.clear();
   QMap<QString, Net> netmap;
-  for (Net const &net: Net::allNets(schem.circuit())) {
+  for (Net const &net: Net::allNets(circ)) {
     if (netmap.contains(net.name()))
       netmap[net.name()].merge(net);
     else
       netmap[net.name()] = net;
   }
   for (Net const &net: netmap)
-    nets << LinkedNet(circ, net);
+    nets << LinkedNet(schem, net);
   havenets = true;
 }
 

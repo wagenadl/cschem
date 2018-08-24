@@ -11,12 +11,14 @@
 
 class LinkedNet {
 public:
-  LinkedNet(Circuit const &circ, Net const &net);
+  LinkedNet(Schem const &schem, Net const &net);
   LinkedNet() { }
   bool containsMatch(Nodename const &) const;
+public:
   QString name;
   QList<Nodename> nodes;
-  void report();
 };
+
+QDebug &operator<<(QDebug &, LinkedNet const &);
 
 #endif

@@ -35,6 +35,8 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
   }
   wronglyInNet.remove(net.seed());
 
+  qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
+
   for (Nodename const &name: linkednet.nodes) {
     if (pcbnames.contains(name))
       continue;
@@ -47,12 +49,17 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
     }
     if (!got) {
       NodeID id = root.findNodeByName(name);
+      qDebug() << "looking for" << name << "gave" << id;
       if (!id.isEmpty())
 	missingFromNet << id;
       else
 	missingEntirely << name;
     }
   }
+
+  //  if (!missingEntirely.isEmpty())
+  //    wronglyInNet << net.seed(); // trick to make it colored
+    
 }
 
 void NetMismatch::report(Group const &root) {

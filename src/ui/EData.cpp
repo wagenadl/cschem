@@ -37,7 +37,9 @@ void EData::updateNet(NodeID seed) {
   linkednet = LinkedNet();
   if (linkedschematic.isValid() && !net.nodes().isEmpty() && crumbs.isEmpty()) {
     Nodename seed = net.someNode();
+    qDebug() << "updatenet" << seed;
     for (LinkedNet const &lnet: linkedschematic.nets()) {
+      qDebug() << "  comparing against" << lnet;
       if (lnet.containsMatch(seed)) {
 	linkednet = lnet;
 	break;
@@ -788,10 +790,7 @@ void EData::editPinName(int groupid, int hole_pad_id) {
   }
   if (ok) {
     UndoCreator uc(this, true);
-    Object &obj(currentGroup().object(groupid).asGroup().object(hole_pad_id));
-    if (ishole)
-      obj.asHole().ref = pin_ref;
-    else
-      obj.asPad().ref = pin_ref;
+    Group &group(currentGroup().object(groupid).asGroup());
+    group.setPinRef(hole_pad_id, pin_ref);
   }
 }

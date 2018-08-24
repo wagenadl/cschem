@@ -64,10 +64,18 @@ public:
   QSet<Point> points() const;
   QSet<Point> points(Layer) const;
   QStringList pinNames() const; // immediate children
+  int pinID(QString) const; // child id for named pin or -1
+  QString pinName(int) const; // ref for given object or "" if not Hole/Pad
   Point pinPosition(QString name) const;
   Point anchor() const; // first named pin
   void insertSegmentedTrace(class Trace const &t);
   Point intersectionWith(class Trace const &t, int *idp=0) const;
+  void setPinRef(int id, QString ref);
+  /* Sets reference for object ID (which must be Hole or Pad). Also
+     steals that reference from other objects. E.g., if there is a pin
+     named "1/D" and another pin gets named "2/D", then the first pin
+     loses the "/D" suffix.
+   */
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

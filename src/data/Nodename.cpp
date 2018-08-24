@@ -2,6 +2,7 @@
 
 #include "Nodename.h"
 #include <QSet>
+#include <QDebug>
 
 Nodename::Nodename(QString component, QString pin):
   comp_(component), pin_(pin) {
@@ -70,5 +71,10 @@ int Nodename::pinNumber() const {
       return k;
   }
   return 0;
+}
+
+QDebug &operator<<(QDebug &dbg, Nodename const &n) {
+  dbg << n.toString();
+  return dbg;
 }
 
