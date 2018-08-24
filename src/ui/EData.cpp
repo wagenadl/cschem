@@ -520,6 +520,16 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
   return fave;
 }
 
+void EData::pressPlacePlane(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  presspoint = p;
+  if (!rubberband)
+    rubberband = new QRubberBand(QRubberBand::Rectangle, ed);
+  rubberband->show();
+  rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
+                          .toRect());
+}  
+
 void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
   Dim mrg = pressMargin();
   int fave = visibleObjectAt(p, mrg);
@@ -629,6 +639,8 @@ void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
 void EData::moveBanding(Point p) {
   if (!rubberband)
     return;
+  if (mode==Mode::PlacePlane)
+    p = p.roundedTo(layout.board().grid);
   rubberband->setGeometry(QRectF(mils2widget.map(presspoint.toMils()),
 				 mils2widget.map(p.toMils())).normalized()
 			  .toRect());
@@ -703,8 +715,18 @@ void EData::releaseMoving(Point p) {
 void EData::releaseBanding(Point p) {
   delete rubberband;
   rubberband = 0;
-  Rect r(presspoint, p);
-  ed->selectArea(r, true);
+  switch (mode) {
+  case Mode::Edit:
+    ed->selectArea(Rect(presspoint, p), true);
+    break;
+  case Mode::PlacePlane:
+    qDebug() << "Create filled plane nyi"
+             << Rect(presspoint, p.roundedTo(layout.board().grid));
+    break;
+  default:
+    qDebug() << "Surprise release banding";
+    break;
+  }
 }
 
 void EData::zoom(double factor) {

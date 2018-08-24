@@ -150,6 +150,9 @@ void Editor::mousePressEvent(QMouseEvent *e) {
       case Mode::PickupTrace:
 	d->pressPickingUp(p);
 	break;
+      case Mode::PlacePlane:
+        d->pressPlacePlane(p);
+        break;
       default:
 	break;
       }
