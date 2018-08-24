@@ -4,15 +4,15 @@
 
 #define TRACE_H
 
+#include "Segment.h"
 #include "Rect.h"
 #include "Layer.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 
-class Trace {
+class Trace: public Segment {
 public:
   Layer layer;
-  Point p1, p2;
   Dim width;
 public:
   Trace();

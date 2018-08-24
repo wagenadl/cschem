@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-06-16T20:33:54",
-  "mod": "2018-08-15T09:38:41",
+  "mod": "2018-08-24T09:59:32",
   "uuid": "ebd324bb",
   "cc": [
     { "typ": "entry",
@@ -56,6 +56,15 @@
       "startPage": 10,
       "title": "Better way to do pin mapping",
       "uuid": "23d5620a"
+    },
+    { "typ": "entry",
+      "cre": "2018-08-24T09:31:23",
+      "mod": "2018-08-24T09:59:32",
+      "seen": "2018-08-24T09:31:23",
+      "sheetCount": 2,
+      "startPage": 12,
+      "title": "Is a point in filled plane?",
+      "uuid": "7bed1257"
     }
   ]
 }
