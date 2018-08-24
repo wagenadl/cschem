@@ -15,10 +15,12 @@ Circuit::Circuit(Connection const &con): Circuit() {
 }
 
 int Circuit::elementByName(QString name) const {
+  int id = -1;
   for (auto it=elements.begin(); it!=elements.end(); ++it)
-    if (it.value().name==name)
-      return it.key();
-  return -1;
+    if (it.value().name==name) 
+      if (id<0 || it.value().isContainer())
+        id = it.key();
+  return id;
 }
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
@@ -330,6 +332,8 @@ int Circuit::containerOf(int id) const {
     return -1;
   Element const &elt = elements[id];
   if (!elt.isNameWellFormed())
+    return -1;
+  if (elt.isContainer())
     return -1;
   QString cname = elt.cname();
   for (Element const &e: elements) {

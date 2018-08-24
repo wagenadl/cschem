@@ -68,7 +68,7 @@ public:
   bool isValid() const;
   void invalidate();
   int elementByName(QString) const;
-  /* Returns ID for named element or -1. */
+  /* Returns ID for named element or -1. Prefers to return container. */
   QSet<int> containedElements(int containerId) const;
   int containerOf(int elt) const; // or -1
 public:
