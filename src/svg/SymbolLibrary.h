@@ -16,7 +16,7 @@ public:
   ~SymbolLibrary();
   QStringList symbolNames() const;
   bool contains(QString) const;
-  Symbol symbol(QString) const;
+  Symbol const &symbol(QString) const;
   int scale() const;
   QPoint downscale(QPointF) const;
   QPointF upscale(QPoint) const;
