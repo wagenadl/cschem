@@ -38,7 +38,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
   else
     t.height = Dim();
   if (ok)
-    t.layer = Layer(a.value("layer").toInt());
+    t.layer = Layer(a.value("l").toInt());
   else
     t.layer = Layer::Invalid;
   t.elliptic = a.value("ell").toInt() != 0;

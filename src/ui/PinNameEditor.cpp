@@ -5,6 +5,8 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QToolButton>
+#include <QAction>
 
 PinNameEditor::PinNameEditor(QString group_ref, QString old_pin_ref,
 			     Symbol const &sym,
@@ -20,6 +22,9 @@ PinNameEditor::PinNameEditor(QString group_ref, QString old_pin_ref,
   lay->addWidget(grp);
   QComboBox *cbox = new SignalNameCombo(sym);
   lay->addWidget(cbox);
+  auto *ok = new QToolButton();
+  ok->setDefaultAction(new QAction("OK", this));
+  lay->addWidget(ok);
   setLayout(lay);
 
   connect(cbox,
@@ -30,6 +35,13 @@ PinNameEditor::PinNameEditor(QString group_ref, QString old_pin_ref,
 	      pin_ref = s;
 	    else
 	      pin_ref += "/" + s;
+	    accept(); });
+  connect(ok, &QAbstractButton::clicked,
+          [this, cbox] {
+	    if (pin_ref.isEmpty())
+	      pin_ref = cbox->currentText();
+	    else
+	      pin_ref += "/" + cbox->currentText();
 	    accept(); });
 }
 

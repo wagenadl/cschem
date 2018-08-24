@@ -258,6 +258,66 @@ bool Group::touches(Point p, Dim mrg) const {
   return false;
 }
 
+void Group::setPinRef(int id, QString ref) {
+  Object &obj(object(id));
+  if (obj.isHole())
+    obj.asHole().ref = ref;
+  else if (obj.isPad())
+    obj.asPad().ref = ref;
+  else
+    return;
+  
+  Nodename refn("-", ref);
+  if (refn.hasPinName()) {
+    // must steal from others
+    QString name = refn.pinName();
+    for (int id1: keys()) {
+      if (id1==id)
+        continue;
+      Nodename refn1("-", pinName(id1));
+      if (refn1.hasPinNumber() && refn1.hasPinName() && refn1.pinName()==name) {
+        // steal
+        QString num1 = QString::number(refn1.pinNumber());
+        Object &obj1(object(id1));
+        if (obj1.isPad())
+          obj1.asPad().ref = num1;
+        else if (obj1.isHole())
+          obj1.asHole().ref = num1;
+      }
+    }
+  }
+}
+
+QString Group::pinName(int id) const {
+  if (!d->obj.contains(id))
+    return "";
+  Object const &obj(object(id));
+  switch (obj.type()) {
+    case Object::Type::Hole:
+      return obj.asHole().ref;
+    case Object::Type::Pad:
+      return obj.asPad().ref;
+    default:
+      return "";
+  }
+  return "";
+}
+  
+
+int Group::pinID(QString s) const {
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    if (obj.isHole()) {
+      if (obj.asHole().ref==s)
+      return id;
+    } else if (obj.isPad()) {
+      if (obj.asPad().ref==s)
+        return id;
+    }
+  }
+  return -1;
+}
+
 QStringList Group::pinNames() const {
   QMap<QString, int> names;
   for (int id: keys()) {
@@ -716,22 +776,8 @@ NodeID Group::findNodeByName(Nodename name) const {
 	}
       }
     } else if (obj.isPad() || obj.isHole()) {
-      QString objref = obj.isPad() ? obj.asPad().ref : obj.asHole().ref;
-      QString n2 = name.component();
-      if (n2.isEmpty())
-	n2 = name.pin();
-      else if (!name.pin().isEmpty())
-	continue;
-      bool got = objref==n2;
-      if (!got) {
-	for (QString n: n2.split("/")) {
-	  if (objref==n) {
-	    got = true;
-	    break;
-	  }
-	}
-      }
-      if (got) {
+      Nodename n1("", obj.isPad() ? obj.asPad().ref : obj.asHole().ref);
+      if (name.matches(n1)) {
 	NodeID nid;
 	nid << id;
 	return nid;

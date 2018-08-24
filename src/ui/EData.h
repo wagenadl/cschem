@@ -64,6 +64,7 @@ public:
   void pressText(Point);
   void pressTracing(Point);
   void pressPickingUp(Point);
+  void pressPlacePlane(Point);
   void moveTracing(Point);
   void abortTracing();
   void moveBanding(Point);

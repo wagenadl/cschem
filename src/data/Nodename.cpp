@@ -2,6 +2,7 @@
 
 #include "Nodename.h"
 #include <QSet>
+#include <QDebug>
 
 Nodename::Nodename(QString component, QString pin):
   comp_(component), pin_(pin) {
@@ -46,12 +47,14 @@ bool Nodename::hasPinName() const {
   for (QString s: pin_.split("/"))
     if (!s.isEmpty() && s.toInt()<=0)
       return true;
+  return false;
 }
 
 bool Nodename::hasPinNumber() const {
   for (QString s: pin_.split("/"))
     if (s.toInt()>0)
       return true;
+  return false;
 }
 
 QString Nodename::pinName() const {
@@ -68,5 +71,10 @@ int Nodename::pinNumber() const {
       return k;
   }
   return 0;
+}
+
+QDebug &operator<<(QDebug &dbg, Nodename const &n) {
+  dbg << n.toString();
+  return dbg;
 }
 
