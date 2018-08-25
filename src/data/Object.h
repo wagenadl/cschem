@@ -10,6 +10,7 @@
 #include "Trace.h"
 #include "Text.h"
 #include "Group.h"
+#include "FilledPlane.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 #include <QSharedData>
@@ -33,6 +34,7 @@ public:
   explicit Object(Trace const &);
   explicit Object(Text const &);
   explicit Object(Group const &);
+  explicit Object(FilledPlane const &);
   Object();
   ~Object();
   Object(Object const &);
@@ -59,8 +61,12 @@ public:
   Text &asText();
   Group const &asGroup() const;
   Group &asGroup();
+  FilledPlane const &asPlane() const;
+  FilledPlane &asPlane();
   Type type() const;
   bool touches(Point p, Dim mrg=Dim()) const;
+  /* Note: Touches returns false for filled planes, because they are
+     not to be selected along with other stuff. */
   Rect boundingRect() const;
   Layer layer() const;
   void translate(Point const &);

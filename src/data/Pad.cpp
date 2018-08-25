@@ -4,6 +4,7 @@
 #include "Trace.h"
 
 Pad::Pad() {
+  topfpcon = bottomfpcon = false;
 }
 
 void Pad::rotate() {
@@ -21,6 +22,10 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Pad const &t) {
   s.writeAttribute("ref", t.ref);
   if (t.elliptic)
     s.writeAttribute("ell", "1");
+  if (t.topfpcon)
+    s.writeAttribute("topfp", "1");
+  if (t.bottomfpcon)
+    s.writeAttribute("bottomfp", "1");
   s.writeEndElement();
   return s;
 }
@@ -41,6 +46,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
     t.layer = Layer(a.value("l").toInt());
   else
     t.layer = Layer::Invalid;
+  t.topfpcon = a.value("topfp") != 0;
+  t.bottomfpcon = a.value("bottomfp").toInt() != 0;
   t.elliptic = a.value("ell").toInt() != 0;
   t.ref = a.value("ref").toString();
   s.skipCurrentElement();
@@ -53,6 +60,8 @@ QDebug operator<<(QDebug d, Pad const &t) {
     << t.height
     << t.layer
     << (t.elliptic ? "ell" : "")
+    << (t.topfpcon ? "topfp" : "")
+    << (t.bottomfpcon ? "bottomfp" : "")
     << ")";
   return d;
 }

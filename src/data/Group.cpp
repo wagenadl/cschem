@@ -500,7 +500,7 @@ NodeID Group::nodeAt(Point p, Dim mrg) const {
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   if (t.isEmpty()) {
-    qDebug() << "Unexpectedly empty group; not writing to xml";
+    qDebug() << "(Empty group; not writing to xml)";
     return s;
   }
   s.writeStartElement("group");

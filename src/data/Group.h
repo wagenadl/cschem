@@ -15,13 +15,11 @@
 #include <QSharedData>
 
 class Group {
-  /* Invariant: A group may not be empty when placed inside a Layout.
-     Empty groups are used to reflect "invalid" status.
-  */
+  /* Empty groups are not saved, even if they do have a ref or notes. */
 public:
   QString ref;
   QString notes;
-  QString pkg; // name of component file
+  QString pkg;
 public:
   Group();
   ~Group();

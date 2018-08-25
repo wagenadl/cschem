@@ -17,6 +17,8 @@ public:
   Layer layer;
   bool elliptic;
   QString ref;
+  bool topfpcon;
+  bool bottomfpcon;
 public:
   Pad();
   bool isValid() const { return layer!=Layer::Invalid; }

@@ -12,6 +12,7 @@ public:
   Text *text;
   Trace *trace;
   Group *group;
+  FilledPlane *plane;
 public:
   OData() {
     hole = 0;
@@ -83,6 +84,11 @@ public:
 Object::Object(Hole const &t): Object() {
   d->hole = new Hole(t);
   d->typ = Type::Hole;
+}
+
+Object::Object(FilledPlane const &t): Object() {
+  d->plane = new FilledPlane(t);
+  d->typ = Type::Plane;
 }
 
 Object::Object(Pad const &t): Object() {
@@ -188,6 +194,11 @@ Group const &Object::asGroup() const {
   return *d->group;
 }
 
+FilledPlane const &Object::asPlane() const {
+  Q_ASSERT(isPlane());
+  return *d->plane;
+}
+
 Hole &Object::asHole() {
   d.detach();
   Q_ASSERT(isHole());
@@ -224,6 +235,12 @@ Group &Object::asGroup() {
   return *d->group;
 }
 
+FilledPlane &Object::asPlane() {
+  d.detach();
+  Q_ASSERT(isPlane());
+  return *d->plane;
+}
+
 QDebug operator<<(QDebug d, Object const &o) {
   switch (o.type()) {
   case Object::Type::Hole:
@@ -245,7 +262,7 @@ QDebug operator<<(QDebug d, Object const &o) {
     d << o.asGroup();
     break;
   case Object::Type::Plane:
-    d << "Object(Plane)";
+    d << o.asPlane();
     break;
   case Object::Type::Null:
     d << "Object(Null)";
@@ -275,12 +292,10 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Object const &o) {
     s << o.asGroup();
     break;
   case Object::Type::Plane:
-    s.writeStartElement("plane");
-    s.writeEndElement();
+    s << o.asPlane();
     break;
   case Object::Type::Null:
-    s.writeStartElement("object");
-    s.writeEndElement();
+    qDebug() << "Not writing null object";
     break;
   }
   return s;
@@ -312,6 +327,10 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Object &o) {
     Group t;
     s >> t;
     o = Object(t);
+  } else if (name=="plane") {
+    FilledPlane t;
+    s >> t;
+    o = Object(t);
   } else  {
     s.skipCurrentElement();
     o = Object();
@@ -333,6 +352,8 @@ bool Object::touches(Point p, Dim mrg) const {
     return asTrace().onSegment(p, mrg);
   case Type::Arc:
     return asArc().onEdge(p, mrg);
+  case Type::Plane:
+    return false;
   default:
     return boundingRect().grow(mrg/2).contains(p);
   }

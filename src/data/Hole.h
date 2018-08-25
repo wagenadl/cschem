@@ -15,6 +15,8 @@ public:
   Dim od;
   bool square;
   QString ref;
+  bool topfpcon;
+  bool bottomfpcon;
 public:
   Hole();
   bool isValid() const { return !od.isNull(); }

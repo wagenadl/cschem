@@ -39,3 +39,7 @@ QDebug operator<<(QDebug d, FilledPlane const &t) {
     << ")";
   return d;
 }
+
+bool FilledPlane::contains(Point p, Dim mrg) const {
+  return perimeter.contains(p, mrg);
+}

@@ -19,6 +19,7 @@ public:
   FilledPlane() { layer=Layer::Invalid; }
   bool isValid() const { return perimeter.size()>2 && layer!=Layer::Invalid; }
   Rect boundingRect() const;
+  bool contains(Point p, Dim mrg=Dim()) const;
 };
 
 QDebug operator<<(QDebug, FilledPlane const &);
