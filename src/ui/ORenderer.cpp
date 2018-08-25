@@ -3,6 +3,7 @@
 #include "ORenderer.h"
 #include "data/SimpleFont.h"
 #include "data/PCBNet.h"
+#include "data/FilledPlane.h"
 
 #include <QSvgGenerator>
 #include <QBuffer>
@@ -13,17 +14,23 @@ constexpr double overrideMils = 30;
 ORenderer::ORenderer(QPainter *p, Point const &o): p(p), origin(o) {
   toplevel = true;
   overr = Override::None;
+  clr = false;
 }
 
 ORenderer::~ORenderer() {
+}
+
+void ORenderer::setBoard(Board const &b) {
+  brd = b;
 }
 
 void ORenderer::setOverride(Override ovr) {
   overr = ovr;
 }
 
-void ORenderer::setLayer(Layer l) {
+void ORenderer::setLayer(Layer l, ORenderer::Sublayer s) {
   layer = l;
+  subl = s;
 }
 
 void ORenderer::setMoving(Point const &p) {
@@ -64,6 +71,9 @@ QColor ORenderer::overrideColor(QColor const &c) const {
   default:
     return c;
   }
+}
+
+void ORenderer::drawPlane(Plane const &t, bool selected, bool innet) {
 }
 
 void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
@@ -211,7 +221,7 @@ void ORenderer::drawGroup(Group const &g, bool selected,
 }
 
 void ORenderer::drawText(Text const &t, bool selected) {
-  if (t.layer != layer)
+  if (t.layer!=layer || subl!=Sublayer::Main)
     return;
   
   SimpleFont const &sf(SimpleFont::instance());
