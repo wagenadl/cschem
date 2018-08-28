@@ -735,10 +735,18 @@ void EData::releaseBanding(Point p) {
   case Mode::Edit:
     ed->selectArea(Rect(presspoint, p), true);
     break;
-  case Mode::PlacePlane:
-    qDebug() << "Create filled plane nyi"
-             << Rect(presspoint, p.roundedTo(layout.board().grid));
-    break;
+  case Mode::PlacePlane: {
+    p = p.roundedTo(layout.board().grid);
+    UndoCreator uc(this, true);
+    FilledPlane fp;
+    fp.layer = props.layer;
+    fp.perimeter << presspoint;
+    fp.perimeter << Point(presspoint.x, p.y);
+    fp.perimeter << p;
+    fp.perimeter << Point(p.x, presspoint.y);
+    currentGroup().insert(Object(fp));
+    ed->update();
+  } break;
   default:
     qDebug() << "Surprise release banding";
     break;

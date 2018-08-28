@@ -27,7 +27,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, FilledPlane &t) {
   auto a = s.attributes();
   t.layer = Layer(a.value("l").toInt(&ok));
   if (ok)
-    t.perimeter = Polyline::fromString(a.value("peri").toString(), &ok);
+    t.perimeter = Polyline::fromString(a.value("pp").toString(), &ok);
   s.skipCurrentElement();
   return s;
 }

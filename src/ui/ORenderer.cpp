@@ -78,6 +78,12 @@ QColor ORenderer::overrideColor(QColor const &c) const {
 }
 
 void ORenderer::drawPlane(FilledPlane const &t, bool selected, bool innet) {
+  if (t.layer != layer)
+    return;
+  if (subl != Sublayer::Plane)
+    return;
+  p->setBrush(brushColor(selected, innet));
+  p->drawPolygon(t.perimeter.toMils());
 }
 
 void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
@@ -111,7 +117,7 @@ void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
 
 double ORenderer::extraMils(bool innet, Dim lw) const {
   if (subl==Sublayer::Clearance) 
-    return brd.clearance(lw).toMils();
+    return brd.clearance(lw).toMils() * 2;
   else if (innet) 
     return overr==Override::None ? inNetMils : overrideMils;
   else
@@ -298,6 +304,8 @@ void ORenderer::drawObject(Object const &o, bool selected,
   case Object::Type::Group:
     drawGroup(o.asGroup(), selected, subnet);
     break;
+  case Object::Type::Plane:
+    drawPlane(o.asPlane(), selected, !subnet.isEmpty());
   default:
     break;
   }
