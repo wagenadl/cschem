@@ -423,11 +423,22 @@ void EData::pressPickingUp(Point p) {
 }
 
 void EData::pressTracing(Point p) {
-  p = p.roundedTo(layout.board().grid);
+  NodeID n = currentGroup().nodeAt(p, layout.board().grid/2);
+  bool ok = false;
+  if (!n.isEmpty()) {
+    auto lp = n.location(currentGroup(), &ok);
+    if (ok)
+      p = lp.point;
+  }
+  if (!ok)
+    p = p.roundedTo(layout.board().grid);
+
   if (tracing && p.distance(tracestart) < pressMargin()) {
+    qDebug() << "abort tracing due to short segment";
     abortTracing();
     return;
   }
+  
   if (tracing) {
     UndoCreator uc(this, true);
     Group &here(currentGroup());
@@ -436,7 +447,7 @@ void EData::pressTracing(Point p) {
     t.p2 = p;
     t.width = props.linewidth;
     t.layer = props.layer;
-    p = here.insertSegmentedTrace(t, layout.board().grid*3/4);
+    here.insertSegmentedTrace(t, layout.board().grid*3/4);
   } else {
     tracing = true;
   }
@@ -463,7 +474,16 @@ void EData::moveMoving(Point p) {
 }
 
 void EData::moveTracing(Point p) {
-  tracecurrent = p.roundedTo(layout.board().grid);
+  NodeID n = currentGroup().nodeAt(p, layout.board().grid/2);
+  bool ok = false;
+  if (!n.isEmpty()) {
+    auto lp = n.location(currentGroup(), &ok);
+    if (ok)
+      p = lp.point;
+  }
+  if (!ok)
+    p = p.roundedTo(layout.board().grid);
+  tracecurrent = p;
   ed->update();
 }
 
