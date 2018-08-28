@@ -1,4 +1,4 @@
->// ORenderer.h
+// ORenderer.h
 
 #ifndef ORENDERER_H
 
@@ -51,6 +51,8 @@ public:
   static void render(Object const &, QPainter *); // all layers
 private:
   QColor overrideColor(QColor const &) const;
+  double extraMils(bool innet, Dim lw=Dim()) const;
+  QColor brushColor(bool selected, bool innet) const;
 private:
   QPainter *p;
   Layer layer;

@@ -14,7 +14,7 @@ constexpr double overrideMils = 30;
 ORenderer::ORenderer(QPainter *p, Point const &o): p(p), origin(o) {
   toplevel = true;
   overr = Override::None;
-  clr = false;
+  subl = Sublayer::Main;
 }
 
 ORenderer::~ORenderer() {
@@ -73,11 +73,13 @@ QColor ORenderer::overrideColor(QColor const &c) const {
   }
 }
 
-void ORenderer::drawPlane(Plane const &t, bool selected, bool innet) {
+void ORenderer::drawPlane(FilledPlane const &t, bool selected, bool innet) {
 }
 
 void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
   if (t.layer != layer)
+    return;
+  if (subl == Sublayer::Plane)
     return;
   
   Point p1 = origin + t.p1;
@@ -97,18 +99,34 @@ void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
 	p2 += movingdelta;
     }
   }
-  if (innet) {
-    p->setPen(QPen(layerColor(t.layer, selected), t.width.toMils() + inNetMils,
-		   Qt::SolidLine, Qt::RoundCap));
-    p->drawLine(p1.toMils(), p2.toMils());
-  }
-  p->setPen(QPen(layerColor(t.layer, selected), t.width.toMils(),
-		Qt::SolidLine, Qt::RoundCap));
+  p->setPen(QPen(brushColor(selected, innet), t.width.toMils()
+                 + extraMils(innet, t.width),
+                 Qt::SolidLine, Qt::RoundCap));
   p->drawLine(p1.toMils(), p2.toMils());
 }
 
+double ORenderer::extraMils(bool innet, Dim lw) const {
+  if (subl==Sublayer::Clearance) 
+    return brd.clearance(lw).toMils();
+  else if (innet) 
+    return overr==Override::None ? inNetMils : overrideMils;
+  else
+    return 0;
+}  
+
+QColor ORenderer::brushColor(bool selected, bool innet) const {
+  if (subl==Sublayer::Clearance)
+    return QColor(0, 0, 0);
+  else if (innet) 
+    return overrideColor(layerColor(layer, selected));
+  else
+    return layerColor(layer, selected);
+}
+
 void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
-  bool inv = layer==Layer::Invalid;
+  if (subl == Sublayer::Plane)
+    return;
+  bool inv = layer==Layer::Invalid; // this is used for drilling
   bool tb = layer==Layer::Bottom || layer==Layer::Top;
   if (overr != Override::None) {
     // easiest way to enforce override is to simply tweak the flags
@@ -130,26 +148,20 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
     p->drawEllipse(p1.toMils(), id/2, id/2);
   } else {
     double od = t.od.toMils();
-    if (innet) {
-      const double extramils = overr==Override::None ? inNetMils : overrideMils;
-      p->setBrush(overrideColor(layerColor(layer, selected)));
-      if (t.square)
-	p->drawRect(QRectF(p1.toMils()
-			   - QPointF(od/2+extramils/2, od/2+extramils/2),
-			   QSizeF(od+extramils, od+extramils)));
-      else 
-	p->drawEllipse(p1.toMils(), od/2+extramils/2, od/2+extramils/2);
-    } else {
-      p->setBrush(layerColor(layer, selected));
-      if (t.square)
-	p->drawRect(QRectF(p1.toMils() - QPointF(od/2, od/2), QSizeF(od, od)));
-      else 
-	p->drawEllipse(p1.toMils(), od/2, od/2);
-    }
+    double extramils = extraMils(innet, t.od - t.id);
+    p->setBrush(brushColor(selected, innet));
+    if (t.square)
+      p->drawRect(QRectF(p1.toMils()
+                         - QPointF(od/2+extramils/2, od/2+extramils/2),
+                         QSizeF(od+extramils, od+extramils)));
+    else 
+      p->drawEllipse(p1.toMils(), od/2+extramils/2, od/2+extramils/2);
   }
 }
 
 void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
+  if (subl == Sublayer::Plane)
+    return;
   if (overr == Override::None) {
     if (t.layer != layer)
       return;
@@ -166,15 +178,11 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   
   double w = t.width.toMils();
   double h = t.height.toMils();
-  if (innet) {
-    const double extramils = overr==Override::None ? inNetMils : overrideMils;
-    p->setBrush(overrideColor(layerColor(layer, selected)));
-    QPointF dp(w+extramils, h+extramils);
-    p->drawRect(QRectF(p0 - dp/2, p0 + dp/2));
-  } else {
-    p->setBrush(layerColor(layer, selected));
-    p->drawRect(QRectF(p0 - QPointF(w/2,h/2), p0 + QPointF(w/2,h/2)));
-  }
+
+  double extramils = extraMils(innet, Dim());
+  p->setBrush(brushColor(selected, innet));
+  QPointF dp(w+extramils, h+extramils);
+  p->drawRect(QRectF(p0 - dp/2, p0 + dp/2));
 }
 
 void ORenderer::drawArc(Arc const &t, bool selected) {
@@ -221,8 +229,11 @@ void ORenderer::drawGroup(Group const &g, bool selected,
 }
 
 void ORenderer::drawText(Text const &t, bool selected) {
-  if (t.layer!=layer || subl!=Sublayer::Main)
+  if (t.layer!=layer)
     return;
+  
+  if (subl!=Sublayer::Main)
+    return; // actually, we should draw a rectangle in Clearance...
   
   SimpleFont const &sf(SimpleFont::instance());
   double scl = sf.scaleFactor(t.fontsize);
