@@ -19,6 +19,7 @@ namespace Gerber {
     case Gerber::Layer::ThroughHoles: return "1-Drill";
     case Gerber::Layer::BottomCopper: return "6-Bottom";
     case Gerber::Layer::BottomSolderMask: return "7-BottomMask";
+    case Gerber::Layer::BottomPasteMask: return "8-BottomPaste";
     case Gerber::Layer::TopCopper: return "4-Top";
     case Gerber::Layer::TopSolderMask: return "5-TopMask";
     case Gerber::Layer::TopSilk: return "2-Silk";
@@ -32,6 +33,7 @@ namespace Gerber {
     case Gerber::Layer::ThroughHoles: return "DRI";
     case Gerber::Layer::BottomCopper: return "GBL";
     case Gerber::Layer::BottomSolderMask: return "GBS";
+    case Gerber::Layer::BottomPasteMask: return "GBP";
     case Gerber::Layer::TopCopper: return "GTL";
     case Gerber::Layer::TopSolderMask: return "GTS";
     case Gerber::Layer::TopPasteMask: return "GTP";

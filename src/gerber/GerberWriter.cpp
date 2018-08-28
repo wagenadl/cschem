@@ -49,6 +49,7 @@ Layer GWData::mapLayer(Gerber::Layer l) {
   case Gerber::Layer::TopPasteMask: return Layer::Top;
   case Gerber::Layer::TopSolderMask: return Layer::Top;
   case Gerber::Layer::BottomCopper: return Layer::Bottom;
+  case Gerber::Layer::BottomPasteMask: return Layer::Bottom;
   case Gerber::Layer::BottomSolderMask: return Layer::Bottom;
   default: return Layer::Invalid;
   }
@@ -95,7 +96,7 @@ bool GerberWriter::writeLayer(Gerber::Layer layer) {
      return d->writeThroughHoles();
   case Gerber::Layer::BottomCopper: case Gerber::Layer::TopCopper:
     return d->writeCopper(layer);
-  case Gerber::Layer::TopPasteMask:
+  case Gerber::Layer::BottomPasteMask: case Gerber::Layer::TopPasteMask:
     return d->writePasteMask(layer);
   case Gerber::Layer::BottomSolderMask: case Gerber::Layer::TopSolderMask:
     return d->writeSolderMask(layer);
@@ -342,7 +343,9 @@ void GWData::collectCopperClearanceApertures(GerberFile &out,
 }
 
 void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
-  if (layer!=Gerber::Layer::TopPasteMask) { // Apertures for traces
+  bool ispaste = layer==Gerber::Layer::TopPasteMask
+    || layer==Gerber::Layer::BottomPasteMask;
+  if (!ispaste) { // Apertures for traces
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::Conductor));
     for (Dim lw: collector.traces(mapLayer(layer)).keys())
@@ -350,7 +353,7 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
     out.writeApertures(aps);
   }
 
-  { // Apertures for component pads
+  if (!ispaste) { // Apertures for component pads
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::ComponentPad));
     for (Dim od: collector.roundHolePads().keys())
@@ -360,7 +363,7 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
     out.writeApertures(aps);
   }
   
-  if (layer!=Gerber::Layer::TopPasteMask) { // Apertures for SMD pads
+  { // Apertures for SMD pads
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::SMDPad));
     for (Point p: collector.smdPads(mapLayer(layer)).keys())
@@ -456,7 +459,8 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
     || layer==Gerber::Layer::BottomCopper;
   bool ismask = layer==Gerber::Layer::TopSolderMask
     || layer==Gerber::Layer::BottomSolderMask;
-  //  bool ispaste = layer==Gerber::Layer::TopPasteMask;
+  bool ispaste = layer==Gerber::Layer::TopPasteMask
+    || layer==Gerber::Layer::BottomPasteMask;
   
   if (iscopper) { // Output all traces
     Gerber::Apertures const
@@ -512,7 +516,8 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
 
   { // Output all the SMD pads
     Gerber::Apertures const
-      &aps(out.apertures(iscopper ? Gerber::Apertures::Func::SMDPad
+      &aps(out.apertures((iscopper || ispaste)
+			 ? Gerber::Apertures::Func::SMDPad
 			 : Gerber::Apertures::Func::Material));
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive (even in mask layers!)
@@ -540,6 +545,8 @@ bool GerberWriter::write(Layout const &layout, QString odir) {
   if (!writer.writeLayer(Gerber::Layer::BottomCopper))
     return false;
   if (!writer.writeLayer(Gerber::Layer::BottomSolderMask))
+    return false;
+  if (!writer.writeLayer(Gerber::Layer::BottomPasteMask))
     return false;
   if (!writer.writeLayer(Gerber::Layer::TopCopper))
     return false;

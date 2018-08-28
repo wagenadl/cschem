@@ -14,6 +14,7 @@ namespace Gerber {
     ThroughHoles,
     BottomCopper,
     BottomSolderMask,
+    BottomPasteMask,
     TopCopper,
     TopSolderMask,
     TopPasteMask,
