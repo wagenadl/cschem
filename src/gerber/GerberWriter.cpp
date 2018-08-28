@@ -12,12 +12,14 @@
 class GWData {
 public:
   GWData(Layout const &layout, QString outputdir):
-    layout(layout), dir(outputdir), collector(layout.board()) {
+    layout(layout), dir(outputdir), collector(layout.board()), metric(false) {
   }
 public:
   // Following return true if OK
   bool writeBoardOutline();
   bool writeThroughHoles();
+  bool writeThroughHolesGerber();
+  bool writeThroughHolesExcellon();
   bool writeCopper(Gerber::Layer);
   bool writeSolderMask(Gerber::Layer);
   bool writeSilk();
@@ -36,6 +38,7 @@ public:
   QDir dir;
   QString uuid;
   Collector collector;
+  bool metric;
 };
 
 Layer GWData::mapLayer(Gerber::Layer l) {
@@ -122,6 +125,65 @@ bool GWData::writeBoardOutline() {
 }
 
 bool GWData::writeThroughHoles() {
+  return writeThroughHolesExcellon();
+}
+
+bool GWData::writeThroughHolesExcellon() {
+  QFile f(dir.absoluteFilePath(dir.dirName()
+			       + "-" + layerInfix(Gerber::Layer::ThroughHoles)
+			       + ".TXT"));
+  if (!f.open(QFile::WriteOnly)) {
+    qDebug() << "Could not create file" << f.fileName();
+    return false;
+  }
+  QTextStream out(&f);
+
+  // Output header
+  out << "; PTH drill file created by cpcb\n";
+  out << "M48\n";
+  if (metric)
+    out << "METRIC,LZ\n";
+  else
+    out << "INCH,LZ\n";
+  out << "FMAT,2\n";
+  int toolidx = 0;
+  QMap<Dim, int> toolindex;
+  for (Dim d: collector.holes().keys()) {
+    ++toolidx;
+    toolindex[d] = toolidx;
+    if (metric)
+      out << QString("T%1C%2\n")
+	.arg(toolidx, 2, 10, QChar('0'))
+	.arg(d.toMM(), 0, 'f', 3);
+    else
+      out << QString("T%1C%2\n")
+	.arg(toolidx, 2, 10, QChar('0'))
+	.arg(d.toInch(), 0, 'f', 4);
+  }
+  out << "%\n";
+
+  // Output body
+  if (metric)
+    out << "M71\n";
+  out << "G05\n";
+  out << "G90\n";
+  for (Dim d: collector.holes().keys()) {
+    out << QString("T%1\n").arg(toolindex[d], 2, 10, QChar('0'));
+    for (Point p: collector.holes()[d]) {
+      if (metric)
+	out << QString("X%1Y%2\n")
+	  .arg(int(round(p.x.toMM()*1000)), 6, 10, QChar('0'))
+	  .arg(int(round(p.y.toMM()*1000)), 6, 10, QChar('0'));
+      else 
+	out << QString("X%1Y%2\n")
+	  .arg(int(round(p.x.toMils()*10)), 6, 10, QChar('0'))
+	  .arg(int(round(p.y.toMils()*10)), 6, 10, QChar('0'));
+  }
+  out << "M30\n";
+  return true;
+}
+
+bool GWData::writeThroughHolesGerber() {
   GerberFile out(dir, Gerber::Layer::ThroughHoles, uuid);
   if (!out.isValid())
     return false;

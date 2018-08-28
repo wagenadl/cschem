@@ -5,7 +5,8 @@
 using namespace Gerber;
 
 GerberFile::GerberFile(QDir dir, Gerber::Layer layer, QString uuid):
-  f(dir.absoluteFilePath(dir.dirName() + "-" + layerInfix(layer) + ".gbr")) {
+  f(dir.absoluteFilePath(dir.dirName() + "-" + layerInfix(layer) + "."
+			 + layerSuffix(layer))) {
   if (!f.open(QFile::WriteOnly)) {
     qDebug() << "Could not create file" << f.fileName();
     return;

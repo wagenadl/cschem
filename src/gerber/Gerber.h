@@ -27,6 +27,7 @@ namespace Gerber {
   QString point(Point); // include "X" and "Y" prefixes
   QString real(Dim); // in millimeters
   QString layerInfix(Layer);
+  QString layerSuffix(Layer);
 };
 
 #endif

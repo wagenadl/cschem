@@ -25,6 +25,18 @@ namespace Gerber {
     default: return "";
     }
   }
+  QString layerSuffix(Layer l) {
+    switch (l) {
+    case Gerber::Layer::BoardOutline: return "GKO";
+    case Gerber::Layer::ThroughHoles: return "DRI";
+    case Gerber::Layer::BottomCopper: return "GBL";
+    case Gerber::Layer::BottomSolderMask: return "GBS";
+    case Gerber::Layer::TopCopper: return "GTL";
+    case Gerber::Layer::TopSolderMask: return "GTS";
+    case Gerber::Layer::TopSilk: return "GTO";
+    default: return "";
+    }
+  }
 };
 
   
