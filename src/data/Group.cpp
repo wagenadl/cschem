@@ -683,25 +683,31 @@ QDebug operator<<(QDebug d, Group const &t) {
   return d;
 }
 
-void Group::insertSegmentedTrace(Trace const &t) {
+Point Group::insertSegmentedTrace(Trace const &t, Dim maxsnap) {
   /* Find out whether there are any traces, holes, or pads crossed by the
      newly proposed trace. If so, break the trace into two parts at the
      crossing point (possibly mildly distorting it), and insert both parts
      recursively. Otherwise, simply insert the trace. */
   // t is specified in terms of parents coords.
+  qDebug() << "insertsegmentedtrace" << t << maxsnap << t.p1.distance(t.p2).toMils();
   if (t.p1==t.p2)
-    return;
+    return t.p2;
   
   int id;
   Point p = intersectionWith(t, &id);
   Dim len = Point::distance(t.p1, t.p2);
-  if (id>0 && p.distance(t.p1)<=len && p.distance(t.p2)<=len) {
+  qDebug() << " => " << id << p << len;
+  if (id>0) {
     Object const &ocross(object(id));
     if (ocross.isTrace()) {
       Trace const &tcross(ocross.asTrace());
-      bool atend = p==t.p1 || p==t.p2;
-      bool atcrossend = p==tcross.p1 || p==tcross.p2;
-      if (!atcrossend) {
+      if (p.distance(tcross.p1)<maxsnap) {
+        p = tcross.p1;
+      } else if (p.distance(tcross.p2)<maxsnap) {
+        p = tcross.p2;
+      } else {
+        // we are crossing somewhere in the middle of the crossing trace
+        // => break the crossing trace up
 	Trace tc1(tcross);
 	tc1.p2 = p;
 	Trace tc2(tcross);
@@ -710,30 +716,30 @@ void Group::insertSegmentedTrace(Trace const &t) {
 	insert(Object(tc1));
 	insert(Object(tc2));
       }
-      if (!atend) {
-	Trace t1(t);
-	t1.p2 = p;
-	Trace t2(t);
-	t2.p1 = p;
-	insertSegmentedTrace(t1);
-	insertSegmentedTrace(t2);
-      } else {
-	insert(Object(t));
-      }
+    }
+
+    if (t.p2.distance(p)<maxsnap) {
+      Trace t1 = t;
+      t1.p2 = p;
+      if (t1.p1 != t1.p2)
+        insert(Object(t1));
+      return p;
+    } else if (t.p1 == p) {
+      if (t.p1 != t.p2)
+        insert(Object(t));
     } else {
-      if (p!=t.p1 && p!=t.p2) {
-	Trace t1(t);
-	t1.p2 = p;
-	Trace t2(t);
-	t2.p1 = p;
-	insertSegmentedTrace(t1);
-	insertSegmentedTrace(t2);
-      } else {
-	insert(Object(t));
-      }	  
+      Trace t1(t);
+      t1.p2 = p;
+      Trace t2(t);
+      t2.p1 = p;
+      insertSegmentedTrace(t1, maxsnap);
+      insertSegmentedTrace(t2, maxsnap);
+      return t.p2;
     }
   } else {
+    qDebug() << "insert";
     insert(Object(t));
+    return t.p2;
   }
 }
 
@@ -741,19 +747,23 @@ Point Group::intersectionWith(class Trace const &t, int *idp) const {
   Trace t1(t);
   t1.p1 = t.p1;
   t1.p2 = t.p2;
-  bool got = false;
+  int qual = 0;
+  Point res;
+  int idres = -1;
   for (int id: keys()) {
     Object const &obj(object(id));
+    bool got;
     Point p = intersectionPoint(t1, obj, &got);
-    if (got) {
-      if (idp)
-	*idp = id;
-      return p;
+    int qual1 = obj.isTrace() ? 1 : 2;
+    if (got && qual1>qual) {
+      res = p;
+      qual = qual1;
+      idres = id;
     }
   }
   if (idp)
-    *idp = -1;
-  return Point();
+    *idp = idres;
+  return res;
 }
 
 NodeID Group::findNodeByName(Nodename name) const {
