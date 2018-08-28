@@ -17,6 +17,10 @@ ORenderer::ORenderer(QPainter *p, Point const &o): p(p), origin(o) {
   subl = Sublayer::Main;
 }
 
+void ORenderer::setPainter(QPainter *p1) {
+  p = p1;
+}
+
 ORenderer::~ORenderer() {
 }
 
@@ -116,7 +120,7 @@ double ORenderer::extraMils(bool innet, Dim lw) const {
 
 QColor ORenderer::brushColor(bool selected, bool innet) const {
   if (subl==Sublayer::Clearance)
-    return QColor(0, 0, 0);
+    return QColor(0, 0, 0, 0);
   else if (innet) 
     return overrideColor(layerColor(layer, selected));
   else

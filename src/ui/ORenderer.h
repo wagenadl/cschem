@@ -34,6 +34,7 @@ public:
   void setOverride(Override ovr);
   void pushOrigin(Point const &origin);
   void popOrigin();
+  void setPainter(QPainter *);
   void drawObject(Object const &o, bool selected=false,
 		  QSet<NodeID> const &subnet=QSet<NodeID>());
   void drawGroup(Group const &g, bool selected=false,

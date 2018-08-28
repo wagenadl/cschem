@@ -235,15 +235,17 @@ void EData::drawObjects(QPainter &p) const {
   Group const &here(currentGroup());
   validateStuckPoints();  
 
+  Board const &brd = layout.board();
   ORenderer rndr(&p);
+  rndr.setBoard(brd);
   if (moving)
     rndr.setMoving(movingdelta);
   rndr.setSelPoints(selpts);
   rndr.setPurePoints(purepts);
   rndr.setStuckPoints(stuckpts);
-  
-  auto onelayer = [&](Layer l) {
-    rndr.setLayer(l);
+
+  auto onesublayer = [&](Layer l, ORenderer::Sublayer s) {
+    rndr.setLayer(l, s);
     for (int id: here.keys()) {
       QSet<NodeID> subnet;
       if (netsvisible)
@@ -253,29 +255,42 @@ void EData::drawObjects(QPainter &p) const {
       rndr.drawObject(here.object(id), selection.contains(id), subnet);
     }
   };
-
-  auto drawplanes = [&](Layer) {
-    // Bottom filled plane is easy.
-    // Top filled plane is tricky because holes should let bottom shine through.
-    // The full solution is to render the plane into a pixmap first, then
-    // copy to the widget.
-    // An alternative is to ADD the plane to the widget, then SUBTRACT
-    // the holes, using appropriate color scheme. That would let bottom traces
-    // shine through, but I am OK with that.
+  auto onelayer = [&](Layer l) {
+    if (brd.planesvisible) {
+      if (l==Layer::Top) {
+        QPixmap pm(ed->size());
+        pm.fill(QColor(0, 0, 0, 0));
+        QPainter pmp(&pm);
+        rndr.setPainter(&pmp);
+        pmp.setTransform(mils2widget, true);
+        pmp.setCompositionMode(QPainter::CompositionMode_Source);
+        onesublayer(l, ORenderer::Sublayer::Plane);
+        onesublayer(l, ORenderer::Sublayer::Clearance);
+        onesublayer(l, ORenderer::Sublayer::Main);
+        rndr.setPainter(&p);
+        p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+        p.setTransform(QTransform());
+        p.drawPixmap(QPoint(0,0), pm);
+        p.setTransform(mils2widget, true);
+      } else if (l==Layer::Bottom) {
+        p.setCompositionMode(QPainter::CompositionMode_Source);
+        onesublayer(l, ORenderer::Sublayer::Plane);
+        onesublayer(l, ORenderer::Sublayer::Clearance);
+        onesublayer(l, ORenderer::Sublayer::Main);
+      } else {
+        onesublayer(l, ORenderer::Sublayer::Main);
+      }
+    } else {
+      onesublayer(l, ORenderer::Sublayer::Main);
+    }
   };
-  
-  Board const &brd = layout.board();
 
-  if (brd.layervisible[Layer::Bottom]) {
-    if (brd.planesvisible)
-      drawplanes(Layer::Bottom);
+  if (brd.layervisible[Layer::Bottom])
     onelayer(Layer::Bottom);
-  }
-  if (brd.layervisible[Layer::Top]) {
-    if (brd.planesvisible)
-      drawplanes(Layer::Top);
+
+  if (brd.layervisible[Layer::Top])
     onelayer(Layer::Top);
-  }
+
   if (brd.layervisible[Layer::Silk])
     onelayer(Layer::Silk);
 
@@ -286,6 +301,7 @@ void EData::drawObjects(QPainter &p) const {
 }
 
 void EData::drawNetMismatch(ORenderer &rndr) const {
+  rndr.setLayer(Layer::Silk, ORenderer::Sublayer::Main);
   rndr.setOverride(ORenderer::Override::WronglyIn);
   for (NodeID const &nid: netmismatch.wronglyInNet) {
     Object const &obj(nid.deref(layout.root()));
