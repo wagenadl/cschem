@@ -21,6 +21,7 @@ public:
   bool writeThroughHolesGerber();
   bool writeThroughHolesExcellon();
   bool writeCopper(Gerber::Layer);
+  bool writePasteMask(Gerber::Layer);
   bool writeSolderMask(Gerber::Layer);
   bool writeSilk();
   static Layer mapLayer(Gerber::Layer l);
@@ -45,6 +46,7 @@ Layer GWData::mapLayer(Gerber::Layer l) {
   switch (l) {
   case Gerber::Layer::TopSilk: return Layer::Silk;
   case Gerber::Layer::TopCopper: return Layer::Top;
+  case Gerber::Layer::TopPasteMask: return Layer::Top;
   case Gerber::Layer::TopSolderMask: return Layer::Top;
   case Gerber::Layer::BottomCopper: return Layer::Bottom;
   case Gerber::Layer::BottomSolderMask: return Layer::Bottom;
@@ -93,6 +95,8 @@ bool GerberWriter::writeLayer(Gerber::Layer layer) {
      return d->writeThroughHoles();
   case Gerber::Layer::BottomCopper: case Gerber::Layer::TopCopper:
     return d->writeCopper(layer);
+  case Gerber::Layer::TopPasteMask:
+    return d->writePasteMask(layer);
   case Gerber::Layer::BottomSolderMask: case Gerber::Layer::TopSolderMask:
     return d->writeSolderMask(layer);
   case Gerber::Layer::TopSilk:
@@ -137,7 +141,7 @@ bool GWData::writeThroughHolesExcellon() {
     return false;
   }
   QTextStream out(&f);
-
+  
   // Output header
   out << "; PTH drill file created by cpcb\n";
   out << "M48\n";
@@ -164,7 +168,9 @@ bool GWData::writeThroughHolesExcellon() {
 
   // Output body
   if (metric)
-    out << "M71\n";
+    out << "M71\n"; // explicit mm
+  else
+    out << "M72\n"; // explicit inch
   out << "G05\n";
   out << "G90\n";
   for (Dim d: collector.holes().keys()) {
@@ -178,6 +184,7 @@ bool GWData::writeThroughHolesExcellon() {
 	out << QString("X%1Y%2\n")
 	  .arg(int(round(p.x.toMils()*10)), 6, 10, QChar('0'))
 	  .arg(int(round(p.y.toMils()*10)), 6, 10, QChar('0'));
+    }
   }
   out << "M30\n";
   return true;
@@ -258,6 +265,19 @@ bool GWData::writeCopper(Gerber::Layer layer) {
   return true;
 }
 
+bool GWData::writePasteMask(Gerber::Layer layer) {
+  GerberFile out(dir, layer, uuid);
+  if (!out.isValid())
+    return false;
+
+  collectCopperApertures(out, layer);
+  if (!writeTracksAndPads(out, layer))
+    return false;
+  
+  out << "M02*\n";
+  return true;
+}
+
 bool GWData::writeFilledPlanes(GerberFile &/*out*/, Gerber::Layer /*layer*/) {
   qDebug() << "GWData::writeFilledPlanes NYI";
   return true; // safe until filled planes are implemented elsewhere
@@ -322,7 +342,7 @@ void GWData::collectCopperClearanceApertures(GerberFile &out,
 }
 
 void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
-  { // Apertures for traces
+  if (layer!=Gerber::Layer::TopPasteMask) { // Apertures for traces
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::Conductor));
     for (Dim lw: collector.traces(mapLayer(layer)).keys())
@@ -340,7 +360,7 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
     out.writeApertures(aps);
   }
   
-  { // Apertures for SMD pads
+  if (layer!=Gerber::Layer::TopPasteMask) { // Apertures for SMD pads
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::SMDPad));
     for (Point p: collector.smdPads(mapLayer(layer)).keys())
@@ -436,8 +456,9 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
     || layer==Gerber::Layer::BottomCopper;
   bool ismask = layer==Gerber::Layer::TopSolderMask
     || layer==Gerber::Layer::BottomSolderMask;
+  //  bool ispaste = layer==Gerber::Layer::TopPasteMask;
   
-  if (!ismask) { // Output all traces
+  if (iscopper) { // Output all traces
     Gerber::Apertures const
       &aps(out.apertures(iscopper 
 			 ? Gerber::Apertures::Func::Conductor
@@ -523,6 +544,8 @@ bool GerberWriter::write(Layout const &layout, QString odir) {
   if (!writer.writeLayer(Gerber::Layer::TopCopper))
     return false;
   if (!writer.writeLayer(Gerber::Layer::TopSolderMask))
+    return false;
+  if (!writer.writeLayer(Gerber::Layer::TopPasteMask))
     return false;
   if (!writer.writeLayer(Gerber::Layer::TopSilk))
     return false;

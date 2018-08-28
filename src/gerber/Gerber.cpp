@@ -17,11 +17,12 @@ namespace Gerber {
     switch (l) {
     case Gerber::Layer::BoardOutline: return "0-Profile";
     case Gerber::Layer::ThroughHoles: return "1-Drill";
-    case Gerber::Layer::BottomCopper: return "5-Bottom";
-    case Gerber::Layer::BottomSolderMask: return "6-BottomMask";
-    case Gerber::Layer::TopCopper: return "3-Top";
-    case Gerber::Layer::TopSolderMask: return "4-TopMask";
+    case Gerber::Layer::BottomCopper: return "6-Bottom";
+    case Gerber::Layer::BottomSolderMask: return "7-BottomMask";
+    case Gerber::Layer::TopCopper: return "4-Top";
+    case Gerber::Layer::TopSolderMask: return "5-TopMask";
     case Gerber::Layer::TopSilk: return "2-Silk";
+    case Gerber::Layer::TopPasteMask: return "3-TopPaste";
     default: return "";
     }
   }
@@ -33,6 +34,7 @@ namespace Gerber {
     case Gerber::Layer::BottomSolderMask: return "GBS";
     case Gerber::Layer::TopCopper: return "GTL";
     case Gerber::Layer::TopSolderMask: return "GTS";
+    case Gerber::Layer::TopPasteMask: return "GTP";
     case Gerber::Layer::TopSilk: return "GTO";
     default: return "";
     }
