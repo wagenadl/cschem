@@ -245,15 +245,15 @@ void GWData::collectCopperClearanceApertures(GerberFile &out,
   Gerber::Apertures
     &aps(out.newApertures(Gerber::Apertures::Func::AntiPad));
   for (Dim lw: collector.traces(mapLayer(layer)).keys())
-    aps.ensure(Gerber::Circ(lw + 2*layout.board().clearance(lw)));
+    aps.ensure(Gerber::Circ(lw + 2*layout.board().traceClearance(lw)));
   for (Dim od: collector.roundHolePads().keys())
-    aps.ensure(Gerber::Circ(od + 2*layout.board().clearance(od)));
+    aps.ensure(Gerber::Circ(od + 2*layout.board().padClearance(od, od)));
   for (Dim od: collector.squareHolePads().keys()) {
-    Dim mrg(2*layout.board().clearance(od));
+    Dim mrg(2*layout.board().padClearance(od, od));
     aps.ensure(Gerber::Rect(od + mrg, od + mrg));
   }
   for (Point p: collector.smdPads(mapLayer(layer)).keys()) {
-    Dim mrg(2*layout.board().clearance(p.x, p.y));
+    Dim mrg(2*layout.board().padClearance(p.x, p.y));
     aps.ensure(Gerber::Rect(p.x, p.y));
   }
   out.writeApertures(aps);
@@ -293,8 +293,8 @@ bool GWData::writeTextClearance(GerberFile &out, Gerber::Layer layer) {
   out << "G01*\n"; // linear
   out << "%LPC*%\n"; // negative
   for (Gerber::FontSpec spec: txts.keys()) {
-    Dim mrg = layout.board().clearance(sf.scaleFactor(spec.fs)
-				       *sf.lineWidth());
+    Dim mrg = layout.board().traceClearance(sf.scaleFactor(spec.fs)
+                                            *sf.lineWidth());
     //    Gerber::Font const &font(out.font(spec));
     for (Text const &txt: txts[spec]) {
       Rect r(txt.boundingRect());
@@ -335,7 +335,7 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
   // Traces
   auto const &trcs(collector.traces(mapLayer(layer)));
   for (Dim lw: trcs.keys()) {
-    Dim mrg = 2*layout.board().clearance(lw);
+    Dim mrg = 2*layout.board().traceClearance(lw);
     out << aps.select(Gerber::Circ(lw + mrg));
     for (Trace const &trc: trcs[lw]) {
       out << Gerber::point(trc.p1) << "D02*\n";
@@ -345,13 +345,13 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
 
   // Through-hole component pads
   for (Dim od: collector.roundHolePads().keys()) {
-    Dim mrg = 2*layout.board().clearance(od);
+    Dim mrg = 2*layout.board().padClearance(od, od);
     out << aps.select(Gerber::Circ(od + mrg));
     for (Point const &p: collector.roundHolePads()[od])
       out << Gerber::point(p) << "D03*\n";
   }
   for (Dim od: collector.squareHolePads().keys()) {
-    Dim mrg = 2*layout.board().clearance(od);
+    Dim mrg = 2*layout.board().padClearance(od, od);
     out << aps.select(Gerber::Rect(od + mrg, od + mrg));
     for (Point const &p: collector.squareHolePads()[od])
       out << Gerber::point(p) << "D03*\n";
@@ -360,7 +360,7 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
   // SMD pads
   auto const &pads(collector.smdPads(mapLayer(layer)));
   for (Point p: pads.keys()) {
-    Dim mrg = 2*layout.board().clearance(p.x, p.y);
+    Dim mrg = 2*layout.board().padClearance(p.x, p.y);
     out << aps.select(Gerber::Rect(p.x + mrg, p.y + mrg));
     for (Point const &p: pads[p])
       out << Gerber::point(p) << "D03*\n";

@@ -8,7 +8,7 @@
 #include <QColor>
 
 enum class Layer {
-  Invalid,
+  Invalid = 0,
   Silk,
   Top,
   Bottom,

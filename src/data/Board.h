@@ -13,8 +13,9 @@ class Board {
 public:
   Board();
   bool isEffectivelyMetric() const;
-  Dim clearance(Dim lw) const; // clearance for a trace with given size
-  Dim clearance(Dim w, Dim h) const; // clearance for a pad with given size
+  Dim traceClearance(Dim lw) const; // clearance for a trace with given size
+  Dim padClearance(Dim w, Dim h) const; // clearance for a pad with given size
+  // (used for round and rectangular pads)
   Dim maskMargin(Dim od) const; // margin for solder mask around object
   Dim maskMargin(Dim w, Dim h) const; // margin for solder mask around object
 public:

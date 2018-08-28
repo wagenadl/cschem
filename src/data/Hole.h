@@ -5,6 +5,7 @@
 #define HOLE_H
 
 #include "Rect.h"
+#include "Layer.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 
@@ -15,8 +16,8 @@ public:
   Dim od;
   bool square;
   QString ref;
-  bool topfpcon;
-  bool bottomfpcon;
+  Layer fpcon;
+  bool noclear;
 public:
   Hole();
   bool isValid() const { return !od.isNull(); }

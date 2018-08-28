@@ -65,12 +65,12 @@ QDebug operator<<(QDebug d, Board const &t) {
   return d;
 }
 
-Dim Board::clearance(Dim) const {
-  return Dim::fromMils(10);
+Dim Board::traceClearance(Dim) const {
+  return Dim::fromMils(15);
 }
 
-Dim Board::clearance(Dim, Dim) const {
-  return Dim::fromMils(10);
+Dim Board::padClearance(Dim, Dim) const {
+  return Dim::fromMils(15);
 }
 
 Dim Board::maskMargin(Dim) const {

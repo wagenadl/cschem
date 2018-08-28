@@ -52,7 +52,8 @@ public:
   static void render(Object const &, QPainter *); // all layers
 private:
   QColor overrideColor(QColor const &) const;
-  double extraMils(bool innet, Dim lw=Dim()) const;
+  double extraMils(bool innet, Dim lw) const;
+  double extraMils(bool innet, Dim w, Dim h) const;
   QColor brushColor(bool selected, bool innet) const;
 private:
   QPainter *p;

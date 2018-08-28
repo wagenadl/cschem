@@ -117,7 +117,16 @@ void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
 
 double ORenderer::extraMils(bool innet, Dim lw) const {
   if (subl==Sublayer::Clearance) 
-    return brd.clearance(lw).toMils() * 2;
+    return brd.traceClearance(lw).toMils() * 2;
+  else if (innet) 
+    return overr==Override::None ? inNetMils : overrideMils;
+  else
+    return 0;
+}  
+
+double ORenderer::extraMils(bool innet, Dim w, Dim h) const {
+  if (subl==Sublayer::Clearance) 
+    return brd.padClearance(w, h).toMils() * 2;
   else if (innet) 
     return overr==Override::None ? inNetMils : overrideMils;
   else
@@ -135,6 +144,8 @@ QColor ORenderer::brushColor(bool selected, bool innet) const {
 
 void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   if (subl == Sublayer::Plane)
+    return;
+  if (subl == Sublayer::Clearance && t.noclear)
     return;
   bool inv = layer==Layer::Invalid; // this is used for drilling
   bool tb = layer==Layer::Bottom || layer==Layer::Top;
@@ -158,7 +169,7 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
     p->drawEllipse(p1.toMils(), id/2, id/2);
   } else {
     double od = t.od.toMils();
-    double extramils = extraMils(innet, t.od - t.id);
+    double extramils = extraMils(innet, t.od, t.od);
     p->setBrush(brushColor(selected, innet));
     if (t.square)
       p->drawRect(QRectF(p1.toMils()
@@ -171,6 +182,8 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
 
 void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   if (subl == Sublayer::Plane)
+    return;
+  if (subl == Sublayer::Clearance && t.noclear)
     return;
   if (overr == Override::None) {
     if (t.layer != layer)
@@ -189,7 +202,7 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   double w = t.width.toMils();
   double h = t.height.toMils();
 
-  double extramils = extraMils(innet, Dim());
+  double extramils = extraMils(innet, t.width, t.height);
   p->setBrush(brushColor(selected, innet));
   QPointF dp(w+extramils, h+extramils);
   p->drawRect(QRectF(p0 - dp/2, p0 + dp/2));

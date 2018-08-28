@@ -4,7 +4,8 @@
 #include "Trace.h"
 
 Hole::Hole() {
-  topfpcon = bottomfpcon = false;
+  fpcon = Layer::Invalid;
+  noclear = false;
 }
 
 Rect Hole::boundingRect() const {
@@ -20,10 +21,10 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
   s.writeAttribute("od", t.od.toString());
   s.writeAttribute("sq", t.square ? "1" : "0");
   s.writeAttribute("ref", t.ref);
-  if (t.topfpcon)
-    s.writeAttribute("topfp", "1");
-  if (t.bottomfpcon)
-    s.writeAttribute("bottomfp", "1");
+  if (t.fpcon != Layer::Invalid)
+    s.writeAttribute("fp", QString::number(int(t.fpcon)));
+  if (t.noclear)
+    s.writeAttribute("noclear", "1");
   s.writeEndElement();
   return s;
 }
@@ -40,8 +41,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
     t.id = Dim::fromString(a.value("id").toString(), &ok);
   if (ok)
     t.od = Dim::fromString(a.value("od").toString(), &ok);
-  t.topfpcon = a.value("topfp").toInt() != 0;
-  t.bottomfpcon = a.value("bottomfp").toInt() != 0;
+  t.noclear = a.value("noclear").toInt() != 0;
   s.skipCurrentElement();
   return s;
 }
@@ -53,8 +53,8 @@ QDebug operator<<(QDebug d, Hole const &t) {
     << t.id
     << t.od
     << (t.square ? "square" : "circ")
-    << (t.topfpcon ? "topfp" : "")
-    << (t.bottomfpcon ? "bottomfp" : "")
+    << int(t.fpcon)
+    << (t.noclear ? "noclear" : "")
     << ")";
   return d;
 }
