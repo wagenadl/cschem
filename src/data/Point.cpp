@@ -70,3 +70,7 @@ QDebug operator<<(QDebug dbg, Point const &p) {
 bool Point::isNull() const {
   return x.isNull() && y.isNull();
 }
+
+qint64 Point::innerProduct(Point const &b) const {
+  return x.raw() * b.x.raw()  + y.raw() * b.y.raw();
+}

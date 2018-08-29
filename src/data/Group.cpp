@@ -482,28 +482,20 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace) const {
     if (obj.touches(p, mrg)) {
       switch (obj.type()) {
       case Object::Type::Group:
-	ids = obj.asGroup().nodeAt(p, mrg, lay, notrace);
+	ids = obj.asGroup().nodeAt(p, mrg, lay, true); // no traces inside groups
 	ids.push_front(id);
 	return ids;
       case Object::Type::Hole:
-	ids = NodeID();
-	ids << id;
-	return ids;
+	return NodeID().plus(id);
       case Object::Type::Pad:
-        if (lay==Layer::Invalid || lay==obj.asPad().layer) {
-          ids = NodeID();
-          ids << id;
-          return ids;
-        }
+        if (lay==Layer::Invalid || lay==obj.asPad().layer) 
+	  return NodeID().plus(id);
         break;
       case Object::Type::Trace:
-        if (ids.isEmpty() && !notrace) {
-          if ((lay==Layer::Invalid && obj.asTrace().layer!=Layer::Silk)
-              || lay==obj.asTrace().layer) {
-            ids << id;
-          return ids;
-          }
-        }
+        if (!notrace && ids.isEmpty()
+	    && (lay==obj.asTrace().layer
+		|| (lay==Layer::Invalid && obj.asTrace().layer!=Layer::Silk)))
+	  ids << id; // this could still be overwritten!
         break;
       default:
         break;

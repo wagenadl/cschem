@@ -30,6 +30,8 @@ public:
   Point operator-() const { Point q(-x, -y); return q; }
   bool operator==(Point const &o) const { return x==o.x && y==o.y; }
   bool operator!=(Point const &o) const { return x!=o.x || y!=o.y; }
+  Point operator*(qint64 a) const { return Point(x*a, y*a); }
+  Point operator/(qint64 a) const { return Point(x/a, y/a); }
   Point flippedLeftRight(Dim x=Dim()) const;
   Point flippedUpDown(Dim y=Dim()) const;
   Point rotatedCW(Point const &p=Point()) const;
@@ -41,6 +43,7 @@ public:
   inline static Dim distance(Point const &a, Point const &b) {
     return a.distance(b); }
   bool operator<(Point const &o) const { return y==o.y ? x<o.x : y<o.y; }
+  qint64 innerProduct(Point const &b) const;
 };
 
 

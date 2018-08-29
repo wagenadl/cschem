@@ -15,6 +15,42 @@ bool Segment::onP2(Point p, Dim mrg) const {
   return p.distance(p2) < mrg;
 }
 
+Fraction Segment::projectionCoefficient(Point p) const {
+  // returns number a such that p1 + a(p2-p1) is the orthogonal projection of p
+  // onto the segment
+  if (p1==p2)
+    return Fraction();
+  Point dp = p2 - p1;
+  qint64 a = (p - p1).innerProduct(dp);
+  qint64 b = dp.innerProduct(dp);
+  return Fraction(a, b);
+}
+
+Point Segment::projectionOntoSegment(Point p) const {
+  Fraction frc(projectionCoefficient(p));
+  if (frc.num<=0)
+    return p1;
+  else if (frc.num>=frc.denom)
+    return p2;
+  else
+    return p1 + (p2-p1)*frc.num / frc.denom;
+}
+
+bool Segment::betweenEndpoints(Point p, Dim mrg) const {
+  if (!onSegment(p, mrg))
+    return false;
+  if (onP1(p, mrg))
+    return false;
+  if (onP2(p, mrg))
+    return false;
+  Fraction frc(projectionCoefficient(p));
+  if (frc.num<=0)
+    return false;
+  if (frc.num>=frc.denom)
+    return false;
+  return true;
+}  
+
 bool Segment::onSegment(Point p, Dim mrg) const {
   Rect bb = boundingRect().grow(mrg*2);
   if (!bb.contains(p))

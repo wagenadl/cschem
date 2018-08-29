@@ -9,12 +9,13 @@
 #include <cmath>
 
 struct Dim {
-  qint64 d;
   static constexpr qint64 PerUM = 10;
   static constexpr qint64 PerMil = 254;
   static constexpr qint64 PerMM = PerUM*1000;
   static constexpr qint64 PerInch = PerMil*1000;
   static constexpr qint64 Infinity = PerInch*1000*1000*1000;
+private:
+  qint64 d;
 public:
   Dim(): d(0) { }
   Dim &operator+=(Dim const &x) { d+=x.d; return *this; }
@@ -23,6 +24,10 @@ public:
   Dim &operator/=(double x) { d/=x; return *this; }
   Dim operator+(Dim const &x) const { return Dim(d+x.d); }
   Dim operator-(Dim const &x) const { return Dim(d-x.d); }
+  Dim operator*(qint64 x) const { return Dim(d*x); }
+  Dim operator/(qint64 x) const { return Dim(d/x); }
+  Dim operator*(int x) const { return Dim(d*x); }
+  Dim operator/(int x) const { return Dim(d/x); }
   Dim operator*(double x) const { return Dim(d*x); }
   Dim operator/(double x) const { return Dim(d/x); }
   Dim operator-() const { return Dim (-d); }
@@ -47,7 +52,7 @@ public:
     else
       return Dim(((2*(d%o.d) >= o.d) ? (d/o.d+1) : (d/o.d)) * o.d);
   }
-  int raw() const { return d; }
+  qint64 raw() const { return d; }
 public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }
   static Dim fromMils(float x) { return Dim(int(std::round(PerMil*x))); }

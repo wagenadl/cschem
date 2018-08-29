@@ -113,8 +113,9 @@ void Tracer::pickup(Point const &p) {
 
 void Tracer::move(Point const &p) {
   NodeID n = d->ed->currentGroup().nodeAt(p, d->ed->pressMargin(),
-					  d->layer, true);
-  auto lp = n.location(d->ed->currentGroup(), &d->onsomething);
+					  d->layer);
+  LayerPoint lp = n.location(d->ed->currentGroup(), p);
+  d->onsomething = lp.layer != Layer::Invalid;
   if (d->onsomething) 
     d->tracecurrent = lp.point;
   else
