@@ -415,6 +415,7 @@ void EData::pressPickingUp(Point p) {
     return;
   }
 
+  tracer = new Tracer(this);
   tracer->pickup(p);
   if (tracer->isTracing()) 
     ed->update();
