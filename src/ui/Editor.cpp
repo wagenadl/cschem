@@ -3,6 +3,7 @@
 #include "Editor.h"
 #include "EData.h"
 #include "UndoCreator.h"
+#include "Tracer.h"
 
 #include <QInputDialog>
 #include <QResizeEvent>
@@ -167,7 +168,7 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
 
   if (d->panning)
     d->movePanning(e->pos());
-  else if (d->tracing)
+  else if (d->tracer)
     d->moveTracing(p);
   else if (d->rubberband)
     d->moveBanding(p);
@@ -177,7 +178,7 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
   d->hoverpt = p;
   emit hovering(p);
 
-  if (!d->moving && !d->tracing)
+  if (!d->moving && !d->tracer)
     updateOnNet();
 }
 
@@ -206,7 +207,7 @@ void Editor::mouseReleaseEvent(QMouseEvent *e) {
 void Editor::keyPressEvent(QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_Escape:
-    if (d->tracing) {
+    if (d->tracer) {
       d->abortTracing();
     } else {
       if (e->modifiers() & Qt::ControlModifier)
@@ -216,8 +217,8 @@ void Editor::keyPressEvent(QKeyEvent *e) {
     }
     break;
   case Qt::Key_Enter: case Qt::Key_Return:
-    if (d->tracing) {
-      d->pressTracing(d->tracecurrent);
+    if (d->tracer) {
+      d->tracer->confirm();
       d->abortTracing();
     }
     break;

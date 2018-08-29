@@ -2,9 +2,24 @@
 
 #include "EData.h"
 #include "Editor.h"
+#include "Tracer.h"
+
 #include "UndoCreator.h"
 #include "PinNameEditor.h"
 #include "svg/Symbol.h"
+
+EData::EData(Editor *ed): ed(ed) {
+  autofit = false;
+  mode = Mode::Edit;
+  moving = false;
+  panning = false;
+  rubberband = 0;
+  stuckptsvalid = false;
+  stepsfromsaved = false;
+  netsvisible = true;
+  resizeTimer = 0;
+  tracer = 0;
+}
 
 Dim EData::pressMargin() const {
   return Dim::fromMils(MARGIN_PIX/mils2px);
@@ -224,11 +239,8 @@ void EData::drawGrid(QPainter &p) const {
 }
 
 void EData::drawTracing(QPainter &p) const {
-  if (!tracing)
-    return;
-  p.setPen(QPen(layerColor(props.layer), props.linewidth.toMils(),
-		Qt::SolidLine, Qt::RoundCap));
-  p.drawLine(tracestart.toMils(), tracecurrent.toMils());
+  if (tracer)
+    tracer->render(p);
 }
 
 void EData::drawObjects(QPainter &p) const {
@@ -331,9 +343,13 @@ void EData::drawSelectedPoints(QPainter &p) const {
 }
 
 void EData::abortTracing() {
-  tracing = false;
-  ed->updateOnNet();
-  ed->update();
+  if (tracer) {
+    tracer->end();
+    delete tracer;
+    tracer = 0;
+    ed->updateOnNet();
+    ed->update();
+  }
 }
 
 void EData::pressText(Point p) {
@@ -394,78 +410,24 @@ void EData::pressArc(Point p) {
 }
 
 void EData::pressPickingUp(Point p) {
-  if (tracing) {
+  if (tracer) {
     pressTracing(p);
     return;
   }
-  Dim mrg = pressMargin();
-  int fave = visibleObjectAt(p, mrg);
-  if (fave<0)
-    return;
-  Group &here(currentGroup());
-  Object const &obj(here.object(fave));
-  if (!obj.isTrace())
-    return;
-  Trace const &t(obj.asTrace());
-  Dim d1 = p.distance(t.p1);
-  Dim d2 = p.distance(t.p2);
-  if (d1<d2) {
-    // pickup p1, leave p2
-    tracestart = t.p2;
-  } else {
-    // pickup p2
-    tracestart = t.p1;
-  }    
-  UndoCreator uc(this, true);
-  here.remove(fave);
-  tracecurrent = p;
-  tracing = true;
-}
 
-Point EData::tracePoint(Point p, bool *onsomething_return) const {
-  bool ok;
-  if (!onsomething_return)
-    onsomething_return = &ok;
-  NodeID n = currentGroup().nodeAt(p, pressMargin(), props.layer, true);
-  if (n.isEmpty()) {
-    *onsomething_return = false;
-  } else {
-    auto lp = n.location(currentGroup(), onsomething_return);
-    if (*onsomething_return)
-      return lp.point;
-  }
-  return p.roundedTo(layout.board().grid);
+  tracer->pickup(p);
+  if (tracer->isTracing()) 
+    ed->update();
+  else
+    abortTracing();
 }
 
 void EData::pressTracing(Point p) {
-  bool onsomething;
-  p = tracePoint(p, &onsomething);
-
-  if (tracing && p.distance(tracestart) < pressMargin()) {
-    qDebug() << "abort tracing due to short segment";
+  if (!tracer)
+    tracer = new Tracer(this);
+  tracer->click(p);
+  if (!tracer->isTracing())
     abortTracing();
-    return;
-  }
-  
-  if (tracing) {
-    UndoCreator uc(this, true);
-    Group &here(currentGroup());
-    Trace t;
-    t.p1 = tracestart;
-    t.p2 = p;
-    t.width = props.linewidth;
-    t.layer = props.layer;
-    here.insertSegmentedTrace(t, layout.board().grid*3/4);
-    if (onsomething) {
-      abortTracing();
-      return;
-    }
-  } 
-
-  tracing = true;
-  tracestart = p;
-  tracecurrent = p;
-  ed->update();
 }
 
 bool EData::isMoveSignificant(Point p) {
@@ -486,7 +448,9 @@ void EData::moveMoving(Point p) {
 }
 
 void EData::moveTracing(Point p) {
-  tracecurrent = tracePoint(p);
+  if (!tracer)
+    return;
+  tracer->move(p);
   ed->update();
 }
 

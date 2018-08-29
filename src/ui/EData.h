@@ -4,8 +4,8 @@
 
 #define EDATA_H
 
-#include "Editor.h"
-
+#include "EProps.h"
+#include "Mode.h"
 #include "data/PCBFileIO.h"
 #include "data/Layout.h"
 #include "data/Orient.h"
@@ -34,18 +34,7 @@ public:
   static constexpr int MOVETHRESHOLD_PIX = 4;
   static constexpr int MARGIN_PIX = 4;
 public:
-  EData(Editor *ed): ed(ed) {
-    autofit = false;
-    mode = Mode::Edit;
-    tracing = false;
-    moving = false;
-    panning = false;
-    rubberband = 0;
-    stuckptsvalid = false;
-    stepsfromsaved = false;
-    netsvisible = true;
-    resizeTimer = 0;
-  }
+  EData(class Editor *ed);
   void drawBoard(QPainter &) const;
   void drawGrid(QPainter &) const;
   void drawSelectedPoints(QPainter &) const;
@@ -114,12 +103,9 @@ public:
   // selected object but also of a non-trace non-selected object and that
   // should not move
   EProps props;
-  Point tracestart;
-  Point tracecurrent;
   Point presspoint;
   Point movingstart;
   Point hoverpt;
-  bool tracing;
   bool moving;
   bool panning;
   bool significantmove;
@@ -139,6 +125,7 @@ public:
   NetMismatch netmismatch;
   QSize lastsize;
   QTimer *resizeTimer;
+  class Tracer *tracer;
 };
 
 

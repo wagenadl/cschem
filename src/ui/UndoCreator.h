@@ -5,6 +5,7 @@
 #define UNDOCREATOR_H
 
 #include "EData.h"
+#include "Editor.h"
 
 class UndoCreator {
 public:
