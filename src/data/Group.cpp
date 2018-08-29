@@ -475,22 +475,38 @@ QString Group::humanName(NodeID const &ids) const {
     return name + ref;
 }
 
-NodeID Group::nodeAt(Point p, Dim mrg) const {
+NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace) const {
   NodeID ids;
   for (int id: d->obj.keys()) {
     Object const &obj(object(id));
     if (obj.touches(p, mrg)) {
-      if (obj.isGroup()) {
-	ids = obj.asGroup().nodeAt(p, mrg);
+      switch (obj.type()) {
+      case Object::Type::Group:
+	ids = obj.asGroup().nodeAt(p, mrg, lay, notrace);
 	ids.push_front(id);
 	return ids;
-      } else if (obj.isHole() || obj.isPad()) {
+      case Object::Type::Hole:
 	ids = NodeID();
 	ids << id;
 	return ids;
-      } else if (obj.isTrace() && ids.isEmpty()
-		 && obj.asTrace().layer!=Layer::Silk) {
-	ids << id;
+      case Object::Type::Pad:
+        if (lay==Layer::Invalid || lay==obj.asPad().layer) {
+          ids = NodeID();
+          ids << id;
+          return ids;
+        }
+        break;
+      case Object::Type::Trace:
+        if (ids.isEmpty() && !notrace) {
+          if ((lay==Layer::Invalid && obj.asTrace().layer!=Layer::Silk)
+              || lay==obj.asTrace().layer) {
+            ids << id;
+          return ids;
+          }
+        }
+        break;
+      default:
+        break;
       }
     }
   }

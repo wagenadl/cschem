@@ -93,6 +93,7 @@ public:
   bool isMoveSignificant(Point p);
   Dim pressMargin() const;
   void editPinName(int groupid, int hole_pad_id);
+  Point tracePoint(Point p, bool *onsomething_return=0) const;
 public:
   Editor *ed;
   Layout layout;

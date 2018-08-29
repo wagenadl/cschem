@@ -39,8 +39,10 @@ public:
   bool touches(Point p, Dim mrg=Dim()) const;
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
   // only direct children are returned
-  NodeID nodeAt(Point p, Dim mrg=Dim()) const;
+  NodeID nodeAt(Point p, Dim mrg=Dim(),
+                Layer l=Layer::Invalid, bool notrace=false) const;
   // even inside subgroups; return is crumbs from this group
+  // optional layer limits pads to given layer
   NodeID findNodeByName(Nodename name) const;
   QString humanName(NodeID const &) const;
   QStringList nodePath(NodeID const &) const; // refs for each level
