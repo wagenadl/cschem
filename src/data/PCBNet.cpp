@@ -95,6 +95,7 @@ void Builder::addConnections(Group const &root) {
 }
 
 PCBNet::PCBNet(): somenode("", "") {
+  havesomenode = false;
 }
 
 PCBNet::PCBNet(Group const &root, NodeID seed): root_(root), seed_(seed),
