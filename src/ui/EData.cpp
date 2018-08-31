@@ -488,10 +488,6 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
     Object const &obj = here.object(id);
     Layer l = obj.layer();
     switch (obj.type()) {
-    case Object::Type::Plane:
-      if (brd.layervisible[l])
-	p1 = l==Layer::Bottom ? Prio::BottomPlane : Prio::TopPlane;
-    break;
     case Object::Type::Trace:
       if (brd.layervisible[l])
 	p1 = l==Layer::Bottom ? Prio::BottomTrace
@@ -513,6 +509,15 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
     case Object::Type::Group:
       p1 = Prio::Silk;
       break;
+    case Object::Type::Plane:
+      qDebug() << "vis plane" << int(l)
+               << brd.planesvisible << brd.layervisible[l];
+      if (brd.planesvisible && brd.layervisible[l])
+        p1 = l==Layer::Bottom ? Prio::BottomPlane
+          : l==Layer::Top ? Prio::TopPlane
+          : Prio::None;
+      qDebug() << int(p1);
+      break;
     default:
       break;
     }
@@ -525,6 +530,8 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
 }
 
 void EData::pressPlacePlane(Point p) {
+  int fave = visibleObjectAt(p, Dim());
+  qDebug() << "ppp" << fave;  
   p = p.roundedTo(layout.board().grid);
   presspoint = p;
   if (!rubberband)

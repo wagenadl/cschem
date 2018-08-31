@@ -84,7 +84,10 @@ void ORenderer::drawPlane(FilledPlane const &t, bool selected, bool innet) {
     return;
   p->setPen(Qt::NoPen);
   p->setBrush(brushColor(selected, innet));
-  p->drawPolygon(t.perimeter.toMils());
+  Polyline pp = t.perimeter;
+  if (selected && toplevel) 
+    pp.translate(movingdelta);
+  p->drawPolygon(pp.toMils());
 }
 
 void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {

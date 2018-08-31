@@ -59,3 +59,7 @@ bool Polyline::contains(Point p, Dim mrg) const {
   return (n&1) ? true : false;
 }
 
+void Polyline::translate(Point const &p1) {
+  for (Point &p: *this)
+    p += p1;
+}

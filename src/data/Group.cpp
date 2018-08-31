@@ -526,8 +526,18 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace) const {
       case Object::Type::Trace:
         if (!notrace && ids.isEmpty()
 	    && (lay==obj.asTrace().layer
-		|| (lay==Layer::Invalid && obj.asTrace().layer!=Layer::Silk)))
+		|| (lay==Layer::Invalid && obj.asTrace().layer!=Layer::Silk))) {
+          ids.clear();
 	  ids << id; // this could still be overwritten!
+        }
+        break;
+      case Object::Type::Plane:
+        if (!notrace && ids.isEmpty()
+	    && (lay==obj.asPlane().layer
+		|| lay==Layer::Invalid)) {
+          ids.clear();
+	  ids << id; // this could still be overwritten!
+        }
         break;
       default:
         break;
