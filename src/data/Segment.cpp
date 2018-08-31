@@ -74,6 +74,14 @@ bool Segment::onSegment(Point p, Dim mrg) const {
   return a < m*b;
 }
 
+bool Segment::touches(Segment const &t, Point *intersection) const {
+  bool res;
+  Point p = intersectionWith(t, &res);
+  if (intersection)
+    *intersection = p;
+  return res;
+}
+
 Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
   /* This implementation is really primitive; it ignores segment width */
   /* Mathematical idea: represent us as p1 + a dp where a in [0, 1] and

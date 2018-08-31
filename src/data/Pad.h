@@ -24,7 +24,7 @@ public:
   bool isValid() const { return layer!=Layer::Invalid; }
   Rect boundingRect() const;
   void rotate();
-  Point intersectionWith(class Trace const &t, bool *ok=0) const;
+  bool touches(class Trace const &t) const;
   /* Returns our center if t touches us, otherwise null. */
 };
 

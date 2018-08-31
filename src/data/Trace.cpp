@@ -56,13 +56,11 @@ bool Trace::onSegment(Point p, Dim mrg) const {
   return Segment::onSegment(p, mrg + width/2);
 }
 
-Point Trace::intersectionWith(class Trace const &t, bool *ok) const {
+bool Trace::touches(class Trace const &t, Point *pt) const {
   if (layer == t.layer) {
     /* This implementation is really primitive; it ignores trace width */
-    return Segment::intersectionWith(t, ok);
+    return Segment::touches(t, pt);
   } else {
-    if (ok)
-      *ok = false;
-    return Point();
+    return false;
   }
 }

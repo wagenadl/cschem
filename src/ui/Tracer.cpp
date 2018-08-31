@@ -65,7 +65,7 @@ void Tracer::confirm() {
   t.p2 = d->tracecurrent;
   t.width = d->ed->props.linewidth;
   t.layer = d->ed->props.layer;
-  here.insertSegmentedTrace(t, d->ed->layout.board().grid*3/4);
+  here.insert(Object(t));
   if (d->onsomething)
     end();
   else
@@ -114,7 +114,8 @@ void Tracer::pickup(Point const &p) {
 void Tracer::move(Point const &p) {
   NodeID n = d->ed->currentGroup().nodeAt(p, d->ed->pressMargin(),
 					  d->layer);
-  LayerPoint lp = n.location(d->ed->currentGroup(), p);
+  LayerPoint lp = n.location(d->ed->currentGroup(),
+			     p.roundedTo(d->ed->layout.board().grid));
   d->onsomething = lp.layer != Layer::Invalid;
   if (d->onsomething) 
     d->tracecurrent = lp.point;

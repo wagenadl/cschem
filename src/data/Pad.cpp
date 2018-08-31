@@ -71,33 +71,27 @@ Rect Pad::boundingRect() const {
   return Rect(p - Point(width/2, height/2), p + Point(width/2, height/2));
 }
 
-Point Pad::intersectionWith(class Trace const &t, bool *ok) const {
-  if (ok)
-    *ok = false;
+bool Pad::touches(class Trace const &t) const {
   if (t.layer != layer)
-    return Point();
+    return false;
   if (p==t.p1 || p==t.p2)
-    return Point();
+    return true;
   Dim diam = Dim::quadrature(width/2, height/2);
   if (t.onSegment(p, diam)) {
     // This is a slightly liberal interpretation of touching, actually, so
     // let's be a bit more careful. Following is not exact either,
     // but should be good enough in all but rather pathological cases.
     Dim min_r = width < height ? width/2 : height/2;
-    if (t.onSegment(p, min_r)
-	|| t.onSegment(p + Point(width/2, height/2))
-	|| t.onSegment(p + Point(-width/2, height/2))
-	|| t.onSegment(p + Point(width/2, -height/2))
-	|| t.onSegment(p + Point(-width/2, -height/2))
-	|| t.onSegment(p + Point(width/2, Dim()))
-	|| t.onSegment(p + Point(-width/2, Dim()))
-	|| t.onSegment(p + Point(Dim(), height/2))
-	|| t.onSegment(p + Point(Dim(), -height/2))) {
-      if (ok)
-	*ok = true;
-      return p;
-    }
+    return t.onSegment(p, min_r)
+			|| t.onSegment(p + Point(width/2, height/2))
+			|| t.onSegment(p + Point(-width/2, height/2))
+			|| t.onSegment(p + Point(width/2, -height/2))
+			|| t.onSegment(p + Point(-width/2, -height/2))
+			|| t.onSegment(p + Point(width/2, Dim()))
+			|| t.onSegment(p + Point(-width/2, Dim()))
+			|| t.onSegment(p + Point(Dim(), height/2))
+			|| t.onSegment(p + Point(Dim(), -height/2));
   }
-  return Point();
+  return false;
 }
 

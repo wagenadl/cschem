@@ -523,35 +523,3 @@ void Object::flipUpDown(Dim y0) {
     break;
   }
 }
-
-Point intersectionPoint(Object const &o, Trace const &t, bool *ok) {
-  switch (o.type()) {
-  case Object::Type::Null:
-    break;
-  case Object::Type::Hole:
-    return o.asHole().intersectionWith(t, ok);
-  case Object::Type::Pad:
-    return o.asPad().intersectionWith(t, ok);
-  case Object::Type::Arc:
-    break;
-  case Object::Type::Text:
-    break;
-  case Object::Type::Trace:
-    return o.asTrace().intersectionWith(t, ok);
-  case Object::Type::Plane:
-    break;
-  case Object::Type::Group: {
-    int id;
-    o.asGroup().intersectionWith(t, &id);
-    if (ok)
-      *ok = id>0;
-  } break;
-  }
-  if (ok)
-    *ok = false;
-  return Point();
-}
-
-Point intersectionPoint(Trace const &t, Object const &o, bool *ok) {
-  return intersectionPoint(o, t, ok);
-}
