@@ -163,20 +163,29 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   if (selected && toplevel) 
     p1 += movingdelta;
   p->setPen(QPen(Qt::NoPen));
+  QPointF p0 = p1.toMils();
   if (inv) {
     double id = t.id.toMils();
     p->setBrush(QColor(0,0,0));
-    p->drawEllipse(p1.toMils(), id/2, id/2);
+    p->drawEllipse(p0, id/2, id/2);
   } else {
     double od = t.od.toMils();
     double extramils = extraMils(innet, t.od, t.od);
     p->setBrush(brushColor(selected, innet));
     if (t.square)
-      p->drawRect(QRectF(p1.toMils()
+      p->drawRect(QRectF(p0
                          - QPointF(od/2+extramils/2, od/2+extramils/2),
                          QSizeF(od+extramils, od+extramils)));
     else 
-      p->drawEllipse(p1.toMils(), od/2+extramils/2, od/2+extramils/2);
+      p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
+  }
+  if (subl==Sublayer::Main && t.fpcon==layer) {
+    double dxm = (t.od/2 + brd.padClearance(t.od, t.od)).toMils();
+    p->setPen(QPen(brushColor(selected, innet),
+                   brd.fpConWidth(t.od, t.od).toMils(),
+                   Qt::SolidLine, Qt::RoundCap));
+    p->drawLine(p0 - QPointF(-dxm, 0), p0 + QPointF(dxm, 0));
+    p->drawLine(p0 - QPointF(0, -dxm), p0 + QPointF(0, dxm));
   }
 }
 
@@ -206,6 +215,17 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   p->setBrush(brushColor(selected, innet));
   QPointF dp(w+extramils, h+extramils);
   p->drawRect(QRectF(p0 - dp/2, p0 + dp/2));
+
+  if (subl==Sublayer::Main && t.fpcon) {
+    Dim pc = brd.padClearance(t.width, t.height);
+    double dxm = w/2 + pc.toMils();
+    double dym = h/2 + pc.toMils();
+    p->setPen(QPen(brushColor(selected, innet),
+                   brd.fpConWidth(t.width, t.height).toMils(),
+                   Qt::SolidLine, Qt::RoundCap));
+    p->drawLine(p0 - QPointF(-dxm, 0), p0 + QPointF(dxm, 0));
+    p->drawLine(p0 - QPointF(0, -dym), p0 + QPointF(0, dym));
+  }
 }
 
 void ORenderer::drawArc(Arc const &t, bool selected) {
