@@ -26,7 +26,8 @@ public:
   // ONSEGMENT(p, mrg) returns true if P is close enough to the line segment.
   // Close enough means within a distance .5*WIDTH + MRG.
   // ONSEGMENT returns true even if ONP1 or ONP2 would return true as well.
-  bool touches(class Trace const &t, Point *intersection=0) const;
+  bool touches(Trace const &t, Point *intersection=0) const;
+  bool operator==(Trace const &) const;
 };
 
 QDebug operator<<(QDebug, Trace const &);

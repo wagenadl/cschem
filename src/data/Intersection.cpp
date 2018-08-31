@@ -64,8 +64,10 @@ Intersection::Result Intersection::touchingTrace(bool allowends) const {
     //  }
     //} break;
     case Object::Type::Trace: {
-      Point p;
       Trace const &tr1(obj.asTrace());
+      if (traceid<0 && tr1==trace)
+        continue; // alt. form of preventing self touch
+      Point p;
       if (tr1.touches(trace, &p)) {
         if (allowends
             || (p!=tr1.p1 && p!=tr1.p2)

@@ -64,3 +64,7 @@ bool Trace::touches(class Trace const &t, Point *pt) const {
     return false;
   }
 }
+
+bool Trace::operator==(Trace const &t) const {
+  return layer==t.layer && width==t.width && p1==t.p1 && p2==t.p2;
+}

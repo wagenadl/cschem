@@ -63,7 +63,7 @@ bool Hole::touches(class Trace const &t) const {
   if (!(t.layer==Layer::Top || t.layer==Layer::Bottom))
     return false;
   if (p==t.p1 || p==t.p2)
-    return false;
+    return true;
   return t.onSegment(p, od/2)
     || (square
 	&& (t.onSegment(p + Point(od/2, od/2))
