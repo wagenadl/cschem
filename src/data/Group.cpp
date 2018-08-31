@@ -207,6 +207,38 @@ Object &Group::object(int key) {
   return d->obj[key];
 }
 
+Object const &Group::object(NodeID const &id) const {
+  static Object nil;
+  if (id.isEmpty() || !contains(id[0]))
+    return nil;
+  Object const &obj(object(id[0]));
+  if (id.size()==1)
+    return obj;
+  if (obj.isGroup())
+    return obj.asGroup().object(id.tail());
+  else
+    return nil;
+}
+
+Object &Group::object(NodeID const &id) {
+  static Object nil;
+  if (id.isEmpty()) {
+    qDebug() << "Returning nonconst reference to nil.";
+    return nil;
+  }
+  d.detach();
+  d->hasbbox = false;
+  Object &obj(object(id[0]));
+  if (id.size()==1)
+    return obj;
+  if (obj.isGroup()) {
+    return obj.asGroup().object(id.tail());
+  } else {
+    qDebug() << "Returning nonconst reference to nil.";
+    return nil;
+  }
+}
+
 QList<int> Group::keys() const {
   return d->obj.keys();
 }
@@ -722,3 +754,4 @@ NodeID Group::findNodeByName(Nodename name) const {
 
   return NodeID();
 }
+

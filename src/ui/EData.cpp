@@ -316,12 +316,12 @@ void EData::drawNetMismatch(ORenderer &rndr) const {
   rndr.setLayer(Layer::Silk, ORenderer::Sublayer::Main);
   rndr.setOverride(ORenderer::Override::WronglyIn);
   for (NodeID const &nid: netmismatch.wronglyInNet) {
-    Object const &obj(nid.deref(layout.root()));
+    Object const &obj(layout.root().object(nid));
     rndr.drawObject(obj);
   }
   rndr.setOverride(ORenderer::Override::Missing);
   for (NodeID const &nid: netmismatch.missingFromNet) {
-    Object const &obj(nid.deref(layout.root()));
+    Object const &obj(layout.root().object(nid));
     rndr.drawObject(obj);
   }
   rndr.setOverride(ORenderer::Override::None);

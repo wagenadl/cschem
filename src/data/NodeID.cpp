@@ -4,19 +4,6 @@
 #include "Object.h"
 #include "Group.h"
 
-Object const &NodeID::deref(Group const &root) const {
-  static Object nul;
-  if (isEmpty() || !root.contains(*begin()))
-    return nul;
-  Object const &obj(root.object(*begin()));
-  if (size()==1)
-    return obj;
-  if (!obj.isGroup())
-    return nul;
-  else
-    return tail().deref(obj.asGroup());
-}
-
 LayerPoint NodeID::location(Group const &root, Point const &near) const {
   if (isEmpty() || !root.contains(*begin()))
     return LayerPoint();

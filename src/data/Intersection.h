@@ -16,13 +16,14 @@ public:
     Point point;
   };
 public:
-  Intersection(Group const &group, Trace const &trace, bool allowends);
-  Result touchingPin() const;
-  Result touchingTrace() const;
+  Intersection(Group const &group, int trcid);
+  Intersection(Group const &group, Trace const &trace);
+  Result touchingPin(bool allowends) const; // goes into groups
+  Result touchingTrace(bool allowends) const; // does not go into groups
 private:
   Group const &group;
   Trace const &trace;
-  bool allowends;
+  int traceid; // id of trace; cannot be returned as a touching trace.
 };
 
 #endif

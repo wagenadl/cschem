@@ -30,6 +30,8 @@ public:
   bool contains(int) const;
   Object const &object(int) const;
   Object &object(int);
+  Object const &object(NodeID const &) const;
+  Object &object(NodeID const &);
   QList<int> keys() const;
   bool isEmpty() const;
   Group const &subgroup(QList<int> path) const; // follows breadcrumbs

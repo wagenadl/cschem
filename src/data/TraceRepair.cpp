@@ -1,64 +1,63 @@
 // TraceRepair.cpp
 
 #include "TraceRepair.h"
-#include "ui/EData.h"
+#include "Group.h"
+#include "Intersection.h"
+#include "Object.h"
 
 class RepairData {
 public:
-  RepairData(EData *ed): ed(ed) { }
+  RepairData(Group &grp): grp(grp) { }
 public:
-  EData *ed;
+  Group &grp;
 };
 
-TraceRepair::TraceRepair(EData *ed): d(new RepairData(ed)) {
+TraceRepair::TraceRepair(Group &grp): d(new RepairData(grp)) {
 }
 
 TraceRepair::~TraceRepair() {
   delete d;
 }
 
-void TraceRepair::fixTraceIntersections(NodeID /*id*/, Dim /*grid*/) {
-  qDebug() << "fixTraceIntersections NYI";
-}
- 
-void TraceRepair::fixPinTouchings(NodeID id) {
-  QList<int> crumbs;
-  int trid = id.takeLast();
-  for (int k: id)
-    crumbs << k;
-  Group &here(d->ed->layout.root().subgroup(crumbs));
-  Object &obj(here.object(trid));
+bool TraceRepair::fixTraceIntersections(int trid, Dim grid) {
+  bool got = false;
+  Object &obj(d->grp.object(trid));
   if (!obj.isTrace()) {
     qDebug() << "fixPinTouchings: not a trace";
-    return;
+    return got;
   }
 
   Trace &trace(obj.asTrace());
-  Intersection isec(here, trace);
-  Intersection::Result res = isec.touchingPin();
-  if (res.node().isEmpty())
-    return;
-
-  // So we are touching a pin. Let's split our trace up.
+  while (true) {
+    Intersection isec(d->grp, trid);
+    Intersection::Result res = isec.touchingTrace(false);
+    if (res.node.isEmpty())
+      return got;
+    
+    // So we are touching a trace somewhere along our middle, or their middle.
+    // Let's split our trace up, or the other one, or both.
+    got = true;
+    if (res.point!=trace.p1 && res.point!=trace.p2) {
+      // must split us up
+      Trace t1(trace);
+      t1.p1 = res.point;
+      trace.p2 = res.point;
+      int id1 = d->grp.insert(Object(t1));
+      fixTraceIntersections(id1, grid);
+    }
+    Trace &trc1(d->grp.object(res.node).asTrace());
+    if (res.point!=trc1.p1 && res.point!=trc1.p2) {
+      // must split other up
+      Trace t1(trc1);
+      t1.p1 = res.point;
+      trc1.p2 = res.point;
+      int id1 = d->grp.insert(Object(t1));
+      fixTraceIntersections(id1, grid);
+      fixTraceIntersections(res.node[0], grid);
+    }
+  }
 }
-
-void Group::insertSegmentedTrace(Trace const &t, Dim maxsnap) {
-  /* Find out whether there are any traces, holes, or pads crossed by the
-     newly proposed trace. If so, break the trace into two parts at the
-     crossing point (possibly mildly distorting it), and insert both parts
-     recursively. Otherwise, simply insert the trace. */
-  // t is specified in terms of parents coords.
-  qDebug() << "insertsegmentedtrace" << t << maxsnap << t.p1.distance(t.p2).toMils();
-  if (t.p1==t.p2)
-    return;
-  
-  int id;
-  Point p = intersectionWith(t, &id);
-  Dim len = Point::distance(t.p1, t.p2);
-  qDebug() << " => " << id << p << len;
-  if (id>0 && t.p1.distance(p) < len && t.p2.distance(p) < len) {
-    Object const &ocross(object(id));
-    if (ocross.isTrace()) {
+/*
       Trace const &tcross(ocross.asTrace());
       Dim lcr = Point::distance(tcross.p1, tcross.p2);
       if (p!=tcross.p1 && p!=tcross.p2
@@ -72,22 +71,30 @@ void Group::insertSegmentedTrace(Trace const &t, Dim maxsnap) {
 	remove(id);
 	insert(Object(tc1));
 	insert(Object(tc2));
-      }
-    }
+*/
+ 
+bool TraceRepair::fixPinTouchings(int trid) {
+  bool got = false;
+  Object &obj(d->grp.object(trid));
+  if (!obj.isTrace()) {
+    qDebug() << "fixPinTouchings: not a trace";
+    return got;
+  }
 
-    if (p==t.p1 || p==t.p2) {
-      // easy
-      insert(Object(t));
-    } else {
-      Trace t1(t);
-      t1.p2 = p;
-      Trace t2(t);
-      t2.p1 = p;
-      insertSegmentedTrace(t1, maxsnap);
-      insertSegmentedTrace(t2, maxsnap);
-    }
-  } else {
-    qDebug() << "insert";
-    insert(Object(t));
+  Trace &trace(obj.asTrace());
+  while (true) {
+    Intersection isec(d->grp, trid);
+    Intersection::Result res = isec.touchingPin(false);
+    if (res.node.isEmpty())
+      return got;
+    
+    // So we are touching a pin. Let's split our trace up.
+    got = true;
+    Trace t1(trace);
+    t1.p1 = res.point;
+    trace.p2 = res.point;
+    int id1 = d->grp.insert(Object(t1));
+    fixPinTouchings(id1);
   }
 }
+
