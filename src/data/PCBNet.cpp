@@ -67,7 +67,7 @@ void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
         insertRecursively(nid);
       break;
     case Object::Type::Plane:
-      qDebug() << "Test for FP NYI";
+      // traces do not touch planes
       break;
     case Object::Type::Group:
       insertFriendsOfTrace(tr, nid);
@@ -90,7 +90,8 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
         insertRecursively(nid);
       break;
     case Object::Type::Plane:
-      qDebug() << "Test for FP NYI";
+      if (h.touches(obj.asPlane()))
+        insertRecursively(nid);
       break;
     default:
       break;
@@ -111,7 +112,8 @@ void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
         insertRecursively(nid);
       break;
     case Object::Type::Plane:
-      qDebug() << "Test for FP NYI";
+      if (pad.touches(obj.asPlane()))
+        insertRecursively(nid);
       break;
     default:
       break;
@@ -119,8 +121,30 @@ void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
   }      
 }
 
-void Builder::insertFriendsOfPlane(FilledPlane const &, NodeID) {
-  qDebug() << "Test for FP NYI";
+void Builder::insertFriendsOfPlane(FilledPlane const &fp, NodeID grpid) {
+  Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  for (int id: univ.keys()) {
+    NodeID nid = grpid.plus(id);
+    if (net.contains(nid))
+      continue;
+    Object const &obj(univ.object(id));
+    switch (obj.type()) {
+    case Object::Type::Pad:
+      if (obj.asPad().touches(fp))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Hole:
+      if (obj.asHole().touches(fp))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Plane:
+      if (obj.asPlane().touches(fp))
+        insertRecursively(nid);
+      break;
+    default:
+      break;
+    }
+  }
 }
 
 

@@ -23,6 +23,7 @@ public:
   bool isValid() const { return !od.isNull(); }
   Rect boundingRect() const;
   bool touches(class Trace const &t) const;
+  bool touches(class FilledPlane const &fp) const;
 };
 
 QDebug operator<<(QDebug, Hole const &);

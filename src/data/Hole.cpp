@@ -2,6 +2,7 @@
 
 #include "Hole.h"
 #include "Trace.h"
+#include "FilledPlane.h"
 
 Hole::Hole() {
   fpcon = Layer::Invalid;
@@ -59,7 +60,7 @@ QDebug operator<<(QDebug d, Hole const &t) {
   return d;
 }
 
-bool Hole::touches(class Trace const &t) const {
+bool Hole::touches(Trace const &t) const {
   if (!(t.layer==Layer::Top || t.layer==Layer::Bottom))
     return false;
   if (p==t.p1 || p==t.p2)
@@ -70,4 +71,11 @@ bool Hole::touches(class Trace const &t) const {
 	    || t.onSegment(p + Point(od/2, -od/2))
 	    || t.onSegment(p + Point(-od/2, od/2))
 	    || t.onSegment(p + Point(-od/2, -od/2))));
+}
+
+bool Hole::touches(FilledPlane const &fp) const {
+  if (noclear || fpcon==fp.layer)
+    return fp.perimeter.contains(p, od/2);
+  else
+    return false;
 }

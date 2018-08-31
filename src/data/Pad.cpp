@@ -2,6 +2,7 @@
 
 #include "Pad.h"
 #include "Trace.h"
+#include "FilledPlane.h"
 
 Pad::Pad() {
   fpcon = false;
@@ -95,3 +96,11 @@ bool Pad::touches(class Trace const &t) const {
   return false;
 }
 
+bool Pad::touches(FilledPlane const &fp) const {
+  if (noclear || (fpcon && layer==fp.layer)) {
+    Dim r = width > height ? width/2 : height/2;
+    return fp.perimeter.contains(p, r);
+  } else {
+    return false;
+  }
+}

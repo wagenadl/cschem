@@ -25,7 +25,7 @@ public:
   Rect boundingRect() const;
   void rotate();
   bool touches(class Trace const &t) const;
-  /* Returns our center if t touches us, otherwise null. */
+  bool touches(class FilledPlane const &fp) const;
 };
 
 QDebug operator<<(QDebug, Pad const &);
