@@ -45,6 +45,8 @@ bool FilledPlane::contains(Point p, Dim mrg) const {
 }
 
 bool FilledPlane::touches(FilledPlane const &fp) const {
-  return layer==fp.layer
+  bool got = layer==fp.layer
     && !perimeter.toMils().intersected(fp.perimeter.toMils()).isEmpty();
+  qDebug() << "fp touch" << got;
+  return got;
 }

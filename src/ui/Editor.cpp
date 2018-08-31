@@ -116,6 +116,8 @@ void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
 	leaveGroup();
       else 
 	doubleClickOn(p, fave);
+    } else if (d->mode == Mode::PlacePlane) {
+      d->doubleClickPlane(p);
     }
   }
 }

@@ -71,6 +71,7 @@ void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
       break;
     case Object::Type::Group:
       insertFriendsOfTrace(tr, nid);
+      break;
     default:
       break;
     }
@@ -90,8 +91,11 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
         insertRecursively(nid);
       break;
     case Object::Type::Plane:
-      if (h.touches(obj.asPlane()))
+      qDebug() << "Hole touches plane?" << h << obj.asPlane();
+      if (h.touches(obj.asPlane())) {
+        qDebug() << " yes ";
         insertRecursively(nid);
+      }
       break;
     default:
       break;
@@ -140,6 +144,9 @@ void Builder::insertFriendsOfPlane(FilledPlane const &fp, NodeID grpid) {
     case Object::Type::Plane:
       if (obj.asPlane().touches(fp))
         insertRecursively(nid);
+      break;
+    case Object::Type::Group:
+      insertFriendsOfPlane(fp, nid);
       break;
     default:
       break;

@@ -82,6 +82,7 @@ void ORenderer::drawPlane(FilledPlane const &t, bool selected, bool innet) {
     return;
   if (subl != Sublayer::Plane)
     return;
+  p->setPen(Qt::NoPen);
   p->setBrush(brushColor(selected, innet));
   p->drawPolygon(t.perimeter.toMils());
 }
@@ -179,13 +180,13 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
     else 
       p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
   }
-  if (subl==Sublayer::Main && t.fpcon==layer) {
+  if (subl==Sublayer::Main && layer!=Layer::Invalid && t.fpcon==layer) {
     double dxm = (t.od/2 + brd.padClearance(t.od, t.od)).toMils();
     p->setPen(QPen(brushColor(selected, innet),
                    brd.fpConWidth(t.od, t.od).toMils(),
                    Qt::SolidLine, Qt::RoundCap));
-    p->drawLine(p0 - QPointF(-dxm, 0), p0 + QPointF(dxm, 0));
-    p->drawLine(p0 - QPointF(0, -dxm), p0 + QPointF(0, dxm));
+    p->drawLine(p0 - QPointF(dxm, 0), p0 + QPointF(dxm, 0));
+    p->drawLine(p0 - QPointF(0, dxm), p0 + QPointF(0, dxm));
   }
 }
 
@@ -223,8 +224,8 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
     p->setPen(QPen(brushColor(selected, innet),
                    brd.fpConWidth(t.width, t.height).toMils(),
                    Qt::SolidLine, Qt::RoundCap));
-    p->drawLine(p0 - QPointF(-dxm, 0), p0 + QPointF(dxm, 0));
-    p->drawLine(p0 - QPointF(0, -dym), p0 + QPointF(0, dym));
+    p->drawLine(p0 - QPointF(dxm, 0), p0 + QPointF(dxm, 0));
+    p->drawLine(p0 - QPointF(0, dym), p0 + QPointF(0, dym));
   }
 }
 

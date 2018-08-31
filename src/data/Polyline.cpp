@@ -35,6 +35,8 @@ bool Polyline::contains(Point p, Dim mrg) const {
   if (K==0)
     return false;
 
+  qDebug() << "Polyline" << toMils() << "contains" << p.toMils();
+
   // First, see if point is on or near edges
   for (int k=0; k<K-1; k++)
     if (Segment(operator[](k), operator[](k+1)).onSegment(p, mrg))

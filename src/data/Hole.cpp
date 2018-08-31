@@ -74,6 +74,7 @@ bool Hole::touches(Trace const &t) const {
 }
 
 bool Hole::touches(FilledPlane const &fp) const {
+  qDebug() << "hole:touches fp" << *this << fp;
   if (noclear || fpcon==fp.layer)
     return fp.perimeter.contains(p, od/2);
   else

@@ -532,7 +532,32 @@ void EData::pressPlacePlane(Point p) {
   rubberband->show();
   rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
                           .toRect());
-}  
+}
+
+void EData::doubleClickPlane(Point p) {
+  Group const &here(currentGroup());
+  NodeID nid = here.nodeAt(p, pressMargin(), props.layer, true);
+  qDebug() << "dcp" << nid;
+  if (nid.isEmpty())
+    return;
+  Object const &obj(here.object(nid));
+  if (obj.isPad()) {
+    UndoCreator uc(this, true);
+    Pad &pad(currentGroup().object(nid).asPad());
+    pad.fpcon = !pad.fpcon;
+    updateOnWhat(true);
+    ed->update();
+  } else if (obj.isHole()) {
+    UndoCreator uc(this, true);
+    Hole &hole(currentGroup().object(nid).asHole());
+    if (hole.fpcon==props.layer)
+      hole.fpcon = Layer::Invalid;
+    else
+      hole.fpcon = props.layer;
+    updateOnWhat(true);
+    ed->update();
+  }  
+}
 
 void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
   Dim mrg = pressMargin();
@@ -725,6 +750,8 @@ void EData::releaseBanding(Point p) {
     break;
   case Mode::PlacePlane: {
     p = p.roundedTo(layout.board().grid);
+    if (p==presspoint)
+      return;
     UndoCreator uc(this, true);
     FilledPlane fp;
     fp.layer = props.layer;
