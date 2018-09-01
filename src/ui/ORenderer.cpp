@@ -83,7 +83,7 @@ void ORenderer::drawPlane(FilledPlane const &t, bool selected, bool innet) {
   if (subl != Sublayer::Plane)
     return;
   p->setPen(Qt::NoPen);
-  p->setBrush(brushColor(selected, innet));
+  p->setBrush(brushColor(selected, innet).darker());
   Polyline pp = t.perimeter;
   if (selected && toplevel) 
     pp.translate(movingdelta);

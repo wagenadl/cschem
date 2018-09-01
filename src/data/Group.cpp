@@ -243,7 +243,17 @@ QList<int> Group::keys() const {
   return d->obj.keys();
 }
 
-Group const &Group::subgroup(QList<int> path) const {
+Group const &Group::parentOf(NodeID path) const {
+  path.removeLast();
+  return subgroup(path);
+}
+
+Group &Group::parentOf(NodeID path) {
+  path.removeLast();
+  return subgroup(path);
+}
+
+Group const &Group::subgroup(NodeID path) const {
   static Group nil;
   if (path.isEmpty())
     return *this;
@@ -254,7 +264,7 @@ Group const &Group::subgroup(QList<int> path) const {
     return nil;
 }
   
-Group &Group::subgroup(QList<int> path) {
+Group &Group::subgroup(NodeID path) {
   // Not using as_const/as_nonconst here, because at every level we must
   // detach *and* stop thinking we know our bbox.
   static Group nil;

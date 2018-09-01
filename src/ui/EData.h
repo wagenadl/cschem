@@ -31,9 +31,6 @@
 
 class EData {
 public:
-  static constexpr int MOVETHRESHOLD_PIX = 4;
-  static constexpr int MARGIN_PIX = 4;
-public:
   EData(class Editor *ed);
   void drawBoard(QPainter &) const;
   void drawGrid(QPainter &) const;
@@ -43,7 +40,7 @@ public:
 		  QPainter &p, bool selected, bool toplevel=false) const;
   // only draw parts of object that are part of given layer
   void drawNetMismatch(class ORenderer &) const;
-  void drawTracing(QPainter &) const;
+  void drawPlaneHover(QPainter &) const;
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
   int visibleObjectAt(Group const &grp, Point p, Dim mrg) const;
@@ -53,7 +50,6 @@ public:
   void pressText(Point);
   void pressTracing(Point);
   void pressPickingUp(Point);
-  void pressPlacePlane(Point);
   void moveTracing(Point);
   void abortTracing();
   void moveBanding(Point);
@@ -62,7 +58,6 @@ public:
   void releaseMoving(Point);
   void pressPanning(QPoint);
   void movePanning(QPoint);
-  void doubleClickPlane(Point);
   void dropFromSelection(int id, Point p, Dim mrg);
   void startMoveSelection(int fave=-1);
   void newSelectionUnless(int id, Point p, Dim mrg, bool add);
@@ -92,7 +87,7 @@ public:
   double mils2px;
   bool autofit;
   bool netsvisible;
-  QList<int> crumbs;
+  NodeID crumbs;
   QSet<int> selection;
   QMap<Layer, QSet<Point> > selpts; // selected points that *are* part
   // of a selected object, by layer
@@ -127,6 +122,7 @@ public:
   QSize lastsize;
   QTimer *resizeTimer;
   class Tracer *tracer;
+  class PlaneEditor *planeeditor;
 };
 
 

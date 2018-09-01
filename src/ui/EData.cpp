@@ -8,6 +8,9 @@
 #include "PinNameEditor.h"
 #include "svg/Symbol.h"
 
+constexpr int MOVETHRESHOLD_PIX = 4;
+constexpr int MARGIN_PIX = 4;
+
 EData::EData(Editor *ed): ed(ed) {
   autofit = false;
   mode = Mode::Edit;
@@ -19,6 +22,7 @@ EData::EData(Editor *ed): ed(ed) {
   netsvisible = true;
   resizeTimer = 0;
   tracer = 0;
+  planeeditor = 0;
 }
 
 Dim EData::pressMargin() const {
@@ -238,11 +242,6 @@ void EData::drawGrid(QPainter &p) const {
   }  
 }
 
-void EData::drawTracing(QPainter &p) const {
-  if (tracer)
-    tracer->render(p);
-}
-
 void EData::drawObjects(QPainter &p) const {
   Group const &here(currentGroup());
   validateStuckPoints();  
@@ -264,7 +263,8 @@ void EData::drawObjects(QPainter &p) const {
 	for (NodeID nid: net.nodes())
 	  if (!nid.isEmpty() && nid.first()==id)
 	    subnet << nid.tail();
-      rndr.drawObject(here.object(id), selection.contains(id), subnet);
+      rndr.drawObject(here.object(id), selection.contains(id) && !planeeditor,
+                      subnet);
     }
   };
   auto onelayer = [&](Layer l) {
@@ -527,43 +527,6 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
     }
   }
   return fave;
-}
-
-void EData::pressPlacePlane(Point p) {
-  int fave = visibleObjectAt(p, Dim());
-  qDebug() << "ppp" << fave;  
-  p = p.roundedTo(layout.board().grid);
-  presspoint = p;
-  if (!rubberband)
-    rubberband = new QRubberBand(QRubberBand::Rectangle, ed);
-  rubberband->show();
-  rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
-                          .toRect());
-}
-
-void EData::doubleClickPlane(Point p) {
-  Group const &here(currentGroup());
-  NodeID nid = here.nodeAt(p, pressMargin(), props.layer, true);
-  qDebug() << "dcp" << nid;
-  if (nid.isEmpty())
-    return;
-  Object const &obj(here.object(nid));
-  if (obj.isPad()) {
-    UndoCreator uc(this, true);
-    Pad &pad(currentGroup().object(nid).asPad());
-    pad.fpcon = !pad.fpcon;
-    updateOnWhat(true);
-    ed->update();
-  } else if (obj.isHole()) {
-    UndoCreator uc(this, true);
-    Hole &hole(currentGroup().object(nid).asHole());
-    if (hole.fpcon==props.layer)
-      hole.fpcon = Layer::Invalid;
-    else
-      hole.fpcon = props.layer;
-    updateOnWhat(true);
-    ed->update();
-  }  
 }
 
 void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {

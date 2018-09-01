@@ -34,9 +34,11 @@ public:
   Object &object(NodeID const &);
   QList<int> keys() const;
   bool isEmpty() const;
-  Group const &subgroup(QList<int> path) const; // follows breadcrumbs
-  Group &subgroup(QList<int> path);
+  Group const &subgroup(NodeID path) const; // follows breadcrumbs
+  Group &subgroup(NodeID path);
   // Caution: Do NOT change the empty group that may be returned.
+  Group const &parentOf(NodeID) const;
+  Group &parentOf(NodeID);
   Rect boundingRect() const; // relative to parent
   bool touches(Point p, Dim mrg=Dim()) const;
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent

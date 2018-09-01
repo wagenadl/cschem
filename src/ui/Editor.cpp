@@ -4,6 +4,7 @@
 #include "EData.h"
 #include "UndoCreator.h"
 #include "Tracer.h"
+#include "PlaneEditor.h"
 
 #include <QInputDialog>
 #include <QResizeEvent>
@@ -24,6 +25,16 @@ void Editor::setMode(Mode m) {
   d->mode = m;
   d->abortTracing();
   clearSelection();
+  if (m==Mode::PlacePlane) {
+    if (!d->planeeditor)
+      d->planeeditor = new PlaneEditor(d);
+  } else {
+    if (d->planeeditor) {
+      delete d->planeeditor;
+      d->planeeditor = 0;
+    }
+  }
+  update();
 }
 
 bool Editor::load(QString fn) {
@@ -116,8 +127,8 @@ void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
 	leaveGroup();
       else 
 	doubleClickOn(p, fave);
-    } else if (d->mode == Mode::PlacePlane) {
-      d->doubleClickPlane(p);
+    } else if (d->planeeditor) {
+      d->planeeditor->doubleClick(p, e->button(), e->modifiers());
     }
   }
 }
@@ -154,7 +165,8 @@ void Editor::mousePressEvent(QMouseEvent *e) {
 	d->pressPickingUp(p);
 	break;
       case Mode::PlacePlane:
-        d->pressPlacePlane(p);
+        Q_ASSERT(d->planeeditor);
+        d->planeeditor->mousePress(p, e->button(), e->modifiers());
         break;
       default:
 	break;
@@ -182,6 +194,8 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
 
   if (!d->moving && !d->tracer)
     updateOnNet();
+  if (d->planeeditor)
+    d->planeeditor->mouseMove(p, e->button(), e->modifiers());
 }
 
 void Editor::updateOnNet() {
@@ -203,6 +217,8 @@ void Editor::mouseReleaseEvent(QMouseEvent *e) {
     d->releaseBanding(p);
   else if (d->moving)
     d->releaseMoving(p);
+  if (d->planeeditor)
+    d->planeeditor->mouseRelease(p, e->button(), e->modifiers());
   d->panning = false;
 }
 
@@ -246,13 +262,18 @@ void Editor::paintEvent(QPaintEvent *) {
   d->drawGrid(p);
   d->drawObjects(p);
   d->drawSelectedPoints(p);
-  d->drawTracing(p);
+  if (d->tracer)
+    d->tracer->render(p);
+  if (d->planeeditor)
+    d->planeeditor->render(p);
 }
 
 void Editor::setGrid(Dim g) {
   Board &brd = d->layout.board();  
   if (g != brd.grid) {
     brd.grid = g;
+    if (d->planeeditor)
+      d->planeeditor->resetMouseMargin();
     update();
     emit boardChanged(brd);
   }
@@ -545,6 +566,8 @@ void Editor::setLayer(Layer l) {
       break;
     }
   }
+  if (d->planeeditor)
+    update();
 }
 
 void Editor::setID(Dim x) {
@@ -708,7 +731,7 @@ void Editor::setFontSize(Dim fs) {
   }
 }
 
-QList<int> Editor::breadcrumbs() const {
+NodeID Editor::breadcrumbs() const {
   return d->crumbs;
 }
 
@@ -896,6 +919,10 @@ void Editor::dissolveGroup() {
 }
 
 void Editor::deleteSelected() {
+  if (d->planeeditor) {
+    d->planeeditor->deleteSelected();
+    return;
+  }
   if (d->selection.isEmpty())
     return;
   UndoCreator uc(d, true);
@@ -1187,4 +1214,8 @@ void Editor::paste() {
   d->purepts.clear();
   for (Object const &obj: lst)
     d->selection << here.insert(obj);
+}
+
+PlaneEditor *Editor::planeEditor() const {
+  return d->planeeditor;
 }

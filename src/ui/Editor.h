@@ -20,7 +20,7 @@ public:
   bool load(QString);
   bool save(QString); 
   Layout const &pcbLayout() const;
-  QList<int> breadcrumbs() const; // to currently entered group
+  NodeID breadcrumbs() const; // to currently entered group
   QSet<int> selectedObjects() const; // within currently entered group
   QSet<Point> selectedPoints() const; // not including those in subgroups
   // in absolute board coordinates
@@ -36,6 +36,7 @@ public:
   bool isRedoAvailable() const;
   bool isAsSaved() const;
   double pixelsPerMil() const;
+  class PlaneEditor *planeEditor() const;
 public slots:
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);

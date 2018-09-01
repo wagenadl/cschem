@@ -42,6 +42,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
     t.id = Dim::fromString(a.value("id").toString(), &ok);
   if (ok)
     t.od = Dim::fromString(a.value("od").toString(), &ok);
+  t.fpcon = Layer(a.value("fp").toInt());
   t.noclear = a.value("noclear").toInt() != 0;
   s.skipCurrentElement();
   return s;
@@ -74,7 +75,6 @@ bool Hole::touches(Trace const &t) const {
 }
 
 bool Hole::touches(FilledPlane const &fp) const {
-  qDebug() << "hole:touches fp" << *this << fp;
   if (noclear || fpcon==fp.layer)
     return fp.perimeter.contains(p, od/2);
   else
