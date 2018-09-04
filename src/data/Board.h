@@ -18,6 +18,7 @@ public:
   // (used for round and rectangular pads)
   Dim maskMargin(Dim od) const; // margin for solder mask around object
   Dim maskMargin(Dim w, Dim h) const; // margin for solder mask around object
+  Dim fpConWidth(Dim w, Dim h) const; // width for filled-plane connection
 public:
   Dim width;
   Dim height;

@@ -74,6 +74,14 @@ bool Segment::onSegment(Point p, Dim mrg) const {
   return a < m*b;
 }
 
+bool Segment::touches(Segment const &t, Point *intersection) const {
+  bool res;
+  Point p = intersectionWith(t, &res);
+  if (intersection)
+    *intersection = p;
+  return res;
+}
+
 Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
   /* This implementation is really primitive; it ignores segment width */
   /* Mathematical idea: represent us as p1 + a dp where a in [0, 1] and
@@ -85,9 +93,12 @@ Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
      (2)    dy a - dy' a' = y1' - y1
      Multiply (1) by dy and (2) by dx and subtract:
             0 - (dx' dy  -  dy' dx) a' = dy (x1' - x1) - dx (y1' - y1)
-     to find a', and multiple (1) by dy' and (2) by dx' and subtract:
+     to find a':
+       a' = - [dy (x1' - x1) - dx (y1' - y1)] / (dx' dy  -  dy' dx)
+     And multiply (1) by dy' and (2) by dx' and subtract:
             (dx dy' - dy dx') a = dy' (x1' - x1) - dx' (y1' - y1)
-     to find a.
+     to find a:
+       a = [dy' (x1' - x1) - dx' (y1' - y1)] / (dx dy' - dy dx')
   */
   
   double x1 = p1.x.toMils();
@@ -99,7 +110,7 @@ Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
   double dx_ = t.p2.x.toMils() - x1_;
   double dy_ = t.p2.y.toMils() - y1_;
   double nrm = dx*dy_ - dy*dx_;
-  if (fabs(nrm<1e-6)) {
+  if (fabs(nrm)<1e-6) {
     // parallel; "intersects" iff directly overlapping
     if (onSegment(t.p1, Dim::fromMM(.001))) {
       if (ok)

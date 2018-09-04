@@ -13,6 +13,7 @@ public:
   QString toString() const;
   QPolygonF toMils() const;
   bool contains(Point p, Dim mrg=Dim()) const;
+  void translate(Point const &);
 };
 
 #endif

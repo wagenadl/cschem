@@ -316,12 +316,12 @@ void EData::drawNetMismatch(ORenderer &rndr) const {
   rndr.setLayer(Layer::Silk, ORenderer::Sublayer::Main);
   rndr.setOverride(ORenderer::Override::WronglyIn);
   for (NodeID const &nid: netmismatch.wronglyInNet) {
-    Object const &obj(nid.deref(layout.root()));
+    Object const &obj(layout.root().object(nid));
     rndr.drawObject(obj);
   }
   rndr.setOverride(ORenderer::Override::Missing);
   for (NodeID const &nid: netmismatch.missingFromNet) {
-    Object const &obj(nid.deref(layout.root()));
+    Object const &obj(layout.root().object(nid));
     rndr.drawObject(obj);
   }
   rndr.setOverride(ORenderer::Override::None);
@@ -488,10 +488,6 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
     Object const &obj = here.object(id);
     Layer l = obj.layer();
     switch (obj.type()) {
-    case Object::Type::Plane:
-      if (brd.layervisible[l])
-	p1 = l==Layer::Bottom ? Prio::BottomPlane : Prio::TopPlane;
-    break;
     case Object::Type::Trace:
       if (brd.layervisible[l])
 	p1 = l==Layer::Bottom ? Prio::BottomTrace
@@ -513,6 +509,15 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
     case Object::Type::Group:
       p1 = Prio::Silk;
       break;
+    case Object::Type::Plane:
+      qDebug() << "vis plane" << int(l)
+               << brd.planesvisible << brd.layervisible[l];
+      if (brd.planesvisible && brd.layervisible[l])
+        p1 = l==Layer::Bottom ? Prio::BottomPlane
+          : l==Layer::Top ? Prio::TopPlane
+          : Prio::None;
+      qDebug() << int(p1);
+      break;
     default:
       break;
     }
@@ -525,6 +530,8 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
 }
 
 void EData::pressPlacePlane(Point p) {
+  int fave = visibleObjectAt(p, Dim());
+  qDebug() << "ppp" << fave;  
   p = p.roundedTo(layout.board().grid);
   presspoint = p;
   if (!rubberband)
@@ -532,7 +539,32 @@ void EData::pressPlacePlane(Point p) {
   rubberband->show();
   rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
                           .toRect());
-}  
+}
+
+void EData::doubleClickPlane(Point p) {
+  Group const &here(currentGroup());
+  NodeID nid = here.nodeAt(p, pressMargin(), props.layer, true);
+  qDebug() << "dcp" << nid;
+  if (nid.isEmpty())
+    return;
+  Object const &obj(here.object(nid));
+  if (obj.isPad()) {
+    UndoCreator uc(this, true);
+    Pad &pad(currentGroup().object(nid).asPad());
+    pad.fpcon = !pad.fpcon;
+    updateOnWhat(true);
+    ed->update();
+  } else if (obj.isHole()) {
+    UndoCreator uc(this, true);
+    Hole &hole(currentGroup().object(nid).asHole());
+    if (hole.fpcon==props.layer)
+      hole.fpcon = Layer::Invalid;
+    else
+      hole.fpcon = props.layer;
+    updateOnWhat(true);
+    ed->update();
+  }  
+}
 
 void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
   Dim mrg = pressMargin();
@@ -725,6 +757,8 @@ void EData::releaseBanding(Point p) {
     break;
   case Mode::PlacePlane: {
     p = p.roundedTo(layout.board().grid);
+    if (p==presspoint)
+      return;
     UndoCreator uc(this, true);
     FilledPlane fp;
     fp.layer = props.layer;

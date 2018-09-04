@@ -1,107 +1,173 @@
-// PCBNet.cpp
+// PCBNet2.cpp
 
 #include "PCBNet.h"
-#include "Group.h"
 #include "Object.h"
-#include "Point.h"
-#include "LayerPoint.h"
 
-#include <QMultiMap>
+// Alternate implementation of PCBNet
 
 class Builder {
 public: 
-  Builder(Group const &root, NodeID seed);
-  QSet<NodeID> const &pcbNet() const { return net; }
-  void buildNetLocations(LayerPoint p);
-  void addConnections(Group const &root);
-  void buildPCBNet(Group const &root, NodeID pfx);
-private:
-  QMultiMap<LayerPoint, LayerPoint> connections;
-  QSet<LayerPoint> in;
+  Builder(Group const &root): root(root) { }
+  void insertRecursively(NodeID);
+  void insertFriendsOfTrace(Trace const &t, NodeID groupid);
+  void insertFriendsOfHole(Hole const &h, NodeID groupid);
+  void insertFriendsOfPad(Pad const &p, NodeID groupid);
+  void insertFriendsOfPlane(FilledPlane const &fp, NodeID groupid);
+public:
+  Group const &root;
   QSet<NodeID> net;
 };
 
-Builder::Builder(Group const &root, NodeID seed) {
-  if (seed.isEmpty())
+void Builder::insertRecursively(NodeID nid) {
+  //  qDebug() << "insertrecursively" << nid;
+  if (net.contains(nid))
     return;
-  addConnections(root);
-  buildNetLocations(seed.location(root));
-  buildPCBNet(root, NodeID());
+  net << nid;
+  // now find everything that thouches nid
+  Object const &obj(root.object(nid));
+  //  qDebug() << "   that is" << obj;
+  switch (obj.type()) {
+  case Object::Type::Trace: 
+    insertFriendsOfTrace(obj.asTrace(), NodeID());
+    break;
+  case Object::Type::Hole:
+    insertFriendsOfHole(obj.asHole(), NodeID());
+    break;
+  case Object::Type::Pad:
+    insertFriendsOfPad(obj.asPad(), NodeID());
+    break;
+  case Object::Type::Plane:
+    insertFriendsOfPlane(obj.asPlane(), NodeID());
+    break;
+  default:
+    break;
+  }
 }
 
-void Builder::buildPCBNet(Group const &root, NodeID pfx) {
-  for (int id: root.keys()) {
-    Object const &obj(root.object(id));
-    if (obj.isTrace()) {
-      Trace const &h(obj.asTrace());
-      LayerPoint lp1(h.layer, h.p1);
-      LayerPoint lp2(h.layer, h.p2);
-      if (in.contains(lp1) || in.contains(lp2))
-	net << pfx.plus(id);
-    } else if (obj.isHole()) {
-      Hole const &h(obj.asHole());
-      LayerPoint lp1(Layer::Top, h.p);
-      LayerPoint lp2(Layer::Bottom, h.p);
-      if (in.contains(lp1) || in.contains(lp2))
-	net << pfx.plus(id);
-    } else if (obj.isPad()) {
-      Pad const &h(obj.asPad());
-      LayerPoint lp1(h.layer, h.p);
-      if (in.contains(lp1))
-	net << pfx.plus(id);
-    } else if (obj.isGroup()) {
-      Group const &h(obj.asGroup());
-      buildPCBNet(h, pfx.plus(id));
+void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
+  Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  for (int id: univ.keys()) {
+    NodeID nid = grpid.plus(id);
+    if (net.contains(nid))
+      continue;
+    Object const &obj(univ.object(id));
+    switch (obj.type()) {
+    case Object::Type::Pad:
+      if (obj.asPad().touches(tr))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Hole:
+      if (obj.asHole().touches(tr))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Trace:
+      //if (obj.asTrace().layer!=Layer::Silk)
+      //  qDebug() << "testing" << tr << "vs" << obj.asTrace();
+      if (obj.asTrace().touches(tr))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Plane:
+      // traces do not touch planes
+      break;
+    case Object::Type::Group:
+      insertFriendsOfTrace(tr, nid);
+      break;
+    default:
+      break;
     }
   }
 }
 
-void Builder::buildNetLocations(LayerPoint p1) {
-  QList<LayerPoint> border;
-  QSet<LayerPoint> seen;
-
-  border << p1;
-  
-  while (!border.isEmpty()) {
-    LayerPoint lp(border.takeLast());
-    in << lp;
-    auto rng(connections.equal_range(lp));
-    for (auto it=rng.first; it!=rng.second; ++it)
-      if (!seen.contains(*it))
-	border << *it;
-    seen << lp;
-  }
+void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
+  Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  for (int id: univ.keys()) {
+    NodeID nid = grpid.plus(id);
+    if (net.contains(nid))
+      continue;
+    Object const &obj(univ.object(id));
+    switch (obj.type()) {
+    case Object::Type::Trace:
+      if (h.touches(obj.asTrace()))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Plane:
+      qDebug() << "Hole touches plane?" << h << obj.asPlane();
+      if (h.touches(obj.asPlane())) {
+        qDebug() << " yes ";
+        insertRecursively(nid);
+      }
+      break;
+    default:
+      break;
+    }
+  }      
 }
 
-void Builder::addConnections(Group const &root) {
-  for (int id: root.keys()) {
-    Object const &obj(root.object(id));
-    if (obj.isHole()) {
-      Hole const &h(obj.asHole());
-      LayerPoint lp1(Layer::Top, h.p);
-      LayerPoint lp2(Layer::Bottom, h.p);
-      connections.insert(lp1, lp2);
-      connections.insert(lp2, lp1);
-    } else if (obj.isTrace()) {
-      Trace const &h(obj.asTrace());
-      LayerPoint lp1(h.layer, h.p1);
-      LayerPoint lp2(h.layer, h.p2);
-      connections.insert(lp1, lp2);
-      connections.insert(lp2, lp1);
-    }	else if (obj.isGroup()) {
-      addConnections(obj.asGroup());
+void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
+  Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  for (int id: univ.keys()) {
+    NodeID nid = grpid.plus(id);
+    if (net.contains(nid))
+      continue;
+    Object const &obj(univ.object(id));
+    switch (obj.type()) {
+    case Object::Type::Trace:
+      if (pad.touches(obj.asTrace()))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Plane:
+      if (pad.touches(obj.asPlane()))
+        insertRecursively(nid);
+      break;
+    default:
+      break;
+    }
+  }      
+}
+
+void Builder::insertFriendsOfPlane(FilledPlane const &fp, NodeID grpid) {
+  Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  for (int id: univ.keys()) {
+    NodeID nid = grpid.plus(id);
+    if (net.contains(nid))
+      continue;
+    Object const &obj(univ.object(id));
+    switch (obj.type()) {
+    case Object::Type::Pad:
+      if (obj.asPad().touches(fp))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Hole:
+      if (obj.asHole().touches(fp))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Plane:
+      if (obj.asPlane().touches(fp))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Group:
+      insertFriendsOfPlane(fp, nid);
+      break;
+    default:
+      break;
     }
   }
 }
+
 
 PCBNet::PCBNet(): somenode("", "") {
+  havesomenode = false;
 }
 
 PCBNet::PCBNet(Group const &root, NodeID seed): root_(root), seed_(seed),
 						somenode("", "") {
-  Builder builder(root, seed);
-  nodes_ = builder.pcbNet();
+  // qDebug() << "PCBNet from" << seed;
   havesomenode = false;
+  // flood fill using things that touch seed
+  Builder bld(root);
+  bld.insertRecursively(seed);
+  nodes_ = bld.net;
+  // report();
 }
 
 Nodename PCBNet::someNode() const {

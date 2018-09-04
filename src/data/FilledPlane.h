@@ -20,6 +20,7 @@ public:
   bool isValid() const { return perimeter.size()>2 && layer!=Layer::Invalid; }
   Rect boundingRect() const;
   bool contains(Point p, Dim mrg=Dim()) const;
+  bool touches(FilledPlane const &) const;
 };
 
 QDebug operator<<(QDebug, FilledPlane const &);

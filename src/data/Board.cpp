@@ -73,6 +73,10 @@ Dim Board::padClearance(Dim, Dim) const {
   return Dim::fromMils(15);
 }
 
+Dim Board::fpConWidth(Dim, Dim) const {
+  return Dim::fromMils(12);
+}
+
 Dim Board::maskMargin(Dim) const {
   return Dim::fromMils(10);
 }  

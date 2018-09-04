@@ -43,3 +43,10 @@ QDebug operator<<(QDebug d, FilledPlane const &t) {
 bool FilledPlane::contains(Point p, Dim mrg) const {
   return perimeter.contains(p, mrg);
 }
+
+bool FilledPlane::touches(FilledPlane const &fp) const {
+  bool got = layer==fp.layer
+    && !perimeter.toMils().intersected(fp.perimeter.toMils()).isEmpty();
+  qDebug() << "fp touch" << got;
+  return got;
+}

@@ -30,6 +30,8 @@ public:
   bool contains(int) const;
   Object const &object(int) const;
   Object &object(int);
+  Object const &object(NodeID const &) const;
+  Object &object(NodeID const &);
   QList<int> keys() const;
   bool isEmpty() const;
   Group const &subgroup(QList<int> path) const; // follows breadcrumbs
@@ -68,8 +70,6 @@ public:
   QString pinName(int) const; // ref for given object or "" if not Hole/Pad
   Point pinPosition(QString name) const;
   Point anchor() const; // first named pin
-  void insertSegmentedTrace(class Trace const &t, Dim maxsnap);
-  Point intersectionWith(class Trace const &t, int *idp=0) const;
   void setPinRef(int id, QString ref);
   /* Sets reference for object ID (which must be Hole or Pad). Also
      steals that reference from other objects. E.g., if there is a pin

@@ -42,8 +42,10 @@ HEADERS += gerber/Collector.h   gerber/GerberFile.h gerber/GerberWriter.h
 SOURCES += gerber/Collector.cpp gerber/Gerber.cpp   gerber/GerberWriter.cpp
 HEADERS += ui/SignalNameCombo.h   ui/PinNameEditor.h   ui/Tracer.h
 SOURCES += ui/SignalNameCombo.cpp ui/PinNameEditor.cpp ui/Tracer.cpp
-HEADERS += data/Polyline.h   data/FilledPlane.h
-SOURCES += data/Polyline.cpp data/FilledPlane.cpp
+HEADERS += data/Polyline.h   data/FilledPlane.h   data/Intersection.h
+SOURCES += data/Polyline.cpp data/FilledPlane.cpp data/Intersection.cpp
+HEADERS += data/TraceRepair.h
+SOURCES += data/TraceRepair.cpp
 
 # From CSCHEM
 HEADERS += circuit/IDFactory.h

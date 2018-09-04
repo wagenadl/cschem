@@ -62,6 +62,7 @@ public:
   void releaseMoving(Point);
   void pressPanning(QPoint);
   void movePanning(QPoint);
+  void doubleClickPlane(Point);
   void dropFromSelection(int id, Point p, Dim mrg);
   void startMoveSelection(int fave=-1);
   void newSelectionUnless(int id, Point p, Dim mrg, bool add);

@@ -207,6 +207,38 @@ Object &Group::object(int key) {
   return d->obj[key];
 }
 
+Object const &Group::object(NodeID const &id) const {
+  static Object nil;
+  if (id.isEmpty() || !contains(id[0]))
+    return nil;
+  Object const &obj(object(id[0]));
+  if (id.size()==1)
+    return obj;
+  if (obj.isGroup())
+    return obj.asGroup().object(id.tail());
+  else
+    return nil;
+}
+
+Object &Group::object(NodeID const &id) {
+  static Object nil;
+  if (id.isEmpty()) {
+    qDebug() << "Returning nonconst reference to nil.";
+    return nil;
+  }
+  d.detach();
+  d->hasbbox = false;
+  Object &obj(object(id[0]));
+  if (id.size()==1)
+    return obj;
+  if (obj.isGroup()) {
+    return obj.asGroup().object(id.tail());
+  } else {
+    qDebug() << "Returning nonconst reference to nil.";
+    return nil;
+  }
+}
+
 QList<int> Group::keys() const {
   return d->obj.keys();
 }
@@ -494,8 +526,18 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace) const {
       case Object::Type::Trace:
         if (!notrace && ids.isEmpty()
 	    && (lay==obj.asTrace().layer
-		|| (lay==Layer::Invalid && obj.asTrace().layer!=Layer::Silk)))
+		|| (lay==Layer::Invalid && obj.asTrace().layer!=Layer::Silk))) {
+          ids.clear();
 	  ids << id; // this could still be overwritten!
+        }
+        break;
+      case Object::Type::Plane:
+        if (!notrace && ids.isEmpty()
+	    && (lay==obj.asPlane().layer
+		|| lay==Layer::Invalid)) {
+          ids.clear();
+	  ids << id; // this could still be overwritten!
+        }
         break;
       default:
         break;
@@ -691,79 +733,6 @@ QDebug operator<<(QDebug d, Group const &t) {
   return d;
 }
 
-void Group::insertSegmentedTrace(Trace const &t, Dim maxsnap) {
-  /* Find out whether there are any traces, holes, or pads crossed by the
-     newly proposed trace. If so, break the trace into two parts at the
-     crossing point (possibly mildly distorting it), and insert both parts
-     recursively. Otherwise, simply insert the trace. */
-  // t is specified in terms of parents coords.
-  qDebug() << "insertsegmentedtrace" << t << maxsnap << t.p1.distance(t.p2).toMils();
-  if (t.p1==t.p2)
-    return;
-  
-  int id;
-  Point p = intersectionWith(t, &id);
-  Dim len = Point::distance(t.p1, t.p2);
-  qDebug() << " => " << id << p << len;
-  if (id>0 && t.p1.distance(p) < len && t.p2.distance(p) < len) {
-    Object const &ocross(object(id));
-    if (ocross.isTrace()) {
-      Trace const &tcross(ocross.asTrace());
-      Dim lcr = Point::distance(tcross.p1, tcross.p2);
-      if (p!=tcross.p1 && p!=tcross.p2
-          && p.distance(tcross.p1)<lcr && p.distance(tcross.p2)<lcr) {
-        // we are crossing somewhere in the middle of the crossing trace
-        // => break the crossing trace up
-	Trace tc1(tcross);
-	tc1.p2 = p;
-	Trace tc2(tcross);
-	tc2.p1 = p;
-	remove(id);
-	insert(Object(tc1));
-	insert(Object(tc2));
-      }
-    }
-
-    if (p==t.p1 || p==t.p2) {
-      // easy
-      insert(Object(t));
-    } else {
-      Trace t1(t);
-      t1.p2 = p;
-      Trace t2(t);
-      t2.p1 = p;
-      insertSegmentedTrace(t1, maxsnap);
-      insertSegmentedTrace(t2, maxsnap);
-    }
-  } else {
-    qDebug() << "insert";
-    insert(Object(t));
-  }
-}
-
-Point Group::intersectionWith(class Trace const &t, int *idp) const {
-  Trace t1(t);
-  t1.p1 = t.p1;
-  t1.p2 = t.p2;
-  int qual = 0;
-  Point res;
-  int idres = -1;
-  for (int id: keys()) {
-    Object const &obj(object(id));
-    bool got;
-    Point p = intersectionPoint(t1, obj, &got);
-    int qual1 = obj.isTrace() ? 1 : 2;
-    if (got && qual1>qual) {
-      res = p;
-      qual = qual1;
-      idres = id;
-    }
-  }
-  if (idp)
-    *idp = idres;
-  return res;
-}
-
 NodeID Group::findNodeByName(Nodename name) const {
   for (int id: d->obj.keys()) {
     Object const &obj(d->obj[id]);
@@ -795,3 +764,4 @@ NodeID Group::findNodeByName(Nodename name) const {
 
   return NodeID();
 }
+

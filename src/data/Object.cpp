@@ -21,6 +21,7 @@ public:
     text = 0;
     trace = 0;
     group = 0;
+    plane = 0;
     typ = Object::Type::Null;
   }
   OData(OData const &o): OData() {
@@ -36,6 +37,8 @@ public:
       trace = new Trace(*o.trace);
     if (o.group)
       group = new Group(*o.group);
+    if (o.plane)
+      plane = new FilledPlane(*o.plane);
     typ = o.typ;
   }
   OData &operator=(OData const &o) {
@@ -48,12 +51,14 @@ public:
     delete text;
     delete trace;
     delete group;
+    delete plane;
     hole = 0;
     pad = 0;
     arc = 0;
     text = 0;
     trace = 0;
     group = 0;
+    plane = 0;
 
     if (o.hole)
       hole = new Hole(*o.hole);
@@ -67,6 +72,8 @@ public:
       trace = new Trace(*o.trace);
     if (o.group)
       group = new Group(*o.group);
+    if (o.plane)
+      plane = new FilledPlane(*o.plane);
     typ = o.typ;
     return *this;
   }
@@ -78,6 +85,7 @@ public:
     delete text;
     delete trace;
     delete group;
+    delete plane;
   }
 };
 
@@ -353,7 +361,7 @@ bool Object::touches(Point p, Dim mrg) const {
   case Type::Arc:
     return asArc().onEdge(p, mrg);
   case Type::Plane:
-    return false;
+    return asPlane().contains(p);
   default:
     return boundingRect().grow(mrg/2).contains(p);
   }
@@ -392,6 +400,8 @@ Layer Object::layer() const {
     return asTrace().layer;
   case Type::Arc:
     return asArc().layer;
+  case Type::Plane:
+    return asPlane().layer;
   default:
     return Layer::Invalid;
   }
@@ -426,6 +436,10 @@ void Object::translate(Point const &p) {
     break;
   case Type::Arc:
     d->arc->center += p;
+    break;
+  case Type::Plane:
+    d->plane->perimeter.translate(p);
+    break;
   default:
     break;
   }
@@ -522,36 +536,4 @@ void Object::flipUpDown(Dim y0) {
     asGroup().flipUpDown(y0);
     break;
   }
-}
-
-Point intersectionPoint(Object const &o, Trace const &t, bool *ok) {
-  switch (o.type()) {
-  case Object::Type::Null:
-    break;
-  case Object::Type::Hole:
-    return o.asHole().intersectionWith(t, ok);
-  case Object::Type::Pad:
-    return o.asPad().intersectionWith(t, ok);
-  case Object::Type::Arc:
-    break;
-  case Object::Type::Text:
-    break;
-  case Object::Type::Trace:
-    return o.asTrace().intersectionWith(t, ok);
-  case Object::Type::Plane:
-    break;
-  case Object::Type::Group: {
-    int id;
-    o.asGroup().intersectionWith(t, &id);
-    if (ok)
-      *ok = id>0;
-  } break;
-  }
-  if (ok)
-    *ok = false;
-  return Point();
-}
-
-Point intersectionPoint(Trace const &t, Object const &o, bool *ok) {
-  return intersectionPoint(o, t, ok);
 }

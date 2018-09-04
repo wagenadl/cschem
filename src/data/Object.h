@@ -79,9 +79,6 @@ private:
   QSharedDataPointer<class OData> d;
 };
 
-Point intersectionPoint(Object const &o, Trace const &t, bool *ok=0);
-Point intersectionPoint(Trace const &t, Object const &o, bool *ok=0);
-
 QDebug operator<<(QDebug, Object const &);
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Object const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Object &);
