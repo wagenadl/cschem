@@ -5,6 +5,7 @@
 #define POLYLINE_H
 
 #include "Point.h"
+#include "Segment.h"
 #include <QVector>
 
 class Polyline: public QVector<Point> {
@@ -14,7 +15,9 @@ public:
   QPolygonF toMils() const;
   bool contains(Point p, Dim mrg=Dim()) const;
   void translate(Point const &);
-  bool selfIntersects(int idx) const; // check given vertex and its edges
+  bool acceptableMove(int idx, Point p) const;
+  Point vertex(int idx) const; // idx is taken mod-N.
+  Segment edge(int idx) const; // segment following given edge.
 };
 
 #endif

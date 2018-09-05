@@ -49,13 +49,24 @@ void PlaneEditor::resetMouseMargin() {
 
 void PlaneEditor::deleteSelected() {
   qDebug() << "PE:Delete";
+  if (d->hoveredgeidx>=0)
+    return; // not doing anything
   Group const &here(ed->currentGroup());
   Object const &obj(here.object(d->hovernode));
   if (obj.isPlane()) {
+    if (d->hoverptidx>=0 && obj.asPlane().perimeter.size()<=3)
+      return;
+    // are there other ways in which we might get in trouble?
+    // yes, we could be creating very thin needles. But I am going to allow
+    // that for now.
     UndoCreator(ed, true);
     Group &grp(ed->currentGroup().parentOf(d->hovernode));
-    grp.remove(d->hovernode.last());
-    d->hovernode = NodeID();
+    if (d->hoverptidx>=0) {
+      grp.object(d->hovernode.last()).asPlane().perimeter.remove(d->hoverptidx);
+    } else {
+      grp.remove(d->hovernode.last());
+      d->hovernode = NodeID();
+    }
     ed->ed->update();
   }
 }
@@ -197,9 +208,7 @@ void PlaneEditor::mouseMove(Point p,
     FilledPlane &fp(obj.asPlane());
     // following is not sufficient if we need to worry about self-intersections
     p = (p + d->premovept - d->presspt).roundedTo(ed->layout.board().grid);
-    Polyline pp = fp.perimeter;
-    pp[d->hoverptidx] = p;
-    if (!pp.selfIntersects(d->hoverptidx))
+    if (fp.perimeter.acceptableMove(d->hoverptidx, p))
       fp.perimeter[d->hoverptidx] = p;
     ed->ed->update();
   } else if (d->creating) {

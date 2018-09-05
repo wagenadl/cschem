@@ -62,23 +62,39 @@ void Polyline::translate(Point const &p1) {
     p += p1;
 }
 
-bool Polyline::selfIntersects(int idx) const {
+Point Polyline::vertex(int n) const {
+  int N = size();
+  if (N==0)
+    return Point();
+  n = n % N;
+  if (n<0)
+    n += N;
+  return operator[](n);
+}
+
+Segment Polyline::edge(int idx) const {
+  return Segment(vertex(idx), vertex(idx+1));
+}
+
+bool Polyline::acceptableMove(int idx, Point p) const {
   int N = size();
   if (idx<0 || idx>=N || N<2)
     return false; // hmmm.
-  QVector<Point> const &pp(*this);
-  Segment a(pp[idx], pp[(idx+1)%N]);
-  for (int tst=idx+2; tst<idx-1+N; tst++) {
-    Segment s(pp[tst%N], pp[(tst+1)%N]);
-    if (a.touches(s)) 
-      return true;
-  }
-  if (Segment(pp[(idx+1)%N], pp[(idx+2)%N])
-      .touches(Segment(pp[(idx+N-1)%N], pp[idx])))
-    return true;
-  if (Segment(pp[(idx+1)%N], pp[(idx+2)%N]).betweenEndpoints(pp[idx]))
-    return true;
-  if (Segment(pp[(idx+N-1)%N], pp[idx%N]).betweenEndpoints(pp[idx]))
-    return true;
-  return false;
+  Segment a(p, vertex(idx+1));
+  Segment b(vertex(idx-1), p);
+  for (int tst=idx+2; tst<idx-1+N; tst++)
+    if (a.touches(edge(tst)))
+      return false;
+  if (edge(idx+1).touches(b))
+    return false;
+  if (edge(idx+1).betweenEndpoints(p))
+    return false;
+  constexpr double LIM = 3.14 * .92; // rather arbitrary...
+  if (fabs(a.angle(edge(idx+1))) > LIM)
+    return false;
+  if (fabs(b.angle(a)) > LIM)
+    return false;
+  if (fabs(edge(idx-2).angle(b)) > LIM)
+    return false;
+  return true;
 }

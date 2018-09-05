@@ -26,7 +26,8 @@ public:
   // Like ONSEGMENT, but not true when on either endpoint
   Point intersectionWith(Segment const &t, bool *ok=0) const;
   bool touches(Segment const &t, Point *intersection=0) const;
-  Point projectionOntoSegment(Point p) const; 
+  Point projectionOntoSegment(Point p) const;
+  double angle(Segment const &t) const; // putting t after us. angle [-pi,+pi).
 private:
   Fraction projectionCoefficient(Point p) const;
 
