@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-06-16T20:33:54",
-  "mod": "2018-08-24T09:59:32",
+  "mod": "2018-09-04T08:44:38",
   "uuid": "ebd324bb",
   "cc": [
     { "typ": "entry",
@@ -59,12 +59,21 @@
     },
     { "typ": "entry",
       "cre": "2018-08-24T09:31:23",
-      "mod": "2018-08-24T09:59:32",
-      "seen": "2018-08-24T09:31:23",
+      "mod": "2018-09-04T08:36:44",
+      "seen": "2018-09-04T08:36:44",
       "sheetCount": 2,
       "startPage": 12,
       "title": "Is a point in filled plane?",
       "uuid": "7bed1257"
+    },
+    { "typ": "entry",
+      "cre": "2018-09-04T08:36:46",
+      "mod": "2018-09-04T08:44:38",
+      "seen": "2018-09-04T08:36:46",
+      "sheetCount": 2,
+      "startPage": 14,
+      "title": "Next steps",
+      "uuid": "35b3adf3"
     }
   ]
 }
