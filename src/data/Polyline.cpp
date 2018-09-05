@@ -61,3 +61,24 @@ void Polyline::translate(Point const &p1) {
   for (Point &p: *this)
     p += p1;
 }
+
+bool Polyline::selfIntersects(int idx) const {
+  int N = size();
+  if (idx<0 || idx>=N || N<2)
+    return false; // hmmm.
+  QVector<Point> const &pp(*this);
+  Segment a(pp[idx], pp[(idx+1)%N]);
+  for (int tst=idx+2; tst<idx-1+N; tst++) {
+    Segment s(pp[tst%N], pp[(tst+1)%N]);
+    if (a.touches(s)) 
+      return true;
+  }
+  if (Segment(pp[(idx+1)%N], pp[(idx+2)%N])
+      .touches(Segment(pp[(idx+N-1)%N], pp[idx])))
+    return true;
+  if (Segment(pp[(idx+1)%N], pp[(idx+2)%N]).betweenEndpoints(pp[idx]))
+    return true;
+  if (Segment(pp[(idx+N-1)%N], pp[idx%N]).betweenEndpoints(pp[idx]))
+    return true;
+  return false;
+}

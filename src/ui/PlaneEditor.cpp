@@ -11,10 +11,10 @@
 class PEData {
 public:
   PEData(EData *ed): ed(ed) {
-    movingptidx = -1;
-    movingedgeidx = -1;
-    realmove = false;
-    startmove = false;
+    hoverptidx = -1;
+    hoveredgeidx = -1;
+    moving = false;
+    creating = false;
   }
 public:
   EData *ed;
@@ -22,13 +22,17 @@ public:
   NodeID hovernode;
   Dim mrg;
   Point presspt;
-  int movingptidx;
-  int movingedgeidx;
-  bool realmove;
-  bool startmove;
+  int hoverptidx;
+  int hoveredgeidx;
+  bool moving;
+  bool creating;
+  Polyline premovepoly;
+  Point premovept;
 public:
-  int onVertex() const;
-  int onEdge() const;
+  int onVertex(Point p) const;
+  int onEdge(Point p, Point *p_out) const;
+  void updateHoverPtIdx();
+  void updateHoverEdgeIdx();
 };
 
 PlaneEditor::PlaneEditor(EData *ed): ed(ed), d(new PEData(ed)) {
@@ -56,51 +60,92 @@ void PlaneEditor::deleteSelected() {
   }
 }
 
-int PEData::onVertex() const {
+void PEData::updateHoverPtIdx() {
+  hoverptidx = onVertex(hoverpt);
+}
+
+void PEData::updateHoverEdgeIdx() {
+  hoveredgeidx = hoverptidx>=0
+    ? -1
+    : onEdge(hoverpt.roundedTo(ed->layout.board().grid), &hoverpt);
+}
+
+int PEData::onVertex(Point p) const {
   Group const &here = ed->currentGroup();
   Object const &obj = here.object(hovernode);
-  if (obj.isPlane()) {
-    FilledPlane const &fp(obj.asPlane());
-    int N = fp.perimeter.size();
-    int nbest = -1;
-    Dim dst = Dim::infinity();
-    for (int n=0; n<N; n++) {
-      Dim dst1 = hoverpt.distance(fp.perimeter[n]);
-      if (dst1 < dst) {
-        dst = dst1;
-        nbest = n;
-      }
+  if (!obj.isPlane())
+    return -1;
+  
+  FilledPlane const &fp(obj.asPlane());
+  int N = fp.perimeter.size();
+  int nbest = -1;
+  Dim dist = Dim::infinity();
+  for (int n=0; n<N; n++) {
+    Dim dist1 = p.distance(fp.perimeter[n]);
+    if (dist1 < dist) {
+      dist = dist1;
+      nbest = n;
     }
-    if (dst < mrg) 
-      return nbest;
   }
-  return -1;
+  if (dist < mrg) 
+    return nbest;
+  else
+    return -1;
 }
   
-int PEData::onEdge() const {
-  return -1; // soon...
+int PEData::onEdge(Point p, Point *p_out) const {
+  Group const &here = ed->currentGroup();
+  Object const &obj = here.object(hovernode);
+  if (!obj.isPlane())
+    return -1;
+  
+  FilledPlane const &fp(obj.asPlane());
+  int N = fp.perimeter.size();
+  for (int n=0; n<N; n++) {
+    Segment s(fp.perimeter[n], fp.perimeter[(n+1)%N]);
+    if (s.betweenEndpoints(p, mrg)) {
+      if (p_out)
+        *p_out = s.projectionOntoSegment(p);
+      return n;
+    }
+  }
+  return -1;
 }
 
 void PlaneEditor::mousePress(Point p, Qt::MouseButton b,
                              Qt::KeyboardModifiers m) {
   mouseMove(p, b, m);
+  if (d->moving || d->creating)
+    return;
   if (d->hovernode.isEmpty()) {
     // not on a node => create a new plane
+    d->creating = true;
     p = p.roundedTo(ed->layout.board().grid);
-    ed->presspoint = p;
-    if (!ed->rubberband)
-      ed->rubberband = new QRubberBand(QRubberBand::Rectangle, ed->ed);
-    ed->rubberband->show();
-    ed->rubberband->setGeometry(QRectF(ed->mils2widget.map(p.toMils()),
-                                       QSize(0,0))
-                                .toRect());
-  } else {
-    d->movingptidx = d->onVertex();
-    d->movingedgeidx = d->movingptidx<0 ? d->onEdge() : -1;
-    d->realmove = false;
-    d->startmove = d->movingptidx>=0 || d->movingedgeidx>=0;
     d->presspt = p;
-    qDebug() << "Press on " << d->movingptidx << d->movingedgeidx;
+    FilledPlane fp;
+    fp.perimeter << p << p << p << p;
+    fp.layer = ed->props.layer;
+    d->hovernode = NodeID();
+    d->hovernode << ed->currentGroup().insert(Object(fp));
+  } else {
+    d->updateHoverPtIdx();
+    d->updateHoverEdgeIdx();
+    if (d->hoverptidx>=0) {
+      d->moving = true;
+      d->presspt = p;
+      d->premovepoly
+        = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
+      d->premovept = d->premovepoly[d->hoverptidx];
+    } else if (d->hoveredgeidx>=0) {
+      d->moving = true;
+      d->presspt = p;
+      d->premovepoly
+        = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
+      ed->currentGroup().object(d->hovernode).asPlane().perimeter
+        .insert(d->hoveredgeidx+1, d->hoverpt);
+      d->hoverptidx = d->hoveredgeidx + 1;
+      d->premovept = d->hoverpt;
+    }
   }
 }
 
@@ -108,49 +153,84 @@ void PlaneEditor::mouseRelease(Point p,
                                Qt::MouseButton b,
                                Qt::KeyboardModifiers m) {
   mouseMove(p, b, m);
-  d->realmove = false;
-  d->startmove = false;
+  if (d->moving) {
+    Polyline postmovepoly
+      = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
+    Point postmovept = postmovepoly[d->hoverptidx];
+    // first, restore...
+    ed->currentGroup().object(d->hovernode).asPlane().perimeter
+      = d->premovepoly;
+    if (postmovept != d->premovept) {
+      // then create undo point...
+      UndoCreator uc(ed, true);
+      // finally remake
+      ed->currentGroup().object(d->hovernode).asPlane().perimeter
+        = postmovepoly;
+    }
+    d->moving = false;
+    ed->ed->update();
+  } else if (d->creating) {
+    FilledPlane fp = ed->currentGroup().object(d->hovernode).asPlane();
+    Polyline postmovepoly = fp.perimeter;
+    // first, restore
+    ed->currentGroup().remove(d->hovernode[0]); // by construction, not deep
+    // then:
+    if (postmovepoly[2].x!=postmovepoly[0].x
+        && postmovepoly[2].y!=postmovepoly[0].y) { // if nonempty
+      UndoCreator uc(ed, true);
+      d->hovernode = NodeID();
+      d->hovernode << ed->currentGroup().insert(Object(fp));
+    }
+    d->creating = false;
+    ed->ed->update();
+  }
 }
 
 void PlaneEditor::mouseMove(Point p,
                             Qt::MouseButton,
                             Qt::KeyboardModifiers) {
+  Point p0 = d->hoverpt;
   d->hoverpt = p;
-  if (ed->rubberband)
-    return;
-  if (d->startmove) {
-    if (p.distance(d->presspt) > ed->pressMargin()) {
-      d->realmove = true;
-      d->startmove = false;
-      UndoCreator uc(ed, true);
-    }
-  }
-  if (d->realmove) {
+  if (d->moving) {
     Group &here = ed->currentGroup();
     Object &obj = here.object(d->hovernode);
-    if (!obj.isPlane()) {
-      qDebug() << "PE move not on object??";
-      return;
-    }
     FilledPlane &fp(obj.asPlane());
-    if (d->movingptidx>=0) {
-      fp.perimeter[d->movingptidx] = p.roundedTo(ed->layout.board().grid);
-      ed->ed->update();
-    }
-  }
-  if (d->startmove || d->realmove)
-    return;
-  if (ed->onnode != d->hovernode) {
-    d->hovernode = ed->onnode;
-    if (ed->onnode.size()==1) {
-      Object const &obj(ed->currentGroup().object(d->hovernode));
-      if (obj.isPlane()) 
-        ed->ed->select(ed->onnode[0]);
-      else
+    // following is not sufficient if we need to worry about self-intersections
+    p = (p + d->premovept - d->presspt).roundedTo(ed->layout.board().grid);
+    Polyline pp = fp.perimeter;
+    pp[d->hoverptidx] = p;
+    if (!pp.selfIntersects(d->hoverptidx))
+      fp.perimeter[d->hoverptidx] = p;
+    ed->ed->update();
+  } else if (d->creating) {
+    p = p.roundedTo(ed->layout.board().grid);
+    Group &here = ed->currentGroup();
+    Object &obj = here.object(d->hovernode);
+    FilledPlane &fp(obj.asPlane());
+    fp.perimeter[2] = p;
+    fp.perimeter[1].x = p.x;
+    fp.perimeter[3].y = p.y;
+    ed->ed->update();
+  } else {
+    if (ed->onnode != d->hovernode) {
+      d->hovernode = ed->onnode;
+      if (ed->onnode.size()==1) {
+        Object const &obj(ed->currentGroup().object(d->hovernode));
+        if (obj.isPlane()) 
+          ed->ed->select(ed->onnode[0]);
+        else
+          ed->ed->clearSelection();
+      } else {
         ed->ed->clearSelection();
-    } else {
-      ed->ed->clearSelection();
+      }
     }
+    int oldptidx = d->hoverptidx;
+    d->updateHoverPtIdx();
+    int oldedgidx = d->hoveredgeidx;
+    d->updateHoverEdgeIdx();
+    if (oldptidx!=d->hoverptidx || oldedgidx!=d->hoveredgeidx
+        || (d->hoveredgeidx>=0 && p0!=d->hoverpt))
+      ed->ed->update();
   }
 }
 
@@ -175,7 +255,7 @@ void PlaneEditor::doubleClick(Point p,
       hole.fpcon = Layer::Invalid;
     else
       hole.fpcon = ed->props.layer;
-    ed->updateOnWhat(true);
+    ed->updateOnWhat(true); // rebuild net
     ed->ed->update();
   }  
 }
@@ -196,7 +276,13 @@ void PlaneEditor::render(QPainter &p) {
     double rad = d->mrg.toMils();
     for (QPointF pt: peri)
       p.drawEllipse(pt, rad, rad);
-      
+    if (d->hoverptidx>=0) {
+      p.setBrush(QColor(255, 255, 255, 128));
+      p.drawEllipse(peri[d->hoverptidx], rad, rad);
+    } else if (d->hoveredgeidx>=0) {
+      p.setBrush(QColor(255, 255, 255, 128));
+      p.drawEllipse(d->hoverpt.toMils(), rad, rad);
+    }
     qDebug() << "Hovering on plane";
   } else {
     qDebug() << "Not on plane";

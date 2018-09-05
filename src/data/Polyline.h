@@ -14,6 +14,7 @@ public:
   QPolygonF toMils() const;
   bool contains(Point p, Dim mrg=Dim()) const;
   void translate(Point const &);
+  bool selfIntersects(int idx) const; // check given vertex and its edges
 };
 
 #endif
