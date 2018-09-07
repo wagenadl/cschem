@@ -175,7 +175,7 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::copyAction);
   menu->addAction(act);
   
-  act = new QAction(tr("&Cut"), this);
+  act = new QAction(tr("Cu&t"), this);
   act->setShortcuts(QKeySequence::Cut);
   act->setStatusTip(tr("Cut selection to clipboard"));
   connect(act, &QAction::triggered, this, &MainWindow::cutAction);
@@ -199,21 +199,19 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::redoAction);
   menu->addAction(act);
 
-  act = new QAction(tr("Rotate &right"), this);
+  act = new QAction(tr("&Rotate clockwise"), this);
   act->setShortcuts(QList<QKeySequence>()
-                    << QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
-  act->setStatusTip(tr("Rotate clockwise"));
+                    << QKeySequence(Qt::CTRL + Qt::Key_R));
   connect(act, &QAction::triggered, this, &MainWindow::rotateCWAction);
   menu->addAction(act);
 
-  act = new QAction(tr("Rotate &left"), this);
+  act = new QAction(tr("Rotate &anticlockwise"), this);
   act->setShortcuts(QList<QKeySequence>()
-                    << QKeySequence(Qt::CTRL + Qt::Key_R));
-  act->setStatusTip(tr("Rotate clockwise"));
+                    << QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
   connect(act, &QAction::triggered, this, &MainWindow::rotateCCWAction);
   menu->addAction(act);
 
-  act = new QAction(tr("Flip"), this);
+  act = new QAction(tr("&Flip"), this);
   act->setShortcuts(QList<QKeySequence>()
                     << QKeySequence(Qt::CTRL + Qt::Key_F));
   act->setStatusTip(tr("Flip horizontally"));

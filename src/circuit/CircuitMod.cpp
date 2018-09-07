@@ -875,6 +875,8 @@ bool CircuitMod::flipElements(QSet<int> eltids) {
     if (d->circ.elements.contains(id)) {
       Element elt = d->circ.elements[id];
       elt.flipped = !elt.flipped;
+      if (elt.rotation & 1)
+	elt.rotation = 4 - elt.rotation;
       QPoint dp = elt.position - p0;
       elt.position = p0 + QPoint(-dp.x(), dp.y());
       elt.namePosition.setX(-elt.namePosition.x());
