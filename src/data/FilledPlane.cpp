@@ -50,3 +50,8 @@ bool FilledPlane::touches(FilledPlane const &fp) const {
   qDebug() << "fp touch" << got;
   return got;
 }
+
+void FilledPlane::flipUpDown(Dim y) {
+  for (Point &p: perimeter)
+    p.y = 2*y - p.y;
+}

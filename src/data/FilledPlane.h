@@ -21,6 +21,7 @@ public:
   Rect boundingRect() const;
   bool contains(Point p, Dim mrg=Dim()) const;
   bool touches(FilledPlane const &) const;
+  void flipUpDown(Dim y);
 };
 
 QDebug operator<<(QDebug, FilledPlane const &);

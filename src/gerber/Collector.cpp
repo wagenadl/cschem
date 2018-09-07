@@ -9,11 +9,12 @@ class ColData {
 public:
   Dim mirrory;
   QMap<Dim, QSet<Point>> holes;
-  QMap<Dim, QSet<Point>> roundHolePads;
-  QMap<Dim, QSet<Point>> squareHolePads;
-  QMap<Layer, QMap<Point, QSet<Point>>> smdPads;
+  QMap<Layer, QMap<Dim, QList<Collector::PadInfo>>> roundHolePads;
+  QMap<Layer, QMap<Dim, QList<Collector::PadInfo>>> squareHolePads;
+  QMap<Layer, QMap<Point, QList<Collector::PadInfo>>> smdPads;
   QMap<Layer, QMap<Dim, QList<Trace>>> traces;
   QMap<Layer, QMap<Dim, QList<Arc>>> arcs;
+  QMap<Layer, QList<Polyline>> filledPlanes;
   QMap<Layer, QMap<Gerber::FontSpec, QList<Text>>> texts;
 };
   
@@ -34,16 +35,24 @@ void Collector::collect(Group const &grp) {
       break;
     case Object::Type::Hole: {
       Hole const &hole(obj.asHole());
-      d->holes[hole.id] << hole.p.flippedUpDown(d->mirrory);
-      if (hole.square)
-	d->squareHolePads[hole.od] << hole.p.flippedUpDown(d->mirrory);
-      else
-	d->roundHolePads[hole.od] << hole.p.flippedUpDown(d->mirrory);
+      Point p(hole.p.flippedUpDown(d->mirrory));
+      d->holes[hole.id] << p;
+      PadInfo padi;
+      padi.p = p;
+      padi.noclear = hole.noclear;
+      auto &map(hole.square ? d->squareHolePads : d->roundHolePads);
+      padi.fpcon = hole.fpcon==Layer::Top;
+      map[Layer::Top][hole.od] << padi;
+      padi.fpcon = hole.fpcon==Layer::Bottom;
+      map[Layer::Bottom][hole.od] << padi;
     } break;
     case Object::Type::Pad: {
       Pad const &pad(obj.asPad());
-      d->smdPads[pad.layer][Point(pad.width, pad.height)]
-	<< pad.p.flippedUpDown(d->mirrory);
+      PadInfo padi;
+      padi.p = pad.p.flippedUpDown(d->mirrory);
+      padi.noclear = pad.noclear;
+      padi.fpcon = pad.fpcon;
+      d->smdPads[pad.layer][Point(pad.width, pad.height)] << padi;
     } break;
     case Object::Type::Trace: {
       Trace trace(obj.asTrace());
@@ -62,6 +71,11 @@ void Collector::collect(Group const &grp) {
       arc.flipUpDown(d->mirrory);
       d->arcs[arc.layer][arc.linewidth] << arc;
     } break;
+    case Object::Type::Plane: {
+      FilledPlane fp(obj.asPlane());
+      fp.flipUpDown(d->mirrory);
+      d->filledPlanes[fp.layer] << fp.perimeter;
+    } break;
     default:
       qDebug() << "unknown type in collect";
       break;
@@ -73,15 +87,17 @@ QMap<Dim, QSet<Point>> const &Collector::holes() const {
   return d->holes;
 }
 
-QMap<Dim, QSet<Point>> const &Collector::roundHolePads() const {
-  return d->roundHolePads;
+QMap<Dim, QList<Collector::PadInfo>> const &
+  Collector::roundHolePads(Layer l) const {
+  return d->roundHolePads[l];
 }
 
-QMap<Dim, QSet<Point>> const &Collector::squareHolePads() const {
-  return d->squareHolePads;
+QMap<Dim, QList<Collector::PadInfo>> const &
+  Collector::squareHolePads(Layer l) const {
+  return d->squareHolePads[l];
 }
 
-QMap<Point, QSet<Point>> const &Collector::smdPads(Layer l) const {
+QMap<Point, QList<Collector::PadInfo>> const &Collector::smdPads(Layer l) const {
   return d->smdPads[l];
   // not strictly const: could create empty map, but that's OK
 }
@@ -92,6 +108,10 @@ QMap<Dim, QList<Trace>> const &Collector::traces(Layer l) const {
 
 QMap<Dim, QList<Arc>> const &Collector::arcs(Layer l) const {
   return d->arcs[l];
+}
+
+QList<Polyline> const &Collector::filledPlanes(Layer l) const {
+  return d->filledPlanes[l];
 }
 
 QMap<Gerber::FontSpec, QList<Text>> const &Collector::texts(Layer l) const {

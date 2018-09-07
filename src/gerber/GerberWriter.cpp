@@ -279,9 +279,19 @@ bool GWData::writePasteMask(Gerber::Layer layer) {
   return true;
 }
 
-bool GWData::writeFilledPlanes(GerberFile &/*out*/, Gerber::Layer /*layer*/) {
-  qDebug() << "GWData::writeFilledPlanes NYI";
-  return true; // safe until filled planes are implemented elsewhere
+bool GWData::writeFilledPlanes(GerberFile &out, Gerber::Layer layer) {
+
+  for (Polyline const &pp: collector.filledPlanes(mapLayer(layer))) {
+    if (pp.isEmpty())
+      continue;
+    out << "G36*\n"; // begin area
+    out << Gerber::point(pp.last()) << "D02*\n";
+    out << "G01*\n";
+    for (Point const &p: pp) 
+      out << Gerber::point(p) << "D01*\n";
+    out << "G37*\n";
+  }
+  return true;
 }
 
 void GWData::collectNonCopperApertures(GerberFile &out, Gerber::Layer layer) {
@@ -304,11 +314,11 @@ void GWData::collectNonCopperApertures(GerberFile &out, Gerber::Layer layer) {
       Dim mrg = 2*layout.board().maskMargin(lw);
       aps.ensure(Gerber::Circ(lw + mrg));
     }
-    for (Dim od: collector.roundHolePads().keys()) {
+    for (Dim od: collector.roundHolePads(mapLayer(layer)).keys()) {
       Dim mrg = 2*layout.board().maskMargin(od);
       aps.ensure(Gerber::Circ(od + mrg));
     }
-    for (Dim od: collector.squareHolePads().keys()) {
+    for (Dim od: collector.squareHolePads(mapLayer(layer)).keys()) {
       Dim mrg = 2*layout.board().maskMargin(od);
       aps.ensure(Gerber::Rect(od + mrg, od + mrg));
     }
@@ -325,17 +335,18 @@ void GWData::collectNonCopperApertures(GerberFile &out, Gerber::Layer layer) {
 
 void GWData::collectCopperClearanceApertures(GerberFile &out,
 					     Gerber::Layer layer) {
+  Layer l = mapLayer(layer);
   Gerber::Apertures
     &aps(out.newApertures(Gerber::Apertures::Func::AntiPad));
-  for (Dim lw: collector.traces(mapLayer(layer)).keys())
+  for (Dim lw: collector.traces(l).keys())
     aps.ensure(Gerber::Circ(lw + 2*layout.board().traceClearance(lw)));
-  for (Dim od: collector.roundHolePads().keys())
+  for (Dim od: collector.roundHolePads(l).keys())
     aps.ensure(Gerber::Circ(od + 2*layout.board().padClearance(od, od)));
-  for (Dim od: collector.squareHolePads().keys()) {
+  for (Dim od: collector.squareHolePads(l).keys()) {
     Dim mrg(2*layout.board().padClearance(od, od));
     aps.ensure(Gerber::Rect(od + mrg, od + mrg));
   }
-  for (Point p: collector.smdPads(mapLayer(layer)).keys()) {
+  for (Point p: collector.smdPads(l).keys()) {
     Dim mrg(2*layout.board().padClearance(p.x, p.y));
     aps.ensure(Gerber::Rect(p.x, p.y));
   }
@@ -343,22 +354,30 @@ void GWData::collectCopperClearanceApertures(GerberFile &out,
 }
 
 void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
+  Layer l = mapLayer(layer);
+  
   bool ispaste = layer==Gerber::Layer::TopPasteMask
     || layer==Gerber::Layer::BottomPasteMask;
   if (!ispaste) { // Apertures for traces
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::Conductor));
-    for (Dim lw: collector.traces(mapLayer(layer)).keys())
+    for (Dim lw: collector.traces(l).keys())
       aps.ensure(Gerber::Circ(lw));
+    for (Dim od: collector.roundHolePads(l).keys())
+      aps.ensure(Gerber::Circ(layout.board().fpConWidth(od, od)));
+    for (Dim od: collector.squareHolePads(l).keys())
+      aps.ensure(Gerber::Circ(layout.board().fpConWidth(od, od)));
+    for (Point wh: collector.smdPads(l).keys())
+      aps.ensure(Gerber::Circ(layout.board().fpConWidth(wh.x, wh.y)));
     out.writeApertures(aps);
   }
 
   if (!ispaste) { // Apertures for component pads
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::ComponentPad));
-    for (Dim od: collector.roundHolePads().keys())
+    for (Dim od: collector.roundHolePads(l).keys())
       aps.ensure(Gerber::Circ(od));
-    for (Dim od: collector.squareHolePads().keys())
+    for (Dim od: collector.squareHolePads(l).keys())
       aps.ensure(Gerber::Rect(od, od));
     out.writeApertures(aps);
   }
@@ -366,7 +385,7 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
   { // Apertures for SMD pads
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::SMDPad));
-    for (Point p: collector.smdPads(mapLayer(layer)).keys())
+    for (Point p: collector.smdPads(l).keys())
       aps.ensure(Gerber::Rect(p.x, p.y));
     out.writeApertures(aps);
   }
@@ -412,13 +431,15 @@ bool GWData::writeText(GerberFile &out, Gerber::Layer layer) {
 }
 
 bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
+  Layer l = mapLayer(layer);
+  
   Gerber::Apertures const
     &aps(out.apertures(Gerber::Apertures::Func::AntiPad));
   out << "G01*\n"; // linear
   out << "%LPC*%\n"; // negative
 
   // Traces
-  auto const &trcs(collector.traces(mapLayer(layer)));
+  auto const &trcs(collector.traces(l));
   for (Dim lw: trcs.keys()) {
     Dim mrg = 2*layout.board().traceClearance(lw);
     out << aps.select(Gerber::Circ(lw + mrg));
@@ -429,32 +450,36 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
   }
 
   // Through-hole component pads
-  for (Dim od: collector.roundHolePads().keys()) {
+  for (Dim od: collector.roundHolePads(l).keys()) {
     Dim mrg = 2*layout.board().padClearance(od, od);
     out << aps.select(Gerber::Circ(od + mrg));
-    for (Point const &p: collector.roundHolePads()[od])
-      out << Gerber::point(p) << "D03*\n";
+    for (Collector::PadInfo const &padi: collector.roundHolePads(l)[od])
+      if (!padi.noclear)
+        out << Gerber::point(padi.p) << "D03*\n";
   }
-  for (Dim od: collector.squareHolePads().keys()) {
+  for (Dim od: collector.squareHolePads(l).keys()) {
     Dim mrg = 2*layout.board().padClearance(od, od);
     out << aps.select(Gerber::Rect(od + mrg, od + mrg));
-    for (Point const &p: collector.squareHolePads()[od])
-      out << Gerber::point(p) << "D03*\n";
+    for (Collector::PadInfo const &padi: collector.squareHolePads(l)[od])
+      if (!padi.noclear)
+        out << Gerber::point(padi.p) << "D03*\n";
   }
 
   // SMD pads
-  auto const &pads(collector.smdPads(mapLayer(layer)));
+  auto const &pads(collector.smdPads(l));
   for (Point p: pads.keys()) {
     Dim mrg = 2*layout.board().padClearance(p.x, p.y);
     out << aps.select(Gerber::Rect(p.x + mrg, p.y + mrg));
-    for (Point const &p: pads[p])
-      out << Gerber::point(p) << "D03*\n";
+    for (Collector::PadInfo const &padi: pads[p])
+      if (!padi.noclear)
+        out << Gerber::point(padi.p) << "D03*\n";
   }
 
   return true;
 }
 
 bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
+  Layer l = mapLayer(layer);
   bool iscopper = layer==Gerber::Layer::TopCopper
     || layer==Gerber::Layer::BottomCopper;
   bool ismask = layer==Gerber::Layer::TopSolderMask
@@ -462,14 +487,14 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
   bool ispaste = layer==Gerber::Layer::TopPasteMask
     || layer==Gerber::Layer::BottomPasteMask;
   
-  if (iscopper) { // Output all traces
+  if (iscopper || layer==Gerber::Layer::TopSilk) { // Output all traces
     Gerber::Apertures const
       &aps(out.apertures(iscopper 
 			 ? Gerber::Apertures::Func::Conductor
 			 : Gerber::Apertures::Func::Material));
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive
-    auto const &trcs(collector.traces(mapLayer(layer)));
+    auto const &trcs(collector.traces(l));
     for (Dim lw: trcs.keys()) {
       out << aps.select(Gerber::Circ(lw));
       for (Trace const &trc: trcs[lw]) {
@@ -483,34 +508,61 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
     // Output all the component pads
     Gerber::Apertures const
       &aps(out.apertures(Gerber::Apertures::Func::ComponentPad));
+    Gerber::Apertures const
+      &trcaps(out.apertures(Gerber::Apertures::Func::Conductor));
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive
-    for (Dim od: collector.roundHolePads().keys()) {
+
+    auto const &rhp(collector.roundHolePads(l));
+    for (Dim od: rhp.keys()) {
       out << aps.select(Gerber::Circ(od));
-      for (Point const &p: collector.roundHolePads()[od])
-	out << Gerber::point(p) << "D03*\n";
+      for (Collector::PadInfo const &padi: rhp[od])
+	out << Gerber::point(padi.p) << "D03*\n";
+      out << trcaps.select(Gerber::Circ(layout.board().fpConWidth(od,od)));
+      Dim dxm = od/2 + layout.board().padClearance(od, od);
+      for (Collector::PadInfo const &padi: rhp[od]) {
+        if (padi.fpcon) {
+          out << Gerber::point(padi.p - Point(dxm,Dim())) << "D02*\n";
+          out << Gerber::point(padi.p + Point(dxm,Dim())) << "D01*\n";
+          out << Gerber::point(padi.p - Point(Dim(),dxm)) << "D02*\n";
+          out << Gerber::point(padi.p + Point(Dim(),dxm)) << "D01*\n";
+        }
+      }
     }
-    for (Dim od: collector.squareHolePads().keys()) {
+    auto const &shp(collector.squareHolePads(l));
+    for (Dim od: shp.keys()) {
       out << aps.select(Gerber::Rect(od, od));
-      for (Point const &p: collector.squareHolePads()[od])
-	out << Gerber::point(p) << "D03*\n";
+      for (Collector::PadInfo const &padi: shp[od])
+	out << Gerber::point(padi.p) << "D03*\n";
+      out << trcaps.select(Gerber::Circ(layout.board().fpConWidth(od,od)));
+      Dim dxm = od/2 + layout.board().padClearance(od, od);
+      for (Collector::PadInfo const &padi: shp[od]) {
+        if (padi.fpcon) {
+          out << Gerber::point(padi.p - Point(dxm,Dim())) << "D02*\n";
+          out << Gerber::point(padi.p + Point(dxm,Dim())) << "D01*\n";
+          out << Gerber::point(padi.p - Point(Dim(),dxm)) << "D02*\n";
+          out << Gerber::point(padi.p + Point(Dim(),dxm)) << "D01*\n";
+        }
+      }
     }
   } else if (ismask) {
     Gerber::Apertures const
       &aps(out.apertures(Gerber::Apertures::Func::Material));
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive, because whole file is negative
-    for (Dim od: collector.roundHolePads().keys()) {
+    auto const &rhp(collector.roundHolePads(l));
+    for (Dim od: rhp.keys()) {
       Dim mrg = 2*layout.board().maskMargin(od);
       out << aps.select(Gerber::Circ(od + mrg));
-      for (Point const &p: collector.roundHolePads()[od])
-	out << Gerber::point(p) << "D03*\n";
+      for (Collector::PadInfo const &padi: rhp[od])
+	out << Gerber::point(padi.p) << "D03*\n";
     }
-    for (Dim od: collector.squareHolePads().keys()) {
+    auto const &shp(collector.squareHolePads(l));
+    for (Dim od: shp.keys()) {
       Dim mrg = 2*layout.board().maskMargin(od);
       out << aps.select(Gerber::Rect(od + mrg, od + mrg));
-      for (Point const &p: collector.squareHolePads()[od])
-	out << Gerber::point(p) << "D03*\n";
+      for (Collector::PadInfo const &padi: shp[od])
+	out << Gerber::point(padi.p) << "D03*\n";
     }
   }
 
@@ -519,17 +571,32 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
       &aps(out.apertures((iscopper || ispaste)
 			 ? Gerber::Apertures::Func::SMDPad
 			 : Gerber::Apertures::Func::Material));
+    Gerber::Apertures const
+      &trcaps(out.apertures(Gerber::Apertures::Func::Conductor));
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive (even in mask layers!)
-    auto const &pads(collector.smdPads(mapLayer(layer)));
+    auto const &pads(collector.smdPads(l));
     for (Point p: pads.keys()) {
       Dim mrg = ismask ? 2*layout.board().maskMargin(p.x, p.y) : Dim();
       out << aps.select(Gerber::Rect(p.x + mrg, p.y + mrg));
-      for (Point const &p: pads[p])
-	out << Gerber::point(p) << "D03*\n";
+      for (Collector::PadInfo const &padi: pads[p])
+	out << Gerber::point(padi.p) << "D03*\n";
+      if (iscopper) {
+        out << trcaps.select(Gerber::Circ(layout.board().fpConWidth(p.x, p.y)));
+        Dim dxm = p.x/2 + layout.board().padClearance(p.x, p.y);
+        Dim dym = p.y/2 + layout.board().padClearance(p.x, p.y);
+        for (Collector::PadInfo const &padi: pads[p]) {
+          if (padi.fpcon) {
+            out << Gerber::point(padi.p - Point(dxm,Dim())) << "D02*\n";
+            out << Gerber::point(padi.p + Point(dxm,Dim())) << "D01*\n";
+            out << Gerber::point(padi.p - Point(Dim(),dym)) << "D02*\n";
+            out << Gerber::point(padi.p + Point(Dim(),dym)) << "D01*\n";
+          }
+        }
+      }
     }
   }
-
+  
   qDebug() << "GWData: Outputing arcs NYI";
   return true;
 }
