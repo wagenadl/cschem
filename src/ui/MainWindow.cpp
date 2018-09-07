@@ -445,6 +445,9 @@ void MWData::makeConnections() {
 		   propbar, &Propertiesbar::reflectMode);
   QObject::connect(modebar, &Modebar::modeChanged,
 		   editor, &Editor::setMode);
+  QObject::connect(modebar, &Modebar::constraintChanged,
+		   editor, &Editor::setAngleConstraint);
+  
 
   // Editor to us
   QObject::connect(editor, &Editor::changedFromSaved,

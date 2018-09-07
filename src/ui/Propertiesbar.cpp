@@ -709,7 +709,8 @@ void PBData::setupUI() {
   };
 
   auto makeIconTool = [](QWidget *container, QString icon,
-			 bool chkb=false, bool ae=false, QString tip="") {
+			 bool chkb=false, bool ae=false, QString tip="",
+			 QKeySequence seq=QKeySequence()) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QToolButton *s = new QToolButton;
@@ -718,8 +719,11 @@ void PBData::setupUI() {
     a->setCheckable(chkb);
     s->setAutoExclusive(ae);
     container->layout()->addWidget(s);
-    if (!tip.isEmpty())
-      a->setToolTip(tip);
+    if (tip.isEmpty())
+      tip = icon;
+    if (!seq.isEmpty())
+      tip += " (" + seq.toString() + ")";
+    a->setToolTip(tip);
     return a;
   };
 
@@ -924,8 +928,7 @@ void PBData::setupUI() {
   layerg = makeGroup(&layera);
   auto *lc = makeContainer(layerg);
   makeLabel(lc, "Layer");
-  silk = makeIconTool(lc, "Silk", true);
-  silk->setShortcut(QKeySequence(Qt::Key_1));
+  silk = makeIconTool(lc, "Silk", true, false, "", QKeySequence(Qt::Key_1));
   QObject::connect(silk, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) {
@@ -933,8 +936,7 @@ void PBData::setupUI() {
 		       bottom->setChecked(false);
 		       editor->setLayer(Layer::Silk);
 		     }});
-  top = makeIconTool(lc, "Top", true);
-  top->setShortcut(QKeySequence(Qt::Key_2));
+  top = makeIconTool(lc, "Top", true, false, "", QKeySequence(Qt::Key_2));
   QObject::connect(top, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) {
@@ -942,8 +944,7 @@ void PBData::setupUI() {
 		       bottom->setChecked(false);
 		       editor->setLayer(Layer::Top);
 		     }});
-  bottom = makeIconTool(lc, "Bottom", true);
-  bottom->setShortcut(QKeySequence(Qt::Key_3));
+  bottom = makeIconTool(lc, "Bottom", true, false, "", QKeySequence(Qt::Key_3));
   QObject::connect(bottom, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) {

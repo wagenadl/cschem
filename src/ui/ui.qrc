@@ -33,5 +33,7 @@
 <file>icons/Arc240a.svg</file>
 <file>icons/Arc180a.svg</file>
 <file>icons/Arc-90a.svg</file>
-    </qresource>
+<file>icons/Constrain45.svg</file>
+<file>icons/NoConstrain45.svg</file>
+</qresource>
 </RCC>
