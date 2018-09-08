@@ -36,21 +36,34 @@ endif
 DOCPATH = $(SHAREPATH)/doc/cschem
 
 # Linux and Mac building
-all: src
+all: release
 
 clean:
 	+rm -rf build
 
-src: prep
+release: release-cpcb release-cschem
+
+debug: debug-cpcb debug-cschem
+
+release-cschem: prep-cschem
 	+make -C build -f Makefile-cschem release
 
-debug: prep
+release-cpcb: prep-cpcb
+	+make -C build -f Makefile-cpcb release
+
+debug-cschem: prep-cschem
 	+make -C build -f Makefile-cschem debug
-prep:
+
+debug-cpcb: prep-cpcb
+	+make -C build -f Makefile-cpcb debug
+prep-cschem:
 	mkdir -p build
-	rm -f build/*/BuildDate.o
-	( cd build; $(SELECTQT) $(QMAKE) ../src/cschem.pro )
+	( cd build; $(SELECTQT) $(QMAKE) ../cschem/cschem.pro )
+
+prep-cpcb:
+	mkdir -p build
+	( cd build; $(SELECTQT) $(QMAKE) ../cpcb/cpcb.pro )
 
 
-.PHONY: src webgrab all clean tar macclean macapp macdmg man userguide \
-        install install-userguide prep webgrabprep debug
+.PHONY: src all clean tar man install prep debug prep-cschem prep-cpcb \
+	debug-cpcb debug-cschem release-cpcb debug-cschem
