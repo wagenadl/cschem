@@ -21,6 +21,10 @@ Editor::~Editor() {
   delete d;
 }
 
+void Editor::setAngleConstraint(bool c) {
+  d->props.angleconstraint = c;
+}
+
 void Editor::setMode(Mode m) {
   d->mode = m;
   d->abortTracing();

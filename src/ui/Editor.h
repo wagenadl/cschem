@@ -38,6 +38,7 @@ public:
   double pixelsPerMil() const;
   class PlaneEditor *planeEditor() const;
 public slots:
+  void setAngleConstraint(bool);
   void setGrid(Dim);
   void setLayerVisibility(Layer, bool);
   void setPlanesVisibility(bool);

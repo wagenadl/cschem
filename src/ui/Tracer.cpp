@@ -10,7 +10,25 @@ public:
     tracing = false;
     linewidth = ed->props.linewidth;
     layer = ed->props.layer;
+    constr45 = ed->props.angleconstraint;
     onsomething = false;
+  }
+  Point constrain(Point p) {
+    Dim grid = ed->layout.board().grid;
+    if (constr45 && tracing) {
+      Point p0 = tracestart.roundedTo(grid);
+      p = p.roundedTo(grid);
+      Dim dx = p.x - p0.x;
+      Dim dy = p.y - p0.y;
+      Dim dr = (abs(dx) + abs(dy))/2;
+      Point p1 = p0 + Point(dx, Dim());
+      Point p2 = p0 + Point(Dim(), dy);
+      Point p3 = (p0 + Point(dr*sign(dx), dr*sign(dy))).roundedTo(grid);
+      Point p12 = p.distance(p1) < p.distance(p2) ? p1 : p2;
+      return (p.distance(p3) < p.distance(p12)) ? p3 : p12;
+    } else {
+      return p.roundedTo(grid);
+    }
   }
 public:
   EData *ed;
@@ -19,6 +37,7 @@ public:
   bool tracing;
   Dim linewidth;
   Layer layer;
+  bool constr45;
   bool onsomething;
 };
 
@@ -120,7 +139,7 @@ void Tracer::move(Point const &p) {
   if (d->onsomething) 
     d->tracecurrent = lp.point;
   else
-    d->tracecurrent = p.roundedTo(d->ed->layout.board().grid);
+    d->tracecurrent = d->constrain(p);
 }
 
 void Tracer::render(QPainter &p) {

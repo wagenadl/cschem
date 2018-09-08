@@ -19,6 +19,20 @@ struct EProps {
   Orient orient;
   Dim fs;
   int arcangle;
+  bool angleconstraint;
+  EProps() {
+    linewidth = Dim::fromMils(12);
+    layer = Layer::Top;
+    id = Dim::fromMils(40);
+    od = Dim::fromMils(65);
+    w = Dim::fromMils(65);
+    h = Dim::fromMils(65);
+    square = false;
+    text = "";
+    fs = Dim::fromMils(70);
+    arcangle = 90;
+    angleconstraint = false;
+  }
 };
 
 #endif

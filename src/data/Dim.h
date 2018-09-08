@@ -72,6 +72,14 @@ inline Dim operator*(double a, Dim const &x) {
   return Dim(a*x.d);
 }
 
+inline Dim abs(Dim const &x) {
+  return x.isNegative() ? -x : x;
+}
+
+inline int sign(Dim const &x) {
+  return x.isPositive() ? 1 : x.isNegative() ? -1 : 0;
+}
+
 inline QDebug operator<<(QDebug d, Dim const &x) {
   d << x.toInch();
   return d;
