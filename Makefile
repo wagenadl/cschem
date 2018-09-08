@@ -39,30 +39,31 @@ DOCPATH = $(SHAREPATH)/doc/cschem
 all: release
 
 clean:
-	+rm -rf build
+	+rm -rf build/cpcb build/cschem
 
 release: release-cpcb release-cschem
 
 debug: debug-cpcb debug-cschem
 
 release-cschem: prep-cschem
-	+make -C build -f Makefile-cschem release
+	+make -C build/cschem -f Makefile-cschem release
 
 release-cpcb: prep-cpcb
-	+make -C build -f Makefile-cpcb release
+	+make -C build/cpcb -f Makefile-cpcb release
 
 debug-cschem: prep-cschem
-	+make -C build -f Makefile-cschem debug
+	+make -C build/cschem -f Makefile-cschem debug
 
 debug-cpcb: prep-cpcb
-	+make -C build -f Makefile-cpcb debug
+	+make -C build/cpcb -f Makefile-cpcb debug
+
 prep-cschem:
-	mkdir -p build
-	( cd build; $(SELECTQT) $(QMAKE) ../cschem/cschem.pro )
+	mkdir -p build/cschem
+	( cd build/cschem; $(SELECTQT) $(QMAKE) ../../cschem/cschem.pro )
 
 prep-cpcb:
-	mkdir -p build
-	( cd build; $(SELECTQT) $(QMAKE) ../cpcb/cpcb.pro )
+	mkdir -p build/cpcb
+	( cd build/cpcb; $(SELECTQT) $(QMAKE) ../../cpcb/cpcb.pro )
 
 
 .PHONY: src all clean tar man install prep debug prep-cschem prep-cpcb \
