@@ -363,6 +363,8 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
       &aps(out.newApertures(Gerber::Apertures::Func::Conductor));
     for (Dim lw: collector.traces(l).keys())
       aps.ensure(Gerber::Circ(lw));
+    for (Dim lw: collector.arcs(l).keys())
+      aps.ensure(Gerber::Circ(lw));
     for (Dim od: collector.roundHolePads(l).keys())
       aps.ensure(Gerber::Circ(layout.board().fpConWidth(od, od)));
     for (Dim od: collector.squareHolePads(l).keys())
