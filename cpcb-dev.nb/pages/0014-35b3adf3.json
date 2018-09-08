@@ -1,0 +1,411 @@
+{ "typ": "page",
+  "cre": "2018-09-04T08:36:46",
+  "mod": "2018-09-04T08:49:51",
+  "cui": "a3a5ba6267c24a74",
+  "stampTime": 0,
+  "startPage": 14,
+  "unlocked": false,
+  "uuid": "35b3adf3",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-09-04T08:36:46",
+      "mod": "2018-09-04T08:36:46",
+      "uuid": "db5efd58"
+    },
+    { "typ": "title",
+      "cre": "2018-09-04T08:36:46",
+      "mod": "2018-09-04T08:36:53",
+      "uuid": "9e85fa83",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:36:46",
+          "mod": "2018-09-04T08:36:53",
+          "lines": [
+            0
+          ],
+          "text": "Next steps",
+          "uuid": "0324bdc5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:36:53",
+      "mod": "2018-09-04T08:37:58",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "deee3727",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:36:53",
+          "mod": "2018-09-04T08:37:58",
+          "lines": [
+            0,
+            62,
+            121
+          ],
+          "text": "– Creating a FP should drag in the correct color: Create a FP right away, delete it upon completion, then create an undo point and recreate.",
+          "uuid": "719b7f1a",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-09-04T08:37:50",
+              "mod": "2018-09-04T08:37:50",
+              "end": 105,
+              "start": 101,
+              "style": 1,
+              "uuid": "6d572c3d"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:37:59",
+      "mod": "2018-09-04T08:38:53",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "cfd83e02",
+      "y0": 145.498,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:37:59",
+          "mod": "2018-09-04T08:38:53",
+          "lines": [
+            0,
+            60,
+            120
+          ],
+          "text": "– FP corners should highlight individually. When changing a FP, again the undo point should be created at release time. (This means the awkward “real move” flag can go.)",
+          "uuid": "6cf76c7c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:38:56",
+      "mod": "2018-09-04T08:40:05",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b0cc97a1",
+      "y0": 218.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:38:56",
+          "mod": "2018-09-04T08:40:05",
+          "lines": [
+            0,
+            62,
+            125,
+            181
+          ],
+          "text": "– Points along the edge of FPs should be liftable. But not at less than 1 (or 2) grid points from the corner. This should be shown by highlighting when hovering. Same rules re undo applies.",
+          "uuid": "61933b5d",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-09-04T08:40:02",
+              "mod": "2018-09-04T08:40:02",
+              "end": 175,
+              "start": 173,
+              "style": 1,
+              "uuid": "033ca8db"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:39:40",
+      "mod": "2018-09-04T08:40:17",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0b1a6be8",
+      "y0": 315.66,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:39:40",
+          "mod": "2018-09-04T08:40:17",
+          "lines": [
+            0
+          ],
+          "text": "– [Backspace] should delete corners of FPs",
+          "uuid": "8be56057"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:40:17",
+      "mod": "2018-09-04T08:40:45",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "aaa1c876",
+      "y0": 342.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:40:17",
+          "mod": "2018-09-04T08:40:45",
+          "lines": [
+            0,
+            51
+          ],
+          "text": "– FP dragging should remember the “last good” drag position and check for self-intersections.",
+          "uuid": "d772db4f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:40:49",
+      "mod": "2018-09-04T08:41:37",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "82a4320f",
+      "y0": 393.158,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:40:49",
+          "mod": "2018-09-04T08:41:37",
+          "lines": [
+            0,
+            60,
+            123
+          ],
+          "text": "– Dragging a corner onto an adjacent corner is allowed, and drops the dragged corner. Except that FPs must have at least 3 corners and the area must not be zero.",
+          "uuid": "cc087946",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-09-04T08:40:57",
+              "mod": "2018-09-04T08:40:57",
+              "end": 46,
+              "start": 44,
+              "style": 1,
+              "uuid": "4a562426"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:41:38",
+      "mod": "2018-09-04T08:41:47",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7e4ed3be",
+      "y0": 466.656,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:41:38",
+          "mod": "2018-09-04T08:41:47",
+          "lines": [
+            0
+          ],
+          "text": "",
+          "uuid": "67aa93e1"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:41:47",
+      "mod": "2018-09-04T08:43:41",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "2493cd2e",
+      "y0": 493.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:41:47",
+          "mod": "2018-09-04T08:43:41",
+          "lines": [
+            0,
+            55,
+            120,
+            183,
+            256
+          ],
+          "text": "– A “45 degree constraint” mode should be implemented. Initially, this would constrain newly created traces (and picked up traces) to 45 deg increments. It is enough to use simply    (𝜹x, 0), (𝜹y, 0), (±𝜶, ±𝜶) where 𝜶 = (|𝜹x| + |𝜹y|)/2 as potential points.",
+          "uuid": "256183a2",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-09-04T08:42:32",
+              "mod": "2018-09-04T08:42:32",
+              "end": 187,
+              "start": 186,
+              "style": 1,
+              "uuid": "1f349739"
+            },
+            { "typ": "markup",
+              "cre": "2018-09-04T08:42:37",
+              "mod": "2018-09-04T08:42:37",
+              "end": 197,
+              "start": 196,
+              "style": 1,
+              "uuid": "c2f288fa"
+            },
+            { "typ": "markup",
+              "cre": "2018-09-04T08:43:03",
+              "mod": "2018-09-04T08:43:03",
+              "end": 230,
+              "start": 229,
+              "style": 1,
+              "uuid": "045e485a"
+            },
+            { "typ": "markup",
+              "cre": "2018-09-04T08:43:08",
+              "mod": "2018-09-04T08:43:08",
+              "end": 238,
+              "start": 237,
+              "style": 1,
+              "uuid": "57a509f5"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:43:43",
+      "mod": "2018-09-04T08:46:30",
+      "h": 258.826,
+      "ind": 1,
+      "sheet": 0,
+      "split": [
+        92.664
+      ],
+      "uuid": "e80d13c8",
+      "y0": 613.652,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:43:43",
+          "mod": "2018-09-04T08:46:30",
+          "lines": [
+            0,
+            53,
+            111,
+            168,
+            228,
+            290,
+            348,
+            406,
+            467,
+            527,
+            588
+          ],
+          "text": "– Later this mode can also work when dragging points connecting existing segments. This is easy where only two segments connect. Where multiple segments connect, there may not be a solution. In that case we could search for the solution that (1) maximizes the number of traces straightened and (2) minimizes the movement of the corner point, but I think it is enough to greedily add to the correctable set segments one by one in (forward or backward) order of ID. In constraint mode, I might want to show segments that violate the constraint by dotting them or coloring them differently. (E.g., orange on the top plane, lime on the bottom plane.)",
+          "uuid": "66fdef03",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-09-04T08:44:34",
+              "mod": "2018-09-04T08:44:34",
+              "end": 212,
+              "start": 207,
+              "style": 1,
+              "uuid": "e394c61a"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:48:01",
+      "mod": "2018-09-04T08:49:20",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "e6225b25",
+      "y0": 238.162,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:48:01",
+          "mod": "2018-09-04T08:49:20",
+          "lines": [
+            0,
+            59,
+            121,
+            184
+          ],
+          "text": "– An even fancier version of constrain-45 mode would split up noncompliant traces into two compliant parts, but the fact that there is always the ambiguity whether to pick the left or right solution may make this unattractive.",
+          "uuid": "c08402fc"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:46:41",
+      "mod": "2018-09-04T08:49:33",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "8a8b5da5",
+      "y0": 334.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:46:41",
+          "mod": "2018-09-04T08:49:33",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "– A search box would be useful: Type “R1” and [Enter] and that component gets selected.",
+          "uuid": "4fe5088a"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:47:10",
+      "mod": "2018-09-04T08:47:52",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "7e7976ea",
+      "y0": 385.158,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:47:10",
+          "mod": "2018-09-04T08:47:52",
+          "lines": [
+            0,
+            56,
+            117
+          ],
+          "text": "– Keyboard shortcuts should be shown in balloon help. I think it should be possible to iterate over all QActions and simply add “ (F2)” or whatever after they are all created.",
+          "uuid": "2a671a84"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-04T08:49:41",
+      "mod": "2018-09-04T08:49:51",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "3b7cbdda",
+      "y0": 458.656,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-04T08:49:41",
+          "mod": "2018-09-04T08:49:51",
+          "lines": [
+            0
+          ],
+          "text": "– Gerber export should export FPs.",
+          "uuid": "4e9779df"
+        }
+      ]
+    }
+  ]
+}

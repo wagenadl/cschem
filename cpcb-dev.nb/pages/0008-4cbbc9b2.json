@@ -1,0 +1,653 @@
+{ "typ": "page",
+  "cre": "2018-08-11T18:26:31",
+  "mod": "2018-08-11T21:54:22",
+  "cui": "f1aa3123020807b3",
+  "stampTime": 0,
+  "startPage": 8,
+  "unlocked": false,
+  "uuid": "4cbbc9b2",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-08-11T18:26:31",
+      "mod": "2018-08-11T18:26:31",
+      "uuid": "b18fcba2"
+    },
+    { "typ": "title",
+      "cre": "2018-08-11T18:26:31",
+      "mod": "2018-08-11T21:54:22",
+      "uuid": "e82f461a",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:26:31",
+          "mod": "2018-08-11T21:54:22",
+          "lines": [
+            0
+          ],
+          "text": "Next steps for linking schematics",
+          "uuid": "7c155f2f",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-08-11T20:26:15",
+              "mod": "2018-08-11T20:26:16",
+              "dx": 13.7849,
+              "dy": -19.8158,
+              "sheet": 1,
+              "textWidth": 0.0,
+              "uuid": "b730af37",
+              "x": 361.332,
+              "y": 421.685,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-08-11T20:26:15",
+                  "mod": "2018-08-11T20:26:16",
+                  "lines": [
+                    0
+                  ],
+                  "text": "done",
+                  "uuid": "5f0d4a94"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-08-11T20:58:14",
+              "mod": "2018-08-11T20:58:35",
+              "dx": 40.9239,
+              "dy": -10.3387,
+              "sheet": 1,
+              "textWidth": 187.624,
+              "uuid": "52d61943",
+              "x": 229.084,
+              "y": 244.635,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-08-11T20:58:14",
+                  "mod": "2018-08-11T20:58:28",
+                  "lines": [
+                    0,
+                    27
+                  ],
+                  "text": "Yes, I did mean that. Both issues solved.",
+                  "uuid": "95badc65"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-08-11T21:04:48",
+              "mod": "2018-08-11T21:47:04",
+              "dx": 34.4622,
+              "dy": 44.8009,
+              "sheet": 1,
+              "textWidth": 385.781,
+              "uuid": "f12dabec",
+              "x": 25.7563,
+              "y": 472.517,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-08-11T21:04:48",
+                  "mod": "2018-08-11T21:47:04",
+                  "lines": [
+                    0,
+                    60,
+                    73,
+                    132
+                  ],
+                  "text": "copying from container in parts list to contents in circuit implemented.\ncopying within circuit also. Empty fields are not copied. \nPrefix “1/n” not enforced. This could be considered incorrect.",
+                  "uuid": "cb753d8b",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2018-08-11T21:41:07",
+                      "mod": "2018-08-11T21:41:07",
+                      "end": 194,
+                      "start": 159,
+                      "style": 2,
+                      "uuid": "0d93eadf"
+                    }
+                  ]
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-08-11T21:54:19",
+              "mod": "2018-08-11T21:54:22",
+              "dx": 45.6625,
+              "dy": 2.58467,
+              "sheet": 1,
+              "textWidth": 30.0,
+              "uuid": "18f31995",
+              "x": 354.009,
+              "y": 609.073,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-08-11T21:54:19",
+                  "mod": "2018-08-11T21:54:20",
+                  "lines": [
+                    0
+                  ],
+                  "text": "done",
+                  "uuid": "2ab34fb7"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:26:39",
+      "mod": "2018-08-11T18:27:18",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f58695d2",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:26:39",
+          "mod": "2018-08-11T18:27:18",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "* The component panel should be persistent, that is, when I save and reload a layout, the same footprints should show up",
+          "uuid": "db8e45cf"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:27:19",
+      "mod": "2018-08-11T18:27:54",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7710d049",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:27:19",
+          "mod": "2018-08-11T18:27:54",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "* Footprints should be collected, and a default footprint should load for previously seen components",
+          "uuid": "ee53d6c6"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:27:46",
+      "mod": "2018-08-11T18:28:11",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "940ec4bc",
+      "y0": 172.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:27:46",
+          "mod": "2018-08-11T18:28:11",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "* When no footprint is shown, the text “(n pins)” should be displayed.",
+          "uuid": "aecc72f1",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-08-11T18:28:03",
+              "mod": "2018-08-11T18:28:03",
+              "end": 42,
+              "start": 41,
+              "style": 1,
+              "uuid": "d21ad07f"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:28:15",
+      "mod": "2018-08-11T18:28:44",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "733292a8",
+      "y0": 222.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:28:15",
+          "mod": "2018-08-11T18:28:44",
+          "lines": [
+            0,
+            57,
+            123
+          ],
+          "text": "* When a footprint is deleted from the layout, it should jump back into the panel, even if it wasn’t originally dragged in from there.",
+          "uuid": "652cd060"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:28:50",
+      "mod": "2018-08-11T18:32:19",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a4ff2a19",
+      "y0": 296.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:28:50",
+          "mod": "2018-08-11T18:32:19",
+          "lines": [
+            0,
+            59,
+            118,
+            178,
+            230,
+            297
+          ],
+          "text": "* When more than one Element in the circuit share a ref, a warning should be displayed in cschem when trying to save. (Saving should still be allowed, but should be discouraged. Automatic renumbering should be offered.) When cpcb encounters this situation, I think it’s OK to only show one in the panel, arbitrarily selected.",
+          "uuid": "a65577f8"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:30:08",
+      "mod": "2018-08-11T18:32:31",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "e7983c0b",
+      "y0": 439.49,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:30:08",
+          "mod": "2018-08-11T18:32:31",
+          "lines": [
+            0,
+            61,
+            121
+          ],
+          "text": "* The exception is when one of the  Elements is a container. In that case, the footprint panel should show the container rather than the contents.",
+          "uuid": "3d478439"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:30:21",
+      "mod": "2018-08-11T18:31:20",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5ce7a036",
+      "y0": 512.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:30:21",
+          "mod": "2018-08-11T18:31:20",
+          "lines": [
+            0,
+            60,
+            119
+          ],
+          "text": "* When an element with Ref. An.m is found, it should not be shown in the footprint panel, unless there is no An in the circuit. ",
+          "uuid": "7d4ef6d4",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-08-11T18:30:39",
+              "mod": "2018-08-11T18:30:43",
+              "end": 30,
+              "start": 28,
+              "style": 1,
+              "uuid": "a19044e5"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-11T18:30:40",
+              "mod": "2018-08-11T18:30:40",
+              "end": 32,
+              "start": 29,
+              "style": 7,
+              "uuid": "86897b71"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-11T18:30:42",
+              "mod": "2018-08-11T18:30:42",
+              "end": 32,
+              "start": 31,
+              "style": 1,
+              "uuid": "db50f4df"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-11T18:31:15",
+              "mod": "2018-08-11T18:31:15",
+              "end": 110,
+              "start": 109,
+              "style": 1,
+              "uuid": "d11f2ab7"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-11T18:31:16",
+              "mod": "2018-08-11T18:31:16",
+              "end": 111,
+              "start": 110,
+              "style": 1,
+              "uuid": "a9eff9f2"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-11T18:31:17",
+              "mod": "2018-08-11T18:31:17",
+              "end": 111,
+              "start": 110,
+              "style": 7,
+              "uuid": "3940d894"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:33:09",
+      "mod": "2018-08-11T18:34:25",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "970a295b",
+      "y0": 586.486,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:33:09",
+          "mod": "2018-08-11T18:34:25",
+          "lines": [
+            0,
+            62,
+            127,
+            188,
+            251
+          ],
+          "text": "* A footprint with mismatched pin names (e.g., “1 2 3” in the pcb vs “G D S” in the circuit) should be highlighted both in the layout and in the footprint panel. A dialog box should allow editing of pin mapping. (Even for footprints that already have OK mapping.)",
+          "uuid": "3d540416"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:35:12",
+      "mod": "2018-08-11T18:36:37",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "a48915b5",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:35:12",
+          "mod": "2018-08-11T18:36:37",
+          "lines": [
+            0,
+            48,
+            108
+          ],
+          "text": "* A new drawing mode should be created to place rectangular filled planes. More complex shapes can be added as an option later.",
+          "uuid": "1209d849"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:35:39",
+      "mod": "2018-08-11T18:36:30",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "f024e74e",
+      "y0": 145.498,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:35:39",
+          "mod": "2018-08-11T18:36:30",
+          "lines": [
+            0,
+            59,
+            121
+          ],
+          "text": "* Board size should be adjustable in a dialog box. Size-to-layout might be a useful button there as well. Nonrectangular perimeters can be added as an option later.",
+          "uuid": "647bc6fd"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:37:25",
+      "mod": "2018-08-11T18:38:52",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "4389ba71",
+      "y0": 218.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:37:25",
+          "mod": "2018-08-11T18:38:52",
+          "lines": [
+            0,
+            59,
+            119
+          ],
+          "text": "* The green disks in the opamp container look awkward. Did I mean for them to be hidden? There are also incorrect pink disks showing in some containers.",
+          "uuid": "140724ba"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:39:02",
+      "mod": "2018-08-11T18:39:28",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "996bd7b5",
+      "y0": 292.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:39:02",
+          "mod": "2018-08-11T18:39:28",
+          "lines": [
+            0,
+            50
+          ],
+          "text": "* Balloon help would be useful when hovering over elements in the library panel of cschem.",
+          "uuid": "dbf90ea2"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:40:36",
+      "mod": "2018-08-11T18:41:06",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "07d5592c",
+      "y0": 342.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:40:36",
+          "mod": "2018-08-11T18:41:06",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "* Double clicking on traces in cschem should cause junctions to move when possible to eliminate elbows.",
+          "uuid": "5422c43b"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:41:10",
+      "mod": "2018-08-11T18:41:35",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "cc7ad2ea",
+      "y0": 393.158,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:41:10",
+          "mod": "2018-08-11T18:41:35",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "* Annotations in cschem still jump around erratically after dragging or editing in certain situations.",
+          "uuid": "8321241f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:42:23",
+      "mod": "2018-08-11T20:26:22",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "4f1748bb",
+      "y0": 443.49,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:42:23",
+          "mod": "2018-08-11T20:26:22",
+          "lines": [
+            0
+          ],
+          "text": "* cschem parts list should not show contained elements.",
+          "uuid": "c77c8735"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T18:42:23",
+      "mod": "2018-08-11T20:26:22",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "4f1748bb",
+      "y0": 470.656,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T18:42:23",
+          "mod": "2018-08-11T20:26:22",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "* Part “value” and “notes” should be intelligently copied between containers and contents. (Think, e.g., “½ OPA2350”).",
+          "uuid": "c77c8735"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T21:46:43",
+      "mod": "2018-08-11T21:46:43",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "722b55d6",
+      "y0": 520.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T21:46:43",
+          "mod": "2018-08-11T21:46:43",
+          "text": "",
+          "uuid": "ff362ce0"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T21:46:44",
+      "mod": "2018-08-11T21:46:44",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "0162f66d",
+      "y0": 548.154,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T21:46:44",
+          "mod": "2018-08-11T21:46:44",
+          "text": "",
+          "uuid": "b53ec8fc"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T21:46:44",
+      "mod": "2018-08-11T21:46:44",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "684ed52e",
+      "y0": 575.32,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T21:46:44",
+          "mod": "2018-08-11T21:46:44",
+          "text": "",
+          "uuid": "159ceca5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T21:46:45",
+      "mod": "2018-08-11T21:46:45",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "a650d3d4",
+      "y0": 602.486,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T21:46:45",
+          "mod": "2018-08-11T21:46:45",
+          "text": "",
+          "uuid": "2a53318e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-11T21:46:45",
+      "mod": "2018-08-11T21:46:54",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "f5a749ff",
+      "y0": 629.652,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-11T21:46:45",
+          "mod": "2018-08-11T21:46:54",
+          "lines": [
+            0
+          ],
+          "text": "* The parts list in cschem should be sorted by ref.",
+          "uuid": "3b1c916a"
+        }
+      ]
+    }
+  ]
+}

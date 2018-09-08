@@ -1,0 +1,162 @@
+{ "typ": "page",
+  "cre": "2018-06-20T08:46:17",
+  "mod": "2018-06-20T08:50:58",
+  "cui": "b92269f0b742f40f",
+  "stampTime": 0,
+  "startPage": 4,
+  "unlocked": false,
+  "uuid": "20c1a899",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-20T08:46:17",
+      "mod": "2018-06-20T08:46:17",
+      "uuid": "3791c62f"
+    },
+    { "typ": "title",
+      "cre": "2018-06-20T08:46:17",
+      "mod": "2018-06-20T08:46:24",
+      "uuid": "a16b9b0c",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:46:17",
+          "mod": "2018-06-20T08:46:24",
+          "lines": [
+            0
+          ],
+          "text": "Part tables",
+          "uuid": "1758a64f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:46:18",
+      "mod": "2018-06-20T08:46:19",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "193401f1",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:46:18",
+          "mod": "2018-06-20T08:46:19",
+          "lines": [
+            0,
+            60,
+            119,
+            170,
+            234,
+            293
+          ],
+          "text": "In cpcb, parts and footprints get mapped. I create a widget that shows a table of all the refs (“U1”) from cschem with associated part numbers (“OPA350”) or symbol names (“connector, 20”). A third column receives footprints (“DIP-8”, “Res. 0.350” (¼W)”, etc.). These come from a combobox. The user can also drag in files.",
+          "uuid": "8c7b929f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:46:35",
+      "mod": "2018-06-20T08:47:02",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "16fac7d3",
+      "y0": 214.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:46:35",
+          "mod": "2018-06-20T08:47:02",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "Cpcb will collect part number ↔ footprint associations in a simple text file to populate the combobox.",
+          "uuid": "2d28aa03"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:47:14",
+      "mod": "2018-06-20T08:47:56",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9eee7cea",
+      "y0": 265.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:47:14",
+          "mod": "2018-06-20T08:47:56",
+          "lines": [
+            0,
+            58,
+            118,
+            177
+          ],
+          "text": "Any notes from cschem will be shown in smaller type under the row. There will be a “+” button next to the combobox to add a note within cpcb as well. Info from cschem cannot be edited inside cpcb.",
+          "uuid": "1a542efb",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-20T08:47:49",
+              "mod": "2018-06-20T08:47:49",
+              "end": 173,
+              "start": 167,
+              "style": 1,
+              "uuid": "d7b005bd"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:47:59",
+      "mod": "2018-06-20T08:48:10",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ec44e9ff",
+      "y0": 361.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:47:59",
+          "mod": "2018-06-20T08:48:10",
+          "lines": [
+            0
+          ],
+          "text": "Only whole parts will have a row (“U1”, but not “U1.1”).",
+          "uuid": "0e391e5d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:48:25",
+      "mod": "2018-06-20T08:50:58",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "1d031bde",
+      "y0": 389.158,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:48:25",
+          "mod": "2018-06-20T08:50:58",
+          "lines": [
+            0,
+            62,
+            127,
+            192,
+            253,
+            309,
+            366
+          ],
+          "text": "There should be a way in this table to form pin associations. For instance, for a FET, there could be a box that says “1/G 2/D 3/S” with a “…” icon next to it to edit associations. That would open a little window with a matrix where the columns are pin numbers in cpcb and the rows are pin names from cschem. Precisely one cell in each row and each column should be checked.",
+          "uuid": "0a916142"
+        }
+      ]
+    }
+  ]
+}

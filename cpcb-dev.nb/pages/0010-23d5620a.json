@@ -1,0 +1,190 @@
+{ "typ": "page",
+  "cre": "2018-08-14T11:00:40",
+  "mod": "2018-08-14T12:33:53",
+  "cui": "1cf70f2052241ded",
+  "stampTime": 0,
+  "startPage": 10,
+  "unlocked": false,
+  "uuid": "23d5620a",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-08-14T11:00:40",
+      "mod": "2018-08-14T11:00:40",
+      "uuid": "152059ef"
+    },
+    { "typ": "title",
+      "cre": "2018-08-14T11:00:40",
+      "mod": "2018-08-14T11:00:46",
+      "uuid": "47dfcc5e",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-14T11:00:40",
+          "mod": "2018-08-14T11:00:46",
+          "lines": [
+            0
+          ],
+          "text": "Better way to do pin mapping",
+          "uuid": "25da4831"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-14T11:00:46",
+      "mod": "2018-08-14T11:06:20",
+      "h": 305.158,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "8f74989b",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-14T11:00:46",
+          "mod": "2018-08-14T11:06:20",
+          "lines": [
+            0,
+            58,
+            114,
+            177,
+            235,
+            293,
+            351,
+            411,
+            473,
+            527,
+            584,
+            649,
+            704
+          ],
+          "text": "Rather than create a global pin map, I could take care of mapping in the input dialog for pin naming. When double clicking on a pin inside a component, a dialog could offer the names of the pins in the corresponding part in schematic. Perhaps already assigned pins should be marked as such or greyed out. In the former case case, selecting an already assigned pin should steal the assignment. Since it would be really confusing if two pins ended up with the same name, the previous assignment would have to be undone. Since we wouldn’t have the original pin number stored, that would involve attaching an arbitrarily selected name to it. That’s not ideal, so the original pin number should be remembered somehow. Perhaps we should simply assign names like “1/G”.",
+          "uuid": "541e5fe2",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-08-14T11:04:57",
+              "mod": "2018-08-14T11:04:57",
+              "end": 564,
+              "start": 558,
+              "style": 1,
+              "uuid": "9491f878"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-14T11:05:46",
+      "mod": "2018-08-14T11:07:12",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0e5ec143",
+      "y0": 377.158,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-14T11:05:46",
+          "mod": "2018-08-14T11:07:12",
+          "lines": [
+            0,
+            62,
+            124
+          ],
+          "text": "Leaving that stealing issue aside for the moment, the  “Ref.” box should allow the same options, I suppose. (Note that this plays only when the component group has been “entered.”)",
+          "uuid": "d35fb551"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-14T11:08:43",
+      "mod": "2018-08-14T11:08:43",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "12384a65",
+      "y0": 450.656,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-14T11:08:43",
+          "mod": "2018-08-14T11:08:43",
+          "text": "",
+          "uuid": "3bb9f359"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-14T11:08:45",
+      "mod": "2018-08-14T11:11:16",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "2d642e12",
+      "y0": 477.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-14T11:08:45",
+          "mod": "2018-08-14T11:11:16",
+          "lines": [
+            0,
+            58,
+            122,
+            184
+          ],
+          "text": "Related issue: pin matching should find contained pins in containers. So “A1:+” in the net should match to A1:3 if A1 has a contained pin named “cp:3/1.+”. (Note that subnumber “1” is commonly omitted in the schematic.)",
+          "uuid": "0b35bbb9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-14T11:12:43",
+      "mod": "2018-08-14T11:14:51",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5335c394",
+      "y0": 574.486,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-14T11:12:43",
+          "mod": "2018-08-14T11:14:51",
+          "lines": [
+            0
+          ],
+          "text": "",
+          "uuid": "8f386203"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-14T11:12:43",
+      "mod": "2018-08-14T12:33:53",
+      "h": 166.162,
+      "ind": 0,
+      "sheet": 0,
+      "split": [
+        92.664
+      ],
+      "uuid": "5335c394",
+      "y0": 601.652,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-14T11:12:43",
+          "mod": "2018-08-14T12:33:53",
+          "lines": [
+            0,
+            62,
+            124,
+            187,
+            253,
+            318,
+            385
+          ],
+          "text": "Another related issue: There should be a priority defined for matching pin names. So that if the schematic has “D1:1/K” and “D1:2/A” there is a defined resolution if the pcb has “D1:1/A” and “D1:2/K”. First of all, it should be considered an error if a part has both “1/K” and “2/K”. Also if a part has both “1/A” and “1/K”. This should be flagged by circuit validator and also in the status bar of cpcb.",
+          "uuid": "8f386203"
+        }
+      ]
+    }
+  ]
+}
