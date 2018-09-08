@@ -1,0 +1,29 @@
+{ "typ": "latenote",
+  "cre": "2018-08-12T10:26:31",
+  "mod": "2018-08-12T10:27:30",
+  "dx": -202.035,
+  "dy": -56.4319,
+  "sheet": 0,
+  "textWidth": 0.0,
+  "uuid": "5951beaf",
+  "x": 420.009,
+  "y": 334.284,
+  "cc": [
+    { "typ": "text",
+      "cre": "2018-08-12T10:26:31",
+      "mod": "2018-08-12T10:27:30",
+      "lines": [
+        0,
+        46,
+        99
+      ],
+      "text": "Created a menu option in “Tools” to check for conflicts. Automatic renumbering for straightforward cases is offered.",
+      "uuid": "1525b069"
+    },
+    { "typ": "resources",
+      "cre": "2018-08-12T10:26:31",
+      "mod": "2018-08-12T10:26:31",
+      "uuid": "971e465a"
+    }
+  ]
+}

@@ -1,0 +1,405 @@
+{ "typ": "page",
+  "cre": "2018-08-24T09:31:23",
+  "mod": "2018-08-24T10:14:40",
+  "cui": "c26081810d6e2b8c",
+  "stampTime": 0,
+  "startPage": 12,
+  "unlocked": false,
+  "uuid": "7bed1257",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-08-24T09:31:23",
+      "mod": "2018-08-24T09:31:23",
+      "uuid": "019efe92"
+    },
+    { "typ": "title",
+      "cre": "2018-08-24T09:31:23",
+      "mod": "2018-08-24T09:31:30",
+      "uuid": "0aa55bb0",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T09:31:23",
+          "mod": "2018-08-24T09:31:30",
+          "lines": [
+            0
+          ],
+          "text": "Is a point in filled plane?",
+          "uuid": "1fdcf88f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-24T09:31:30",
+      "mod": "2018-08-24T09:34:40",
+      "h": 166.162,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "3a460b5b",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T09:31:30",
+          "mod": "2018-08-24T09:34:40",
+          "lines": [
+            0,
+            65,
+            128,
+            189,
+            254,
+            322,
+            388
+          ],
+          "text": "If the FP is defined as a polygon, first check whether the point is within a distance mrg of any of the edges. If not, use even-odd algorithm: count number of crossings of the line segment from the point (x,y) to (∞,y) with edges of the polygon. If odd, point is inside. (This is easy enough: if edge is (x,y) = (a,b) + t (c,d); simply solve y = y0 for t and see if the corresponding x > x0.)",
+          "uuid": "3bdbc7f0",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-08-24T09:32:03",
+              "mod": "2018-08-24T09:32:03",
+              "end": 89,
+              "start": 86,
+              "style": 1,
+              "uuid": "748f89dc"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:32:52",
+              "mod": "2018-08-24T09:32:52",
+              "end": 217,
+              "start": 216,
+              "style": 1,
+              "uuid": "2ae9e848"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:32:54",
+              "mod": "2018-08-24T09:32:54",
+              "end": 208,
+              "start": 207,
+              "style": 1,
+              "uuid": "dc128245"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:32:54",
+              "mod": "2018-08-24T09:32:54",
+              "end": 206,
+              "start": 205,
+              "style": 1,
+              "uuid": "6881011c"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:33:59",
+              "mod": "2018-08-24T09:33:59",
+              "end": 306,
+              "start": 305,
+              "style": 1,
+              "uuid": "0b599603"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:00",
+              "mod": "2018-08-24T09:34:00",
+              "end": 308,
+              "start": 307,
+              "style": 1,
+              "uuid": "d5eb8a90"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:01",
+              "mod": "2018-08-24T09:34:01",
+              "end": 314,
+              "start": 313,
+              "style": 1,
+              "uuid": "86abda0a"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:02",
+              "mod": "2018-08-24T09:34:02",
+              "end": 316,
+              "start": 315,
+              "style": 1,
+              "uuid": "74327fdf"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:03",
+              "mod": "2018-08-24T09:34:03",
+              "end": 321,
+              "start": 320,
+              "style": 1,
+              "uuid": "a67036cd"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:05",
+              "mod": "2018-08-24T09:34:05",
+              "end": 324,
+              "start": 323,
+              "style": 1,
+              "uuid": "e69a0db9"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:05",
+              "mod": "2018-08-24T09:34:05",
+              "end": 326,
+              "start": 325,
+              "style": 1,
+              "uuid": "eec3da5a"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:20",
+              "mod": "2018-08-24T09:34:20",
+              "end": 343,
+              "start": 342,
+              "style": 1,
+              "uuid": "270d1b2c"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:21",
+              "mod": "2018-08-24T09:34:21",
+              "end": 348,
+              "start": 347,
+              "style": 7,
+              "uuid": "3e1a1ddb"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:22",
+              "mod": "2018-08-24T09:34:22",
+              "end": 347,
+              "start": 346,
+              "style": 1,
+              "uuid": "10e22baa"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:24",
+              "mod": "2018-08-24T09:34:24",
+              "end": 354,
+              "start": 353,
+              "style": 1,
+              "uuid": "53c2ed19"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:33",
+              "mod": "2018-08-24T09:34:33",
+              "end": 385,
+              "start": 384,
+              "style": 1,
+              "uuid": "5d0cce5b"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:37",
+              "mod": "2018-08-24T09:34:37",
+              "end": 389,
+              "start": 388,
+              "style": 1,
+              "uuid": "2f083e22"
+            },
+            { "typ": "markup",
+              "cre": "2018-08-24T09:34:38",
+              "mod": "2018-08-24T09:34:38",
+              "end": 390,
+              "start": 389,
+              "style": 7,
+              "uuid": "6bcf604d"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-24T09:35:09",
+      "mod": "2018-08-24T09:35:27",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "109ea49d",
+      "y0": 238.162,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T09:35:09",
+          "mod": "2018-08-24T09:35:27",
+          "lines": [
+            0,
+            66
+          ],
+          "text": "I think I already have a func for testing if a point is wirthin a distance mrg of a segment.",
+          "uuid": "9ea21606",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-08-24T09:35:25",
+              "mod": "2018-08-24T09:35:25",
+              "end": 78,
+              "start": 75,
+              "style": 1,
+              "uuid": "d349387b"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-24T09:46:43",
+      "mod": "2018-08-24T09:47:02",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7c61ec88",
+      "y0": 288.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T09:46:43",
+          "mod": "2018-08-24T09:47:02",
+          "lines": [
+            0
+          ],
+          "text": "I can then include FPs when calculating PCBNets.",
+          "uuid": "1a07ab1d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-24T09:47:03",
+      "mod": "2018-08-24T09:51:47",
+      "h": 305.158,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0dcdce16",
+      "y0": 315.66,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T09:47:03",
+          "mod": "2018-08-24T09:51:47",
+          "lines": [
+            0,
+            61,
+            118,
+            174,
+            238,
+            304,
+            370,
+            430,
+            497,
+            554,
+            614,
+            675,
+            739
+          ],
+          "text": "For GUI, I will allow FPs to be edited only in “Place Plane” mode; in other modes they are locked. In FP mode, corner points of the FP will be marked and light up when mouse hovers. Can be dragged arbitrarily. (Enforcing 45 ° constraints can be added later.) Only essential constraint is that a drag may not cause a self-intersection. This is easy to detect: Either the point between segments k and k+1 is too close to one of the other segments, or there is an actual intersection. (It is allowed to drag a point onto preceding or following point, which eliminates point, but not if only two points would remain.) Hovering over edge creates temporary control point which can also be dragged. At end of drag,  any points with turning angle ≅ 0 is eliminated. ",
+          "uuid": "b02407a3",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-08-24T09:49:57",
+              "mod": "2018-08-24T09:49:57",
+              "end": 488,
+              "start": 486,
+              "style": 1,
+              "uuid": "156b02ed"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-24T09:51:48",
+      "mod": "2018-08-24T09:52:26",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0c4e9c19",
+      "y0": 620.818,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T09:51:48",
+          "mod": "2018-08-24T09:52:26",
+          "lines": [
+            0,
+            55,
+            116
+          ],
+          "text": "In FP mode, holes/pads can be double-clicked to enable/disable connection to FP. Traces do not highlight in this FP mode.",
+          "uuid": "7cfc646f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-24T09:59:32",
+      "mod": "2018-08-24T10:00:35",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "fa4c5aca",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T09:59:32",
+          "mod": "2018-08-24T10:00:35",
+          "lines": [
+            0,
+            56,
+            118,
+            184
+          ],
+          "text": "Upon entering FP mode, FPs should automatically be made visible, and either top or bottom copper layer selected. Only FPs on selected layer can be edited. I think FP visibility should be separated by layer.",
+          "uuid": "60e032ca"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-24T10:00:51",
+      "mod": "2018-08-24T10:01:04",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "77df07ff",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T10:00:51",
+          "mod": "2018-08-24T10:01:04",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "Pads and holes that connect to FP should be marked in all modes.",
+          "uuid": "81ae0ae1"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-08-24T10:01:31",
+      "mod": "2018-08-24T10:14:40",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "923d9b44",
+      "y0": 218.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-08-24T10:01:31",
+          "mod": "2018-08-24T10:14:40",
+          "lines": [
+            0,
+            59,
+            124,
+            184,
+            246
+          ],
+          "text": "Rendering FPs should be solid but darker than traces. When top FP is visible and bottom anything is visible, top layer will have to be rendered to a separate pixmap first, because the only practical way to render FPs is to first simply draw them and then carve out trace/pad/hole clearance.",
+          "uuid": "5eb37b39",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-08-24T10:13:47",
+              "mod": "2018-08-24T10:13:47",
+              "end": 80,
+              "start": 77,
+              "style": 1,
+              "uuid": "ec7e48b1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

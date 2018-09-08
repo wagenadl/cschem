@@ -1,0 +1,29 @@
+{ "typ": "latenote",
+  "cre": "2018-09-04T21:19:34",
+  "mod": "2018-09-04T21:20:06",
+  "dx": 19.4849,
+  "dy": 59.898,
+  "sheet": 0,
+  "textWidth": 171.787,
+  "uuid": "24c91947",
+  "x": 369.491,
+  "y": 381.759,
+  "cc": [
+    { "typ": "text",
+      "cre": "2018-09-04T21:19:34",
+      "mod": "2018-09-04T21:19:54",
+      "lines": [
+        0,
+        25,
+        50
+      ],
+      "text": "Done, but some heuristic may be needed to prevent needle-thin protrusions",
+      "uuid": "81e5cc4b"
+    },
+    { "typ": "resources",
+      "cre": "2018-09-04T21:19:34",
+      "mod": "2018-09-04T21:19:34",
+      "uuid": "746e0d99"
+    }
+  ]
+}

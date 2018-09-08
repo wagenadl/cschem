@@ -1,0 +1,131 @@
+{ "typ": "page",
+  "cre": "2018-06-20T08:51:10",
+  "mod": "2018-06-20T08:54:22",
+  "cui": "b92269f0b742f40f",
+  "stampTime": 0,
+  "startPage": 5,
+  "unlocked": false,
+  "uuid": "db837368",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-06-20T08:51:10",
+      "mod": "2018-06-20T08:51:10",
+      "uuid": "da61f950"
+    },
+    { "typ": "title",
+      "cre": "2018-06-20T08:51:10",
+      "mod": "2018-06-20T08:51:12",
+      "uuid": "eecf510a",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:51:10",
+          "mod": "2018-06-20T08:51:12",
+          "lines": [
+            0
+          ],
+          "text": "Part files",
+          "uuid": "84742a9e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:51:12",
+      "mod": "2018-06-20T08:53:28",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f52f5553",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:51:12",
+          "mod": "2018-06-20T08:53:28",
+          "lines": [
+            0,
+            65,
+            129,
+            190
+          ],
+          "text": "CPcb part files, currently in a nonstandard “.cpart” xml format, should instead be saved as svg with the “cpart” data in a note. Inkscape feels at liberty to add <sodipodi:whatever> tags to the <svg> element after  including an ",
+          "uuid": "aa13f530",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-06-20T08:53:01",
+              "mod": "2018-06-20T08:53:01",
+              "end": 180,
+              "start": 172,
+              "style": 1,
+              "uuid": "983765f6"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:51:12",
+      "mod": "2018-06-20T08:53:32",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f52f5553",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:51:12",
+          "mod": "2018-06-20T08:53:31",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "xmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\"",
+          "uuid": "aa13f530"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:51:12",
+      "mod": "2018-06-20T08:53:43",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f52f5553",
+      "y0": 205.631,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:51:12",
+          "mod": "2018-06-20T08:53:43",
+          "lines": [
+            0
+          ],
+          "text": "property.",
+          "uuid": "aa13f530"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-06-20T08:54:06",
+      "mod": "2018-06-20T08:54:22",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "3e2ac7bc",
+      "y0": 232.797,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-06-20T08:54:06",
+          "mod": "2018-06-20T08:54:22",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "That way, part files can have automatic previews in filer windows.",
+          "uuid": "f45bb0ea"
+        }
+      ]
+    }
+  ]
+}

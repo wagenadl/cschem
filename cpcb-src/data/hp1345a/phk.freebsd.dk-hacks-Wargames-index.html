@@ -1,0 +1,1575 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>HP1345A (and Wargames) &#8212; PHKs Bikeshed</title>
+    <link rel="stylesheet" href="../../_static/traditional.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="End of European Loran-C transmissions" href="../20151231_end_of_nels/index.html" />
+    <link rel="prev" title="Formatting scanned document PDF’s for Kobo Glo eReader" href="../kobo.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../20151231_end_of_nels/index.html" title="End of European Loran-C transmissions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../kobo.html" title="Formatting scanned document PDF’s for Kobo Glo eReader"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PHKs Bikeshed</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Poul-Hennings Hacks &amp; Stuff</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <img alt="../../_images/fig_wg.svg" id="hack-wargames" src="../../_images/fig_wg.svg" /><div class="section" id="hp1345a">
+<h1>HP1345A<a class="headerlink" href="#hp1345a" title="Permalink to this headline">¶</a></h1>
+<p>I have spent a bit of time fixing a HP1345A digital vector display,
+including reverse-engineering, just for the heck of it, its
+character generator.</p>
+<p>If you click on the individual glyphs below you get
+a magnified version of just that glyph.</p>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1"
+ width="681" height="681"
+ xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1,0,0,-1,0,679)" >
+    <g stroke="#000000">
+      <polyline points=" 5,619 17,619" />
+      <polyline points=" 24,612 34,626" />
+      <polyline points=" 35,622 35,616 32,610 26,610 23,616 23,622 26,628 32,628 35,622" />
+      <polyline points=" 46,652 56,666" />
+      <polyline points=" 57,662 57,656 54,650 48,650 45,656 45,662 48,668 54,668 57,662" />
+      <polyline points=" 63,659 75,659" />
+      <polyline points=" 5,579 17,579" />
+      <polyline points=" 26,570 32,570" />
+      <polyline points=" 29,570 29,588 26,585" />
+      <polyline points=" 88,650 94,650" />
+      <polyline points=" 91,650 91,668 88,665" />
+      <polyline points=" 103,659 115,659" />
+      <polyline points=" 5,539 17,539" />
+      <polyline points=" 23,545 26,548 32,548 35,545 35,541 25,535 23,530 35,530" />
+      <polyline points=" 125,665 128,668 134,668 137,665 137,661 127,655 125,650 137,650" />
+      <polyline points=" 143,659 155,659" />
+      <polyline points=" 5,499 17,499" />
+      <polyline points=" 23,506 26,508 32,508 35,505 35,501 32,499 26,499" />
+      <polyline points=" 32,499 35,497 35,493 32,490 26,490 23,492" />
+      <polyline points=" 165,666 168,668 174,668 177,665 177,661 174,659 168,659" />
+      <polyline points=" 174,659 177,657 177,653 174,650 168,650 165,652" />
+      <polyline points=" 183,659 195,659" />
+      <polyline points=" 5,459 17,459" />
+      <polyline points=" 32,450 32,468 23,456 35,456" />
+      <polyline points=" 214,650 214,668 205,656 217,656" />
+      <polyline points=" 223,659 235,659" />
+      <polyline points=" 5,419 17,419" />
+      <polyline points=" 23,412 26,410 32,410 35,412 35,418 32,420 26,420 23,419 25,428 35,428" />
+      <polyline points=" 245,652 248,650 254,650 257,652 257,658 254,660 248,660 245,659 247,668 257,668" />
+      <polyline points=" 263,659 275,659" />
+      <polyline points=" 5,379 17,379" />
+      <polyline points=" 23,377 26,380 32,380 35,377 35,373 32,370 26,370 23,373 23,380 26,385 30,388" />
+      <polyline points=" 285,657 288,660 294,660 297,657 297,653 294,650 288,650 285,653 285,660 288,665 292,668" />
+      <polyline points=" 303,659 315,659" />
+      <polyline points=" 5,339 17,339" />
+      <polyline points=" 23,348 35,348 27,330" />
+      <polyline points=" 325,668 337,668 329,650" />
+      <polyline points=" 343,659 355,659" />
+      <polyline points=" 5,299 17,299" />
+      <polyline points=" 26,300 23,303 23,306 26,309 32,309 35,306 35,303 32,300 26,300 23,297 23,293 26,290 32,290 35,293 35,297 32,300" />
+      <polyline points=" 368,660 365,663 365,666 368,669 374,669 377,666 377,663 374,660 368,660 365,657 365,653 368,650 374,650 377,653 377,657 374,660" />
+      <polyline points=" 383,659 395,659" />
+      <polyline points=" 5,259 17,259" />
+      <polyline points=" 28,250 32,253 35,258 35,265 32,268 26,268 23,265 23,261 26,258 32,258 35,261" />
+      <polyline points=" 410,650 414,653 417,658 417,665 414,668 408,668 405,665 405,661 408,658 414,658 417,661" />
+      <polyline points=" 423,659 435,659" />
+      <polyline points=" 5,219 17,219" />
+      <polyline points=" 23,220 28,222 34,220 34,212 31,210 27,210 23,212 23,215 34,216" />
+      <polyline points=" 34,212 36,210" />
+      <polyline points=" 445,660 450,662 456,660 456,652 453,650 449,650 445,652 445,655 456,656" />
+      <polyline points=" 456,652 458,650" />
+      <polyline points=" 463,659 475,659" />
+      <polyline points=" 5,179 17,179" />
+      <polyline points=" 23,170 23,188" />
+      <polyline points=" 23,179 29,181 35,179 35,172 29,170 23,172" />
+      <polyline points=" 485,650 485,668" />
+      <polyline points=" 485,659 491,661 497,659 497,652 491,650 485,652" />
+      <polyline points=" 503,659 515,659" />
+      <polyline points=" 5,139 17,139" />
+      <polyline points=" 34,139 29,141 23,139 23,132 29,130 34,132" />
+      <polyline points=" 536,659 531,661 525,659 525,652 531,650 536,652" />
+      <polyline points=" 543,659 555,659" />
+      <polyline points=" 5,99 17,99" />
+      <polyline points=" 35,92 29,90 23,92 23,99 29,101 35,99" />
+      <polyline points=" 35,108 35,90" />
+      <polyline points=" 577,652 571,650 565,652 565,659 571,661 577,659" />
+      <polyline points=" 577,668 577,650" />
+      <polyline points=" 583,659 595,659" />
+      <polyline points=" 5,59 17,59" />
+      <polyline points=" 23,56 35,57 32,62 26,62 23,59 23,52 26,50 32,50 35,52" />
+      <polyline points=" 605,656 617,657 614,662 608,662 605,659 605,652 608,650 614,650 617,652" />
+      <polyline points=" 623,659 635,659" />
+      <polyline points=" 5,19 17,19" />
+      <polyline points=" 27,10 27,26 31,28 35,26" />
+      <polyline points=" 23,19 31,19" />
+      <polyline points=" 649,650 649,666 653,668 657,666" />
+      <polyline points=" 645,659 653,659" />
+      <polyline points=" 663,659 675,659" />
+    </g>
+	<a xlink:href="_wargames_0f.svg">
+	<rect x="40" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,10)" >
+          <polyline points=" 0,4 0,-4" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_0e.svg">
+	<rect x="40" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,50,43)" >
+          <polyline points=" -4,0 4,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_0d.svg">
+	<rect x="40" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,83)" >
+	</g>
+	</a>
+	<a xlink:href="_wargames_0c.svg">
+	<rect x="40" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,123)" >
+	</g>
+	</a>
+	<a xlink:href="_wargames_0b.svg">
+	<rect x="40" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.00,0,0,1.00,42,162)" >
+	</g>
+	</a>
+	<a xlink:href="_wargames_0a.svg">
+	<rect x="40" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,268)" >
+	</g>
+	</a>
+	<a xlink:href="_wargames_09.svg">
+	<rect x="40" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,259)" >
+	</g>
+	</a>
+	<a xlink:href="_wargames_08.svg">
+	<rect x="40" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,76,283)" >
+	</g>
+	</a>
+	<a xlink:href="_wargames_07.svg">
+	<rect x="40" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,323)" >
+          <polyline points=" 0,0 4,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_06.svg">
+	<rect x="40" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,50,363)" >
+          <polyline points=" 0,0 -4,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_05.svg">
+	<rect x="40" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,410)" >
+          <polyline points=" 0,0 0,-4" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_04.svg">
+	<rect x="40" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,443)" >
+          <polyline points=" 0,0 0,4" />
+	</g>
+	</a>
+	<rect x="40" y="480" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_02.svg">
+	<rect x="40" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.38,0,0,1.38,42,532)" >
+          <polyline points=" 0,-7 1,7 3,16 7,18 12,16 12,10 8,8 2,8" />
+          <polyline points=" 8,8 11,7 12,3 9,0 5,0 1,3" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_01.svg">
+	<rect x="40" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(0.69,0,0,0.69,41,561)" >
+          <polyline points=" 19,0 3,0 0,3 0,24 3,27 14,27" />
+          <polyline points=" 20,27 42,27 45,24 45,3 42,0 25,0" />
+          <polyline points=" 13,9 17,27" />
+          <polyline points=" 15,18 19,18 21,16 20,9" />
+          <polyline points=" 22,0 26,18 30,18 32,16 31,11 29,9 24,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_00.svg">
+	<rect x="40" y="600" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,43,603)" >
+	</g>
+	</a>
+	<a xlink:href="_wargames_1f.svg">
+	<rect x="80" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,3)" >
+          <polyline points=" 0,0 6,10" />
+          <polyline points=" 0,17 3,18 9,2 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_1e.svg">
+	<rect x="80" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,43)" >
+          <polyline points=" 7,0 2,0 0,4 0,10 2,15 5,18 10,18 12,14 12,8 10,3 7,0" />
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_1d.svg">
+	<rect x="80" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,83)" >
+          <polyline points=" 0,0 4,0" />
+          <polyline points=" 2,0 2,18" />
+          <polyline points=" 0,18 12,18 12,14" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_1c.svg">
+	<rect x="80" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.74,0,0,1.74,83,135)" >
+          <polyline points=" 0,-7 3,9 7,12 11,11 13,8 13,4 10,0 5,0 2,3" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_1b.svg">
+	<rect x="80" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,163)" >
+          <polyline points=" 0,0 4,0 1,7 1,12 4,16 9,16 12,12 12,7 9,0 13,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_1a.svg">
+	<rect x="80" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.48,0,0,1.48,82,202)" >
+          <polyline points=" 6,16 4,18 4,21 6,23 9,23 11,21 11,18 9,16 6,16" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_19.svg">
+	<rect x="80" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,256)" >
+          <polyline points=" 0,-7 2,11" />
+          <polyline points=" 1,2 6,0 10,2 11,11" />
+          <polyline points=" 10,2 13,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_18.svg">
+	<rect x="80" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,283)" >
+          <polyline points=" 0,0 6,15 12,0 0,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_17.svg">
+	<rect x="80" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,323)" >
+          <polyline points=" 3,0 4,12" />
+          <polyline points=" 9,0 9,12" />
+          <polyline points=" 0,10 4,12 9,12 12,14" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_16.svg">
+	<rect x="80" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.67,0,0,1.67,83,363)" >
+          <polyline points=" 0,3 3,0 6,20 13,20" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_15.svg">
+	<rect x="80" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,403)" >
+          <polyline points=" 6,3 12,9 6,15" />
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_14.svg">
+	<rect x="80" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,443)" >
+          <polyline points=" 0,8 6,0 12,8" />
+          <polyline points=" 6,0 6,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_13.svg">
+	<rect x="80" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,483)" >
+          <polyline points=" 6,3 0,9 6,15" />
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_12.svg">
+	<rect x="80" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,83,523)" >
+          <polyline points=" 0,10 6,18 12,10" />
+          <polyline points=" 6,18 6,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_11.svg">
+	<rect x="80" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,92,572)" >
+          <polyline points=" -2,-5 -5,-2 -5,2 -2,5 2,5 5,2 5,-2 2,-5 -2,-5" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_10.svg">
+	<rect x="80" y="600" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,92,612)" >
+          <polyline points=" 4,4 -4,-4" />
+          <polyline points=" 0,-5 0,5" />
+          <polyline points=" -4,4 4,-4" />
+          <polyline points=" 5,0 -5,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_2f.svg">
+	<rect x="120" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,3)" >
+          <polyline points=" 0,0 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_2e.svg">
+	<rect x="120" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,43)" >
+          <polyline points=" 6,0 6,0 6,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_2d.svg">
+	<rect x="120" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,83)" >
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_2c.svg">
+	<rect x="120" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,130)" >
+          <polyline points=" 4,-4 6,1 6,1" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_2b.svg">
+	<rect x="120" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,163)" >
+          <polyline points=" 6,2 6,16" />
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_2a.svg">
+	<rect x="120" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,203)" >
+          <polyline points=" 3,2 9,16" />
+          <polyline points=" 3,16 9,2" />
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_29.svg">
+	<rect x="120" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.54,0,0,1.54,123,246)" >
+          <polyline points=" 0,-2 6,4 6,14 0,20" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_28.svg">
+	<rect x="120" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.54,0,0,1.54,123,286)" >
+          <polyline points=" 12,-2 6,4 6,14 12,20" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_27.svg">
+	<rect x="120" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,323)" >
+          <polyline points=" 5,14 7,18 7,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_26.svg">
+	<rect x="120" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,363)" >
+          <polyline points=" 12,5 8,0 2,0 0,4 9,14 7,18 3,18 1,14 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_25.svg">
+	<rect x="120" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,403)" >
+          <polyline points=" 0,0 12,18" />
+          <polyline points=" 6,14 3,10 0,14 3,18 6,14" />
+          <polyline points=" 9,8 12,4 9,0 6,4 9,8" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_24.svg">
+	<rect x="120" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.67,0,0,1.67,123,445)" >
+          <polyline points=" 0,3 3,1 9,1 12,3 12,7 9,9 3,9 0,11 0,15 3,17 9,17 12,15" />
+          <polyline points=" 6,19 6,-1" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_23.svg">
+	<rect x="120" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,483)" >
+          <polyline points=" 2,0 4,18" />
+          <polyline points=" 8,0 10,18" />
+          <polyline points=" 0,13 12,13" />
+          <polyline points=" 0,5 12,5" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_22.svg">
+	<rect x="120" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,523)" >
+          <polyline points=" 3,14 4,18" />
+          <polyline points=" 7,14 8,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_21.svg">
+	<rect x="120" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,563)" >
+          <polyline points=" 6,0 6,0" />
+          <polyline points=" 6,5 6,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_20.svg">
+	<rect x="120" y="600" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,123,603)" >
+	</g>
+	</a>
+	<a xlink:href="_wargames_3f.svg">
+	<rect x="160" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,3)" >
+          <polyline points=" 0,15 3,18 9,18 12,15 12,11 6,7 6,4" />
+          <polyline points=" 6,0 6,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_3e.svg">
+	<rect x="160" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,43)" >
+          <polyline points=" 0,0 12,9 0,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_3d.svg">
+	<rect x="160" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,83)" >
+          <polyline points=" 0,4 12,4" />
+          <polyline points=" 0,14 12,14" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_3c.svg">
+	<rect x="160" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,123)" >
+          <polyline points=" 12,0 0,9 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_3b.svg">
+	<rect x="160" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,170)" >
+          <polyline points=" 5,-4 7,0 7,0" />
+          <polyline points=" 7,10 7,10" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_3a.svg">
+	<rect x="160" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,203)" >
+          <polyline points=" 6,4 6,4" />
+          <polyline points=" 6,14 6,14" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_39.svg">
+	<rect x="160" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,243)" >
+          <polyline points=" 5,0 9,3 12,8 12,15 9,18 3,18 0,15 0,11 3,8 9,8 12,11" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_38.svg">
+	<rect x="160" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.74,0,0,1.74,163,283)" >
+          <polyline points=" 3,10 0,13 0,16 3,19 9,19 12,16 12,13 9,10 3,10 0,7 0,3 3,0 9,0 12,3 12,7 9,10" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_37.svg">
+	<rect x="160" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,323)" >
+          <polyline points=" 0,18 12,18 4,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_36.svg">
+	<rect x="160" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,363)" >
+          <polyline points=" 0,7 3,10 9,10 12,7 12,3 9,0 3,0 0,3 0,10 3,15 7,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_35.svg">
+	<rect x="160" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,403)" >
+          <polyline points=" 0,2 3,0 9,0 12,2 12,8 9,10 3,10 0,9 2,18 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_34.svg">
+	<rect x="160" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,443)" >
+          <polyline points=" 9,0 9,18 0,6 12,6" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_33.svg">
+	<rect x="160" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,483)" >
+          <polyline points=" 0,16 3,18 9,18 12,15 12,11 9,9 3,9" />
+          <polyline points=" 9,9 12,7 12,3 9,0 3,0 0,2" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_32.svg">
+	<rect x="160" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,523)" >
+          <polyline points=" 0,15 3,18 9,18 12,15 12,11 2,5 0,0 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_31.svg">
+	<rect x="160" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,563)" >
+          <polyline points=" 3,0 9,0" />
+          <polyline points=" 6,0 6,18 3,15" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_30.svg">
+	<rect x="160" y="600" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,163,603)" >
+          <polyline points=" 1,2 11,16" />
+          <polyline points=" 12,12 12,6 9,0 3,0 0,6 0,12 3,18 9,18 12,12" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_4f.svg">
+	<rect x="200" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,3)" >
+          <polyline points=" 3,0 0,3 0,15 3,18 9,18 12,15 12,3 9,0 3,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_4e.svg">
+	<rect x="200" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,43)" >
+          <polyline points=" 0,0 0,18 12,0 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_4d.svg">
+	<rect x="200" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,83)" >
+          <polyline points=" 0,0 0,18 6,5 12,18 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_4c.svg">
+	<rect x="200" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,123)" >
+          <polyline points=" 0,0 0,18" />
+          <polyline points=" 0,0 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_4b.svg">
+	<rect x="200" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,163)" >
+          <polyline points=" 0,0 0,18" />
+          <polyline points=" 12,18 0,6" />
+          <polyline points=" 3,9 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_4a.svg">
+	<rect x="200" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,203)" >
+          <polyline points=" 0,2 3,0 5,0 8,2 8,18" />
+          <polyline points=" 4,18 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_49.svg">
+	<rect x="200" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,243)" >
+          <polyline points=" 2,0 10,0" />
+          <polyline points=" 6,0 6,18" />
+          <polyline points=" 2,18 10,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_48.svg">
+	<rect x="200" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,283)" >
+          <polyline points=" 0,0 0,18" />
+          <polyline points=" 12,0 12,18" />
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_47.svg">
+	<rect x="200" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,323)" >
+          <polyline points=" 12,15 9,18 3,18 0,15 0,3 3,0 9,0 12,3 12,8 5,8" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_46.svg">
+	<rect x="200" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,363)" >
+          <polyline points=" 0,0 0,18 12,18" />
+          <polyline points=" 0,9 9,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_45.svg">
+	<rect x="200" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,403)" >
+          <polyline points=" 0,0 0,18 12,18" />
+          <polyline points=" 0,9 9,9" />
+          <polyline points=" 0,0 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_44.svg">
+	<rect x="200" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,443)" >
+          <polyline points=" 0,0 0,18 9,18 12,15 12,3 9,0 0,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_43.svg">
+	<rect x="200" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,483)" >
+          <polyline points=" 12,3 9,0 3,0 0,3 0,15 3,18 9,18 12,15" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_42.svg">
+	<rect x="200" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,523)" >
+          <polyline points=" 0,0 0,18 9,18 12,15 12,12 9,9 0,9" />
+          <polyline points=" 9,9 12,6 12,3 9,0 0,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_41.svg">
+	<rect x="200" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,563)" >
+          <polyline points=" 0,0 6,18 12,0" />
+          <polyline points=" 3,9 9,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_40.svg">
+	<rect x="200" y="600" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,203,603)" >
+          <polyline points=" 12,2 10,0 3,0 0,3 0,15 3,18 9,18 12,15 12,6 5,6 5,13 12,13" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_5f.svg">
+	<rect x="240" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,276,12)" >
+          <polyline points=" -18,-5 0,-5" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_5e.svg">
+	<rect x="240" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,43)" >
+          <polyline points=" 0,7 6,16 12,7" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_5d.svg">
+	<rect x="240" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.54,0,0,1.54,243,86)" >
+          <polyline points=" 0,-2 6,-2 6,20 0,20" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_5c.svg">
+	<rect x="240" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,123)" >
+          <polyline points=" 0,18 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_5b.svg">
+	<rect x="240" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.54,0,0,1.54,243,166)" >
+          <polyline points=" 12,20 6,20 6,-2 12,-2" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_5a.svg">
+	<rect x="240" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,203)" >
+          <polyline points=" 0,0 12,18 0,18" />
+          <polyline points=" 12,0 0,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_59.svg">
+	<rect x="240" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,243)" >
+          <polyline points=" 6,0 6,7 0,18" />
+          <polyline points=" 6,7 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_58.svg">
+	<rect x="240" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,283)" >
+          <polyline points=" 0,0 12,18" />
+          <polyline points=" 0,18 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_57.svg">
+	<rect x="240" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,323)" >
+          <polyline points=" 0,18 3,0 6,14 9,0 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_56.svg">
+	<rect x="240" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,363)" >
+          <polyline points=" 0,18 6,0 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_55.svg">
+	<rect x="240" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,403)" >
+          <polyline points=" 0,18 0,3 3,0 9,0 12,3 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_54.svg">
+	<rect x="240" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,443)" >
+          <polyline points=" 6,0 6,18" />
+          <polyline points=" 0,18 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_53.svg">
+	<rect x="240" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,483)" >
+          <polyline points=" 0,2 3,0 9,0 12,3 12,6 9,9 3,9 0,12 0,15 3,18 9,18 12,16" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_52.svg">
+	<rect x="240" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,523)" >
+          <polyline points=" 0,0 0,18 9,18 12,15 12,11 9,8 0,8" />
+          <polyline points=" 7,8 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_51.svg">
+	<rect x="240" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.67,0,0,1.67,243,566)" >
+          <polyline points=" 3,0 0,3 0,15 3,18 9,18 12,15 12,3 9,0 3,0" />
+          <polyline points=" 7,5 14,-2" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_50.svg">
+	<rect x="240" y="600" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,243,603)" >
+          <polyline points=" 0,0 0,18 9,18 12,15 12,11 9,8 0,8" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_6f.svg">
+	<rect x="280" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,3)" >
+          <polyline points=" 6,0 0,2 0,9 6,11 12,9 12,2 6,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_6e.svg">
+	<rect x="280" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,43)" >
+          <polyline points=" 0,0 0,11" />
+          <polyline points=" 0,8 6,11 12,8 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_6d.svg">
+	<rect x="280" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,83)" >
+          <polyline points=" 0,0 0,12" />
+          <polyline points=" 0,9 4,12 6,9 6,0" />
+          <polyline points=" 6,9 10,12 12,9 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_6c.svg">
+	<rect x="280" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,123)" >
+          <polyline points=" 3,0 9,0" />
+          <polyline points=" 6,0 6,18 3,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_6b.svg">
+	<rect x="280" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,163)" >
+          <polyline points=" 0,0 0,18" />
+          <polyline points=" 0,5 12,11" />
+          <polyline points=" 4,7 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_6a.svg">
+	<rect x="280" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.38,0,0,1.38,282,212)" >
+          <polyline points=" 0,-5 4,-7 8,-5 8,11" />
+          <polyline points=" 8,18 8,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_69.svg">
+	<rect x="280" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,243)" >
+          <polyline points=" 7,0 7,11 4,11" />
+          <polyline points=" 7,18 7,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_68.svg">
+	<rect x="280" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,283)" >
+          <polyline points=" 0,0 0,18" />
+          <polyline points=" 0,9 6,11 12,9 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_67.svg">
+	<rect x="280" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,336)" >
+          <polyline points=" 11,2 6,0 0,2 0,9 6,11 11,9" />
+          <polyline points=" 11,11 11,-5 6,-7 0,-5" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_66.svg">
+	<rect x="280" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,363)" >
+          <polyline points=" 4,0 4,16 8,18 12,16" />
+          <polyline points=" 0,9 8,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_65.svg">
+	<rect x="280" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,403)" >
+          <polyline points=" 0,6 12,7 9,12 3,12 0,9 0,2 3,0 9,0 12,2" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_64.svg">
+	<rect x="280" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,443)" >
+          <polyline points=" 12,2 6,0 0,2 0,9 6,11 12,9" />
+          <polyline points=" 12,18 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_63.svg">
+	<rect x="280" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,483)" >
+          <polyline points=" 11,9 6,11 0,9 0,2 6,0 11,2" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_62.svg">
+	<rect x="280" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,523)" >
+          <polyline points=" 0,0 0,18" />
+          <polyline points=" 0,9 6,11 12,9 12,2 6,0 0,2" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_61.svg">
+	<rect x="280" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,563)" >
+          <polyline points=" 0,10 5,12 11,10 11,2 8,0 4,0 0,2 0,5 11,6" />
+          <polyline points=" 11,2 13,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_60.svg">
+	<rect x="280" y="600" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,283,603)" >
+          <polyline points=" 5,18 5,18 7,14" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_7f.svg">
+	<rect x="320" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,3)" >
+          <polyline points=" 0,0 0,18 12,9 0,0" />
+          <polyline points=" 0,3 4,3 4,15 0,15" />
+          <polyline points=" 0,6 8,6 8,12 0,12" />
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_7e.svg">
+	<rect x="320" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(0.67,0,0,0.67,321,41)" >
+          <polyline points=" 0,0 0,53 53,53 53,0 0,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_7d.svg">
+	<rect x="320" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.54,0,0,1.54,323,86)" >
+          <polyline points=" 0,-2 5,1 5,6 8,9 5,12 5,17 0,20" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_7c.svg">
+	<rect x="320" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,123)" >
+          <polyline points=" 6,0 6,6" />
+          <polyline points=" 6,12 6,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_7b.svg">
+	<rect x="320" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.54,0,0,1.54,323,166)" >
+          <polyline points=" 12,-2 7,1 7,6 4,9 7,12 7,17 12,20" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_7a.svg">
+	<rect x="320" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,203)" >
+          <polyline points=" 0,11 12,11 0,0 12,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_79.svg">
+	<rect x="320" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,256)" >
+          <polyline points=" 0,11 7,1" />
+          <polyline points=" 3,-7 12,11" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_78.svg">
+	<rect x="320" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,283)" >
+          <polyline points=" 0,0 11,11" />
+          <polyline points=" 0,11 11,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_77.svg">
+	<rect x="320" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,323)" >
+          <polyline points=" 0,11 3,0 6,8 9,0 12,11" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_76.svg">
+	<rect x="320" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,363)" >
+          <polyline points=" 0,11 6,0 12,11" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_75.svg">
+	<rect x="320" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,403)" >
+          <polyline points=" 0,11 0,2 6,0 12,2 12,11" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_74.svg">
+	<rect x="320" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,443)" >
+          <polyline points=" 12,2 8,0 4,2 4,18" />
+          <polyline points=" 0,11 8,11" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_73.svg">
+	<rect x="320" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,483)" >
+          <polyline points=" 0,2 6,0 12,2 12,5 0,7 0,10 6,12 12,10" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_72.svg">
+	<rect x="320" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,523)" >
+          <polyline points=" 0,0 0,11" />
+          <polyline points=" 0,8 6,11 12,8" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_71.svg">
+	<rect x="320" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.74,0,0,1.74,323,577)" >
+          <polyline points=" 11,2 6,0 0,2 0,9 6,11 11,9" />
+          <polyline points=" 11,11 11,-6 13,-8" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_70.svg">
+	<rect x="320" y="600" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,323,616)" >
+          <polyline points=" 0,-7 0,11" />
+          <polyline points=" 0,9 6,11 12,9 12,2 6,0 0,2" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_8f.svg">
+	<rect x="360" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,363,19)" >
+          <polyline points=" 0,9 0,-9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_8e.svg">
+	<rect x="360" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,379,43)" >
+          <polyline points=" -9,0 9,0" />
+	</g>
+	</a>
+	<rect x="360" y="80" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="360" y="120" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="360" y="160" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="360" y="200" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="360" y="240" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="360" y="280" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_87.svg">
+	<rect x="360" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,363,323)" >
+          <polyline points=" 0,0 9,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_86.svg">
+	<rect x="360" y="360" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,379,363)" >
+          <polyline points=" 0,0 -9,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_85.svg">
+	<rect x="360" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,363,419)" >
+          <polyline points=" 0,0 0,-9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_84.svg">
+	<rect x="360" y="440" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,363,443)" >
+          <polyline points=" 0,0 0,9" />
+	</g>
+	</a>
+	<rect x="360" y="480" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_82.svg">
+	<rect x="360" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(0.68,0,0,0.68,393,558)" >
+          <polyline points=" 0,0 -48,0" />
+          <polyline points=" 0,-11 -48,-11" />
+          <polyline points=" 0,-22 -48,-22" />
+          <polyline points=" 0,-33 -48,-33" />
+          <polyline points=" 0,-44 -48,-44" />
+          <polyline points=" 0,-55 -48,-55" />
+	</g>
+	</a>
+	<rect x="360" y="560" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="360" y="600" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="0" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_9e.svg">
+	<rect x="400" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(0.29,0,0,0.29,400,60)" >
+          <polyline points=" 0,-7 6,0" />
+          <polyline points=" 0,-14 12,0" />
+          <polyline points=" 0,-21 18,0" />
+          <polyline points=" 0,-28 24,0" />
+          <polyline points=" 0,-35 30,0" />
+          <polyline points=" 0,-42 36,0" />
+          <polyline points=" 0,-49 42,0" />
+          <polyline points=" 0,-56 48,0" />
+          <polyline points=" 0,-63 48,-7" />
+          <polyline points=" 3,-66 48,-14" />
+          <polyline points=" 9,-66 48,-21" />
+          <polyline points=" 15,-66 48,-28" />
+          <polyline points=" 21,-66 48,-35" />
+          <polyline points=" 27,-66 48,-42" />
+          <polyline points=" 33,-66 48,-49" />
+          <polyline points=" 39,-66 48,-56" />
+          <polyline points=" 45,-66 48,-63" />
+          <polyline points=" 54,0 48,7" />
+          <polyline points=" 60,0 48,14" />
+          <polyline points=" 66,0 48,21" />
+          <polyline points=" 72,0 48,28" />
+          <polyline points=" 78,0 48,35" />
+          <polyline points=" 84,0 48,42" />
+          <polyline points=" 90,0 48,49" />
+          <polyline points=" 96,0 48,56" />
+          <polyline points=" 96,7 48,63" />
+          <polyline points=" 96,14 51,66" />
+          <polyline points=" 96,21 57,66" />
+          <polyline points=" 96,28 63,66" />
+          <polyline points=" 96,35 69,66" />
+          <polyline points=" 96,42 75,66" />
+          <polyline points=" 96,49 81,66" />
+          <polyline points=" 96,56 87,66" />
+          <polyline points=" 96,63 93,66" />
+          <polyline points=" 48,55 0,55" />
+          <polyline points=" 48,44 0,44" />
+          <polyline points=" 48,33 0,33" />
+          <polyline points=" 48,22 0,22" />
+          <polyline points=" 48,11 0,11" />
+	</g>
+	</a>
+	<rect x="400" y="80" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="120" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_9b.svg">
+	<rect x="400" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(0.48,0,0,0.48,400,160)" >
+          <polyline points=" 0,0 0,39" />
+          <polyline points=" 0,40 0,80 58,80 58,41" />
+          <polyline points=" 58,40 58,0 0,0" />
+          <polyline points=" 5,7 5,40 5,73 53,73 53,40 53,7 5,7" />
+          <polyline points=" 5,40 53,40" />
+          <polyline points=" 29,73 29,40 29,7" />
+          <polyline points=" 31,40 31,7" />
+          <polyline points=" 33,40 33,7" />
+          <polyline points=" 35,40 35,7" />
+          <polyline points=" 37,40 37,7" />
+          <polyline points=" 39,40 39,7" />
+          <polyline points=" 41,40 41,7" />
+          <polyline points=" 43,40 43,7" />
+          <polyline points=" 45,40 45,7" />
+          <polyline points=" 47,40 47,7" />
+          <polyline points=" 49,40 49,7" />
+          <polyline points=" 51,40 51,7" />
+	</g>
+	</a>
+	<rect x="400" y="200" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="240" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="280" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="320" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="360" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="400" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="440" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="400" y="480" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_92.svg">
+	<rect x="400" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(0.67,0,0,0.67,401,521)" >
+          <polyline points=" 0,0 0,39 53,39 53,0 0,0" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_91.svg">
+	<rect x="400" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.08,0,0,1.08,402,562)" >
+	</g>
+	</a>
+	<rect x="400" y="600" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="0" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="40" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="80" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_ac.svg">
+	<rect x="440" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.33,0,0,1.33,466,122)" >
+          <polyline points=" -18,23 -15,26 -9,23 -6,26" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_ab.svg">
+	<rect x="440" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,470,163)" >
+          <polyline points=" -15,17 -15,17" />
+          <polyline points=" -9,17 -9,17" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_aa.svg">
+	<rect x="440" y="200" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,474,203)" >
+          <polyline points=" -17,15 -12,18 -7,15" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_a9.svg">
+	<rect x="440" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.74,0,0,1.74,473,243)" >
+          <polyline points=" -17,19 -7,15" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_a8.svg">
+	<rect x="440" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,474,283)" >
+          <polyline points=" -17,15 -8,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_a7.svg">
+	<rect x="440" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,443,323)" >
+          <polyline points=" 6,13 6,18" />
+	</g>
+	</a>
+	<rect x="440" y="360" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="400" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="440" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="480" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="520" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="560" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="440" y="600" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="480" y="0" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_be.svg">
+	<rect x="480" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(0.65,0,0,0.65,481,41)" >
+          <polyline points=" 0,0 0,58 58,58 58,0 0,0" />
+          <polyline points=" 5,5 5,53 53,53 53,5 5,5" />
+          <polyline points=" 5,29 53,29" />
+          <polyline points=" 29,53 29,5" />
+          <polyline points=" 31,29 31,5" />
+          <polyline points=" 33,29 33,5" />
+          <polyline points=" 35,29 35,5" />
+          <polyline points=" 37,29 37,5" />
+          <polyline points=" 39,29 39,5" />
+          <polyline points=" 41,29 41,5" />
+          <polyline points=" 43,29 43,5" />
+          <polyline points=" 45,29 45,5" />
+          <polyline points=" 47,29 47,5" />
+          <polyline points=" 49,29 49,5" />
+          <polyline points=" 51,29 51,5" />
+	</g>
+	</a>
+	<rect x="480" y="80" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="480" y="120" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_bb.svg">
+	<rect x="480" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,483,163)" >
+          <polyline points=" 3,9 9,9" />
+          <polyline points=" 12,17 8,18 6,15 6,2 3,0 0,0 0,2 3,2 6,0 9,0 12,2" />
+	</g>
+	</a>
+	<rect x="480" y="200" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_b9.svg">
+	<rect x="480" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,483,243)" >
+          <polyline points=" 12,3 6,0 0,3 0,7 6,10 6,14" />
+          <polyline points=" 6,18 6,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_b8.svg">
+	<rect x="480" y="280" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,483,283)" >
+          <polyline points=" 12,0 12,13" />
+          <polyline points=" 12,18 12,18" />
+	</g>
+	</a>
+	<rect x="480" y="320" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="480" y="360" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_b5.svg">
+	<rect x="480" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.60,0,0,1.60,483,419)" >
+          <polyline points=" 11,9 5,11 0,9 0,2 5,0 11,2" />
+          <polyline points=" 5,0 5,-4 8,-7 5,-10" />
+	</g>
+	</a>
+	<rect x="480" y="440" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="480" y="480" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="480" y="520" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="480" y="560" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="480" y="600" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="0" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="40" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="80" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="120" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="160" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="200" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="240" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="280" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="320" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="360" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="400" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="440" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="480" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="520" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="560" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="520" y="600" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_df.svg">
+	<rect x="560" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,563,12)" >
+          <polyline points=" 0,-5 18,-5" />
+	</g>
+	</a>
+	<rect x="560" y="40" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="80" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="120" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="160" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="200" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="240" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="280" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_d7.svg">
+	<rect x="560" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,563,323)" >
+          <polyline points=" 0,11 6,11 6,0 0,0 2,5 13,5 13,8 10,11 7,8 7,2 9,0 13,0" />
+	</g>
+	</a>
+	<rect x="560" y="360" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="400" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="440" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_d3.svg">
+	<rect x="560" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,563,483)" >
+          <polyline points=" 0,0 4,18 7,18 7,0 12,0" />
+          <polyline points=" 12,9 2,9" />
+          <polyline points=" 7,18 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_d2.svg">
+	<rect x="560" y="520" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,563,523)" >
+          <polyline points=" 0,3 0,15 6,18 12,15 12,3 6,0 0,3 12,15" />
+	</g>
+	</a>
+	<rect x="560" y="560" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="560" y="600" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_ef.svg">
+	<rect x="600" y="0" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,603,3)" >
+          <polyline points=" 0,0 12,10" />
+          <polyline points=" 12,8 9,10 3,10 0,8 0,2 3,0 9,0 12,2 12,8" />
+	</g>
+	</a>
+	<rect x="600" y="40" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="80" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="120" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="160" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="200" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="240" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="280" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="320" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="360" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="400" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="440" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="480" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="600" y="520" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_e1.svg">
+	<rect x="600" y="560" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(0.40,0,0,0.40,600,580)" >
+          <polyline points=" 0,-6 5,0" />
+          <polyline points=" 0,-12 10,0" />
+          <polyline points=" 0,-18 15,0" />
+          <polyline points=" 0,-24 20,0" />
+          <polyline points=" 0,-30 25,0" />
+          <polyline points=" 0,-36 30,0" />
+          <polyline points=" 0,-42 35,0" />
+          <polyline points=" 0,-48 40,0" />
+          <polyline points=" 5,-48 45,0" />
+          <polyline points=" 10,-48 48,-3" />
+          <polyline points=" 15,-48 48,-9" />
+          <polyline points=" 20,-48 48,-15" />
+          <polyline points=" 25,-48 48,-21" />
+          <polyline points=" 30,-48 48,-27" />
+          <polyline points=" 35,-48 48,-33" />
+          <polyline points=" 40,-48 48,-39" />
+          <polyline points=" 45,-48 48,-45" />
+          <polyline points=" 53,0 48,6" />
+          <polyline points=" 58,0 48,12" />
+          <polyline points=" 63,0 48,18" />
+          <polyline points=" 68,0 48,24" />
+          <polyline points=" 73,0 48,30" />
+          <polyline points=" 78,0 48,36" />
+          <polyline points=" 83,0 48,42" />
+          <polyline points=" 88,0 48,48" />
+          <polyline points=" 93,0 53,48" />
+          <polyline points=" 96,3 58,48" />
+          <polyline points=" 96,9 63,48" />
+          <polyline points=" 96,15 68,48" />
+          <polyline points=" 96,21 73,48" />
+          <polyline points=" 96,27 78,48" />
+          <polyline points=" 96,33 83,48" />
+          <polyline points=" 96,39 88,48" />
+          <polyline points=" 96,45 93,48" />
+          <polyline points=" 48,44 0,44" />
+          <polyline points=" 48,40 0,40" />
+          <polyline points=" 48,36 0,36" />
+          <polyline points=" 48,32 0,32" />
+          <polyline points=" 48,28 0,28" />
+          <polyline points=" 48,24 0,24" />
+          <polyline points=" 48,20 0,20" />
+          <polyline points=" 48,16 0,16" />
+          <polyline points=" 48,12 0,12" />
+          <polyline points=" 48,8 0,8" />
+          <polyline points=" 48,4 0,4" />
+	</g>
+	</a>
+	<rect x="600" y="600" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="640" y="0" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_fe.svg">
+	<rect x="640" y="40" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,643,43)" >
+          <polyline points=" 0,16 3,18 9,16 12,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_fd.svg">
+	<rect x="640" y="80" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.00,0,0,1.00,678,82)" >
+          <polyline points=" -36,16 -30,18 -24,18 -18,16 -12,16 -6,18" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_fc.svg">
+	<rect x="640" y="120" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,643,123)" >
+          <polyline points=" 0,0 0,18" />
+          <polyline points=" 0,9 12,9" />
+	</g>
+	</a>
+	<a xlink:href="_wargames_fb.svg">
+	<rect x="640" y="160" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.00,0,0,1.00,678,162)" >
+          <polyline points=" -36,23 -30,26 -24,26 -18,23 -12,23 -6,26" />
+	</g>
+	</a>
+	<rect x="640" y="200" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_f9.svg">
+	<rect x="640" y="240" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,665,243)" >
+          <polyline points=" -12,17 -12,17" />
+	</g>
+	</a>
+	<rect x="640" y="280" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_f7.svg">
+	<rect x="640" y="320" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.80,0,0,1.80,676,323)" >
+          <polyline points=" -18,16 -15,18 -9,16 -6,18" />
+	</g>
+	</a>
+	<rect x="640" y="360" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_f5.svg">
+	<rect x="640" y="400" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.48,0,0,1.48,660,402)" >
+          <polyline points=" -12,23 -12,23" />
+	</g>
+	</a>
+	<rect x="640" y="440" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<a xlink:href="_wargames_f3.svg">
+	<rect x="640" y="480" width="40" height="40" style="fill:#ffffff;stroke:#999999"/>
+	<g stroke="#000000" transform="matrix(1.48,0,0,1.48,665,482)" >
+          <polyline points=" -15,23 -15,23" />
+          <polyline points=" -9,23 -9,23" />
+	</g>
+	</a>
+	<rect x="640" y="520" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="640" y="560" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+	<rect x="640" y="600" width="40" height="40" style="fill:#eeeeee;stroke:#999999"/>
+  </g>
+</svg>
+</div>
+<div class="section" id="hp1345a-service-mode">
+<h1>HP1345A service-mode<a class="headerlink" href="#hp1345a-service-mode" title="Permalink to this headline">¶</a></h1>
+<p>The HP1345A has two built in service modes, and the quite large
+“windows” glyphs, 0x7e, 0x9b, 0x9e, 0xbe and 0xe1, are for them.</p>
+<p>The alignment picture is displayed by an i8748 microcontroller if
+no computer is attached:</p>
+<img alt="../../_images/_align.svg" src="../../_images/_align.svg" /><p>(I have included the error message if the Option 704 memory fails
+because it nicely shows the largest text-size available.)</p>
+<p>This is what the alignment picture looks like in real life:</p>
+<img alt="../../_images/align.JPG" src="../../_images/align.JPG" />
+<p>The focus screen is displayed by they i8748 if a jumper is mounted:</p>
+<img alt="../../_images/_focus.svg" src="../../_images/_focus.svg" /><p>And in real life:</p>
+<img alt="../../_images/focus.JPG" src="../../_images/focus.JPG" />
+<p>That image has been scaled down, because typical computer screens
+these days still do not have the same resolution as the HP1345A.
+Here is a small snippet of the center “window”:</p>
+<img alt="../../_images/focus2.png" src="../../_images/focus2.png" />
+</div>
+<div class="section" id="useless-information-of-the-day">
+<h1>Useless information of the day<a class="headerlink" href="#useless-information-of-the-day" title="Permalink to this headline">¶</a></h1>
+<p>The only difference between the original (01347-80001) and newer
+(01347-80012) Character Rom is that they changed the comma:</p>
+<img alt="../../_images/fig_commas.svg" src="../../_images/fig_commas.svg" /><p>It is probably more interesting to note that the focus-window glyphs
+exist in two different aspect ratios.  This hints at the existence
+of an option with 1:1 aspect ratio, rather than the default aspect
+of 4:3.  Some of the pictures of the test-pattern in the older
+manuals (01345-90908 for instance) lacks the “Y=2047” text.
+Presumably such an option would have a different i8748, since the
+firmware shows no sign of support for this.</p>
+</div>
+<div class="section" id="wargames">
+<h1>WarGames<a class="headerlink" href="#wargames" title="Permalink to this headline">¶</a></h1>
+<p>In all likelyhood, you have never heard of the movie
+<a class="reference external" href="https://en.wikipedia.org/wiki/WarGames">WarGames.</a></p>
+<p>On the surface, it was an OK and profitable summer-movie for 1983,
+with a typical far-fetched summer-movie plot:  Kid dials into
+computer and it offers him a selection of games:</p>
+<img alt="../../_images/wargames-05.jpg" src="../../_images/wargames-05.jpg" />
+<p>When he selects “GLOBAL THERMONUCLEAR WAR” it transpires it is the real thing.</p>
+<p>Spoiler:  They manage to stop the computer.</p>
+<p>But WarGames is notable for a lot of  reasons.</p>
+<p>1983 was the depth of the cold war, we are right smack in the middle of
+the <a class="reference external" href="https://en.wikipedia.org/wiki/Pershing_II">NATO Pershing II in West Germany</a> crisis, and the movie’s initial premise was that missile launch
+officers might refuse to fire their ICMBs.</p>
+<p>The very straight line from the soviet doomsday machine in
+<a class="reference external" href="https://en.wikipedia.org/wiki/Dr._Strangelove">Kubriks Dr. Strangelove</a>
+to “WOPR” in WarGames.</p>
+<p>The ending of the movie gets close to both Gametheory and “The
+Halting Problem.”</p>
+<p>And probably most interesting scene from todays security environment
+is that some rather neat “social engineering” (and shitty passwords)
+are employed.</p>
+<p>The kids computer is a seriously souped up
+<a class="reference external" href="https://en.wikipedia.org/wiki/IMSAI_8080">IMSAI Altair 8080</a> which has
+a serious claim to being the first “personal computer”.</p>
+<p>The Altair used 8-inch floppydisks for storage, a couple of hundred
+kilobytes on each.</p>
+<p>Guess who <a class="reference external" href="http://www.bbc.com/news/world-us-canada-36385839">still uses those today</a> ?</p>
+<img alt="../../_images/wargames-10.jpg" src="../../_images/wargames-10.jpg" />
+<p>and so on…</p>
+<p>But this is about a font used on the “NORADs hot dream about themselves”
+movie-set which was built at a cost of over a million dollars:</p>
+<img alt="../../_images/wargames-09.jpg" src="../../_images/wargames-09.jpg" />
+<p>The graphics were spectactular.</p>
+<p>Not handdrawn like the computer graphics in Kubriks 2001, but
+designed on a HP9845 computer, drawn on a HP1345A vector display,
+and filmed through successive color filters, one frame a minute
+onto 50,000 feet of negatives over seven months:</p>
+<img alt="../../_images/wargames-01.png" src="../../_images/wargames-01.png" />
+<p>It is pretty obvious that some of the alphanumerics were generated
+on the computer and sent to the display as vectors, because the
+fonts do not quite match what is in the HP1345A character generator.</p>
+</div>
+<div class="section" id="resources">
+<h1>Resources<a class="headerlink" href="#resources" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference external" href="www.hparchive.com/Journals/HPJ-1982-01.pdf">Hewlett-Packard Journal January 1982</a></li>
+<li><a class="reference download internal" href="../../_downloads/01347-80001.bin" download=""><code class="xref download docutils literal"><span class="pre">The</span> <span class="pre">original</span> <span class="pre">Character</span> <span class="pre">Rom</span> <span class="pre">(01347-80001)</span></code></a></li>
+<li><a class="reference download internal" href="../../_downloads/01347-80012.bin" download=""><code class="xref download docutils literal"><span class="pre">The</span> <span class="pre">newer</span> <span class="pre">Character</span> <span class="pre">Rom</span> <span class="pre">(01347-80012)</span></code></a></li>
+<li><a class="reference download internal" href="../../_downloads/01347-80010.bin" download=""><code class="xref download docutils literal"><span class="pre">The</span> <span class="pre">i8748</span> <span class="pre">firmware</span> <span class="pre">Rom</span> <span class="pre">(01347-80010)</span></code></a></li>
+<li><a class="reference download internal" href="../../_downloads/1816-1500.bin" download=""><code class="xref download docutils literal"><span class="pre">The</span> <span class="pre">Character</span> <span class="pre">Index</span> <span class="pre">Rom</span> <span class="pre">(1816-1500)</span></code></a></li>
+<li><a class="reference download internal" href="../../_downloads/hp1345.py" download=""><code class="xref download docutils literal"><span class="pre">Python</span> <span class="pre">code</span> <span class="pre">to</span> <span class="pre">render</span> <span class="pre">HP1345A</span> <span class="pre">instructions</span> <span class="pre">as</span> <span class="pre">SVG</span></code></a></li>
+<li><a class="reference download internal" href="../../_downloads/hp1345_font.py" download=""><code class="xref download docutils literal"><span class="pre">Python</span> <span class="pre">code</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">HP1345A</span> <span class="pre">Character</span> <span class="pre">Set</span></code></a></li>
+<li><a class="reference download internal" href="../../_downloads/mksvgs.py" download=""><code class="xref download docutils literal"><span class="pre">Python</span> <span class="pre">code</span> <span class="pre">to</span> <span class="pre">make</span> <span class="pre">the</span> <span class="pre">Character</span> <span class="pre">Set</span> <span class="pre">SVGs</span></code></a></li>
+<li><a class="reference external" href="https://github.com/bsdphk/PyReveng3/tree/master/examples/HP1345A">Python disassembler for the i8748 firmware</a></li>
+<li><a class="reference external" href="http://www.originalprop.com/blog/2014/11/13/colin-cantwell-video-interviews-star-wars-prototype-models-nasa/">Interviews with Colin Cantwell about SFX (2001, Starwars and WarGames)</a></li>
+<li><a class="reference external" href="http://www.hp9845.net/9845/software/screenart/wargames/">Article about the HP9845A computer used for WarGames</a></li>
+</ul>
+<p><em>phk</em></p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/phk_200.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">HP1345A</a></li>
+<li><a class="reference internal" href="#hp1345a-service-mode">HP1345A service-mode</a></li>
+<li><a class="reference internal" href="#useless-information-of-the-day">Useless information of the day</a></li>
+<li><a class="reference internal" href="#wargames">WarGames</a></li>
+<li><a class="reference internal" href="#resources">Resources</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../kobo.html"
+                        title="previous chapter">Formatting scanned document PDF’s for Kobo Glo eReader</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../20151231_end_of_nels/index.html"
+                        title="next chapter">End of European Loran-C transmissions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/hacks/Wargames/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../20151231_end_of_nels/index.html" title="End of European Loran-C transmissions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../kobo.html" title="Formatting scanned document PDF’s for Kobo Glo eReader"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">PHKs Bikeshed</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Poul-Hennings Hacks &amp; Stuff</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.
+    </div>
+  </body>
+</html>
