@@ -41,6 +41,7 @@ public:
   SymbolLibrary const &lib;
   QSet<int> junctions;
   QSet<int> connections;
+  QList<int> dropped;
   int majorcon;
   QPolygonF points; // includes from and to
   int fromId, toId; // could refer to a new junction!
@@ -89,10 +90,8 @@ QGraphicsLineItem *ConnBuilderData::newSegment() {
 bool ConnBuilderData::considerCompletion() {
   QLineF l = segments.last()->line();
   int elt = scene->elementAt(l.p2());
-  qDebug() << "at" << elt;
   if (elt>0) {
     QString pin = scene->pinAt(l.p2(), elt);
-    qDebug() << "at" << elt << pin;
     if (pin != PinID::NOPIN) {
       forceCompletion(elt, pin);
       return true;
@@ -103,7 +102,6 @@ bool ConnBuilderData::considerCompletion() {
   if (c>0) {
     CircuitMod cm(circ, lib);
     int junc = cm.injectJunction(c, lib.downscale(l.p2()));
-    qDebug() << "Drop onto connection" << c << junc;
     if (junc>0) {
       circ = cm.circuit();
       junctions += cm.affectedElements();
@@ -120,6 +118,13 @@ void ConnBuilderData::forceCompletion(int elt, QString pin) {
     points << scene->pinPosition(elt, pin);
   toId = elt;
   toPin = pin;
+
+  if (fromId>0 && toId==fromId && fromPin==toPin) {
+    // circular -> abandon
+    fromId = -1;
+    return;
+  }
+
   ensureEndJunction();
   buildConnection();
 }
@@ -142,13 +147,31 @@ void ConnBuilderData::buildConnection() {
     fromId = -1;
     return;
   }
+
+  if (toId>0 && fromId>0) {
+    /* If the exact same connection already exists, drop that connection
+       instead of inserting a new one. */
+    QSet<int> otherConn = circ.connectionsOn(toId, toPin);
+    for (int id: otherConn) {
+      Connection const &con(circ.connections[id]);
+      if ((con.fromId==fromId && con.fromPin==fromPin
+           && con.toId==toId && con.toPin==toPin)
+          || (con.toId==fromId && con.toPin==fromPin
+           && con.fromId==toId && con.fromPin==toPin)) {
+        // gotcha
+        dropped << id;
+        return;
+      }
+    }
+  }
+  
+  
   Connection c;
   c.fromId = fromId;
   c.toId = toId;
   c.fromPin = fromPin;
   c.toPin = toPin;
   auto pp = simplifiedPoints();
-  qDebug() << fromId << toId << pp;
   if (fromId>0)
     pp.removeFirst();
   if (toId>0)
@@ -188,8 +211,6 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   if (othercons.isEmpty())
     return -1; // nothing there, so no need
 
-  qDebug() << "othercons" << othercons;
-  
   // must add a junction, or this will be confusing
   Element j(Element::junction(scene->library().downscale(pt)));
   circ.insert(j);
@@ -205,13 +226,14 @@ int ConnBuilderData::ensureJunctionFor(int id, QString pin, QPointF pt) {
   // move other connections to junction
   for (int o: othercons) {
     Connection c(circ.connections[o]);
-    if (c.fromId == id)
+    if (c.fromId==id && c.fromPin==pin)
       c.setFrom(j.id);
-    if (c.toId == id) 
+    if (c.toId==id && c.toPin==pin) 
       c.setTo(j.id);
     circ.insert(c);
     connections << c.id;
   }
+
   return j.id;
 }
 
@@ -223,7 +245,6 @@ ConnBuilder::~ConnBuilder() {
 }
 
 void ConnBuilder::startFromConnection(QPointF fromPos, int conId, int seg) {
-  qDebug() << "startfromcon" << fromPos << conId << seg;
   CircuitMod cm(d->circ, d->lib);
   int junc = cm.injectJunction(conId, d->lib.downscale(fromPos));
   if (junc>0) {
@@ -237,7 +258,6 @@ void ConnBuilder::startFromConnection(QPointF fromPos, int conId, int seg) {
 }
 
 void ConnBuilder::startFromPin(QPointF fromPos, int fromId, QString fromPin) {
-  qDebug() << "startfrompin" << fromPos << fromId << fromPin;
   d->reset();
 
   d->fromId = fromId;
@@ -250,7 +270,6 @@ void ConnBuilder::startFromPin(QPointF fromPos, int fromId, QString fromPin) {
     p0 = d->lib.upscale(geom.pinPosition(fromId, fromPin));
   }
   d->points << p0;
-  qDebug() << "p0 p1" << p0 << p1;
   
   d->ensureStartJunction();
 
@@ -273,14 +292,11 @@ void ConnBuilder::startFromPin(QPointF fromPos, int fromId, QString fromPin) {
 }
 
 void ConnBuilder::keyPress(QKeyEvent *e) {
-  qDebug() << "ConnBuilder: key" << e->key();
   switch (e->key()) {
   case Qt::Key_Escape:
-    qDebug() << "ConnBuilder: abandon";
     d->fromId = -1; // abandon
     break;
   case Qt::Key_Return:
-    qDebug() << "ConnBuilder: complete";
     d->fixPenultimate();
     if (!d->considerCompletion())
       d->forceDanglingCompletion();
@@ -291,7 +307,6 @@ void ConnBuilder::keyPress(QKeyEvent *e) {
 void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
   if (d->points.isEmpty())
     return;
-  qDebug() << "ConnBuilder: move " << e->scenePos();
   QPointF p0 = d->points.last();
   QPointF p = d->lib.nearestGrid(e->scenePos());
   QPointF dp = p - p0;
@@ -323,13 +338,11 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
 }
 
 void ConnBuilder::mousePress(QGraphicsSceneMouseEvent *e) {
-  qDebug() << "ConnBuilder: press " << e->scenePos();
 }
 
 void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *e) {
   if (d->points.isEmpty())
     return;
-  qDebug() << "ConnBuilder: release " << e->scenePos();
   if (!d->fixPenultimate())
     return;
   addToGroup(d->newSegment());
@@ -342,6 +355,10 @@ bool ConnBuilder::isComplete() const {
 
 bool ConnBuilder::isAbandoned() const {
   return d->fromId < 0;
+}
+
+QList<int> ConnBuilder::droppedConnections() const {
+  return d->dropped;
 }
 
 QList<Connection> ConnBuilder::connections() const {

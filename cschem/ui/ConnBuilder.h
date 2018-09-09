@@ -18,6 +18,7 @@ public:
   bool isAbandoned() const;
   QList<Connection> connections() const;
   QList<Element> junctions() const;
+  QList<int> droppedConnections() const;
   void keyPress(QKeyEvent *);
   void mousePress(QGraphicsSceneMouseEvent *);
   void mouseMove(QGraphicsSceneMouseEvent *);

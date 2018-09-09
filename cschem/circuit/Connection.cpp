@@ -148,10 +148,12 @@ bool Connection::isEquivalentTo(Connection const &o) const {
 }
 
 QString Connection::report() const {
-  QString x = QString("c#%1: [%2:%3 ; ").arg(id).arg(fromId).arg(fromPin);
+  QString x = QString("c#%1: from %2:%3 ").arg(id).arg(fromId).arg(fromPin);
+  if (!via.isEmpty())
+    x += "via ";
   for (auto v: via)
     x += QString("%1,%2 ").arg(v.x()).arg(v.y());
-  x += QString("; %1:%2]").arg(toId).arg(toPin);
+  x += QString("to %1:%2]").arg(toId).arg(toPin);
   return x;
 }
 
