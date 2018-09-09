@@ -714,12 +714,6 @@ void SceneData::finalizeConnection() {
       conns[c.id] = new SceneConnection(scene, c);
       cc << c.id;
     }
-    for (int c: connbuilder->droppedConnections()) {
-      if (conns.contains(c)) {
-        delete conns[c];
-        conns.remove(c);
-      }
-    }
     CircuitMod cm(circ(), lib());
     for (int c: cc) 
       cm.simplifyConnection(c);
@@ -727,8 +721,6 @@ void SceneData::finalizeConnection() {
       cm.removeConnectionsEquivalentTo(c);
     for (int c: cc)
       cm.adjustOverlappingConnections(c);
-    for (int c: connbuilder->droppedConnections())
-      cm.deleteConnection(c);
     for (auto c: connbuilder->junctions())
       cm.removePointlessJunction(c.id);
     rebuildAsNeeded(cm);

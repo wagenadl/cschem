@@ -41,7 +41,6 @@ public:
   SymbolLibrary const &lib;
   QSet<int> junctions;
   QSet<int> connections;
-  QList<int> dropped;
   int majorcon;
   QPolygonF points; // includes from and to
   int fromId, toId; // could refer to a new junction!
@@ -147,24 +146,6 @@ void ConnBuilderData::buildConnection() {
     fromId = -1;
     return;
   }
-
-  if (toId>0 && fromId>0) {
-    /* If the exact same connection already exists, drop that connection
-       instead of inserting a new one. */
-    QSet<int> otherConn = circ.connectionsOn(toId, toPin);
-    for (int id: otherConn) {
-      Connection const &con(circ.connections[id]);
-      if ((con.fromId==fromId && con.fromPin==fromPin
-           && con.toId==toId && con.toPin==toPin)
-          || (con.toId==fromId && con.toPin==fromPin
-           && con.fromId==toId && con.fromPin==toPin)) {
-        // gotcha
-        dropped << id;
-        return;
-      }
-    }
-  }
-  
   
   Connection c;
   c.fromId = fromId;
@@ -355,10 +336,6 @@ bool ConnBuilder::isComplete() const {
 
 bool ConnBuilder::isAbandoned() const {
   return d->fromId < 0;
-}
-
-QList<int> ConnBuilder::droppedConnections() const {
-  return d->dropped;
 }
 
 QList<Connection> ConnBuilder::connections() const {
