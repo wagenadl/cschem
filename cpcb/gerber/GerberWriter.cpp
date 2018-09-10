@@ -507,12 +507,12 @@ static void writeArcs(GerberFile &out, Gerber::Apertures const &aps,
       double astart, aend;
       if (arc.angle<0) {
         // clockwise from 12 o'clock [before flip] apart from rot.
-        astart = PI/180*(90*arc.rot - 90);
-        aend = PI/180*(90*arc.rot - arc.angle - 90);
+        astart = PI/180*(90*arc.rot + 90);
+        aend = PI/180*(90*arc.rot - arc.angle + 90);
       } else {
         // symmetric around 12 o'clock [before flip] apart from rotation
-        astart = PI/180*(90*arc.rot - arc.angle/2 - 90);
-        aend = PI/180*(90*arc.rot + arc.angle/2 - 90);
+        astart = PI/180*(90*arc.rot - arc.angle/2 + 90);
+        aend = PI/180*(90*arc.rot + arc.angle/2 + 90);
       }
       qDebug() << "astartend" << astart << aend;
       out << Gerber::point(arc.center
