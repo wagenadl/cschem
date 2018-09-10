@@ -13,6 +13,7 @@ class Board {
 public:
   Board();
   bool isEffectivelyMetric() const;
+  static Dim fpConOverlap();
   Dim traceClearance(Dim lw) const; // clearance for a trace with given size
   Dim padClearance(Dim w, Dim h) const; // clearance for a pad with given size
   // (used for round and rectangular pads)

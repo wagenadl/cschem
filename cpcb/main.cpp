@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
   
   MainWindow mw;
 
+  qDebug() << args;
   if (args.size()>=2)
     mw.open(args.last());  
   QSize avg = app.primaryScreen()->availableSize();
