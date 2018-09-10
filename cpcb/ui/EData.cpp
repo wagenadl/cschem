@@ -8,6 +8,8 @@
 #include "PinNameEditor.h"
 #include "svg/Symbol.h"
 
+#include <QMessageBox>
+
 constexpr int MOVETHRESHOLD_PIX = 4;
 constexpr int MARGIN_PIX = 4;
 
@@ -372,14 +374,20 @@ void EData::pressText(Point p) {
 
 void EData::pressHole(Point p) {
   p = p.roundedTo(layout.board().grid);
-  Group &here(currentGroup());
-  Hole t;
-  t.p = p;
-  t.od = props.od;
-  t.id = props.id;
-  t.square = props.square;
-  UndoCreator uc(this, true);
-  here.insert(Object(t));
+  if (props.od - props.id < Dim::fromInch(0.005)) {
+    QMessageBox::warning(ed, "cpcb",
+			 "Invalid ID/OD pairing",
+			 QMessageBox::Ok);
+  } else {
+    Group &here(currentGroup());
+    Hole t;
+    t.p = p;
+    t.od = props.od;
+    t.id = props.id;
+    t.square = props.square;
+    UndoCreator uc(this, true);
+    here.insert(Object(t));
+  }
 }
 
 
