@@ -25,7 +25,7 @@ namespace Gerber {
     }
   };
   struct Rect {
-    Rect(Dim w, Dim h): w(w), h(h) { }
+    Rect(Dim w0, Dim h0=Dim()): w(w0), h(h0) { if (h.isNull()) h = w; }
     Dim w;
     Dim h;
     bool operator<(Rect const &rk) const {
