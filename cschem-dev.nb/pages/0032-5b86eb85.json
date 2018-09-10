@@ -1,0 +1,147 @@
+{ "typ": "page",
+  "cre": "2018-09-08T22:31:18",
+  "mod": "2018-09-09T10:14:56",
+  "cui": "86ebeb0a0e8f39d9",
+  "stampTime": 0,
+  "startPage": 32,
+  "unlocked": false,
+  "uuid": "5b86eb85",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-09-08T22:31:18",
+      "mod": "2018-09-08T22:31:18",
+      "uuid": "601ce918",
+      "cc": [
+        { "typ": "res",
+          "cre": "2018-09-08T22:31:18",
+          "mod": "2018-09-08T22:31:18",
+          "archive": "31_-7c9ea260",
+          "desc": "",
+          "preview": "31_-7c9ea260p.png",
+          "source": "page://0.0.0.31/35b3adf3/1",
+          "tag": "31",
+          "title": "",
+          "uuid": "7c9ea260"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2018-09-08T22:31:18",
+      "mod": "2018-09-08T22:31:18",
+      "uuid": "465bf579",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-08T22:31:18",
+          "mod": "2018-09-08T22:31:18",
+          "lines": [
+            0
+          ],
+          "text": "Next steps (cont’d)",
+          "uuid": "1b728403",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-09-08T22:31:18",
+              "mod": "2018-09-08T22:31:18",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "0c2c6fd3",
+              "x": -46.8281,
+              "y": 45.06,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-09-08T22:31:18",
+                  "mod": "2018-09-08T22:31:18",
+                  "lines": [
+                    0
+                  ],
+                  "text": "p. 31 >",
+                  "uuid": "aadc0eb8",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2018-09-08T22:31:18",
+                      "mod": "2018-09-08T22:31:18",
+                      "end": 5,
+                      "res": [
+                        "31"
+                      ],
+                      "start": 3,
+                      "style": 4,
+                      "uuid": "3a902211"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-08T22:31:20",
+      "mod": "2018-09-08T22:31:44",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "3c312a68",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-08T22:31:20",
+          "mod": "2018-09-08T22:31:44",
+          "lines": [
+            0,
+            62
+          ],
+          "text": "– Either “Ref” or “Text” should be shown in cpcb propbar, not both",
+          "uuid": "1871326b"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-08T22:31:54",
+      "mod": "2018-09-08T22:32:24",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "954c972e",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-08T22:31:54",
+          "mod": "2018-09-08T22:32:24",
+          "lines": [
+            0,
+            57
+          ],
+          "text": "– Gerber output of FPCon (and dispaly) should use square aperture (sq. cap), appropriately shortened.",
+          "uuid": "5b388960"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-09-09T10:14:51",
+      "mod": "2018-09-09T10:14:56",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9b96df0a",
+      "y0": 172.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-09-09T10:14:51",
+          "mod": "2018-09-09T10:14:56",
+          "lines": [
+            0
+          ],
+          "text": "– Gerber output of arcs",
+          "uuid": "773c80a3"
+        }
+      ]
+    }
+  ]
+}
