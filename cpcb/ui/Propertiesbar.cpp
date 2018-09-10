@@ -13,6 +13,8 @@
 #include <QLineEdit>
 #include "data/Object.h"
 
+const Dim minRingWidth(Dim::fromInch(0.015));
+
 class NarrowEditor: public QLineEdit {
 public:
   QSize sizeHint() const override { return minimumSizeHint(); }
@@ -780,8 +782,8 @@ void PBData::setupUI() {
   QObject::connect(id, &DimSpinner::valueEdited,
 		   [this](Dim d) {
 		     if (od->hasValue()
-			 && (od->value() < d + Dim::fromInch(0.015)))
-		       od->setValue(d + Dim::fromInch(0.015), true);
+			 && (od->value() < d + minRingWidth))
+		       od->setValue(d + minRingWidth, true);
 		     editor->setID(d); });
   odc = makeContainer(dimg);
   makeLabel(odc, "OD")->setToolTip("Pad diameter");
@@ -791,8 +793,8 @@ void PBData::setupUI() {
   QObject::connect(od, &DimSpinner::valueEdited,
 		   [this](Dim d) {
 		     if (id->hasValue()
-			 && (id->value() > d - Dim::fromInch(0.015)))
-		       id->setValue(d - Dim::fromInch(0.015), true);
+			 && (id->value() > d - minRingWidth))
+		       id->setValue(d - minRingWidth, true);
 		     editor->setOD(d);
 		   });
   wc = makeContainer(dimg);
@@ -839,8 +841,9 @@ void PBData::setupUI() {
   
   textg = makeGroup(&texta);
   auto *c1 = makeContainer(textg);
-  makeLabel(c1, "Aa")->setToolTip("Text");
+  makeLabel(c1, "Fs")->setToolTip("Font size");
   auto *c2 = makeContainer(textg);
+  makeLabel(c2, "Text")->setToolTip("Text");
   text = makeEdit(c2);
   QObject::connect(text, &QLineEdit::textEdited,
 		   [this](QString txt) { editor->setText(txt); });
@@ -973,6 +976,8 @@ void Propertiesbar::reflectMode(Mode m) {
       d->circle->setChecked(true);
       d->editor->setSquare(false);
     }
+    if (d->od->value() < d->id->value() + minRingWidth)
+      d->od->setValue(d->id->value() + minRingWidth);
   }
   if (m==Mode::PlaceArc || m==Mode::PlaceText) {
     if (d->layer()==Layer::Invalid) {
