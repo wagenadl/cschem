@@ -41,6 +41,9 @@ all: release
 clean:
 	+rm -rf build/cpcb build/cschem
 
+cpcb: release-cpcb
+cschem: release-cschem
+
 release: release-cpcb release-cschem
 
 debug: debug-cpcb debug-cschem
@@ -67,4 +70,4 @@ prep-cpcb:
 
 
 .PHONY: src all clean tar man install prep debug prep-cschem prep-cpcb \
-	debug-cpcb debug-cschem release-cpcb debug-cschem
+	debug-cpcb debug-cschem release-cpcb debug-cschem cschem cpcb

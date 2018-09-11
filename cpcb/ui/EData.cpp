@@ -385,8 +385,10 @@ void EData::pressHole(Point p) {
     t.od = props.od;
     t.id = props.id;
     t.square = props.square;
+    t.ref = props.text;
     UndoCreator uc(this, true);
     here.insert(Object(t));
+    ed->insertedPadOrHole();
   }
 }
 
@@ -399,8 +401,10 @@ void EData::pressPad(Point p) {
   t.width = props.w;
   t.height = props.h;
   t.layer = props.layer;
+  t.ref = props.text;
   UndoCreator uc(this, true);
   here.insert(Object(t));
+  ed->insertedPadOrHole();
 }
 
 void EData::pressArc(Point p) {
@@ -823,7 +827,8 @@ void EData::editPinName(int groupid, int hole_pad_id) {
     if (ok)
       pin_ref = pne.pinRef();
   } else {
-    pin_ref = QInputDialog::getText(ed, "Hole properties", "Ref.",
+    QString what = ishole ? "Hole" : "Pad";
+    pin_ref = QInputDialog::getText(ed, what + " properties", "Pin name/number:",
 				    QLineEdit::Normal,
 				    pin_ref, &ok);
   }
