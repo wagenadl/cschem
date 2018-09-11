@@ -325,36 +325,42 @@ void Editor::doubleClickOn(Point p, int id) {
   } break;
   case Object::Type::Hole: {
     bool ok;
-    QString ref = QInputDialog::getText(this, "Hole properties", "Ref.",
+    QString ref = QInputDialog::getText(this, "Hole properties",
+                                        "Pin name/number:",
 					QLineEdit::Normal,
 					obj.asHole().ref, &ok);
     if (ok) {
       select(id);
-      setRef(ref);
+      setRefText(ref);
       select(id);
       update();
     }
   } break;
   case Object::Type::Pad: {
     bool ok;
-    QString ref = QInputDialog::getText(this, "Pad properties", "Ref.",
+    QString ref = QInputDialog::getText(this, "Pad properties",
+                                        "Pin name/number:",
 					QLineEdit::Normal,
 					obj.asPad().ref, &ok);
     if (ok) {
       select(id);
-      setRef(ref);
+      setRefText(ref);
       select(id);
       update();
     }
   } break;
   case Object::Type::Text: {
     bool ok;
-    QString ref = QInputDialog::getText(this, "Text properties", "Text",
+    bool isref = obj.asText().groupAffiliation()>0;
+    QString what = isref ? "Group" : "Text";
+    QString lbl = isref ? "Ref." : "Text";
+    QString ref = QInputDialog::getText(this, what + " properties",
+                                        lbl + ":",
 					QLineEdit::Normal,
 					obj.asText().text, &ok);
     if (ok) {
       select(id);
-      setText(ref);
+      setRefText(ref);
       select(id);
       update();
     }
@@ -657,10 +663,11 @@ void Editor::setSquare(bool b) {
   }
 }
 
-void Editor::setRef(QString t) {
-  UndoCreator uc(d);
+void Editor::setRefText(QString t) {
+  d->props.text = t;
   Group const &here(d->currentGroup());
   bool cchg = false;
+  UndoCreator uc(d);
   for (int id: d->selection) {
     Object const &obj(here.object(id));
     if (obj.isHole()) {
@@ -680,38 +687,24 @@ void Editor::setRef(QString t) {
         here.object(tid).asText().text = t;
       }
       cchg = true;
-    }
-  }
-  if (cchg)
-    emit componentsChanged();
-}
-
-void Editor::setText(QString t) {
-  d->props.text = t;
-  bool cchg = false;
-  Group const &here(d->currentGroup());
-  UndoCreator uc(d);
-  for (int id: d->selection) {
-    Object const &obj(here.object(id));
-    if (obj.isText()) {
+    } else if (obj.isText()) {
       uc.realize();
       int gid;
       { Text &txt(d->currentGroup().object(id).asText());
-	gid = txt.groupAffiliation();
-	txt.text = t;
+        gid = txt.groupAffiliation();
+        txt.text = t;
       } /* make sure reference goes out of scope before it becomes toxic
-	   by removal from the group */
+           by removal from the group */
       if (t.isEmpty())
-	d->currentGroup().remove(id);
+        d->currentGroup().remove(id);
       if (gid>0 && here.contains(gid)) {
-	d->currentGroup().object(gid).asGroup().ref = t;
-	cchg = true;
+        d->currentGroup().object(gid).asGroup().ref = t;
+        cchg = true;
       }
     }
   }
   if (cchg)
     emit componentsChanged();
-  
 }
 
 void Editor::setRotation(int rot) {

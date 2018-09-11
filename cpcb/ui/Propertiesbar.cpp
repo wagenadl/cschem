@@ -49,15 +49,11 @@ public:
   QToolButton *circle; // for hole
   QToolButton *square; // for hole
 
-  QWidget *refg;
-  QAction *refa;
-  QLineEdit *ref;
-  //  QAction *component; // popup for replacing component
-  
   QWidget *textg;
   QAction *texta;
-  DimSpinner *fs; // for text
+  QLabel *textl;
   QLineEdit *text;
+  DimSpinner *fs;
 
   QWidget *arcg;
   QAction *arca;
@@ -96,10 +92,9 @@ private:
   void fillLinewidth(QSet<int> const &objects, Group const &here);
   void fillWH(QSet<int> const &objects, Group const &here);
   void fillDiamAndShape(QSet<int> const &objects, Group const &here);
-  void fillRef(QSet<int> const &objects, Group const &here);
+  void fillRefText(QSet<int> const &objects, Group const &here);
   void fillArcAngle(QSet<int> const &objects, Group const &here);
   void fillLayer(QSet<int> const &objects, Group const &here);
-  void fillText(QSet<int> const &objects, Group const &here);    
   void fillFontSize(QSet<int> const &objects, Group const &here);    
 };
 
@@ -238,24 +233,46 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
     editor->properties().square = false;
 }
 
-void PBData::fillRef(QSet<int> const &objects, Group const &here) {
+void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
   bool got = false;
   // set ref if we have precisely one hole or group, otherwise clear it
-  ref->setText("");
+  text->setText("");
+  int kignore = -1;
   for (int k: objects) {
     Object const &obj(here.object(k));
-    if (obj.isHole() || obj.isGroup()) {
-      if (got) {
-	ref->setText("");
+    if (obj.isHole() || obj.isPad() || obj.isGroup() || obj.isText()) {
+      if (got && k!=kignore) {
+	text->setText("");
+        textl->setText("Text");
+        kignore = -1;
 	break;
       } else {
-	ref->setText(obj.isHole()
-		     ? obj.asHole().ref
-		     : obj.asGroup().ref);
+	text->setText(obj.isHole()
+                      ? obj.asHole().ref
+                      : obj.isPad()
+                      ? obj.asPad().ref
+                      : obj.isGroup()
+                      ? obj.asGroup().ref
+                      : obj.asText().text);
+        textl->setText(obj.isHole()
+                       ? "Pin"
+                       : obj.isPad()
+                       ? "Pin"
+                       : obj.isGroup()
+                       ? "Ref."
+                       : "Text");
+        if (text->text() != "")
+          editor->properties().text = text->text();
+        if (obj.isText())
+          kignore = obj.asText().groupAffiliation();
+        else if (obj.isGroup())
+          kignore = obj.asGroup().refTextId();
 	got = true;
       }
     }
   }
+  if (kignore>0)
+    textl->setText("Ref.");
 }
 
 void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
@@ -337,26 +354,6 @@ void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
   editor->properties().layer = l;
 }
 
-void PBData::fillText(QSet<int> const &objects, Group const &here) {
-  bool got = false;
-  // set text if we have precisely one text object, otherwise clear it
-  text->setText("");
-  for (int k: objects) {
-    Object const &obj(here.object(k));
-    if (obj.isText()) {
-      if (got) {
-	text->setText("");
-	break;
-      } else  {
-	text->setText(obj.asText().text);
-	got = true;
-      }
-    }
-  }
-  if (text->text() != "")
-    editor->properties().text = text->text();
-}
-
 void PBData::fillFontSize(QSet<int> const &objects, Group const &here) {
   bool got = false;
   // set fs if we have text, and all are same
@@ -387,10 +384,9 @@ void PBData::getPropertiesFromSelection() {
   fillLinewidth(objects, here);
   fillWH(objects, here);
   fillDiamAndShape(objects,  here);
-  fillRef(objects, here);
+  fillRefText(objects, here);
   fillArcAngle(objects, here);  
   fillLayer(objects, here);  
-  fillText(objects, here);
   fillFontSize(objects, here);    
 }
 
@@ -423,8 +419,9 @@ Layer PBData::layer() const {
 void PBData::hideAndShow() {
   xya->setEnabled(false);
   dima->setEnabled(false);
-  refa->setEnabled(false);
   texta->setEnabled(false);
+  text->setEnabled(false);
+  fs->setEnabled(false);
   arca->setEnabled(false);
   layera->setEnabled(false);
   orienta->setEnabled(false);
@@ -450,22 +447,23 @@ void PBData::hideAndShow() {
     linewidthc->setEnabled(true);
     layera->setEnabled(true);
     break;
-  case Mode::PlaceComponent:
-    layera->setEnabled(true);
-    refa->setEnabled(true);
-    orienta->setEnabled(true);
-    break;
   case Mode::PlaceHole:
     dima->setEnabled(true);
     idc->setEnabled(true);
     odc->setEnabled(true);
     squarec->setEnabled(true);
+    texta->setEnabled(true);
+    text->setEnabled(true);
+    textl->setText("Pin");
     break;
   case Mode::PlacePad:
     dima->setEnabled(true);
     wc->setEnabled(true);
     hc->setEnabled(true);
     layera->setEnabled(true);
+    texta->setEnabled(true);
+    text->setEnabled(true);
+    textl->setText("Pin");
     if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
       top->setChecked(true);
       editor->properties().layer = Layer::Top;
@@ -473,6 +471,9 @@ void PBData::hideAndShow() {
     break;
   case Mode::PlaceText:
     texta->setEnabled(true);
+    text->setEnabled(true);
+    fs->setEnabled(true);
+    textl->setText("Text");
     layera->setEnabled(true);
     orienta->setEnabled(true);
     flipped->setEnabled(true);
@@ -572,14 +573,19 @@ void PBData::hsEdit() {
     }
   }
   
-  // Show ref if we have exactly one hole or exactly one group
+  // Show text if we have exactly one hole/pad or exactly one group or text
   if (objects.size()==1) {
     for (int k: objects) { // loop of 1, but each to write this way
       Object const &obj(here.object(k));
       if (obj.isGroup()
 	  || obj.isHole()
-	  || obj.isPad())
-	refa->setEnabled(true);
+	  || obj.isPad()
+          || obj.isText()) {
+	texta->setEnabled(true);
+        text->setEnabled(true);
+        if (obj.isGroup())
+          fs->setEnabled(true);
+      }
     }
   } else if (objects.size()==2) {
     for (int k: objects) { 
@@ -588,18 +594,19 @@ void PBData::hsEdit() {
 	int tid = obj.asGroup().refTextId();
 	if (objects.contains(tid)) {
 	  // got group and its ref text
-	  refa->setEnabled(true);
+	  texta->setEnabled(true);
+	  text->setEnabled(true);
+          fs->setEnabled(true);
 	}
       }
     }
   }
 
-  // Show text if we have exactly one text; font size if we have at
-  // least one text
+  // Show font size if we have at least one text
   for (int k: objects) {
     if (here.object(k).isText()) {
       texta->setEnabled(true);
-      text->setEnabled(objects.size()==1);
+      fs->setEnabled(true);
       break;
     }
   }
@@ -829,30 +836,19 @@ void PBData::setupUI() {
 		     }
 		   });
 
-  refg = makeGroup(&refa);
-  auto *c5 = makeContainer(refg);
-  makeLabel(c5, "Ref.");
-  ref = makeEdit(c5);
-  QObject::connect(ref, &QLineEdit::textEdited,
-		   [this](QString txt) { editor->setRef(txt); });
-  // component = makeIconTool(c5, "EditComponent");
-  // component->setToolTip("Choose package");
-  // component->setCheckable(false);
-  
   textg = makeGroup(&texta);
+  auto *c5 = makeContainer(textg);
+  textl = makeLabel(c5, "Text");
+  text = makeEdit(c5);
+  QObject::connect(text, &QLineEdit::textEdited,
+		   [this](QString txt) { editor->setRefText(txt); });
   auto *c1 = makeContainer(textg);
   makeLabel(c1, "Fs")->setToolTip("Font size");
-  auto *c2 = makeContainer(textg);
-  makeLabel(c2, "Text")->setToolTip("Text");
-  text = makeEdit(c2);
-  QObject::connect(text, &QLineEdit::textEdited,
-		   [this](QString txt) { editor->setText(txt); });
   fs = makeDimSpinner(c1);
   fs->setValue(Dim::fromInch(.050));
   fs->setToolTip("Font size");
   QObject::connect(fs, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setFontSize(d); });
-
 
   arcg = makeGroup(&arca);
   arcc = makeContainer(arcg);
@@ -971,6 +967,8 @@ Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) 
 
 void Propertiesbar::reflectMode(Mode m) {
   d->mode = m;
+  d->editor->properties().text = "";
+  d->text->setText("");
   if (m==Mode::PlaceHole) {
     if (!d->square->isChecked()) {
       d->circle->setChecked(true);
@@ -1027,10 +1025,22 @@ void Propertiesbar::forwardAllProperties() {
   d->editor->setOD(d->od->value());
   d->editor->setSquare(d->square->isChecked());
   d->editor->setFontSize(d->fs->value());
-  d->editor->setText(d->text->text());
+  d->editor->setRefText(d->text->text());
   d->editor->setRotation(d->right->isChecked() ? 1
 			 : d->down->isChecked() ? 2
 			 : d->left->isChecked() ? 3
 			 : 0);
   d->editor->setFlipped(d->flipped->isChecked());
+}
+
+void Propertiesbar::stepPinNumber() {
+  int pin = d->text->text().toInt();
+  if (pin>0) {
+    QString txt = QString::number(pin+1);
+    d->text->setText(txt);
+    d->editor->properties().text = txt;
+  } else {
+    d->text->setText("");
+    d->editor->properties().text = "";
+  }
 }

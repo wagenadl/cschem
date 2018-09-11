@@ -8,7 +8,6 @@ enum class Mode {
   Invalid,
   Edit,
   PlaceTrace,
-  PlaceComponent,
   PlaceHole,
   PlacePad,
   PlaceText,

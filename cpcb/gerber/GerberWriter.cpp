@@ -114,13 +114,12 @@ bool GWData::writeBoardOutline() {
     qDebug() << "Could not create gerberfile for outline";
     return false;
   }
-  qDebug() << "Check if writeboardoutline uses G75 correctly";
   out << "%TA.AperFunction,Profile*%\n";
-  out << "%ADD10C,0.10000*%\n"; // not sure we really need this
+  out << "%ADD10C,0.10000*%\n"; // create 0.1 mm thick line
   out << "G01*\n"; // linear
-  out << "G75*\n"; // area ---- IS THIS CORRECT
+  out << "G75*\n"; // irrelevant since we don't use arcs, but so what
   out << "%LPD*%\n"; // positive
-  out << "D10*\n"; // use apertures (but why?)
+  out << "D10*\n"; // use aperture
   out << "X0Y0D02*\n"; // move to origin
   out << "X" << Gerber::coord(layout.board().width) << "D01*\n"; 
   out << "Y" << Gerber::coord(layout.board().height) << "D01*\n";

@@ -64,9 +64,8 @@ public slots:
   void setWidth(Dim);
   void setHeight(Dim);
   void setSquare(bool);
-  void setRef(QString);
+  void setRefText(QString);
   void setFontSize(Dim);
-  void setText(QString);
   void setArcAngle(int angle);
   void rotateCW(bool noundo=false);
   void rotateCCW(bool noundo=false);
@@ -91,6 +90,7 @@ public slots:
   void translate(Point);
   void updateOnNet();
 signals:
+  void insertedPadOrHole();
   void boardChanged(Board const &);
   void hovering(Point);
   void onObject(QString);
