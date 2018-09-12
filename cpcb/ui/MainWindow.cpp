@@ -8,6 +8,7 @@
 #include "MultiCompView.h"
 #include "data/Paths.h"
 #include "gerber/GerberWriter.h"
+#include "Find.h"
 
 #include <QProcess>
 #include <QMessageBox>
@@ -395,6 +396,9 @@ void MWData::makeMenus() {
   QObject::connect(editor, &Editor::redoAvailable,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
+
+  edit->addAction("Find", [this]() { Find(editor).run(); },
+                  QKeySequence(Qt::CTRL + Qt::Key_Slash));
   
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },
