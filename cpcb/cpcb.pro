@@ -44,8 +44,8 @@ HEADERS += ui/SignalNameCombo.h   ui/PinNameEditor.h   ui/Tracer.h
 SOURCES += ui/SignalNameCombo.cpp ui/PinNameEditor.cpp ui/Tracer.cpp
 HEADERS += data/Polyline.h   data/FilledPlane.h   data/Intersection.h
 SOURCES += data/Polyline.cpp data/FilledPlane.cpp data/Intersection.cpp
-HEADERS += data/TraceRepair.h   ui/PlaneEditor.h
-SOURCES += data/TraceRepair.cpp ui/PlaneEditor.cpp
+HEADERS += data/TraceRepair.h   ui/PlaneEditor.h   ui/Find.h
+SOURCES += data/TraceRepair.cpp ui/PlaneEditor.cpp ui/Find.cpp
 
 # From CSCHEM
 HEADERS += circuit/IDFactory.h
