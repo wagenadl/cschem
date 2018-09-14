@@ -8,8 +8,10 @@
 #include "MultiCompView.h"
 #include "data/Paths.h"
 #include "gerber/GerberWriter.h"
+#include "gerber/PasteMaskWriter.h"
 #include "Find.h"
 
+#include <QInputDialog>
 #include <QProcess>
 #include <QMessageBox>
 #include <QMenu>
@@ -38,6 +40,7 @@ public:
   void fillBars();
   void openDialog();
   bool exportAsDialog();
+  bool exportPasteMaskDialog();
   bool saveAsDialog();
   bool saveImmediately();
   void linkSchematicDialog();
@@ -192,6 +195,40 @@ void MWData::linkSchematicDialog() {
                          "Cannot link schematic “" + fn
                          + "”. Could the file be damaged?");
 }
+
+bool MWData::exportPasteMaskDialog() {
+  if (pwd.isEmpty())
+    pwd = Paths::defaultLocation();
+  
+  QString fn = QFileDialog::getSaveFileName(0, "Export paste mask as…",
+					    pwd,
+					    "SVG files (*.svg)");
+  if (fn.isEmpty())
+    return false;
+  if (!fn.endsWith(".svg"))
+    fn += ".svg";
+
+  bool metric = editor->pcbLayout().board().isEffectivelyMetric();
+  QString unit = metric ? "mm" : "inch";
+  int decimals = metric ? 2 : 3;
+  double max = metric ? 1 : .05;
+  double shrinkage = QInputDialog::getDouble(mw, "Export Paste mark",
+					     "Shrinkage for cutouts ("
+					     + unit + "):",
+					     0, 0, max, decimals);
+  PasteMaskWriter pmw;
+  pmw.setShrinkage(metric ? Dim::fromMM(shrinkage)
+		   : Dim::fromInch(shrinkage));
+  if (pmw.write(editor->pcbLayout(), fn))
+    return true;
+
+  QMessageBox::warning(mw, "cpcb",
+		       "Could not export paste mask as “"
+		       + fn + "”",
+		       QMessageBox::Ok);
+  return false;
+}
+  
 
 bool MWData::exportAsDialog() {
   if (pwd.isEmpty())

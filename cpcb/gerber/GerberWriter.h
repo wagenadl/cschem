@@ -13,6 +13,7 @@ public:
   ~GerberWriter();
   bool prepareFolder();
   bool writeLayer(Gerber::Layer layer);
+  bool writeAllLayers();
 public:
   static bool write(Layout const &layout, QString outputdir);
 private:
