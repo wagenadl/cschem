@@ -646,23 +646,27 @@ bool GerberWriter::write(Layout const &layout, QString odir) {
   GerberWriter writer(layout, odir);
   if (!writer.prepareFolder())
     return false;
-  if (!writer.writeLayer(Gerber::Layer::BoardOutline))
+  return writer.writeAllLayers();
+}
+
+bool GerberWriter::writeAllLayers() {
+  if (!writeLayer(Gerber::Layer::BoardOutline))
     return false;
-  if (!writer.writeLayer(Gerber::Layer::ThroughHoles))
+  if (!writeLayer(Gerber::Layer::ThroughHoles))
     return false;
-  if (!writer.writeLayer(Gerber::Layer::BottomCopper))
+  if (!writeLayer(Gerber::Layer::BottomCopper))
     return false;
-  if (!writer.writeLayer(Gerber::Layer::BottomSolderMask))
+  if (!writeLayer(Gerber::Layer::BottomSolderMask))
     return false;
-  if (!writer.writeLayer(Gerber::Layer::BottomPasteMask))
+  if (!writeLayer(Gerber::Layer::BottomPasteMask))
     return false;
-  if (!writer.writeLayer(Gerber::Layer::TopCopper))
+  if (!writeLayer(Gerber::Layer::TopCopper))
     return false;
-  if (!writer.writeLayer(Gerber::Layer::TopSolderMask))
+  if (!writeLayer(Gerber::Layer::TopSolderMask))
     return false;
-  if (!writer.writeLayer(Gerber::Layer::TopPasteMask))
+  if (!writeLayer(Gerber::Layer::TopPasteMask))
     return false;
-  if (!writer.writeLayer(Gerber::Layer::TopSilk))
+  if (!writeLayer(Gerber::Layer::TopSilk))
     return false;
 
   return true;
