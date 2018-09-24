@@ -43,8 +43,8 @@ bool PMWData::writeSvgHeader() {
       << " "
       << coord(layout.board().height)
       << "\"\n";
-  out << "    " << prop("width", layout.board().width) << "\n";
-  out << "    " << prop("height", layout.board().height) << "\n";
+  out << "  " << prop("width", layout.board().width) << "\n";
+  out << "  " << prop("height", layout.board().height) << ">\n";
 
   out << "  <defs\n";
   out << "     id=\"defs2\" />\n";
@@ -67,6 +67,8 @@ bool PMWData::writeSvgHeader() {
 }
 
 bool PMWData::writeSvgFooter() {
+  out << "  </g>\n";
+  out << "</svg>\n";
   return true;
 }
   
@@ -76,7 +78,7 @@ bool PMWData::writeSvgOutline() {
       << prop("y", Dim::fromInch(0))
       << prop("width", layout.board().width) 
       << prop("height", layout.board().height)
-      << " style=\"opacity:1;fill:none;stroke:#ff0000;stroke-width:1\""
+      << " style=\"opacity:1;fill:none;stroke:#ff0000;stroke-width:0.2\""
       << " />\n";    
   return true;
 }
@@ -127,8 +129,10 @@ void PasteMaskWriter::setShrinkage(Dim s) {
 bool PasteMaskWriter::write(Layout const &layout, QString filename) {
   d->layout = layout;
   QFile file(filename);
-  if (file.open(QFile::WriteOnly)) 
+  qDebug() << "pmw: " << filename;
+  if (!file.open(QFile::WriteOnly)) 
     return false;
+  qDebug() << "opened";
 
   d->out.setDevice(&file);
   

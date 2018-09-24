@@ -339,6 +339,9 @@ void MWData::makeMenus() {
   file->addAction("&Export Gerber…", [this]() { exportAsDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_E));
 
+  file->addAction("Export &paste mask…", [this]() { exportPasteMaskDialog(); },
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
+
   
   file->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_L));
