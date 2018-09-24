@@ -1,0 +1,271 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+sub usage {
+  print STDERR "Usage: easyeda2cpcb GERBERFOLDER [CPCBFILE]\n";
+  exit 1;
+}
+
+my $idir = shift @ARGV or usage();
+my $ofn = shift @ARGV;
+$ofn = "$idir.cpcb" unless defined $ofn;
+usage() if @ARGV;
+
+######################################################################
+
+sub inch2dim {
+  my $inch = shift;
+  return int($inch * 154000 + .5);
+}
+
+sub opengerber {
+  my $ext = shift;
+  my @fns = glob("$idir/*.$ext");
+  die "Cannot find $ext file in $idir\n" unless @fns;
+  my $fn = shift @fns;
+  die "Multiple $ext files in $idir\n" if @fns;
+  open(my $fd, "<$fn") or die "Cannot open $ext file in $idir\n";
+  return $fd;
+}
+
+sub boardsize {
+  my $fd = opengerber("GKO");
+  my $w = 0;
+  my $h = 0;
+  while (<$fd>) {
+    if (/X(\d+)/) {
+      my $x = int($1)/1e4;
+      $w = $x if $x>$w;
+    }
+    if (/Y(\d+)/) {
+      my $y = int($1)/1e4;
+      $h = $y if $y>$h;
+    }
+  }
+  close $fd;
+  return (inch2dim($w), inch2dim($h));
+}
+
+######################################################################
+
+my ($wid, $hei) = boardsize();
+print "board size $wid x $hei\n";
+
+######################################################################
+
+sub drillholes {
+  my %holes;
+  my $fd = opengerber("DRL");
+  my %drills;
+  my $drill;
+  while (<$fd>) {
+    if (/T(\d+)C([.0-9]+)/) {
+      $drills{$1} = inch2dim($2);
+    } elsif (/T(\d+)/) {
+      $drill = $drills{$1};
+    } elsif (/X(\d+)Y(\d+)/) {
+      my $x = inch2dim($1/1e4);
+      my $y = $hei - inch2dim($2/1e4);
+      my $pos = "$x:$y";
+      my @foo = ($x, $y, $drill);
+      $holes{$pos} = \@foo;
+    }
+  }
+  close $fd;
+  return \%holes;
+}
+
+
+sub traces {
+  my $layer = shift;
+  my @traces;
+  my $fd = opengerber($layer);
+  my $x;
+  my $y;
+  my %lw;
+  my $lw;
+  my $inpoly = 0;
+  while (<$fd>) {
+    if (/\%ADD(\d+)C,([.0-9]+)\*\%/) {
+      $lw{$1} = inch2dim($2);
+    } elsif (/G36/) {
+      $inpoly = 1;
+    } elsif (/G37/) {
+      $inpoly = 0;
+    } elsif (/D02/) {
+      if (/X(\d+)Y(\d+)/) {
+	$x = inch2dim($1/1e4);
+	$y = $hei - inch2dim($2/1e4);
+      }
+    } elsif (/D01/) {
+      if (/X(\d+)Y(\d+)/) {
+	my $x1 = inch2dim($1/1e4);
+	my $y1 = $hei - inch2dim($2/1e4);
+	my @foo = ($x, $y, $x1, $y1, $lw);
+	push @traces, \@foo unless $inpoly;
+	$x = $x1;
+	$y = $y1;
+      }
+    } elsif (/D(\d+)/) {
+      $lw = $lw{$1} if exists $lw{$1};
+    }
+  }
+  close $fd;
+  return \@traces;
+}
+
+sub roundpads {
+  my $layer = shift;
+  my @pads;
+  my $fd = opengerber($layer);
+  my $x;
+  my $y;
+  my %od;
+  my $od = 0;
+  while (<$fd>) {
+    if (/\%ADD(\d+)C,([.0-9]+)\*\%/) {
+      $od{$1} = inch2dim($2);
+    } elsif (/D03/) {
+      if (/X(\d+)Y(\d+)/ && $od>0) {
+	my $x = inch2dim($1/1e4);
+	my $y = $hei - inch2dim($2/1e4);
+	my @foo = ($x, $y, $od);
+	push @pads, \@foo;
+      }
+    } elsif (/D(\d+)/) {
+      if (exists $od{$1}) {
+	$od = $od{$1};
+      } else {
+	$od = 0;
+      }
+    }
+  }
+  close $fd;
+  return \@pads;
+}
+
+sub rectpads {
+  my $layer = shift;
+  my @pads;
+  my $fd = opengerber($layer);
+  my $x;
+  my $y;
+  my %w;
+  my $w = 0;
+  my %h;
+  my $h = 0;
+  while (<$fd>) {
+    if (/\%ADD(\d+)R,([.0-9]+)[Xx]([.0-9]+)\*\%/) {
+      $w{$1} = inch2dim($2);
+      $h{$1} = inch2dim($3);
+    } elsif (/D03/) {
+      if (/X(\d+)Y(\d+)/ && $w>0) {
+	my $x = inch2dim($1/1e4);
+	my $y = $hei - inch2dim($2/1e4);
+	my @foo = ($x, $y, $w, $h);
+	push @pads, \@foo;
+      }
+    } elsif (/D(\d+)/) {
+      if (exists $w{$1}) {
+	$w = $w{$1};
+	$h = $h{$1};
+      } else {
+	$w = 0;
+      }
+    }
+  }
+  close $fd;
+  return \@pads;
+}
+
+######################################################################
+
+sub writeheader {
+  print OUT <<"EOF";
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cpcb xmlns="http://www.danielwagenaar.net/cpcb-ns.html">
+  <board w="$wid" h="$hei" grid="12700" metric="0" planesvis="1" layer1vis="1" layer2vis="1" layer3vis="1"/>
+  <group ref="">
+EOF
+}
+
+sub writefooter {
+  print OUT <<"EOF";
+  </group>
+</cpcb>
+EOF
+}
+
+sub writetraces {
+  my $ilayer = shift;
+  my $olayer = shift;
+  my $trc = traces($ilayer);
+  for (@{$trc}) {
+    my ($x, $y, $x1, $y1, $lw) = @{$_};
+    print OUT <<"EOF";
+<trace p1="$x $y" p2="$x1 $y1" w="$lw" l="$olayer"/>
+EOF
+  }
+}
+
+sub writeholes {
+  my $hol = drillholes();
+  my $rp = roundpads("GTL");
+  my $sp = rectpads("GTL");
+  for (@$rp) {
+    my ($x, $y, $od) = @$_;
+    my $pos = "$x:$y";
+    if (exists $hol->{$pos}) {
+      my ($x1, $y1, $id) = @{$hol->{$pos}};
+      # Genuine hole
+      print OUT <<"EOF";
+<hole p="$x $y" od="$od" id="$id" sq="0"/>
+EOF
+    } else {
+      print "Surprising round pad at $pos\n";
+    }
+  }
+  for (@$sp) {
+    my ($x, $y, $w, $h) = @$_;
+    my $pos = "$x:$y";
+    if (exists $hol->{$pos}) {
+      my ($x1, $y1, $id) = @{$hol->{$pos}};
+      my $od = int(sqrt($w*$h));
+      # Genuine hole
+      print OUT <<"EOF";
+<hole p="$x $y" od="$od" id="$id" sq="1"/>
+EOF
+    }
+  }
+}
+
+sub writepads {
+  my $ilayer = shift;
+  my $olayer = shift;
+  my $hol = drillholes();
+  my $sp = rectpads($ilayer);
+  for (@$sp) {
+    my ($x, $y, $w, $h) = @$_;
+    my $pos = "$x:$y";
+    unless (exists $hol->{$pos}) {
+      print OUT <<"EOF";
+<pad p="$x $y" w="$w" h="$h" l="$olayer"/>
+EOF
+    }
+  }
+}
+  
+######################################################################
+
+open OUT, ">$ofn" or die "Cannot write $ofn\n";
+writeheader();
+writetraces("GTO", 1);
+writetraces("GTL", 2);
+writetraces("GBL", 3);
+writeholes();
+writepads("GTL", 2);
+writepads("GBL", 3);
+writefooter();
+close OUT;
+
