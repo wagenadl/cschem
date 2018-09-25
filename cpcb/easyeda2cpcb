@@ -76,6 +76,45 @@ sub drillholes {
   return \%holes;
 }
 
+sub planes {
+  my $layer = shift;
+  my @planes;
+  my $fd = opengerber($layer);
+  my $x;
+  my $y;
+  my %lw;
+  my $lw;
+  my $inpoly = 0;
+  my @xx;
+  my @yy;
+  while (<$fd>) {
+    if (/G36/) {
+      $inpoly = 1;
+      @xx = ();
+      @yy = ();
+    } elsif (/G37/) {
+      if (@xx) {
+        my @xxx = @xx;
+        my @yyy = @yy;
+        my @foo = (\@xxx, \@yyy);
+        push @planes, \@foo;
+      }
+      $inpoly = 0;
+    } elsif (/D02/ || /D01/) {
+      if (/X(\d+)Y(\d+)/) {
+	$x = inch2dim($1/1e4);
+	$y = $hei - inch2dim($2/1e4);
+        if ($inpoly) {
+          push @xx, $x;
+          push @yy, $y;
+        }
+      }
+    }
+  }
+  close $fd;
+  return \@planes;
+}
+
 
 sub traces {
   my $layer = shift;
@@ -209,6 +248,23 @@ EOF
   }
 }
 
+sub writeplanes {
+  my $ilayer = shift;
+  my $olayer = shift;
+  my $fp = planes($ilayer);
+  for (@{$fp}) {
+    my ($xx, $yy) = @{$_};
+    my @xx = @{$xx};
+    my @yy = @{$yy};
+    my @peri;
+    push @peri, "$xx[$_] $yy[$_]" for (0..$#xx);
+    my $peri = join(";", @peri);
+    print OUT <<"EOF";
+<plane pp="$peri" l="$olayer"/>
+EOF
+  }
+}
+
 sub writeholes {
   my $hol = drillholes();
   my $rp = roundpads("GTL");
@@ -266,6 +322,8 @@ writetraces("GBL", 3);
 writeholes();
 writepads("GTL", 2);
 writepads("GBL", 3);
+writeplanes("GTL", 2);
+writeplanes("GBL", 3);
 writefooter();
 close OUT;
 
