@@ -41,12 +41,11 @@ Group &EData::currentGroup() {
 
 bool EData::updateOnWhat(bool force) {
   Dim mrg = pressMargin();
-  Group &here(currentGroup());
-  NodeID ids = here.nodeAt(hoverpt, mrg);
+  NodeID ids = visibleNodeAt(hoverpt, mrg);
   bool isnew = ids != onnode;
   onnode = ids;
   if (isnew || force)
-    onobject = here.humanName(ids);
+    onobject = currentGroup().humanName(ids);
   if (netsvisible && (isnew || force))
     updateNet(ids);
   return isnew;
@@ -477,6 +476,24 @@ enum class Prio {
   TopObject,
   Silk
 };
+
+NodeID EData::visibleNodeAt(Point p, Dim mrg) const {
+  Group const &here(currentGroup());
+  return visibleNodeAt(here, p, mrg);
+}
+
+NodeID EData::visibleNodeAt(Group const &grp, Point p, Dim mrg) const {
+  NodeID nid;
+  int id = visibleObjectAt(grp, p, mrg);
+  if (id<0)
+    return nid;
+
+  nid << id;
+  if (grp.object(id).isGroup()) 
+    nid += visibleNodeAt(grp.object(id).asGroup(), p, mrg);
+  return nid;
+}
+
 
 int EData::visibleObjectAt(Point p, Dim mrg) const {
   Group const &here(currentGroup());
