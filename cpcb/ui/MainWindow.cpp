@@ -10,6 +10,7 @@
 #include "gerber/GerberWriter.h"
 #include "gerber/PasteMaskWriter.h"
 #include "Find.h"
+#include "Settings.h"
 
 #include <QInputDialog>
 #include <QProcess>
@@ -212,13 +213,23 @@ bool MWData::exportPasteMaskDialog() {
   QString unit = metric ? "mm" : "inch";
   int decimals = metric ? 2 : 3;
   double max = metric ? 1 : .05;
+  Settings stg;
+  Dim dflt = Dim::fromString(stg.value("shrinkage",
+                                       Dim::fromInch(0.005).toString())
+                             .toString());
   double shrinkage = QInputDialog::getDouble(mw, "Export Paste mark",
 					     "Shrinkage for cutouts ("
 					     + unit + "):",
-					     0, 0, max, decimals);
+					     metric ? dflt.toMM()
+                                             : dflt.toInch(),
+                                             0, max, decimals);
+  Dim shrnk = metric ? Dim::fromMM(shrinkage)
+    : Dim::fromInch(shrinkage);
+  if (shrnk != dflt)
+    stg.setValue("shrinkage", shrnk.toString());
+  
   PasteMaskWriter pmw;
-  pmw.setShrinkage(metric ? Dim::fromMM(shrinkage)
-		   : Dim::fromInch(shrinkage));
+  pmw.setShrinkage(shrnk);
   if (pmw.write(editor->pcbLayout(), fn))
     return true;
 
