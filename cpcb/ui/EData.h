@@ -44,6 +44,8 @@ public:
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
   int visibleObjectAt(Group const &grp, Point p, Dim mrg) const;
+  NodeID visibleNodeAt(Point p, Dim mrg=Dim()) const;
+  NodeID visibleNodeAt(Group const &grp, Point p, Dim mrg) const;
   void pressPad(Point);
   void pressArc(Point);
   void pressHole(Point);
