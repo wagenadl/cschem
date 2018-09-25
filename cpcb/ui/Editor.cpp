@@ -43,7 +43,8 @@ void Editor::setMode(Mode m) {
 
 bool Editor::load(QString fn) {
   d->layout = FileIO::loadLayout(fn);
-  d->linkedschematic.link(d->layout.board().linkedschematic);
+  if (d->layout.root().isEmpty())
+    d->layout = Layout();
   d->stepsfromsaved = 0;
   d->undostack.clear();
   d->redostack.clear();
@@ -52,6 +53,7 @@ bool Editor::load(QString fn) {
   emit changedFromSaved(false);
   scaleToFit();
   update();
+  d->linkedschematic.link(d->layout.board().linkedschematic);
   return !d->layout.root().isEmpty();
 }
 

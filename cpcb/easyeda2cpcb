@@ -16,7 +16,7 @@ usage() if @ARGV;
 
 sub inch2dim {
   my $inch = shift;
-  return int($inch * 154000 + .5);
+  return int($inch * 254000 + .5);
 }
 
 sub opengerber {
