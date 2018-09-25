@@ -29,6 +29,7 @@ public:
     mcvdock = 0;
   }
   void setWindowTitle();
+  void resetFilename();
   void about();
   void makeToolbars();
   void makeMenus();
@@ -60,10 +61,13 @@ public:
   QString filename;
 };
 
+void MWData::resetFilename() {
+  filename = "Untitled.cpcb";
+  setWindowTitle();
+}
+
 void MWData::setWindowTitle() {
-  QString lbl = "Untitled (cpcb)";
-  if (!filename.isEmpty())
-    lbl = filename;
+  QString lbl = filename;
   if (editor && !editor->isAsSaved())
     lbl += " *";
   mw->setWindowTitle(lbl);
@@ -107,12 +111,15 @@ void MWData::openDialog() {
 }
 
 void MainWindow::open(QString fn) {
-  d->filename = fn;
-  d->pwd = QFileInfo(fn).dir().absolutePath();
-  setWindowTitle(fn);
-  d->editor->load(fn);
-  if (d->editor->linkedSchematic().isValid())
-    d->showParts();
+  if (d->editor->load(fn)) {
+    d->filename = fn;
+    d->pwd = QFileInfo(fn).dir().absolutePath();
+    setWindowTitle(fn);
+    if (d->editor->linkedSchematic().isValid())
+      d->showParts();
+  } else {
+    d->resetFilename();
+  }
 }  
 
 bool MWData::saveImmediately() {
@@ -200,9 +207,17 @@ void MWData::linkSchematicDialog() {
 bool MWData::exportPasteMaskDialog() {
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
+
+  QString path = pwd;
+  if (!filename.isEmpty()) {
+    if (!path.endsWith("/"))
+      path += "/";
+    path += QFileInfo(filename).baseName();
+    path += ".svg";
+  }
   
   QString fn = QFileDialog::getSaveFileName(0, "Export paste mask as…",
-					    pwd,
+					    path,
 					    "SVG files (*.svg)");
   if (fn.isEmpty())
     return false;
@@ -244,9 +259,16 @@ bool MWData::exportPasteMaskDialog() {
 bool MWData::exportAsDialog() {
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
-  
+
+  QString path = pwd;
+  if (!filename.isEmpty()) {
+    if (!path.endsWith("/"))
+      path += "/";
+    path += QFileInfo(filename).baseName();
+    path += ".zip";
+  }
   QString fn = QFileDialog::getSaveFileName(0, "Export as…",
-					    pwd,
+					    path,
 					    "Zip files (*.zip)");
   if (fn.isEmpty())
     return false;
@@ -526,6 +548,7 @@ MainWindow::MainWindow(): QMainWindow() {
   d->makeMenus();
   d->makeConnections();
   d->fillBars();
+  d->resetFilename();
 }
 
 MainWindow::~MainWindow() {
