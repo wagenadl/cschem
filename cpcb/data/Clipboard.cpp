@@ -25,15 +25,30 @@ bool Clipboard::isValid() const {
 
 void Clipboard::store(Group const &root, QSet<int> selection) {
   qDebug() << "Storing" << selection.size() << "objects";
+  Group g;
+  QMap<int, int> idmap;
+  for (int id: selection) 
+    idmap[id] = g.insert(root.object(id));
+  for (int id: selection) {
+    if (root.object(id).isGroup()) {
+      int gid = idmap[id];
+      Group &grp(g.object(gid).asGroup());
+      if (grp.refTextId()>0) {
+	int tid = idmap[grp.refTextId()];
+	Text &txt(g.object(tid).asText());
+	grp.setRefTextId(tid);
+	txt.setGroupAffiliation(gid);
+      }
+    }
+  }
+  
   QBuffer buf;
   buf.open(QBuffer::WriteOnly);
   { QXmlStreamWriter s(&buf);
     s.writeStartDocument("1.0", false);
     s.writeStartElement("cpcbsel");
     s.writeDefaultNamespace("http://www.danielwagenaar.net/cpcbsel-ns.html");
-    for (int id: selection)
-      if (root.contains(id))
-	s << root.object(id);
+    s << g;
     s.writeEndElement();
     s.writeEndDocument();
   }
@@ -45,10 +60,9 @@ void Clipboard::store(Group const &root, QSet<int> selection) {
   cb->setMimeData(md);
 }
 
-QList<Object> Clipboard::retrieve() const {
-  QList<Object> lst;
+Group Clipboard::retrieve() const {
   if (!isValid())
-    return lst;
+    return Group();
   QClipboard *cb = QApplication::clipboard();
   QMimeData const *md = cb->mimeData();
   QByteArray ba(md->data(dndformat));
@@ -56,7 +70,7 @@ QList<Object> Clipboard::retrieve() const {
   qDebug() << "Retrieving" << QString(buf.buffer());
   if (!buf.open(QBuffer::ReadOnly)) {
     qDebug() << "Failed to open clipboard buffer";
-    return lst;
+    return Group();
   }
   QXmlStreamReader s(&buf);
   while (!s.atEnd()) {
@@ -65,10 +79,14 @@ QList<Object> Clipboard::retrieve() const {
       while (!s.atEnd()) {
 	s.readNext();
 	if (s.isStartElement()) {
+	  qDebug() << "in cpcbsel" << s.name();
 	  Object o;
 	  s >> o;
 	  qDebug() << "Retrieved" << o;
-	  lst << o;
+	  if (o.isGroup())
+	    return o.asGroup();
+	  else
+	    return Group(); // this is an error
 	} else if (s.isEndElement()) {
 	  break;
 	} else {
@@ -81,8 +99,7 @@ QList<Object> Clipboard::retrieve() const {
       qDebug() << "Unexpected entity in clipboard at top" << s.tokenType();
     }
   }
-  qDebug() << "Retrieved" << lst.size() << "objects";
-  return lst;
+  return Group();
 }
 
   

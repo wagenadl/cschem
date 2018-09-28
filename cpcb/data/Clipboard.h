@@ -17,7 +17,7 @@ public:
 public:
   bool isValid() const;
   void store(Group const &root, QSet<int> selection);
-  QList<Object> retrieve() const;
+  Group retrieve() const;
 private:
   Clipboard();
 };
