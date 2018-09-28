@@ -98,3 +98,43 @@ bool TraceRepair::fixPinTouchings(int trid) {
   }
 }
 
+bool TraceRepair::dropDanglingTraces() {
+  bool anyever = false;
+  QSet<Point> fixedpoints = d->grp.pinPoints();
+  QMap<Point, int> tracepoints;
+  for (int id: d->grp.keys()) {
+    Object const &obj(d->grp.object(id));
+    if (obj.isTrace()) {
+      Trace const &t(obj.asTrace());
+      if (t.layer==Layer::Top || t.layer==Layer::Bottom) {
+	tracepoints[t.p1]++;
+	tracepoints[t.p2]++;
+      }
+    }
+  }
+  while (true) {
+    QSet<int> dropme;
+    for (int id: d->grp.keys()) {
+      Object const &obj(d->grp.object(id));
+      if (obj.isTrace()) {
+	Trace const &t(obj.asTrace());
+	if (t.layer==Layer::Top || t.layer==Layer::Bottom) {
+	  if (!(tracepoints[t.p1]>=2 || fixedpoints.contains(t.p1))
+	      || !(tracepoints[t.p2]>=2 || fixedpoints.contains(t.p2))
+	      || t.p1 == t.p2) {
+	    dropme << id;
+	    tracepoints[t.p1]--;
+	    tracepoints[t.p2]--;
+	  }
+	}
+      }
+    }
+    if (dropme.isEmpty())
+      break;
+    for (int id: dropme)
+      d->grp.remove(id);
+    anyever = true;
+  }
+  return anyever;
+}
+    

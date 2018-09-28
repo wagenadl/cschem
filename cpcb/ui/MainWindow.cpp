@@ -472,6 +472,11 @@ void MWData::makeMenus() {
 
   edit->addAction("Find", [this]() { Find(editor).run(); },
                   QKeySequence(Qt::CTRL + Qt::Key_Slash));
+
+  auto *tools = mb->addMenu("&Tools");
+  tools->addAction("Remove &dangling traces",
+		   [this]() { editor->deleteDanglingTraces(); },
+		   QKeySequence(Qt::CTRL + Qt::Key_B));
   
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },

@@ -90,7 +90,7 @@ void EData::validateStuckPoints() const {
       Object const &obj(here.object(id));
       if (!obj.isTrace())
 	for (Layer l: lays)
-	  stuckpts[l] |= pointsOf(obj, l);
+	  stuckpts[l] |= obj.allPoints(l);
     }
   }
   for (Layer l: lays)
@@ -130,69 +130,7 @@ void EData::selectPointsOf(int id) {
   Group const &here(currentGroup());
   if (here.contains(id))
     for (Layer l: ::layers())
-      selpts[l] |= pointsOf(here.object(id), l);
-}
-
-QSet<Point> EData::pointsOf(Object const &obj) const {
-  QSet<Point> pp;
-  switch (obj.type()) {
-  case Object::Type::Null:
-    break;
-  case Object::Type::Hole:
-    pp << obj.asHole().p;
-    break;
-  case Object::Type::Pad:
-    pp << obj.asPad().p;
-    break;
-  case Object::Type::Arc:
-    pp << obj.asArc().center;
-    break;
-  case Object::Type::Text:
-    break;
-  case Object::Type::Trace:
-    pp << obj.asTrace().p1 << obj.asTrace().p2;
-    break;
-  case Object::Type::Group:
-    for (Point const &p: obj.asGroup().points())
-      pp << p;
-    break;
-  case Object::Type::Plane:
-    break;
-  }
-  return pp;
-}
-
-QSet<Point> EData::pointsOf(Object const &obj, Layer lay) const {
-  QSet<Point> pp;
-  switch (obj.type()) {
-  case Object::Type::Null:
-    break;
-  case Object::Type::Hole:
-    if (lay==Layer::Top || lay==Layer::Bottom)
-      pp << obj.asHole().p;
-    break;
-  case Object::Type::Pad:
-    if (lay==obj.asPad().layer)
-      pp << obj.asPad().p;
-    break;
-  case Object::Type::Arc:
-    if (lay==obj.asArc().layer)
-      pp << obj.asArc().center;
-    break;
-  case Object::Type::Text:
-    break;
-  case Object::Type::Trace:
-    if (lay==obj.asTrace().layer)
-      pp << obj.asTrace().p1 << obj.asTrace().p2;
-    break;
-  case Object::Type::Group:
-    for (Point const &p: obj.asGroup().points(lay))
-      pp << p;
-    break;
-  case Object::Type::Plane:
-    break;
-  }
-  return pp;
+      selpts[l] |= here.object(id).allPoints(l);
 }
 
 void EData::drawBoard(QPainter &p) const {
