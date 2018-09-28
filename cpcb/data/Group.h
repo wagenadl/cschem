@@ -65,8 +65,10 @@ public:
   void setRefTextId(int);
   bool saveComponent(int id, QString fn); // id must be a subgroup
   int insertComponent(QString fn);
-  QSet<Point> points() const;
-  QSet<Point> points(Layer) const;
+  QSet<Point> pinPoints() const; // hole and pad centers of immediate children
+  QSet<Point> pinPoints(Layer) const; // same, limited to given layer
+  QSet<Point> allPoints() const;
+  QSet<Point> allPoints(Layer) const;
   QStringList pinNames() const; // immediate children
   int pinID(QString) const; // child id for named pin or -1
   QString pinName(int) const; // ref for given object or "" if not Hole/Pad
@@ -78,6 +80,8 @@ public:
      named "1/D" and another pin gets named "2/D", then the first pin
      loses the "/D" suffix.
    */
+  QSet<QString> immediateRefs() const;
+  // names of holes, pads, and groups (not recursively)
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  
