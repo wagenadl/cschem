@@ -82,6 +82,7 @@ public:
    */
   QSet<QString> immediateRefs() const;
   // names of holes, pads, and groups (not recursively)
+  QSet<int> merge(Group const &g); // return is ids
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

@@ -818,3 +818,59 @@ QSet<QString> Group::immediateRefs() const {
   return refs;
 }  
   
+static QString altRef(QString ref) {
+  if (ref.isEmpty())
+    return "a";
+  else if (ref[ref.size()-1]>='a' && ref[ref.size()-1]<'z')
+    return ref.left(ref.size()-1) + QChar(ref[ref.size()-1].unicode()+1);
+  else
+    return ref + "a";
+}
+
+QSet<int> Group::merge(Group const &g) {
+  QSet<QString> refs = immediateRefs();
+  qDebug() << "merge" << g;
+  QSet<int> ids;
+  QMap<int, int> idmap; // g's id to our id
+  for (int id: g.keys()) {
+    int ourid = insert(g.object(id));
+    ids << ourid;
+    idmap[id] = ourid;
+  }
+
+  // ensure no duplicate refs
+  for (int id: g.keys()) {
+    Object const &obj(g.object(id));
+    switch (obj.type()) {
+    case Object::Type::Pad: {
+      Pad &pad(object(idmap[id]).asPad());
+      while (refs.contains(pad.ref))
+	pad.ref = ::altRef(pad.ref);
+      refs << pad.ref;
+    } break;
+    case Object::Type::Hole: {
+      Hole &hole(object(idmap[id]).asHole());
+      while (refs.contains(hole.ref))
+	hole.ref = ::altRef(hole.ref);
+      refs << hole.ref;
+    } break;
+    case Object::Type::Group: {
+      Group &group(object(idmap[id]).asGroup());
+      while (refs.contains(group.ref))
+	group.ref = ::altRef(group.ref);
+      refs << group.ref;
+      if (group.refTextId()>0) {
+	int txtid = idmap[group.refTextId()];
+	Text &text(object(txtid).asText());
+	group.setRefTextId(txtid);
+	text.setGroupAffiliation(idmap[id]);
+	text.text = group.ref;
+      }
+    } break;
+    default:
+      break;
+    }
+  }
+  return ids;
+}
+
