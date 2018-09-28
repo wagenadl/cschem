@@ -75,6 +75,10 @@ public:
   void rotateCW(Point const &);
   void flipLeftRight(Dim x);
   void flipUpDown(Dim y);
+  QSet<Point> pinPoints() const; // recursive
+  QSet<Point> pinPoints(Layer l) const;
+  QSet<Point> allPoints() const; // incl. traces and arcs
+  QSet<Point> allPoints(Layer) const;
 private:
   QSharedDataPointer<class OData> d;
 };

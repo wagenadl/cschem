@@ -5,6 +5,7 @@
 #include "UndoCreator.h"
 #include "Tracer.h"
 #include "PlaneEditor.h"
+#include "data/TraceRepair.h"
 
 #include <QInputDialog>
 #include <QResizeEvent>
@@ -1201,6 +1202,15 @@ void Editor::copy() {
   clp.store(here, d->selection);
 }
 
+static QString altRef(QString ref) {
+  if (ref.isEmpty())
+    return "a";
+  else if (ref[ref.size()-1]>='a' && ref[ref.size()-1]<'z')
+    return ref.left(ref.size()-1) + QChar(ref[ref.size()-1].unicode()+1);
+  else
+    return ref + "a";
+}
+
 void Editor::paste() {
   Clipboard &clp(Clipboard::instance());
   if (!clp.isValid())
@@ -1211,10 +1221,43 @@ void Editor::paste() {
   d->selection.clear();
   d->selpts.clear();
   d->purepts.clear();
-  for (Object const &obj: lst)
+  QSet<QString> refs = here.immediateRefs();
+  for (Object obj: lst) {
+    switch (obj.type()) {
+    case Object::Type::Hole:
+      while (refs.contains(obj.asHole().ref))
+	obj.asHole().ref = ::altRef(obj.asHole().ref);
+      refs << obj.asHole().ref;
+      break;
+    case Object::Type::Pad:
+      while (refs.contains(obj.asPad().ref))
+	obj.asPad().ref = ::altRef(obj.asPad().ref);
+      refs << obj.asPad().ref;
+      break;
+    case Object::Type::Group:
+      while (refs.contains(obj.asGroup().ref))
+	obj.asGroup().ref = ::altRef(obj.asGroup().ref);
+      refs << obj.asGroup().ref;
+      break;
+    default:
+      break;
+    }
     d->selection << here.insert(obj);
+  }
 }
 
 PlaneEditor *Editor::planeEditor() const {
   return d->planeeditor;
+}
+
+void Editor::deleteDanglingTraces() {
+  Group here = currentGroup();
+  TraceRepair tr(here);
+  if (tr.dropDanglingTraces()) {
+    clearSelection();
+    UndoCreator uc(d, true);
+    d->currentGroup() = here;
+    d->updateOnWhat(true);
+    update();
+  }
 }

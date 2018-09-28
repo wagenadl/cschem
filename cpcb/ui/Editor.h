@@ -89,6 +89,7 @@ public slots:
   void markAsSaved();
   void translate(Point);
   void updateOnNet();
+  void deleteDanglingTraces();
 signals:
   void insertedPadOrHole();
   void boardChanged(Board const &);

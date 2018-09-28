@@ -18,6 +18,8 @@ public:
   bool fixPinTouchings(int id);
   // id must be a trace in the group
   // returns true if anything done
+  bool dropDanglingTraces();
+  // returns true if anything done
 private:
   class RepairData *d;
 };

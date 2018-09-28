@@ -64,8 +64,6 @@ public:
   void startMoveSelection(int fave=-1);
   void newSelectionUnless(int id, Point p, Dim mrg, bool add);
   void selectPointsOf(int id);
-  QSet<Point> pointsOf(Object const &obj) const;
-  QSet<Point> pointsOf(Object const &obj, Layer lay) const;
   Rect selectionBounds() const; // board coordinates
   void validateStuckPoints() const;
   void invalidateStuckPoints() const;

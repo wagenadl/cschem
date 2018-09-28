@@ -537,3 +537,102 @@ void Object::flipUpDown(Dim y0) {
     break;
   }
 }
+
+QSet<Point> Object::allPoints() const {
+  QSet<Point> pp;
+  switch (type()) {
+  case Object::Type::Null:
+    break;
+  case Object::Type::Hole:
+    pp << asHole().p;
+    break;
+  case Object::Type::Pad:
+    pp << asPad().p;
+    break;
+  case Object::Type::Arc:
+    pp << asArc().center;
+    break;
+  case Object::Type::Text:
+    break;
+  case Object::Type::Trace:
+    pp << asTrace().p1 << asTrace().p2;
+    break;
+  case Object::Type::Group:
+    pp |= asGroup().allPoints();
+    break;
+  case Object::Type::Plane:
+    break;
+  }
+  return pp;
+}
+
+QSet<Point> Object::allPoints(Layer lay) const {
+  QSet<Point> pp;
+  switch (type()) {
+  case Object::Type::Null:
+    break;
+  case Object::Type::Hole:
+    if (lay==Layer::Top || lay==Layer::Bottom)
+      pp << asHole().p;
+    break;
+  case Object::Type::Pad:
+    if (lay==asPad().layer)
+      pp << asPad().p;
+    break;
+  case Object::Type::Arc:
+    if (lay==asArc().layer)
+      pp << asArc().center;
+    break;
+  case Object::Type::Text:
+    break;
+  case Object::Type::Trace:
+    if (lay==asTrace().layer)
+      pp << asTrace().p1 << asTrace().p2;
+    break;
+  case Object::Type::Group:
+    pp |= asGroup().allPoints(lay);
+    break;
+  case Object::Type::Plane:
+    break;
+  }
+  return pp;
+}
+
+QSet<Point> Object::pinPoints() const {
+  QSet<Point> pp;
+  switch (type()) {
+  case Object::Type::Hole:
+    pp << asHole().p;
+    break;
+  case Object::Type::Pad:
+    pp << asPad().p;
+    break;
+  case Object::Type::Group:
+    pp |= asGroup().pinPoints();
+    break;
+  default:
+    break;
+  }
+  return pp;
+}
+
+QSet<Point> Object::pinPoints(Layer lay) const {
+  QSet<Point> pp;
+  switch (type()) {
+  case Object::Type::Hole:
+    if (lay==Layer::Top || lay==Layer::Bottom)
+      pp << asHole().p;
+    break;
+  case Object::Type::Pad:
+    if (lay==asPad().layer)
+      pp << asPad().p;
+    break;
+  case Object::Type::Group:
+    pp |= asGroup().pinPoints(lay);
+    break;
+  default:
+    break;
+  }
+  return pp;
+}
+

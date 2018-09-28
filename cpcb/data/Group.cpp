@@ -406,9 +406,24 @@ Point Group::pinPosition(QString name) const {
   }
   return Point();
 }  
-  
 
-QSet<Point> Group::points() const {
+QSet<Point> Group::allPoints() const {
+  QSet<Point> pp;
+  for (int id: keys()) 
+    pp |=  object(id).allPoints();
+  return pp;
+}
+
+QSet<Point> Group::allPoints(Layer l) const {
+  QSet<Point> pp;
+  for (int id: keys()) 
+    pp |=  object(id).allPoints(l);
+  return pp;
+}
+
+      
+
+QSet<Point> Group::pinPoints() const {
   QSet<Point> pp;
   for (int id: keys()) {
     Object const &obj = object(id);
@@ -419,6 +434,9 @@ QSet<Point> Group::points() const {
     case Object::Type::Pad:
       pp << obj.asPad().p;
       break;
+    case Object::Type::Group: 
+      pp |= obj.asGroup().pinPoints();
+      break;
     default:
       break;
     }
@@ -426,7 +444,7 @@ QSet<Point> Group::points() const {
   return pp;
 }  
 
-QSet<Point> Group::points(Layer l) const {
+QSet<Point> Group::pinPoints(Layer l) const {
   QSet<Point> pp;
   for (int id: keys()) {
     Object const &obj = object(id);
@@ -440,6 +458,9 @@ QSet<Point> Group::points(Layer l) const {
       if (l==pad.layer)
 	pp << pad.p;
     } break;
+    case Object::Type::Group: 
+      pp |= obj.asGroup().pinPoints(l);
+      break;
     default:
       break;
     }
@@ -775,3 +796,25 @@ NodeID Group::findNodeByName(Nodename name) const {
   return NodeID();
 }
 
+QSet<QString> Group::immediateRefs() const {
+  QSet<QString> refs;
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    switch (obj.type()) {
+    case Object::Type::Hole:
+      refs << obj.asHole().ref;
+      break;
+    case Object::Type::Pad:
+      refs << obj.asPad().ref;
+      break;
+    case Object::Type::Group: 
+      refs << obj.asGroup().ref;
+      break;
+    default:
+      break;
+    }
+  }
+  refs.remove("");
+  return refs;
+}  
+  
