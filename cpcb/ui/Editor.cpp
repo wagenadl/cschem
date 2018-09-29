@@ -554,26 +554,28 @@ void Editor::setLineWidth(Dim l) {
 void Editor::setLayer(Layer l) {
   d->props.layer = l;
 
-  Group &here(d->currentGroup());
+  Group const &here(d->currentGroup());
   UndoCreator uc(d);
   for (int id: d->selection) {
-    Object &obj(here.object(id));
+    Object const &obj(here.object(id));
     switch (obj.type()) {
     case Object::Type::Trace:
       uc.realize();
-      obj.asTrace().layer = l;
+      d->currentGroup().object(id).asTrace().layer = l;
       break;
     case Object::Type::Text:
-      uc.realize();
-      obj.asText().setLayer(l);
+      if (obj.asText().groupAffiliation()<0) {
+	uc.realize();
+	d->currentGroup().object(id).asText().setLayer(l);
+      }
       break;
     case Object::Type::Pad:
       uc.realize();
-      obj.asPad().layer = l;
+      d->currentGroup().object(id).asPad().layer = l;
       break;
     case Object::Type::Arc:
       uc.realize();
-      obj.asArc().layer = l;
+      d->currentGroup().object(id).asArc().layer = l;
       break;
     default:
       break;
