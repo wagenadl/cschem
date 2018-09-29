@@ -18,6 +18,7 @@ public:
   bool acceptableMove(int idx, Point p) const;
   Point vertex(int idx) const; // idx is taken mod-N.
   Segment edge(int idx) const; // segment following given edge.
+  void setVertex(int idx, Point); // idx is taken mod-N.
 };
 
 #endif

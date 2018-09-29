@@ -15,6 +15,7 @@ public:
     hoveredgeidx = -1;
     moving = false;
     creating = false;
+    shiftheld = false;
   }
 public:
   EData *ed;
@@ -28,6 +29,8 @@ public:
   bool creating;
   Polyline premovepoly;
   Point premovept;
+  bool shiftheld;
+  bool movingedge;
 public:
   int onVertex(Point p) const;
   int onEdge(Point p, Point *p_out) const;
@@ -143,18 +146,22 @@ void PlaneEditor::mousePress(Point p, Qt::MouseButton b,
     d->updateHoverEdgeIdx();
     if (d->hoverptidx>=0) {
       d->moving = true;
+      d->movingedge = false;
       d->presspt = p;
       d->premovepoly
         = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
       d->premovept = d->premovepoly[d->hoverptidx];
     } else if (d->hoveredgeidx>=0) {
       d->moving = true;
+      d->movingedge = d->shiftheld;
       d->presspt = p;
       d->premovepoly
         = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
-      ed->currentGroup().object(d->hovernode).asPlane().perimeter
-        .insert(d->hoveredgeidx+1, d->hoverpt);
-      d->hoverptidx = d->hoveredgeidx + 1;
+      if (!d->movingedge) {
+	ed->currentGroup().object(d->hovernode).asPlane().perimeter
+	  .insert(d->hoveredgeidx+1, d->hoverpt);
+	d->hoverptidx = d->hoveredgeidx + 1;
+      }
       d->premovept = d->hoverpt;
     }
   }
@@ -199,17 +206,42 @@ void PlaneEditor::mouseRelease(Point p,
 
 void PlaneEditor::mouseMove(Point p,
                             Qt::MouseButton,
-                            Qt::KeyboardModifiers) {
+                            Qt::KeyboardModifiers m) {
+  d->shiftheld = m & Qt::ShiftModifier;
   Point p0 = d->hoverpt;
   d->hoverpt = p;
   if (d->moving) {
     Group &here = ed->currentGroup();
     Object &obj = here.object(d->hovernode);
     FilledPlane &fp(obj.asPlane());
-    // following is not sufficient if we need to worry about self-intersections
-    p = (p + d->premovept - d->presspt).roundedTo(ed->layout.board().grid);
-    if (fp.perimeter.acceptableMove(d->hoverptidx, p))
-      fp.perimeter[d->hoverptidx] = p;
+    if (d->movingedge) {
+      Point delta = p - d->presspt;
+      Point p0 = d->premovepoly.vertex(d->hoveredgeidx);
+      Point p1 = d->premovepoly.vertex(d->hoveredgeidx+1);
+      if (p0.x==p1.x) {
+	Point px = (p0+delta).roundedTo(ed->layout.board().grid);
+	p1.x += px.x - p0.x;
+	p0.x = px.x;
+      } else if  (p0.y==p1.y) {
+	Point py = (p0+delta).roundedTo(ed->layout.board().grid);
+	p1.y += py.y - p0.y;
+	p0.y = py.y;
+      } else {
+	Point p = (p0+delta).roundedTo(ed->layout.board().grid);
+	p1 += p - p0;
+	p0 = p;
+      }
+      Point p0a = fp.perimeter.vertex(d->hoveredgeidx);
+      fp.perimeter.setVertex(d->hoveredgeidx, p0);
+      if (fp.perimeter.acceptableMove(d->hoveredgeidx+1, p1)) 
+	fp.perimeter.setVertex(d->hoveredgeidx+1, p1);
+     else
+       fp.perimeter.setVertex(d->hoveredgeidx, p0a);
+    } else  {
+      p = (p + d->premovept - d->presspt).roundedTo(ed->layout.board().grid);
+      if (fp.perimeter.acceptableMove(d->hoverptidx, p))
+	fp.perimeter[d->hoverptidx] = p;
+    }
     ed->ed->update();
   } else if (d->creating) {
     p = p.roundedTo(ed->layout.board().grid);
@@ -289,8 +321,15 @@ void PlaneEditor::render(QPainter &p) {
       p.setBrush(QColor(255, 255, 255, 128));
       p.drawEllipse(peri[d->hoverptidx], rad, rad);
     } else if (d->hoveredgeidx>=0) {
-      p.setBrush(QColor(255, 255, 255, 128));
-      p.drawEllipse(d->hoverpt.toMils(), rad, rad);
+      if (d->moving ? d->movingedge : d->shiftheld) {
+	QPointF p0 = peri[d->hoveredgeidx];
+	QPointF p1 = peri[(d->hoveredgeidx+1) % peri.size()];
+	p.setPen(QPen(QColor(255, 255, 255, 128), rad*2));
+	p.drawLine(p0, p1);
+      } else {
+	p.setBrush(QColor(255, 255, 255, 128));
+	p.drawEllipse(d->hoverpt.toMils(), rad, rad);
+      }
     }
     qDebug() << "Hovering on plane";
   } else {
