@@ -110,6 +110,8 @@ void Tracer::pickup(Point const &p) {
   { Object const &obj(d->ed->currentGroup().object(id));
     if (obj.isTrace()) {
       t = obj.asTrace();
+      d->ed->props.linewidth = t.width;
+      d->ed->props.layer = t.layer;
     } else {
       end();
       return;

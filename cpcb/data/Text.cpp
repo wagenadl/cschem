@@ -4,7 +4,7 @@
 #include "SimpleFont.h"
 
 Text::Text() {
-  groupaffiliation = 0;
+  groupaffiliation = -1;
 }
 
 void Text::setGroupAffiliation(int id) {

@@ -99,7 +99,6 @@ bool TraceRepair::fixPinTouchings(int trid) {
 }
 
 bool TraceRepair::dropDanglingTraces() {
-  bool anyever = false;
   QSet<Point> fixedpoints = d->grp.pinPoints();
   QMap<Point, int> tracepoints;
   for (int id: d->grp.keys()) {
@@ -111,7 +110,8 @@ bool TraceRepair::dropDanglingTraces() {
 	tracepoints[t.p2]++;
       }
     }
-  }
+  } 
+  bool anyever = false;
   while (true) {
     QSet<int> dropme;
     for (int id: d->grp.keys()) {
