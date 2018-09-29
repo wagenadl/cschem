@@ -11,6 +11,7 @@
 #include "gerber/PasteMaskWriter.h"
 #include "Find.h"
 #include "Settings.h"
+#include "BoardSizeDialog.h"
 
 #include <QInputDialog>
 #include <QProcess>
@@ -40,6 +41,7 @@ public:
   void showParts();
   void hideParts();
   void fillBars();
+  void boardSizeDialog();
   void openDialog();
   bool exportAsDialog();
   bool exportPasteMaskDialog();
@@ -71,6 +73,14 @@ void MWData::setWindowTitle() {
   if (editor && !editor->isAsSaved())
     lbl += " *";
   mw->setWindowTitle(lbl);
+}
+
+void MWData::boardSizeDialog() {
+  BoardSizeDialog bsd;
+  bsd.setLayout(editor->pcbLayout());
+  if (bsd.exec()) {
+    editor->setBoardSize(bsd.boardWidth(), bsd.boardHeight());
+  }
 }
 
 void MWData::showHideParts() {
@@ -474,6 +484,9 @@ void MWData::makeMenus() {
                   QKeySequence(Qt::CTRL + Qt::Key_Slash));
 
   auto *tools = mb->addMenu("&Tools");
+  tools->addAction("&Board size…",
+		   [this]() { boardSizeDialog(); });
+		   
   tools->addAction("Remove &dangling traces",
 		   [this]() { editor->deleteDanglingTraces(); },
 		   QKeySequence(Qt::CTRL + Qt::Key_B));

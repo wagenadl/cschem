@@ -90,6 +90,7 @@ public slots:
   void translate(Point);
   void updateOnNet();
   void deleteDanglingTraces();
+  void setBoardSize(Dim w, Dim h);
 signals:
   void insertedPadOrHole();
   void boardChanged(Board const &);

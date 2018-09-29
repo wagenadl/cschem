@@ -1231,3 +1231,9 @@ void Editor::deleteDanglingTraces() {
     update();
   }
 }
+
+void Editor::setBoardSize(Dim w, Dim h) {
+  d->layout.board().width = w;
+  d->layout.board().height = h;
+  update();
+}
