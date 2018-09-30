@@ -91,9 +91,7 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
         insertRecursively(nid);
       break;
     case Object::Type::Plane:
-      qDebug() << "Hole touches plane?" << h << obj.asPlane();
       if (h.touches(obj.asPlane())) {
-        qDebug() << " yes ";
         insertRecursively(nid);
       }
       break;

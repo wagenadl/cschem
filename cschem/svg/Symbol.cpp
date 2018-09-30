@@ -210,7 +210,6 @@ void SymbolData::scanPins(XmlElement const &elt) {
     } else if (label.startsWith("cp")) {
       QString name = label.mid(3);
       int sidx = name.indexOf("/");
-      qDebug() << name << sidx;
       if (sidx>0 && name.mid(sidx+1)=="nc") {
 	ncpins ++;
       } else {

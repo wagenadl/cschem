@@ -12,7 +12,9 @@
 #include "Find.h"
 #include "Settings.h"
 #include "BoardSizeDialog.h"
+#include "data/NetMismatch.h"
 
+#include <QDesktopServices>
 #include <QInputDialog>
 #include <QProcess>
 #include <QMessageBox>
@@ -49,7 +51,9 @@ public:
   bool saveImmediately();
   void linkSchematicDialog();
   void insertComponentDialog();
+  void openLibrary();
   void saveComponentDialog();
+  void verifyNets();
 public:
   MainWindow *mw;
   Modebar *modebar;
@@ -172,6 +176,9 @@ void MWData::saveComponentDialog() {
   editor->saveComponent(id, fn);
 }
 
+void MWData::openLibrary() {
+  QDesktopServices::openUrl(QUrl(Paths::componentRoot()));
+}
 
 void MWData::insertComponentDialog() {
   if (compwd.isEmpty()) {
@@ -191,6 +198,24 @@ void MWData::insertComponentDialog() {
     QMessageBox::warning(mw, "Failed to insert component",
                          "Cannot insert component “" + fn
                          + "”. Could the file be damaged?");
+}
+
+void MWData::verifyNets() {
+  NetMismatch nm;
+  nm.recalculateAll(editor->linkedSchematic(), editor->pcbLayout().root());
+  nm.report(editor->pcbLayout().root());
+  if (!nm.wronglyInNet.isEmpty()) {
+    editor->pretendOnNet(*nm.wronglyInNet.begin());
+  } else if (!nm.missingFromNet.isEmpty()) {
+    editor->pretendOnNet(*nm.missingFromNet.begin());
+  }
+  QStringList names;
+  for (Nodename nn: nm.missingEntirely)
+    names << nn.humanName();
+  statusbar->setMissing(names);
+  if (nm.wronglyInNet.isEmpty() && nm.missingFromNet.isEmpty()
+      && nm.missingEntirely.isEmpty())
+    QMessageBox::information(0, "cpcb", "All nets verified OK.");
 }
 
 void MWData::linkSchematicDialog() {
@@ -386,24 +411,6 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
 
   
-  file->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_L));
-
-  a = file->addAction("&Unlink schematic",
-		      [this]() { editor->unlinkSchematic(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
-  QObject::connect(editor, &Editor::schematicLinked,
-		   a, &QAction::setEnabled);
-  a->setEnabled(false);
-  
-  file->addAction("&Insert component…", [this]() { insertComponentDialog(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_I));
-
-  a = file->addAction("Save &component…", [this]() { saveComponentDialog(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
-  QObject::connect(editor, &Editor::selectionIsGroup,
-		   a, &QAction::setEnabled);
-  a->setEnabled(false);
   
   file->addAction("&Quit", []() { QApplication::quit(); });
 
@@ -484,12 +491,37 @@ void MWData::makeMenus() {
                   QKeySequence(Qt::CTRL + Qt::Key_Slash));
 
   auto *tools = mb->addMenu("&Tools");
+  tools->addAction("&Open library", [this]() { openLibrary(); },
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+  tools->addAction("&Insert component…", [this]() { insertComponentDialog(); },
+		   QKeySequence(Qt::CTRL + Qt::Key_I));
+  a = tools->addAction("Save &component…", [this]() { saveComponentDialog(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
+  QObject::connect(editor, &Editor::selectionIsGroup,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   tools->addAction("&Board size…",
 		   [this]() { boardSizeDialog(); });
 		   
   tools->addAction("Remove &dangling traces",
 		   [this]() { editor->deleteDanglingTraces(); },
 		   QKeySequence(Qt::CTRL + Qt::Key_B));
+
+  tools->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_L));
+
+  a = tools->addAction("&Unlink schematic",
+		      [this]() { editor->unlinkSchematic(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+  QObject::connect(editor, &Editor::schematicLinked,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+  a = tools->addAction("&Verify nets",
+		      [this]() { verifyNets(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_V));
+  QObject::connect(editor, &Editor::schematicLinked,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   auto *view = mb->addMenu("&View");
   view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },

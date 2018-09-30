@@ -89,6 +89,7 @@ public slots:
   void markAsSaved();
   void translate(Point);
   void updateOnNet();
+  void pretendOnNet(NodeID);
   void deleteDanglingTraces();
   void setBoardSize(Dim w, Dim h);
 signals:
