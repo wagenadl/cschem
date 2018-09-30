@@ -77,7 +77,7 @@ install: all
 	install -d $(SHAREPATH)/mime/packages
 	install -d $(DOCPATH)
 	install build/cschem/cschem $(INSTALLPATH)/bin/cschem
-	install build/cschem/cpcb $(INSTALLPATH)/bin/cpcb
+	install build/cpcb/cpcb $(INSTALLPATH)/bin/cpcb
 	cp cschem/cschem.svg $(SHAREPATH)/pixmaps/cschem.svg
 	cp cschem/cschem.png $(SHAREPATH)/pixmaps/cschem.png
 	cp cschem/cschem.png $(SHAREPATH)/icons/gnome/128x128/mimetypes/cschem.png
