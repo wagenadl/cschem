@@ -55,6 +55,7 @@ bool Editor::load(QString fn) {
   scaleToFit();
   update();
   d->linkedschematic.link(d->layout.board().linkedschematic);
+  emit schematicLinked(!d->layout.board().linkedschematic.isEmpty());
   return !d->layout.root().isEmpty();
 }
 
@@ -109,8 +110,8 @@ void Editor::wheelEvent(QWheelEvent *e) {
   d->zoom(pow(2, e->angleDelta().y()/240.));
 }
 
-void Editor::resizeEvent(QResizeEvent *e) {
-  qDebug() << "editor::resizeevent" << e->oldSize() << e->size();
+void Editor::resizeEvent(QResizeEvent *) {
+  //  qDebug() << "editor::resizeevent" << e->oldSize() << e->size();
   if (!d->autofit)
     return;
   if (!d->resizeTimer) {
@@ -203,6 +204,20 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
     updateOnNet();
   if (d->planeeditor)
     d->planeeditor->mouseMove(p, e->button(), e->modifiers());
+}
+
+void Editor::pretendOnNet(NodeID ids) {
+  d->onobject = d->currentGroup().humanName(ids);
+  if (d->netsvisible)
+    d->updateNet(ids);
+  emit onObject(d->onobject);
+  QStringList mis;
+  for (Nodename const &n: d->netmismatch.missingEntirely)
+    mis << n.humanName();
+  mis.sort();
+  emit missingNodes(mis);
+  if (d->netsvisible)
+    update();
 }
 
 void Editor::updateOnNet() {

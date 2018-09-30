@@ -84,7 +84,6 @@ void MCVData::setMinWidth() {
 }
 
 void MCVData::rebuild() {
-  qDebug() << "mcv rebuild";
   QMap<QString, Element> newelts;
   for (Element const &elt: schem.circuit().elements)
     if (elt.type==Element::Type::Component)

@@ -33,6 +33,7 @@ public:
   Object const &object(NodeID const &) const;
   Object &object(NodeID const &);
   QList<int> keys() const;
+  QList<NodeID> allPins() const; // recursively
   bool isEmpty() const;
   Group const &subgroup(NodeID path) const; // follows breadcrumbs
   Group &subgroup(NodeID path);

@@ -477,13 +477,10 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
       p1 = Prio::Silk;
       break;
     case Object::Type::Plane:
-      qDebug() << "vis plane" << int(l)
-               << brd.planesvisible << brd.layervisible[l];
       if (brd.planesvisible && brd.layervisible[l])
         p1 = l==Layer::Bottom ? Prio::BottomPlane
           : l==Layer::Top ? Prio::TopPlane
           : Prio::None;
-      qDebug() << int(p1);
       break;
     default:
       break;
