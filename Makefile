@@ -39,7 +39,7 @@ DOCPATH = $(SHAREPATH)/doc/cschem
 all: release man
 
 clean:
-	+rm -rf build/cpcb build/cschem
+	+rm -rf build/
 
 cpcb: release-cpcb
 cschem: release-cschem
