@@ -90,7 +90,7 @@ sub getbasicinfo {
   my @bits = split("/", $here);
   my $package = pop @bits;
 
-  my $srcvsn = `cat src/version`;
+  my $srcvsn = `cat cschem/version`;
   chomp $srcvsn;
 
   my $chglvsn;
