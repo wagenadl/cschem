@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=cpcb
+GenericName=CPCB pcb layout
+Comment=
+Exec=cpcb %f
+Terminal=false
+Type=Application
+Categories=Scientific
+Icon=/usr/share/pixmaps/cpcb.png
+MimeType=application/cschem-cpcb
