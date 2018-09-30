@@ -14,6 +14,8 @@ public:
   void reset();
   void recalculate(class PCBNet const &net, class LinkedNet const &linkednet,
 		   class Group const &root);
+  void recalculateAll(class LinkedSchematic const &ls,
+		      class Group const &root);
   void report(Group const &root);
 public:
   QSet<NodeID> wronglyInNet;

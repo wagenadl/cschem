@@ -384,7 +384,7 @@ Rect Object::boundingRect() const {
   case Type::Text:
     return asText().boundingRect();
   case Type::Plane:
-    qDebug() << "Object::boundingRect: plane nyi";
+    return asPlane().boundingRect();
     return Rect();
   }
   return Rect();

@@ -243,6 +243,30 @@ QList<int> Group::keys() const {
   return d->obj.keys();
 }
 
+QList<NodeID> Group::allPins() const {
+  QList<NodeID> ids;
+  for (int id: keys()) {
+    Object const &obj(object(id));
+    switch (obj.type()) {
+    case Object::Type::Pad:
+    case Object::Type::Hole:
+      ids << NodeID().plus(id);
+      break;
+    case Object::Type::Group:
+      for (NodeID const &id1: obj.asGroup().allPins()) {
+	NodeID nid;
+	nid << id;
+	nid.append(id1);
+	ids << nid;
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  return ids;
+}
+
 Group const &Group::parentOf(NodeID path) const {
   path.removeLast();
   return subgroup(path);
