@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=cschem
+GenericName=CSchem circuit designer
+Comment=
+Exec=cschem %f
+Terminal=false
+Type=Application
+Categories=Scientific
+Icon=/usr/share/pixmaps/cschem.png
+MimeType=application/cschem-cschem

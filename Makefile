@@ -36,7 +36,7 @@ endif
 DOCPATH = $(SHAREPATH)/doc/cschem
 
 # Linux and Mac building
-all: release
+all: release man
 
 clean:
 	+rm -rf build/cpcb build/cschem
@@ -68,6 +68,34 @@ prep-cpcb:
 	mkdir -p build/cpcb
 	( cd build/cpcb; $(SELECTQT) $(QMAKE) ../../cpcb/cpcb.pro )
 
+install: all
+	install -d $(INSTALLPATH)/bin
+	install -d $(SHAREPATH)/man/man1
+	install -d $(SHAREPATH)/pixmaps
+	install -d $(SHAREPATH)/applications
+	install -d $(SHAREPATH)/icons/gnome/128x128/mimetypes
+	install -d $(SHAREPATH)/mime/packages
+	install -d $(DOCPATH)
+	install build/cschem/cschem $(INSTALLPATH)/bin/cschem
+	install build/cschem/cpcb $(INSTALLPATH)/bin/cpcb
+	cp cschem/cschem.svg $(SHAREPATH)/pixmaps/cschem.svg
+	cp cschem/cschem.png $(SHAREPATH)/pixmaps/cschem.png
+	cp cschem/cschem.png $(SHAREPATH)/icons/gnome/128x128/mimetypes/cschem.png
+	cp cpcb/cpcb.svg $(SHAREPATH)/pixmaps/cpcb.svg
+	cp cpcb/cpcb.png $(SHAREPATH)/pixmaps/cpcb.png
+	cp cpcb/cpcb.png $(SHAREPATH)/icons/gnome/128x128/mimetypes/cpcb.png
+	cp cschem/cschem.xml $(SHAREPATH)/mime/packages/cschem.xml
+	cp cpcb/cpcb.xml $(SHAREPATH)/mime/packages/cpcb.xml
+	install cschem/cschem.desktop $(SHAREPATH)/applications/cschem.desktop
+	install cpcb/cpcb.desktop $(SHAREPATH)/applications/cpcb.desktop
 
-.PHONY: src all clean tar man install prep debug prep-cschem prep-cpcb \
+man: build/cpcb.1 build/cschem.1
+
+build/%.1: doc/%.1.txt
+	a2x --doctype manpage --format manpage --no-xmllint --destination build $<
+
+tar: all
+	git archive -o ../cschem.tar.gz --prefix=cschem/ HEAD
+
+.PHONY: all clean tar man install prep debug prep-cschem prep-cpcb \
 	debug-cpcb debug-cschem release-cpcb debug-cschem cschem cpcb
