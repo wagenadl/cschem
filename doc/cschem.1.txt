@@ -1,0 +1,36 @@
+CSCHEM(1)
+=========
+:doctype: manpage
+
+NAME
+----
+cschem - Electronic Circuit Design
+
+SYNOPSIS
+--------
+*cschem* ['SCHEMFILE']
+
+DESCRIPTION
+-----------
+The *cschem*(1) command starts the CSchem electronic circuit design
+editor. Optional argument specifies a circuit to load.
+
+
+OPTIONS
+-------
+None.
+
+BUGS
+----
+CSchem is in active development. There may be bugs. Please
+contact the author if one bites you.
+
+AUTHOR
+------
+Daniel Wagenaar <daw@caltech.edu>, Division of Biology and Biological 
+Engineering, California Institute of Technology. http://www.danielwagenaar.net.
+
+SEE ALSO
+--------
+More complete documentation of *cschem* will be posted
+online at http://www.danielwagenaar.net/cschem as time permits.
