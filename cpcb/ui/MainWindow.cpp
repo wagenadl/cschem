@@ -507,6 +507,9 @@ void MWData::makeMenus() {
 		   [this]() { editor->deleteDanglingTraces(); },
 		   QKeySequence(Qt::CTRL + Qt::Key_B));
 
+  tools->addAction("Cleanup &trace intersections",
+		   [this]() { editor->cleanupIntersections(); });
+  
   tools->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_L));
 

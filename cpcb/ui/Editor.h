@@ -91,6 +91,7 @@ public slots:
   void updateOnNet();
   void pretendOnNet(NodeID);
   void deleteDanglingTraces();
+  void cleanupIntersections();
   void setBoardSize(Dim w, Dim h);
 signals:
   void insertedPadOrHole();

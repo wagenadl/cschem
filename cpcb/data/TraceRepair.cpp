@@ -20,6 +20,50 @@ TraceRepair::~TraceRepair() {
   delete d;
 }
 
+bool TraceRepair::fixAllPinTouchings() {
+  bool got = false;
+  while (true) {
+    bool any = false;
+    for (int id: d->grp.keys()) {
+      Object const &obj(d->grp.object(id));
+      if (obj.isTrace()) {
+        if (fixPinTouchings(id)) {
+          any = true;
+          break;
+        }
+      }
+    }
+    if (any) {
+      got = true;
+    } else {
+      break;
+    }
+  }
+  return got;
+}
+
+bool TraceRepair::fixAllTraceIntersections(Dim grid) {
+  bool got = false;
+  while (true) {
+    bool any = false;
+    for (int id: d->grp.keys()) {
+      Object const &obj(d->grp.object(id));
+      if (obj.isTrace()) {
+        if (fixTraceIntersections(id, grid)) {
+          any = true;
+          break;
+        }
+      }
+    }
+    if (any) {
+      got = true;
+    } else {
+      break;
+    }
+  }
+  return got;
+}
+
 bool TraceRepair::fixTraceIntersections(int trid, Dim grid) {
   bool got = false;
   Object &obj(d->grp.object(trid));

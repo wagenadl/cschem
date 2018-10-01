@@ -1249,6 +1249,20 @@ void Editor::deleteDanglingTraces() {
   }
 }
 
+void Editor::cleanupIntersections() {
+  Group here = currentGroup();
+  TraceRepair tr(here);
+  bool tri = tr.fixAllTraceIntersections(pcbLayout().board().grid);
+  bool pni = tr.fixAllPinTouchings();
+  if (tri || pni) {
+    clearSelection();
+    UndoCreator uc(d, true);
+    d->currentGroup() = here;
+    d->updateOnWhat(true);
+    update();
+  }
+}
+
 void Editor::setBoardSize(Dim w, Dim h) {
   d->layout.board().width = w;
   d->layout.board().height = h;
