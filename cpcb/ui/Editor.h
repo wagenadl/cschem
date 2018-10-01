@@ -37,6 +37,7 @@ public:
   bool isAsSaved() const;
   double pixelsPerMil() const;
   class PlaneEditor *planeEditor() const;
+  Point userOrigin() const;
 public slots:
   void setAngleConstraint(bool);
   void setGrid(Dim);
@@ -94,6 +95,7 @@ public slots:
   void cleanupIntersections();
   void setBoardSize(Dim w, Dim h);
 signals:
+  void userOriginChanged(Point);
   void insertedPadOrHole();
   void boardChanged(Board const &);
   void hovering(Point);

@@ -100,6 +100,7 @@ private:
 };
 
 void PBData::fillXY(QSet<Point> const &points) {
+  qDebug() << "fillxy" << ori;
   if (points.isEmpty())
     return;
 
@@ -111,8 +112,8 @@ void PBData::fillXY(QSet<Point> const &points) {
     if (p.y<y0)
       y0 = p.y;
   }
-  x->setValue(x0 + ori.x);
-  y->setValue(y0 + ori.y);
+  x->setValue(x0 - ori.x);
+  y->setValue(y0 - ori.y);
 }
 
 void Propertiesbar::setUserOrigin(Point o) {
@@ -779,7 +780,7 @@ void PBData::setupUI() {
   y = makeDimSpinner(yc, Dim::fromInch(.050));
   QObject::connect(y, &DimSpinner::valueEdited,
 		   [this](Dim d) {
-		     d += ori.x;
+		     d += ori.y;
 		     editor->translate(Point(Dim(), d - y0));
 		     y0 = d; });
 

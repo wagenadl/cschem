@@ -432,6 +432,18 @@ NodeID EData::visibleNodeAt(Group const &grp, Point p, Dim mrg) const {
   return nid;
 }
 
+void EData::pressOrigin(Point p) {
+  Dim mrg = pressMargin();
+  NodeID node = visibleNodeAt(p);
+  Object const &obj(currentGroup().object(node));
+  if (obj.isPad()) {
+    userorigin = obj.asPad().p;
+    ed->userOriginChanged(userorigin);
+  } else if (obj.isHole()) {
+    userorigin = obj.asHole().p;
+    ed->userOriginChanged(userorigin);
+  }
+}
 
 int EData::visibleObjectAt(Point p, Dim mrg) const {
   Group const &here(currentGroup());
