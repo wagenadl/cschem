@@ -14,6 +14,7 @@ enum class Mode {
   PlaceArc,
   PlacePlane,
   PickupTrace,
+  SetIncOrigin,
 };
 
 #endif

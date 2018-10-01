@@ -21,7 +21,7 @@ DimSpinner::DimSpinner(QWidget *parent): QDoubleSpinBox(parent) {
   metric_ = false;
   hasvalue_ = true;
   suppress_signals = 0;
-  minv = Dim::fromInch(0.);
+  minv = Dim::fromInch(-100.);
   maxv = Dim::fromInch(100.);
   step = Dim::fromInch(.005);
   setInch();

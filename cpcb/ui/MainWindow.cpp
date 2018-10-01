@@ -545,6 +545,14 @@ void MWData::makeEditor() {
 
 void MWData::makeConnections() {
   // Editor to status bar and v.v.
+  QObject::connect(editor, &Editor::userOriginChanged,
+		   [this](Point o) {
+		     if (!modebar->isOriginIncremental())
+		       o = Point();
+		     statusbar->setUserOrigin(o);
+		     propbar->setUserOrigin(o);
+		     modebar->setMode(Mode::Edit);
+		   });
   QObject::connect(editor, &Editor::hovering,
 		   statusbar, &Statusbar::setCursorXY);
   QObject::connect(editor, &Editor::onObject,
@@ -579,6 +587,12 @@ void MWData::makeConnections() {
 		   editor, &Editor::setMode);
   QObject::connect(modebar, &Modebar::constraintChanged,
 		   editor, &Editor::setAngleConstraint);
+  QObject::connect(modebar, &Modebar::originChanged,
+		   [this](bool inc) {
+		     Point o = inc ? editor->userOrigin() : Point();
+		     statusbar->setUserOrigin(o);
+		     propbar->setUserOrigin(o);
+		   });		     
   
 
   // Editor to us
