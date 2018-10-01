@@ -176,6 +176,9 @@ void Editor::mousePressEvent(QMouseEvent *e) {
         Q_ASSERT(d->planeeditor);
         d->planeeditor->mousePress(p, e->button(), e->modifiers());
         break;
+      case Mode::SetIncOrigin:
+	d->pressOrigin(p);
+	break;
       default:
 	break;
       }
@@ -1267,4 +1270,8 @@ void Editor::setBoardSize(Dim w, Dim h) {
   d->layout.board().width = w;
   d->layout.board().height = h;
   update();
+}
+
+Point Editor::userOrigin() const {
+  return d->userorigin;
 }
