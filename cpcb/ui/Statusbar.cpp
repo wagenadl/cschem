@@ -117,6 +117,7 @@ void Statusbar::resetGridChoices() {
 }
 
 void Statusbar::setGrid(Dim g) {
+  board.grid = g;
   int idx = gridui->findData(QVariant(g.toString()));
   if (idx>=0) {
     gridui->setCurrentIndex(idx);
@@ -180,18 +181,24 @@ void Statusbar::setMissing(QStringList mis1) {
   }
 }
 
+void Statusbar::setUserOrigin(Point o) {
+  ori = o;
+  updateCursor();
+}
+
 void Statusbar::updateCursor() {
   if (p.x>=Dim() && p.y>=Dim() && p.x<=board.width && p.y<=board.height) {
+    Point p1 = p - ori;
     bool metric = board.isEffectivelyMetric();
     QString txt;
     if (metric) 
-      txt = QString("X:%1 Y:%2")
-	.arg(p.x.toInch(),5,'f',2, QChar(0x2007))
-	.arg(p.y.toInch(),5,'f',2, QChar(0x2007));
+      txt = QString("X:%1 mm Y:%2 mm")
+	.arg(p1.x.toInch(),5,'f',2, QChar(0x2007))
+	.arg(p1.y.toInch(),5,'f',2, QChar(0x2007));
     else
-      txt = QString("X:%1 Y:%2")
-	.arg(p.x.toInch(),0,'f',3)
-	.arg(p.y.toInch(),0,'f',3);
+      txt = QString("X:%1” Y:%2”")
+	.arg(p1.x.toInch(),0,'f',3)
+	.arg(p1.y.toInch(),0,'f',3);
     if (!obj.isEmpty())
       txt += " on " + obj;
     cursorui->setText(txt);

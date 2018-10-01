@@ -40,6 +40,7 @@ public slots:
   void hideNets();
   void showNets();
   void resetGridChoices();
+  void setUserOrigin(Point);
 private:
   void updateCursor();
 private:
@@ -53,6 +54,7 @@ private:
   bool noemit;
   Point p;
   QString obj;
+  Point ori;
 };
 
 #endif

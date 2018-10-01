@@ -18,6 +18,7 @@ public slots:
   void reflectBoard(class Board const &);
   void forwardAllProperties();
   void stepPinNumber();
+  void setUserOrigin(Point);
 private:
   class PBData *d;
 };
