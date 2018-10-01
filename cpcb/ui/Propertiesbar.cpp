@@ -76,6 +76,7 @@ public:
   bool metric;
   
   Dim x0, y0;
+  Point ori;
 public:
   void switchToMetric();
   void switchToInch();
@@ -110,8 +111,14 @@ void PBData::fillXY(QSet<Point> const &points) {
     if (p.y<y0)
       y0 = p.y;
   }
-  x->setValue(x0);
-  y->setValue(y0);
+  x->setValue(x0 + ori.x);
+  y->setValue(y0 + ori.y);
+}
+
+void Propertiesbar::setUserOrigin(Point o) {
+  d->ori = o;
+  d->x->setValue(d->x0 + o.x);
+  d->y->setValue(d->y0 + o.y);
 }
 
 void PBData::fillLinewidth(QSet<int> const &objects, Group const &here) {
@@ -764,6 +771,7 @@ void PBData::setupUI() {
   x = makeDimSpinner(xc, Dim::fromInch(.050));
   QObject::connect(x, &DimSpinner::valueEdited,
 		   [this](Dim d) {
+		     d += ori.x;
 		     editor->translate(Point(d - x0, Dim()));
 		     x0 = d; });
   yc = makeContainer(xyg);
@@ -771,6 +779,7 @@ void PBData::setupUI() {
   y = makeDimSpinner(yc, Dim::fromInch(.050));
   QObject::connect(y, &DimSpinner::valueEdited,
 		   [this](Dim d) {
+		     d += ori.x;
 		     editor->translate(Point(Dim(), d - y0));
 		     y0 = d; });
 
