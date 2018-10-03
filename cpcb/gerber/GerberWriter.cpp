@@ -493,12 +493,17 @@ static void writeTraces(GerberFile &out, Gerber::Apertures const &aps,
   }
 }
 
+constexpr bool ARC_USE_STRAIGHT = false;//true;
+
 static void writeArcs(GerberFile &out, Gerber::Apertures const &aps,
                         QMap<Dim, QList<Arc>> const &arcs) {
   constexpr double PI = 4*atan(1);
-  out << "G03*\n"; // clockwise
-  out << "G75*\n"; // multiquadrant
   out << "%LPD*%\n"; // positive
+  if (ARC_USE_STRAIGHT) {
+    out << "G01*\n"; // linear
+  } else {
+    out << "G75*\n"; // multiquadrant
+  }
   for (Dim lw: arcs.keys()) {
     out << aps.select(Gerber::Circ(lw));
     for (Arc const &arc: arcs[lw]) {
@@ -507,25 +512,40 @@ static void writeArcs(GerberFile &out, Gerber::Apertures const &aps,
       if (arc.angle<0) {
         // clockwise from 12 o'clock [before flip] apart from rot.
         astart = PI/180*(90*arc.rot + 90);
-        aend = PI/180*(90*arc.rot - arc.angle + 90);
+        aend = PI/180*(90*arc.rot + fabs(arc.angle) + 90);
       } else {
         // symmetric around 12 o'clock [before flip] apart from rotation
         astart = PI/180*(90*arc.rot - arc.angle/2 + 90);
         aend = PI/180*(90*arc.rot + arc.angle/2 + 90);
       }
       qDebug() << "astartend" << astart << aend;
-      out << Gerber::point(arc.center
-                           + Point(arc.radius*cos(astart),
-                                   arc.radius*sin(astart)))
-          << "D02*\n";
-      out << "I" << Gerber::coord(-arc.radius*cos(astart))
-          << "J" << Gerber::coord(-arc.radius*sin(astart))
-          << Gerber::point(arc.center
-                           + Point(arc.radius*cos(aend),
-                                   arc.radius*sin(aend)))
-          << "D01*\n";
+      if (ARC_USE_STRAIGHT) {
+	int N = 6 + int((aend-astart) * arc.radius.toMils()/30.0);
+	out << Gerber::point(arc.center
+			     + Point(arc.radius*cos(astart),
+				     arc.radius*sin(astart))) << "D02*\n";
+	for (int n=1; n<=N; n++) {
+	  double a = astart + n*(aend-astart)/N;
+	  out << Gerber::point(arc.center
+			       + Point(arc.radius*cos(a),
+				       arc.radius*sin(a))) << "D01*\n";
+	}
+      } else {
+	out << "G01" << Gerber::point(arc.center
+				      + Point(arc.radius*cos(astart),
+					      arc.radius*sin(astart)))
+	    << "D02*\n";
+	out << "G03"
+	    << Gerber::point(arc.center
+			     + Point(arc.radius*cos(aend),
+				     arc.radius*sin(aend)))
+	    << "I" << Gerber::coord(-arc.radius*cos(astart))
+	    << "J" << Gerber::coord(-arc.radius*sin(astart))
+	    << "D01*\n";
+      }
     }
   }
+  out << "G01*\n";
 }
 
 static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
