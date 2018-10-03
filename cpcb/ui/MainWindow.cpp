@@ -309,13 +309,15 @@ bool MWData::exportAsDialog() {
     return false;
   if (fn.endsWith(".zip"))
     fn=fn.left(fn.size()-4);
+  if (!fn.startsWith("/"))
+    fn = QDir::current().absoluteFilePath(fn);
   if (GerberWriter::write(editor->pcbLayout(), fn)) {
     QString zipfn = fn + ".zip";
     QStringList args;
-    args << "-r" << zipfn <<fn;
+    args << "-j" << "-r" << zipfn << fn;
     QDir::root().remove(zipfn);
     if (QProcess::execute("zip", args)==0) {
-      // rm the folder
+      QDir(fn).removeRecursively();
       return true;
     }
   }
