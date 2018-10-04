@@ -44,7 +44,7 @@ bool PartNumbering::initiallyShowName(QString symbol) {
 QString PartNumbering::nameToHtml(QString name) {
   if (isNameWellFormed(name))
     return "<i>" + prefix(name) + "</i>"
-      + "<sub>" + QString::number(number(name)) + csuffix(name) + "</sub>";
+      + "<sub>" + cnumber(name) + csuffix(name) + "</sub>";
   return name;
 }
 
@@ -74,28 +74,33 @@ QString PartNumbering::htmlToSvg(QString html) {
 }
  
 static QRegularExpression wfn("^([A-Za-z]+)((\\d+)(.(\\d+))?)?$");
+// e.g., "A1.2"
 
 bool PartNumbering::isNameWellFormed(QString name) {
   return wfn.match(name).hasMatch();
 }
 
 QString PartNumbering::prefix(QString name) {
-  return wfn.match(name).captured(1);
+  return wfn.match(name).captured(1); // the "A" part
+}
+
+QString PartNumbering::cnumber(QString name) {
+  return wfn.match(name).captured(3); // the "1" part, as string
 }
 
 int PartNumbering::number(QString name) {
-  return wfn.match(name).captured(3).toInt();
+  return wfn.match(name).captured(3).toInt(); // the "1" part
 }
 
 int PartNumbering::subNumber(QString name) {
-  return wfn.match(name).captured(5).toInt();
+  return wfn.match(name).captured(5).toInt(); // the "2" part
 }
 
 QString PartNumbering::cname(QString name) {
   auto m(wfn.match(name));
-  return m.captured(1) + m.captured(3);
+  return m.captured(1) + m.captured(3); // // the "A1" part
 }
 
-QString PartNumbering::csuffix(QString name) {
+QString PartNumbering::csuffix(QString name) { // the ".2" part
   return wfn.match(name).captured(4);
 }
