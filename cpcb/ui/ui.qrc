@@ -28,6 +28,7 @@
 <file>icons/Trace.svg</file>
 <file>icons/Up.svg</file>
 <file>icons/Width.svg</file>
+<file>icons/SlotLength.svg</file>
 <file>icons/Arc360a.svg</file>
 <file>icons/Arc300a.svg</file>
 <file>icons/Arc240a.svg</file>
@@ -37,5 +38,7 @@
 <file>icons/NoConstrain45.svg</file>
 <file>icons/AbsOrigin.svg</file>
 <file>icons/IncOrigin.svg</file>
+<file>icons/BoardOutline.svg</file>
+<file>icons/NPHole.svg</file>
 </qresource>
 </RCC>

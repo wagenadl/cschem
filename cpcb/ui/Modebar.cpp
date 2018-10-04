@@ -4,13 +4,16 @@
 #include <QDebug>
 
 Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
-  auto addAct = [this](Mode m, QString lbl, Qt::Key k) {
-    actions[m] = addAction(QIcon(":/icons/"+lbl), lbl,
+  auto addAct2 = [this](Mode m, QString ic, QString lbl, Qt::Key k) {
+    actions[m] = addAction(QIcon(":/icons/"+ic), lbl,
 			   [this, m]() { setMode(m); });
     actions[m]->setShortcut(QKeySequence(k));
     actions[m]->setCheckable(true);
     actions[m]->setToolTip(lbl + " (" + QKeySequence(k).toString() +")");
     return actions[m];
+  };
+  auto addAct = [this, addAct2](Mode m, QString lbl, Qt::Key k) {
+    return addAct2(m, lbl, lbl, k);
   };
   m = Mode::Invalid;
   addAct(Mode::Edit, "Edit", Qt::Key_F1);
@@ -20,8 +23,10 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   addAct(Mode::PlacePad, "Pad", Qt::Key_F4);
   addAct(Mode::PlaceText, "Text", Qt::Key_F5);
   addAct(Mode::PlaceArc, "Arc", Qt::Key_F6);
-  addAct(Mode::PlacePlane, "Plane", Qt::Key_F7);
-  addAct(Mode::PickupTrace, "Disconnect", Qt::Key_F8);
+  addAct2(Mode::PlacePlane, "Plane", "Filled planes", Qt::Key_F7);
+  addAct2(Mode::PickupTrace, "Disconnect", "Pickup trace", Qt::Key_F8);
+  addAct2(Mode::PlaceNPHole, "NPHole", "Nonplated hole", Qt::Key_F9);
+  addAct2(Mode::BoardOutline, "BoardOutline", "Board outline", Qt::Key_F10);
 
   addSeparator();
   a_origin = addAct(Mode::SetIncOrigin, "AbsOrigin", Qt::Key_F11);
