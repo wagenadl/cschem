@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>371</width>
-    <height>329</height>
+    <width>348</width>
+    <height>345</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,6 +17,18 @@
    <item>
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QFormLayout" name="formLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>6</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
         <property name="text">
@@ -37,12 +49,22 @@
       <item row="1" column="1">
        <widget class="DimSpinner" name="height"/>
       </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="round">
+        <property name="text">
+         <string>Round</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QToolButton" name="shrink">
         <property name="text">

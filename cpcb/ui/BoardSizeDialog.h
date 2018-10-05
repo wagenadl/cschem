@@ -6,6 +6,7 @@
 
 #include "data/Dim.h"
 #include "data/Rect.h"
+#include "data/Board.h"
 #include <QDialog>
 
 class BoardSizeDialog: public QDialog {
@@ -15,6 +16,7 @@ public:
   void setLayout(class Layout const &);
   Dim boardWidth() const;
   Dim boardHeight() const;
+  Board::Shape boardShape() const;
 private:
   class Ui_BoardSizeDialog *ui;
   Rect minrect;

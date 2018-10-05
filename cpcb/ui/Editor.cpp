@@ -1301,10 +1301,13 @@ void Editor::cleanupIntersections() {
   }
 }
 
-void Editor::setBoardSize(Dim w, Dim h) {
+void Editor::setBoardSize(Dim w, Dim h, Board::Shape shp) {
   d->layout.board().width = w;
   d->layout.board().height = h;
+  d->layout.board().shape = shp;
+  qDebug() << "setboardsize should create an undo step";
   update();
+  emit boardChanged(d->layout.board());
 }
 
 Point Editor::userOrigin() const {
