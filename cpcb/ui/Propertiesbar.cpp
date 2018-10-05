@@ -203,6 +203,15 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
 	  circle->setChecked(true);
 	got = true;
       }
+    } else if (obj.isNPHole()) {
+      Dim id1 = obj.asNPHole().d;
+      if (got) {
+        if (id1 != id->value())
+          id->setNoValue();
+      } else {
+        id->setValue(id1);
+        got = true;
+      }
     }
   }
   if (got) {
@@ -447,7 +456,7 @@ void PBData::hideAndShow() {
   rotatec->setVisible(false);
 
   switch (mode) {
-  case Mode::Invalid:
+  case Mode::Invalid: case Mode::SetIncOrigin:
     break;
   case Mode::Edit:
     hsEdit();
@@ -465,6 +474,13 @@ void PBData::hideAndShow() {
     texta->setEnabled(true);
     text->setEnabled(true);
     textl->setText("Pin");
+    break;
+  case Mode::PlaceNPHole:
+    dima->setEnabled(true);
+    idc->setEnabled(true);
+    odc->setEnabled(false);
+    squarec->setEnabled(false);
+    texta->setEnabled(false);
     break;
   case Mode::PlacePad:
     dima->setEnabled(true);
@@ -561,13 +577,24 @@ void PBData::hsEdit() {
     }
   }
 
-  // Show id, od, sq. if we have at least one hole
+  // Show id, od, sq., slot length if we have at least one hole
   for (int k: objects) {
     if (here.object(k).isHole()) {
       dima->setEnabled(true);
       idc->setEnabled(true);
       odc->setEnabled(true);
+      slotlengthc->setEnabled(true);
       squarec->setEnabled(true);
+      break;
+    }
+  }
+
+  // Show id, slot length if we have at least one nphole
+  for (int k: objects) {
+    if (here.object(k).isNPHole()) {
+      dima->setEnabled(true);
+      idc->setEnabled(true);
+      slotlengthc->setEnabled(true);
       break;
     }
   }
@@ -815,7 +842,7 @@ void PBData::setupUI() {
   QObject::connect(id, &DimSpinner::valueEdited,
 		   [this](Dim d) {
                      qDebug() << "EDITOR SETSLOTLENGTH";
-		     // editor->setSlotLength(d);
+		     editor->setSlotLength(d);
                    });
   
   odc = makeContainer(dimg);

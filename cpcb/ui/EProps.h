@@ -13,6 +13,7 @@ struct EProps {
   Dim linewidth;
   Layer layer;
   Dim od, id;
+  Dim slotlength;
   Dim w, h;
   bool square;
   QString text;

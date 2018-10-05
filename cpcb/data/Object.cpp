@@ -13,6 +13,7 @@ public:
   Trace *trace;
   Group *group;
   FilledPlane *plane;
+  NPHole *nphole;
 public:
   OData() {
     hole = 0;
@@ -22,11 +23,14 @@ public:
     trace = 0;
     group = 0;
     plane = 0;
+    nphole = 0;
     typ = Object::Type::Null;
   }
   OData(OData const &o): OData() {
     if (o.hole)
       hole = new Hole(*o.hole);
+    if (o.nphole)
+      nphole = new NPHole(*o.nphole);
     if (o.pad)
       pad = new Pad(*o.pad);
     if (o.arc)
@@ -46,6 +50,7 @@ public:
       return *this;
 
     delete hole;
+    delete nphole;
     delete pad;
     delete arc;
     delete text;
@@ -53,6 +58,7 @@ public:
     delete group;
     delete plane;
     hole = 0;
+    nphole = 0;
     pad = 0;
     arc = 0;
     text = 0;
@@ -62,6 +68,8 @@ public:
 
     if (o.hole)
       hole = new Hole(*o.hole);
+    if (o.nphole)
+      nphole = new NPHole(*o.nphole);
     if (o.pad)
       pad = new Pad(*o.pad);
     if (o.arc)
@@ -80,6 +88,7 @@ public:
   
   ~OData() {
     delete hole;
+    delete nphole;
     delete pad;
     delete arc;
     delete text;
@@ -92,6 +101,11 @@ public:
 Object::Object(Hole const &t): Object() {
   d->hole = new Hole(t);
   d->typ = Type::Hole;
+}
+
+Object::Object(NPHole const &t): Object() {
+  d->nphole = new NPHole(t);
+  d->typ = Type::NPHole;
 }
 
 Object::Object(FilledPlane const &t): Object() {
@@ -148,6 +162,10 @@ bool Object::isHole() const {
   return d->typ==Type::Hole;
 }
 
+bool Object::isNPHole() const {
+  return d->typ==Type::NPHole;
+}
+
 bool Object::isPad() const {
   return d->typ==Type::Pad;
 }
@@ -175,6 +193,11 @@ bool Object::isGroup() const {
 Hole const &Object::asHole() const {
   Q_ASSERT(isHole());
   return *d->hole;
+}
+
+NPHole const &Object::asNPHole() const {
+  Q_ASSERT(isNPHole());
+  return *d->nphole;
 }
 
 Pad const &Object::asPad() const {
@@ -211,6 +234,12 @@ Hole &Object::asHole() {
   d.detach();
   Q_ASSERT(isHole());
   return *d->hole;
+}
+
+NPHole &Object::asNPHole() {
+  d.detach();
+  Q_ASSERT(isNPHole());
+  return *d->nphole;
 }
 
 Pad &Object::asPad() {
@@ -254,6 +283,9 @@ QDebug operator<<(QDebug d, Object const &o) {
   case Object::Type::Hole:
     d << o.asHole();
     break;
+  case Object::Type::NPHole:
+    d << o.asNPHole();
+    break;
   case Object::Type::Arc:
     d << o.asArc();
     break;
@@ -284,6 +316,9 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Object const &o) {
   case Object::Type::Hole:
     s << o.asHole();
     break;
+  case Object::Type::NPHole:
+    s << o.asNPHole();
+    break;
   case Object::Type::Pad:
     s << o.asPad();
     break;
@@ -313,6 +348,10 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Object &o) {
   QStringRef name = s.name();
   if (name=="hole") {
     Hole t;
+    s >> t;
+    o = Object(t);
+  } else if (name=="nphole") {
+    NPHole t;
     s >> t;
     o = Object(t);
   } else if (name=="pad") {
@@ -373,6 +412,8 @@ Rect Object::boundingRect() const {
     return Rect();
   case Type::Hole:
     return asHole().boundingRect();
+  case Type::NPHole:
+    return asNPHole().boundingRect();
   case Type::Pad:
     return asPad().boundingRect();
   case Type::Arc:
@@ -421,6 +462,9 @@ void Object::translate(Point const &p) {
   case Type::Hole:
     d->hole->p += p;
     break;
+  case Type::NPHole:
+    d->nphole->p += p;
+    break;
   case Type::Pad:
     d->pad->p += p;
     break;
@@ -458,6 +502,9 @@ void Object::rotateCW(Point const &p0) {
   case Type::Hole:
     asHole().p.rotateCW(p0);
     break;
+  case Type::NPHole:
+    asNPHole().p.rotateCW(p0);
+    break;
   case Type::Pad:
     asPad().p.rotateCW(p0);
     asPad().rotate();
@@ -488,6 +535,9 @@ void Object::flipLeftRight(Dim x0) {
   case Type::Hole:
     asHole().p.flipLeftRight(x0);
     break;
+  case Type::NPHole:
+    asNPHole().p.flipLeftRight(x0);
+    break;
   case Type::Pad:
     asPad().p.flipLeftRight(x0);
     break;
@@ -515,6 +565,10 @@ void Object::flipUpDown(Dim y0) {
   case Type::Null:
     break;
   case Type::Hole:
+    asHole().p.flipUpDown(y0);
+    break;
+  case Type::NPHole:
+    asNPHole().p.flipUpDown(y0);
     break;
   case Type::Pad:
     asPad().p.flipUpDown(y0);
@@ -543,6 +597,8 @@ QSet<Point> Object::allPoints() const {
   switch (type()) {
   case Object::Type::Null:
     break;
+  case Object::Type::NPHole:
+    break;
   case Object::Type::Hole:
     pp << asHole().p;
     break;
@@ -570,6 +626,8 @@ QSet<Point> Object::allPoints(Layer lay) const {
   QSet<Point> pp;
   switch (type()) {
   case Object::Type::Null:
+    break;
+  case Object::Type::NPHole:
     break;
   case Object::Type::Hole:
     if (lay==Layer::Top || lay==Layer::Bottom)
@@ -635,4 +693,3 @@ QSet<Point> Object::pinPoints(Layer lay) const {
   }
   return pp;
 }
-
