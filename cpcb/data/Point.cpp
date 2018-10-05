@@ -25,6 +25,26 @@ Point Point::flippedUpDown(Dim y0) const {
   return Point(x, 2*y0 - y);
 }
 
+Point Point::rotated(int deg, Point const &p0) const {
+  Point p = *this;
+  p.rotate(deg, p0);
+  return p;
+}
+
+Point &Point::rotate(int deg, Point const &p0) {
+  constexpr double PI = 4*atan(1);
+  double phi = deg*PI/180;
+  double cs = cos(phi);
+  double sn = sin(phi);
+  x -= p0.x;
+  y -= p0.y;
+  Dim x1 = x*cs - y*sn;
+  Dim y1 = x*sn + y*cs;
+  x = x1 + p0.x;
+  y = y1 + p0.y;
+  return *this;
+}
+
 Point Point::rotatedCW(Point const &p0) const {
   Point p = *this - p0;
   Point q(-p.y, p.x);

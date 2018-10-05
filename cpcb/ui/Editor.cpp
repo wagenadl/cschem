@@ -160,6 +160,9 @@ void Editor::mousePressEvent(QMouseEvent *e) {
       case Mode::PlaceHole:
 	d->pressHole(p);
 	break;
+      case Mode::PlaceNPHole:
+	d->pressNPHole(p);
+	break;
       case Mode::PlaceText:
 	d->pressText(p);
 	break;
@@ -548,9 +551,21 @@ void Editor::setArcAngle(int angle) {
     Object &obj(here.object(id));
     if (obj.isArc()) {
       uc.realize();
-      obj.asArc().angle = angle;
+      Arc &arc(obj.asArc());
+      int a0 = (arc.rota + arc.angle/2) / 90.0 + .49;
+      qDebug() << arc.rota << arc.angle << a0 << angle;
+      if (angle<0) {
+        arc.angle = -angle;
+        arc.rota = FreeRotation(a0*90);
+      } else {
+        arc.angle = angle;
+        arc.rota = FreeRotation(a0*90 - angle/2);
+      }
+      qDebug() << " to " << arc.rota << arc.angle << a0*90 - angle/2
+               << FreeRotation(210);
     }
   }
+  d->emitSelectionStatus();
 }
 
 void Editor::setLineWidth(Dim l) {
@@ -617,6 +632,9 @@ void Editor::setID(Dim x) {
       obj.asHole().id = x;
       if (obj.asHole().od < x + Dim::fromInch(.015))
 	obj.asHole().od = x + Dim::fromInch(.015);
+    } else if (obj.isNPHole()) {
+      uc.realize();
+      obj.asNPHole().d = x;
     } else if (obj.isArc()) {
       uc.realize();
       obj.asArc().radius = x/2;
@@ -624,6 +642,24 @@ void Editor::setID(Dim x) {
   }
 }
 
+void Editor::setSlotLength(Dim x) {
+  d->props.slotlength = x;
+  UndoCreator uc(d);
+
+  Group &here(d->currentGroup());
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Hole) {
+      uc.realize();
+      obj.asHole().slotlength = x;
+    } else if (obj.type()==Object::Type::NPHole) {
+      uc.realize();
+      obj.asNPHole().slotlength = x;
+    }
+  }
+}
+  
+  
 void Editor::setOD(Dim x) {
   if (x < Dim::fromInch(.02))
     x = Dim::fromInch(.02);
@@ -731,11 +767,11 @@ void Editor::setRefText(QString t) {
 }
 
 void Editor::setRotation(int rot) {
-  d->props.orient.rot = rot;
+  d->props.rota = FreeRotation(rot);
 }
 
 void Editor::setFlipped(bool f) {
-  d->props.orient.flip = f;
+  d->props.flip = f;
 }
 
 void Editor::setFontSize(Dim fs) {

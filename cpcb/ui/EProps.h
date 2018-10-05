@@ -3,7 +3,7 @@
 #ifndef EPROPS_H
 
 #define EPROPS_H
-#include "data/Orient.h"
+
 #include "data/Dim.h"
 #include "data/Arc.h"
 #include "data/Layer.h"
@@ -13,12 +13,15 @@ struct EProps {
   Dim linewidth;
   Layer layer;
   Dim od, id;
+  Dim slotlength;
   Dim w, h;
   bool square;
   QString text;
-  Orient orient;
+  FreeRotation rota;
+  bool flip;
   Dim fs;
-  int arcangle;
+  int arcangle; // here, we still allow -ve to mean starting at rota and
+  // +ve to mean centered around rota
   bool angleconstraint;
   EProps() {
     linewidth = Dim::fromMils(12);
@@ -30,6 +33,7 @@ struct EProps {
     square = false;
     text = "";
     fs = Dim::fromMils(70);
+    flip = false;
     arcangle = 90;
     angleconstraint = false;
   }

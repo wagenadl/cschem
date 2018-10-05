@@ -14,6 +14,7 @@ public:
   Point p;
   Dim id;
   Dim od;
+  Dim slotlength;
   bool square;
   QString ref;
   Layer fpcon;

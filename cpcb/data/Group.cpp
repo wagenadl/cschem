@@ -65,8 +65,6 @@ int Group::ensureRefText(int gid) {
   Text reftext;
   reftext.layer = Layer::Silk;
   reftext.fontsize = Dim::fromInch(.05);
-  reftext.orient.rot = 0;
-  reftext.orient.flip = false;
   reftext.text = g.ref;
   Rect bb = g.boundingRect();
   reftext.p = Point(bb.left, bb.top - Dim::fromInch(0.05));
@@ -83,8 +81,6 @@ int Group::formSubgroup(QSet<int> const &ids) {
   Text reftext;
   reftext.layer = Layer::Silk;
   reftext.fontsize = Dim::fromInch(.05);
-  reftext.orient.rot = 0;
-  reftext.orient.flip = false;
   reftext.text = "X?";
   auto reftextmatch = [this](QString txt) {
     return txt == ref || QRegExp("[A-Z]([0-9]+|\\?)").exactMatch(txt);

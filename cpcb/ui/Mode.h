@@ -15,6 +15,8 @@ enum class Mode {
   PlacePlane,
   PickupTrace,
   SetIncOrigin,
+  PlaceNPHole,
+  BoardOutline,
 };
 
 #endif

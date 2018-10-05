@@ -26,7 +26,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.0489707"
-     inkscape:cx="-15.311872"
+     inkscape:cx="-17.085181"
      inkscape:cy="32"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -81,13 +81,15 @@
        x="7.9375"
        y="288.00415" />
     <g
-       aria-label="I"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.62176037px;line-height:125%;font-family:Serif;-inkscape-font-specification:Serif;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#fa0000;fill-opacity:1;stroke:none;stroke-width:0.26458335px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="text836-3">
+       aria-label="0"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.05555534px;line-height:125%;font-family:Lato;-inkscape-font-specification:'Lato Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458335px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="text3173"
+       transform="translate(1.0583333,0.52916667)">
       <path
-         d="m 14.278507,295.20131 h 1.449284 v 0.80855 h -4.447014 v -0.80855 h 1.449284 v -9.7636 h -1.449284 v -0.81618 h 4.447014 v 0.81618 h -1.449284 z"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.62176037px;font-family:Serif;-inkscape-font-specification:Serif;fill:#fa0000;fill-opacity:1;stroke-width:0.26458335px"
-         id="path5884" />
+         d="m 14.197918,292.92781 q 0,0.66675 -0.144639,1.16064 -0.141111,0.49036 -0.395111,0.81139 -0.250473,0.32103 -0.596195,0.47978 -0.342194,0.15522 -0.740833,0.15522 -0.398639,0 -0.740833,-0.15522 -0.338667,-0.15875 -0.589139,-0.47978 -0.250472,-0.32103 -0.391584,-0.81139 -0.141111,-0.49389 -0.141111,-1.16064 0,-0.67028 0.141111,-1.16064 0.141112,-0.49036 0.391584,-0.81139 0.250472,-0.32103 0.589139,-0.47625 0.342194,-0.15875 0.740833,-0.15875 0.398639,0 0.740833,0.15875 0.345722,0.15522 0.596195,0.47625 0.254,0.32103 0.395111,0.81139 0.144639,0.49036 0.144639,1.16064 z m -0.899584,0 q 0,-0.55386 -0.08114,-0.91722 -0.08114,-0.36336 -0.218722,-0.57856 -0.134055,-0.21519 -0.310444,-0.29986 -0.176389,-0.0882 -0.366889,-0.0882 -0.186972,0 -0.363361,0.0882 -0.172861,0.0847 -0.306917,0.29986 -0.134055,0.2152 -0.215194,0.57856 -0.07761,0.36336 -0.07761,0.91722 0,0.55386 0.07761,0.91722 0.08114,0.36336 0.215194,0.57856 0.134056,0.21519 0.306917,0.30339 0.176389,0.0847 0.363361,0.0847 0.1905,0 0.366889,-0.0847 0.176389,-0.0882 0.310444,-0.30339 0.137584,-0.2152 0.218722,-0.57856 0.08114,-0.36336 0.08114,-0.91722 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Lato;-inkscape-font-specification:'Lato Bold';stroke-width:0.26458335px"
+         id="path3185"
+         inkscape:connector-curvature="0" />
     </g>
   </g>
 </svg>
