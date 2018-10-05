@@ -194,6 +194,16 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   }
 }
 
+void ORenderer::drawNPHole(NPHole const &h, bool selected, bool /*innet*/) {
+  if (layer!=Layer::Invalid)
+    return;
+  p->setBrush(selected ? QColor(255, 255, 255) : QColor(180, 180, 180));
+  Point p1 = origin + h.p;
+  if (selected && toplevel) 
+    p1 += movingdelta;
+  p->drawEllipse(p1.toMils(), h.d.toMils()/2, h.d.toMils()/2);
+}
+
 void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   if (subl == Sublayer::Plane)
     return;
@@ -332,6 +342,9 @@ void ORenderer::drawObject(Object const &o, bool selected,
    break;
   case Object::Type::Hole:
     drawHole(o.asHole(), selected, !subnet.isEmpty());
+    break;
+  case Object::Type::NPHole:
+    drawNPHole(o.asNPHole(), selected, !subnet.isEmpty());
     break;
   case Object::Type::Pad: 
     drawPad(o.asPad(), selected, !subnet.isEmpty());

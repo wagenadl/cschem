@@ -160,6 +160,9 @@ void Editor::mousePressEvent(QMouseEvent *e) {
       case Mode::PlaceHole:
 	d->pressHole(p);
 	break;
+      case Mode::PlaceNPHole:
+	d->pressNPHole(p);
+	break;
       case Mode::PlaceText:
 	d->pressText(p);
 	break;
@@ -617,6 +620,9 @@ void Editor::setID(Dim x) {
       obj.asHole().id = x;
       if (obj.asHole().od < x + Dim::fromInch(.015))
 	obj.asHole().od = x + Dim::fromInch(.015);
+    } else if (obj.isNPHole()) {
+      uc.realize();
+      obj.asNPHole().d = x;
     } else if (obj.isArc()) {
       uc.realize();
       obj.asArc().radius = x/2;
@@ -624,6 +630,24 @@ void Editor::setID(Dim x) {
   }
 }
 
+void Editor::setSlotLength(Dim x) {
+  d->props.slotlength = x;
+  UndoCreator uc(d);
+
+  Group &here(d->currentGroup());
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Hole) {
+      uc.realize();
+      obj.asHole().slotlength = x;
+    } else if (obj.type()==Object::Type::NPHole) {
+      uc.realize();
+      obj.asNPHole().slotlength = x;
+    }
+  }
+}
+  
+  
 void Editor::setOD(Dim x) {
   if (x < Dim::fromInch(.02))
     x = Dim::fromInch(.02);
