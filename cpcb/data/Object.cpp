@@ -500,18 +500,16 @@ void Object::rotateCW(Point const &p0) {
   case Type::Null:
     break;
   case Type::Hole:
-    asHole().p.rotateCW(p0);
+    asHole().rotateCW(p0);
     break;
   case Type::NPHole:
-    asNPHole().p.rotateCW(p0);
+    asNPHole().rotateCW(p0);
     break;
   case Type::Pad:
-    asPad().p.rotateCW(p0);
-    asPad().rotate();
+    asPad().rotateCW(p0);
     break;
   case Type::Arc:
-    asArc().center.rotateCW(p0);
-    asArc().rotateCW();
+    asArc().rotateCW(p0);
     break;
   case Type::Text:
     asText().rotateCW(p0);
@@ -533,17 +531,16 @@ void Object::flipLeftRight(Dim x0) {
   case Type::Null:
     break;
   case Type::Hole:
-    asHole().p.flipLeftRight(x0);
+    asHole().flipLeftRight(x0);
     break;
   case Type::NPHole:
-    asNPHole().p.flipLeftRight(x0);
+    asNPHole().flipLeftRight(x0);
     break;
   case Type::Pad:
-    asPad().p.flipLeftRight(x0);
+    asPad().flipLeftRight(x0);
     break;
   case Type::Arc:
-    asArc().center.flipLeftRight(x0);
-    asArc().flipLeftRight();
+    asArc().flipLeftRight(x0);
     break;
   case Type::Text:
     asText().flipLeftRight(x0);
@@ -565,17 +562,16 @@ void Object::flipUpDown(Dim y0) {
   case Type::Null:
     break;
   case Type::Hole:
-    asHole().p.flipUpDown(y0);
+    asHole().flipUpDown(y0);
     break;
   case Type::NPHole:
-    asNPHole().p.flipUpDown(y0);
+    asNPHole().flipUpDown(y0);
     break;
   case Type::Pad:
-    asPad().p.flipUpDown(y0);
+    asPad().flipUpDown(y0);
     break;
   case Type::Arc:
-    asArc().center.flipUpDown(y0);
-    asArc().flipUpDown();
+    asArc().flipUpDown(y0);
     break;
   case Type::Text:
     asText().flipUpDown(y0);

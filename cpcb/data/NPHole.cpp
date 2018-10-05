@@ -50,3 +50,17 @@ QDebug operator<<(QDebug d, NPHole const &t) {
   return d;
 }
 
+void NPHole::rotateCW(Point const &p0) {
+  rota += 90;
+  p.rotateCW(p0);
+}
+
+void NPHole::flipLeftRight(Dim const &x0) {
+  rota.flipLeftRight();
+  p.flipLeftRight(x0);
+}
+
+void NPHole::flipUpDown(Dim const &y0) {
+  rota.flipUpDown();
+  p.flipUpDown(y0);
+}

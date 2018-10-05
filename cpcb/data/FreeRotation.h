@@ -14,6 +14,8 @@ public:
   FreeRotation operator-() const;
   double cos() const;
   double sin() const;
+  void flipLeftRight();
+  void flipUpDown();
 private:
   void normalize();
   int r;

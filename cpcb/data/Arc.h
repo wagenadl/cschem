@@ -34,9 +34,12 @@ public:
 public:
   Arc();
   void rotateFreely(int);
-  void rotateCW();
-  void rotateCCW();
+  void rotateCW(); // around center
+  void rotateCCW(); // around center
+  void rotateCW(Point const &p0);
+  void rotateCCW(Point const &p0);
   void flipLeftRight();
+  void flipLeftRight(Dim x);
   void flipUpDown(); // around our center
   void flipUpDown(Dim y); // around y
   void setLayer(Layer);

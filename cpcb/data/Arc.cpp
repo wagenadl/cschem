@@ -100,11 +100,26 @@ void Arc::flipLeftRight() {
   rota = -rota;
 }
 
+void Arc::flipLeftRight(Dim x) {
+  center.flipLeftRight(x);
+  flipLeftRight();
+}
+
 void Arc::rotateCW() {
   rota += 90;
 }
 
+void Arc::rotateCW(Point const &p0) {
+  center.rotateCW(p0);
+  rota += 90;
+}
+
 void Arc::rotateCCW() {
+  rota -= 90;
+}
+
+void Arc::rotateCCW(Point const &p0) {
+  center.rotateCCW(p0);
   rota -= 90;
 }
 

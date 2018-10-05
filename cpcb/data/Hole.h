@@ -27,6 +27,9 @@ public:
   Rect boundingRect() const;
   bool touches(class Trace const &t) const;
   bool touches(class FilledPlane const &fp) const;
+  void rotateCW(Point const &p0);
+  void flipLeftRight(Dim const &x0);
+  void flipUpDown(Dim const &y0);
 };
 
 QDebug operator<<(QDebug, Hole const &);
