@@ -79,6 +79,7 @@ public:
   
   Dim x0, y0;
   Point ori;
+  QMap<QWidget *, QSet<QToolButton *>> exclusiveGroups;
 public:
   void switchToMetric();
   void switchToInch();
@@ -378,12 +379,11 @@ void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
       break;
     }
   }
-  if (l==Layer::Invalid)
-    return;
   silk->setChecked(l==Layer::Silk);
   top->setChecked(l==Layer::Top);
   bottom->setChecked(l==Layer::Bottom);
-  editor->properties().layer = l;
+  if (l!=Layer::Invalid)
+    editor->properties().layer = l;
 }
 
 void PBData::fillFontSize(QSet<int> const &objects, Group const &here) {
@@ -696,20 +696,6 @@ void PBData::setupUI() {
     return container;
   };
 
-  //auto makeContainerGrid = [](QWidget *group, QGridLayout **layp) {
-  //  Q_ASSERT(group);
-  //  Q_ASSERT(group->layout());
-  //  QWidget *container = new QWidget(group);
-  //  auto *lay = new QGridLayout;
-  //  lay->setSpacing(4);
-  //  lay->setContentsMargins(0, 0, 0, 0);
-  //  container->setLayout(lay);
-  //  group->layout()->addWidget(container);
-  //  if (layp)
-  //    *layp = lay;
-  //  return container;
-  //};
-  
   auto makeDimSpinner = [](QWidget *container,
 			   Dim step=Dim::fromInch(.005)) {
     Q_ASSERT(container);
@@ -728,55 +714,65 @@ void PBData::setupUI() {
     return s;
   };
 
-  auto makeLabel = [](QWidget *container, QString txt) {
+  auto makeLabel = [](QWidget *container, QString txt, QString tip="") {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QLabel *s = new QLabel(txt);
-    //    s->setToolTip(txt);
+    if (!tip.isEmpty())
+      s->setToolTip(tip);
     container->layout()->addWidget(s);
     return s;
   };
 
-  auto makeIcon = [](QWidget *container, QString icon) {
+  auto makeIcon = [](QWidget *container, QString icon, QString tip="") {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QLabel *s = new QLabel;
     s->setPixmap(QIcon(":icons/" + icon + ".svg").pixmap(32));
-    s->setToolTip(icon);
+    s->setToolTip(tip.isEmpty() ? icon : tip);
     container->layout()->addWidget(s);
     return s;
   };
 
-  /*
-    auto makeRadio = [](QWidget *container, QString text) {
-    Q_ASSERT(container);
-    Q_ASSERT(container->layout());
-    QRadioButton *s = new QRadioButton(text);
-    container->layout()->addWidget(s);
-    return s;
-    };
-  */
-
-  auto makeTextTool = [](QWidget *container, QString text) {
+  auto makeTextTool = [](QWidget *container, QString text, QString tip="") {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QToolButton *s = new QToolButton;
     s->setText(text);
     s->setCheckable(true);
+    if (!tip.isEmpty())
+      s->setToolTip(tip);
     container->layout()->addWidget(s);
     return s;
   };
 
-  auto makeIconTool = [](QWidget *container, QString icon,
-			 bool chkb=false, bool ae=false, QString tip="",
-			 QKeySequence seq=QKeySequence()) {
+  auto makeIconTool = [this](QWidget *container, QString icon,
+			     bool chkb=false, bool ae=false, QString tip="",
+			     QKeySequence seq=QKeySequence()) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QToolButton *s = new QToolButton;
     QAction *a = new QAction(QIcon(":icons/" + icon + ".svg"), icon);
     s->setDefaultAction(a);
     a->setCheckable(chkb);
-    s->setAutoExclusive(ae);
+    if (ae) {
+      qDebug() << "ae" << s << exclusiveGroups[container].size();
+      for (QToolButton *oth: exclusiveGroups[container]) {
+	QObject::connect(oth, &QToolButton::clicked,
+			 [s, oth]() {
+			   qDebug() << "click1" << s << oth;
+			   s->setChecked(false);
+			   oth->setChecked(true);
+			 });
+	QObject::connect(s,  &QToolButton::clicked,
+			 [s, oth]() {
+			   qDebug() << "click2" << s << oth;
+			   s->setChecked(true);
+			   oth->setChecked(false);
+			 });
+      }
+      exclusiveGroups[container].insert(s);
+    }
     container->layout()->addWidget(s);
     if (tip.isEmpty())
       tip = icon;
@@ -785,32 +781,10 @@ void PBData::setupUI() {
     a->setToolTip(tip);
     return a;
   };
-
-  //auto makeIconToolGrid = [](QGridLayout *container, QString icon, int r, int c,
-  //			     bool chkb=true, bool ae=true) {
-  //  Q_ASSERT(container);
-  //  QToolButton *s = new QToolButton;
-  //  QAction *a = new QAction(QIcon(":icons/" + icon + ".svg"), icon);
-  //  s->setDefaultAction(a);
-  //  a->setCheckable(chkb);
-  //  s->setAutoExclusive(ae);
-  //  container->addWidget(s, r, c);
-  //  return a;
-  //};
-  
-  /*
-    auto makeCheckBox = [](QWidget *container, QString text) {
-    Q_ASSERT(container);
-    Q_ASSERT(container->layout());
-    QCheckBox *s = new QCheckBox(text);
-    container->layout()->addWidget(s);
-    return s;
-    };
-  */
     
   xyg = makeGroup(&xya);
   xc = makeContainer(xyg);
-  makeLabel(xc, "X");
+  makeLabel(xc, "X", "Distance from left");
   x = makeDimSpinner(xc, Dim::fromInch(.050));
   QObject::connect(x, &DimSpinner::valueEdited,
 		   [this](Dim d) {
@@ -818,7 +792,7 @@ void PBData::setupUI() {
 		     editor->translate(Point(d - x0, Dim()));
 		     x0 = d; });
   yc = makeContainer(xyg);
-  makeLabel(yc, "Y");
+  makeLabel(yc, "Y", "Distance from top");
   y = makeDimSpinner(yc, Dim::fromInch(.050));
   QObject::connect(y, &DimSpinner::valueEdited,
 		   [this](Dim d) {
@@ -830,14 +804,14 @@ void PBData::setupUI() {
   dimg = makeGroup(&dima);
 
   linewidthc = makeContainer(dimg);
-  makeIcon(linewidthc, "Width")->setToolTip("Line width");
+  makeIcon(linewidthc, "Width", "Line width");
   linewidth = makeDimSpinner(linewidthc);
   linewidth->setValue(Dim::fromInch(.010));
   QObject::connect(linewidth, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setLineWidth(d); });
 
   idc = makeContainer(dimg);
-  makeLabel(idc, "⌀")->setToolTip("Hole diameter");
+  makeLabel(idc, "⌀", "Hole diameter");
   id = makeDimSpinner(idc);
   id->setMinimumValue(Dim::fromInch(0.005));
   id->setValue(Dim::fromInch(.040));
@@ -849,7 +823,7 @@ void PBData::setupUI() {
 		     editor->setID(d); });
 
   slotlengthc = makeContainer(dimg);
-  makeIcon(slotlengthc, "SlotLength")->setToolTip("Slot length");
+  makeIcon(slotlengthc, "SlotLength", "Slot length");
   slotlength = makeDimSpinner(slotlengthc);
   slotlength->setMinimumValue(Dim::fromInch(0.00));
   QObject::connect(slotlength, &DimSpinner::valueEdited,
@@ -858,7 +832,7 @@ void PBData::setupUI() {
                    });
   
   odc = makeContainer(dimg);
-  makeLabel(odc, "OD")->setToolTip("Pad diameter");
+  makeLabel(odc, "OD", "Pad diameter");
   od = makeDimSpinner(odc);
   od->setMinimumValue(Dim::fromInch(0.020));
   od->setValue(Dim::fromInch(.065));
@@ -871,53 +845,48 @@ void PBData::setupUI() {
 		   });
 
   wc = makeContainer(dimg);
-  makeLabel(wc, "W");
+  makeLabel(wc, "W", "Pad width");
   w = makeDimSpinner(wc);
   w->setValue(Dim::fromInch(.020));
   w->setMinimumValue(Dim::fromInch(0.005));
 
   hc = makeContainer(dimg);
-  makeLabel(hc, "H");
+  makeLabel(hc, "H", "Pad height");
   h = makeDimSpinner(hc);
   h->setValue(Dim::fromInch(.040));
   h->setMinimumValue(Dim::fromInch(0.005));
 
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
-  circle = makeTextTool(squarec, "○");
-  circle->setToolTip("Round");
+  circle = makeTextTool(squarec, "○", "Round");
   circle->setChecked(true);
-  square = makeTextTool(squarec, "□");
-  square->setToolTip("Square");
+  square = makeTextTool(squarec, "□", "Square");
 
   QObject::connect(square, &QToolButton::clicked,
-		   [this](bool b) {
-		     if (b) {
-		       circle->setChecked(false);
-		       editor->setSquare(true);
-		     }
+		   [this]() {
+		     square->setChecked(true);
+		     circle->setChecked(false);
+		     editor->setSquare(true);
 		   });
   QObject::connect(circle, &QToolButton::clicked,
-		   [this](bool b) {
-		     if (b) {
-		       square->setChecked(false);
-		       editor->setSquare(false);
-		     }
+		   [this]() {
+		     circle->setChecked(true);
+		     square->setChecked(false);
+		     editor->setSquare(false);
 		   });
 
   textg = makeGroup(&texta);
 
   auto *c5 = makeContainer(textg);
-  textl = makeLabel(c5, "Text");
+  textl = makeLabel(c5, "Text", "Text or object reference");
   text = makeEdit(c5);
   QObject::connect(text, &QLineEdit::textEdited,
 		   [this](QString txt) { editor->setRefText(txt); });
 
   auto *c1 = makeContainer(textg);
-  makeLabel(c1, "Fs")->setToolTip("Font size");
+  makeLabel(c1, "Fs", "Font size");
   fs = makeDimSpinner(c1);
   fs->setValue(Dim::fromInch(.050));
-  fs->setToolTip("Font size");
   QObject::connect(fs, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setFontSize(d); });
 
@@ -980,20 +949,16 @@ void PBData::setupUI() {
 		     editor->setFlipped(b);
 		   });
 
-  ccw = makeIconTool(rotatec, "CCW");
-  ccw->setToolTip("Rotate left");
+  ccw = makeIconTool(rotatec, "CCW", false, false, "Rotate left");
   QObject::connect(ccw, &QAction::triggered,
 		   [this]() { editor->rotateCCW(); });
-  cw = makeIconTool(rotatec, "CW");
-  cw->setToolTip("Rotate right");
+  cw = makeIconTool(rotatec, "CW", false, false, "Rotate right");
   QObject::connect(cw, &QAction::triggered,
 		   [this]() { editor->rotateCW(); });
-  fliph = makeIconTool(rotatec, "FlipH");
-  fliph->setToolTip("Flip left to right");
+  fliph = makeIconTool(rotatec, "FlipH", false, false, "Flip left to right");
   QObject::connect(fliph, &QAction::triggered,
 		   [this]() { editor->flipH(); });
-  flipv = makeIconTool(rotatec, "FlipV");
-  flipv->setToolTip("Flip top to bottom");
+  flipv = makeIconTool(rotatec, "FlipV", false, false, "Flip top to bottom");
   QObject::connect(flipv, &QAction::triggered,
 		   [this]() { editor->flipV(); });
 
@@ -1004,30 +969,30 @@ void PBData::setupUI() {
 
   silk = makeIconTool(lc, "Silk", true, false, "", QKeySequence(Qt::Key_1));
   QObject::connect(silk, &QAction::triggered,
-		   [this](bool b) {
-		     if (b) {
-		       top->setChecked(false);
-		       bottom->setChecked(false);
-		       editor->setLayer(Layer::Silk);
-		     }});
+		   [this]() {
+		     silk->setChecked(true);
+		     top->setChecked(false);
+		     bottom->setChecked(false);
+		     editor->setLayer(Layer::Silk);
+		     });
 
   top = makeIconTool(lc, "Top", true, false, "", QKeySequence(Qt::Key_2));
   QObject::connect(top, &QAction::triggered,
-		   [this](bool b) {
-		     if (b) {
-		       silk->setChecked(false);
-		       bottom->setChecked(false);
-		       editor->setLayer(Layer::Top);
-		     }});
+		   [this]() {
+		     silk->setChecked(false);
+		     top->setChecked(true);
+		     bottom->setChecked(false);
+		     editor->setLayer(Layer::Top);
+		     });
 
   bottom = makeIconTool(lc, "Bottom", true, false, "", QKeySequence(Qt::Key_3));
   QObject::connect(bottom, &QAction::triggered,
-		   [this](bool b) {
-		     if (b) {
-		       silk->setChecked(false);
-		       top->setChecked(false);
-		       editor->setLayer(Layer::Bottom);
-		     }});
+		   [this]() {
+		     bottom->setChecked(true);
+		     silk->setChecked(false);
+		     top->setChecked(false);
+		     editor->setLayer(Layer::Bottom);
+		   });
   top->setChecked(true);
 }  
 
@@ -1076,6 +1041,7 @@ void Propertiesbar::reflectMode(Mode m) {
 }
 
 void Propertiesbar::reflectSelection() {
+  qDebug() << "reflectselection";
   d->getPropertiesFromSelection();
   d->hideAndShow();
 }
