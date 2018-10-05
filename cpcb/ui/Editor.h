@@ -94,7 +94,7 @@ public slots:
   void pretendOnNet(NodeID);
   void deleteDanglingTraces();
   void cleanupIntersections();
-  void setBoardSize(Dim w, Dim h);
+  void setBoardSize(Dim w, Dim h, Board::Shape shp=Board::Shape::Rect);
 signals:
   void userOriginChanged(Point);
   void insertedPadOrHole();
