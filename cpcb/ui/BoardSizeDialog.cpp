@@ -24,6 +24,13 @@ void BoardSizeDialog::setLayout(class Layout const &lay) {
   minrect = lay.root().boundingRect();
   ui->width->setValue(lay.board().width);
   ui->height->setValue(lay.board().height);
+  ui->round->setChecked(lay.board().shape==Board::Shape::Round);
+}
+
+Board::Shape BoardSizeDialog::boardShape() const {
+  return ui->round->isChecked()
+    ? Board::Shape::Round
+    : Board::Shape::Rect;
 }
 
 Dim BoardSizeDialog::boardWidth() const {
