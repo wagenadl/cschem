@@ -26,11 +26,11 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="15.09375"
-     inkscape:cx="32"
+     inkscape:cx="15.138716"
      inkscape:cy="32"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     showgrid="true"
+     showgrid="false"
      units="px"
      inkscape:window-width="2234"
      inkscape:window-height="1192"
@@ -49,7 +49,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -59,14 +59,25 @@
      id="layer1"
      transform="translate(0,-280.06665)">
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.26458335px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.79375001;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="M 1.3229167,283.24165 H 15.875 l 0,10.58333 H 1.3229167 Z"
        id="path3202"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.79374999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 13.985434,288.05084 v 3.84789 h -3.848492"
+       id="path3328"
+       inkscape:connector-curvature="0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2"
+     sodipodi:insensitive="true">
     <g
        id="g3324"
-       transform="translate(-7.3437506e-8,-0.52916995)">
+       transform="translate(-7.3437507e-8,-280.59581)">
       <circle
          r="0.47493532"
          cy="286.36572"
@@ -124,7 +135,7 @@
     </g>
     <g
        id="g3313"
-       transform="rotate(-90,10.451042,286.28436)">
+       transform="rotate(-90,-129.58228,146.25103)">
       <g
          transform="rotate(90,10.689361,287.31643)"
          id="g3305">
@@ -152,15 +163,5 @@
          id="rect3307"
          style="opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#d5cc00;stroke-width:0.26458335;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     </g>
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.26458335px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 15.055745,290.18295 v 2.64583 h -2.64583"
-       id="path3328"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.26458335px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 14.120937,289.20349 v 2.64583 h -2.64583"
-       id="path3328-7"
-       inkscape:connector-curvature="0" />
   </g>
 </svg>

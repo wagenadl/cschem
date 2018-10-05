@@ -45,6 +45,7 @@ public:
   void drawPlane(FilledPlane const &g, bool selected=false, bool innet=false);
   void drawPad(Pad const &g, bool selected=false, bool innet=false);
   void drawHole(Hole const &g, bool selected=false, bool innet=false);
+  void drawNPHole(NPHole const &g, bool selected=false, bool innet=false);
 public:
   static QByteArray objectToSvg(Object const &,
 				  Dim margin=Dim(), Dim minSize=Dim());
