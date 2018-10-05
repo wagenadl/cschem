@@ -205,7 +205,7 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
                   + brd.fpConOverlap()).toMils();
     double dxm = dym + t.slotlength.toMils()/2;
     double cs = cos(PI*t.rota/180);
-    double sn = cos(PI*t.rota/180);
+    double sn = sin(PI*t.rota/180);
     QPointF dmaj(cs*dxm, sn*dxm);
     QPointF dmin(-sn*dym, cs*dym);
     p->setPen(QPen(brushColor(selected, innet),
