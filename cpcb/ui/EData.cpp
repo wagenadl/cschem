@@ -309,6 +309,17 @@ void EData::pressText(Point p) {
   here.insert(Object(t));
 } 
 
+void EData::pressNPHole(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  Group &here(currentGroup());
+  NPHole t;
+  t.p = p;
+  t.d = props.od;
+  UndoCreator uc(this, true);
+  here.insert(Object(t));
+  ed->update();
+}
+
 void EData::pressHole(Point p) {
   p = p.roundedTo(layout.board().grid);
   if (props.od - props.id < Dim::fromInch(0.005)) {
@@ -433,7 +444,6 @@ NodeID EData::visibleNodeAt(Group const &grp, Point p, Dim mrg) const {
 }
 
 void EData::pressOrigin(Point p) {
-  Dim mrg = pressMargin();
   NodeID node = visibleNodeAt(p);
   Object const &obj(currentGroup().object(node));
   if (obj.isPad()) {
@@ -484,6 +494,9 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
 	p1 = Prio::TopObject;
       else if (brd.layervisible[Layer::Bottom])
 	p1 = Prio::BottomObject;
+      break;
+    case Object::Type::NPHole:
+      p1 = Prio::Silk;
       break;
     case Object::Type::Group:
       p1 = Prio::Silk;

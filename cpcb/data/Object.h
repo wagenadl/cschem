@@ -5,6 +5,7 @@
 #define OBJECT_H
 
 #include "Hole.h"
+#include "NPHole.h"
 #include "Pad.h"
 #include "Arc.h"
 #include "Trace.h"
@@ -26,6 +27,7 @@ public:
     Trace,
     Plane,
     Group,
+    NPHole,
   };
 public:
   explicit Object(Hole const &);
@@ -35,12 +37,14 @@ public:
   explicit Object(Text const &);
   explicit Object(Group const &);
   explicit Object(FilledPlane const &);
+  explicit Object(NPHole const &);
   Object();
   ~Object();
   Object(Object const &);
   Object &operator=(Object const &);
   bool isNull() const;
   bool isHole() const;
+  bool isNPHole() const;
   bool isPad() const;
   bool isArc() const;
   bool isTrace() const;
@@ -51,6 +55,8 @@ public:
   Hole &asHole();
   // Both const and nonconst versions ASSERT correct type.
   // Use isXXX first to check!
+  NPHole const &asNPHole() const;
+  NPHole &asNPHole();
   Pad const &asPad() const;
   Pad &asPad();
   Arc const &asArc() const;

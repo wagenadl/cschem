@@ -26,6 +26,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
     s.writeAttribute("fp", QString::number(int(t.fpcon)));
   if (t.noclear)
     s.writeAttribute("noclear", "1");
+  if (t.slotlength.isPositive())
+    s.writeAttribute("sl", t.slotlength.toString());
   s.writeEndElement();
   return s;
 }
@@ -44,6 +46,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
     t.od = Dim::fromString(a.value("od").toString(), &ok);
   t.fpcon = Layer(a.value("fp").toInt());
   t.noclear = a.value("noclear").toInt() != 0;
+  if (ok)
+    t.slotlength = Dim::fromString(a.value("slotlength").toString());
   s.skipCurrentElement();
   return s;
 }
@@ -57,6 +61,7 @@ QDebug operator<<(QDebug d, Hole const &t) {
     << (t.square ? "square" : "circ")
     << int(t.fpcon)
     << (t.noclear ? "noclear" : "")
+    << t.slotlength
     << ")";
   return d;
 }

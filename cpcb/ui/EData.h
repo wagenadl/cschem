@@ -50,6 +50,7 @@ public:
   void pressPad(Point);
   void pressArc(Point);
   void pressHole(Point);
+  void pressNPHole(Point);
   void pressText(Point);
   void pressTracing(Point);
   void pressPickingUp(Point);
