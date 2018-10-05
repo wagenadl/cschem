@@ -19,6 +19,9 @@ public:
   NPHole();
   bool isValid() const { return !d.isNull(); }
   Rect boundingRect() const;
+  void rotateCW(Point const &p0);
+  void flipLeftRight(Dim const &x0);
+  void flipUpDown(Dim const &y0);
 };
 
 QDebug operator<<(QDebug, NPHole const &);

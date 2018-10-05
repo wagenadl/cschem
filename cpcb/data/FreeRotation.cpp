@@ -50,3 +50,13 @@ double FreeRotation::cos() const {
   constexpr double PI = 4*atan(1);
   return ::cos(r*PI/180);
 }
+
+void FreeRotation::flipLeftRight() {
+  r = -r;
+  normalize();
+}
+
+void FreeRotation::flipUpDown() {
+  r = 180-r;
+  normalize();
+}

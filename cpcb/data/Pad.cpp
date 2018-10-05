@@ -9,10 +9,16 @@ Pad::Pad() {
   noclear = false;
 }
 
-void Pad::rotate() {
-  Dim x = width;
-  width = height;
-  height = x;
+void Pad::rotateCW() {
+  rota += 90;
+  if (rota==180) {
+    rota = FreeRotation();
+  } else if (rota==90 || rota==270) {
+    Dim x = width;
+    width = height;
+    height = x;
+    rota = FreeRotation();
+  }
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Pad const &t) {
@@ -28,6 +34,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Pad const &t) {
     s.writeAttribute("fp", "1");
   if (t.noclear)
     s.writeAttribute("noclear", "1");
+  if (t.rota)
+    s.writeAttribute("rot", QString::number(t.rota));
   s.writeEndElement();
   return s;
 }
@@ -52,6 +60,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
   t.noclear = a.value("noclear").toInt() != 0;
   t.elliptic = a.value("ell").toInt() != 0;
   t.ref = a.value("ref").toString();
+  t.rota = FreeRotation(a.value("rot").toInt());
   s.skipCurrentElement();
   return s;
 }
@@ -64,12 +73,24 @@ QDebug operator<<(QDebug d, Pad const &t) {
     << (t.elliptic ? "ell" : "")
     << (t.fpcon ? "fp" : "")
     << (t.noclear ? "noclear" : "")
+    << t.rota
     << ")";
   return d;
 }
 
 Rect Pad::boundingRect() const {
-  return Rect(p - Point(width/2, height/2), p + Point(width/2, height/2));
+  Point dp(width/2, height/2);
+  if (rota) {
+    Rect r(p, p);
+    r |= p+dp.rotated(rota);
+    r |= p+(-dp).rotated(rota);
+    dp.y = -dp.y;
+    r |= p+dp.rotated(rota);
+    r |= p+(-dp).rotated(rota);
+    return r;
+  } else {
+    return Rect(p - dp, p + dp);
+  }
 }
 
 bool Pad::touches(class Trace const &t) const {
@@ -103,4 +124,21 @@ bool Pad::touches(FilledPlane const &fp) const {
   } else {
     return false;
   }
+}
+
+void Pad::rotateCW(Point const &p0) {
+  rotateCW();
+  p.rotateCW(p0);
+}
+
+void Pad::flipLeftRight(Dim const &x0) {
+  rota.flipLeftRight();
+  p.flipLeftRight(x0);
+}
+
+void Pad::flipUpDown(Dim const &y0) {
+  rota.flipUpDown();
+  if (rota==180)
+    rota = FreeRotation();
+  p.flipUpDown(y0);
 }
