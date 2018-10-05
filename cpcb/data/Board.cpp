@@ -4,8 +4,9 @@
 
 Board::Board() {
   metric = false;
-  width = Dim::fromInch(3.8);
-  height = Dim::fromInch(2.5);
+  shape = Shape::Rect;
+  width = Dim::fromInch(4);
+  height = Dim::fromInch(3);
   grid = Dim::fromInch(0.050);
   layervisible[Layer::Silk] = true;
   layervisible[Layer::Top] = true;
@@ -13,11 +14,19 @@ Board::Board() {
   planesvisible = true;
 }
 
+QString Board::shapeName() const {
+  if (shape==Shape::Rect)
+    return "rect";
+  if (shape==Shape::Round)
+    return "round";
+  qDebug() << "Unknown board shape";
+  return "";
+}
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Board const &t) {
   s.writeStartElement("board");
   s.writeStartElement("outline");
-  s.writeAttribute("shape", "rect");
+  s.writeAttribute("shape", t.shapeName());
   s.writeAttribute("w", t.width.toString());
   s.writeAttribute("h", t.height.toString());
   s.writeEndElement(); // outline
@@ -39,6 +48,16 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Board const &t) {
 
 static void readOutline(QXmlStreamReader &s, Board &t) {
   auto a = s.attributes();
+  t.shape = Board::Shape::Rect;
+  if (a.hasAttribute("shape")) {
+    QString shp = a.value("shape").toString();
+    if (shp=="rect")
+      t.shape = Board::Shape::Rect;
+    else if (shp=="round")
+      t.shape = Board::Shape::Round;
+    else
+      qDebug() << "Unknown board shape in xml";
+  }
   t.width = Dim::fromString(a.value("w").toString());
   t.height = Dim::fromString(a.value("h").toString());
 }
