@@ -117,14 +117,30 @@ bool GWData::writeBoardOutline() {
   out << "%TA.AperFunction,Profile*%\n";
   out << "%ADD10C,0.10000*%\n"; // create 0.1 mm thick line
   out << "G01*\n"; // linear
-  out << "G75*\n"; // irrelevant since we don't use arcs, but so what
+  out << "G75*\n"; // multisegment arcs
   out << "%LPD*%\n"; // positive
   out << "D10*\n"; // use aperture
-  out << "X0Y0D02*\n"; // move to origin
-  out << "X" << Gerber::coord(layout.board().width) << "D01*\n"; 
-  out << "Y" << Gerber::coord(layout.board().height) << "D01*\n";
-  out << "X0D01*\n";
-  out << "Y0D01*\n"; // return to origin
+  Board const &brd(layout.board());
+  switch (brd.shape) {
+  case Board::Shape::Rect:
+    out << "X0Y0D02*\n"; // move to origin
+    out << "X" << Gerber::coord(brd.width) << "D01*\n"; 
+    out << "Y" << Gerber::coord(brd.height) << "D01*\n";
+    out << "X0D01*\n";
+    out << "Y0D01*\n"; // return to origin
+    break;
+  case Board::Shape::Round:
+    if (brd.width==brd.height) {
+      // simple circle
+      out << "G01" << "X0Y" << Gerber::coord(brd.height/2) << "D02*\n";
+      out << "G03" << "X0Y" << Gerber::coord(brd.height/2)
+	  << "I" <<  Gerber::coord(brd.width/2)
+	  << "J0" << "D01*\n";
+    } else if (brd.width<brd.height) {
+    } else {
+    }
+    break;
+  }
   out << "M02*\n"; // terminate file
   return true;
 }
