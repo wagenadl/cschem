@@ -166,42 +166,75 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   Point p1 = origin + t.p;
   if (selected && toplevel) 
     p1 += movingdelta;
-  p->setPen(QPen(Qt::NoPen));
   QPointF p0 = p1.toMils();
+  double id = t.id.toMils();
+  double dx = t.slotlength.toMils()/2;
+  constexpr double PI = 4*atan(1);
+  QPoint dxy(dx*cos(PI*t.rota/180), dx*sin(PI*t.rota/180));
   if (inv) {
-    double id = t.id.toMils();
-    p->setBrush(QColor(0,0,0));
-    p->drawEllipse(p0, id/2, id/2);
+    // draw cutout
+    if (dx>0) {
+      p->setPen(QPen(QColor(0,0,0), id, Qt::SolidLine, Qt::RoundCap));
+      p->drawLine(p0 - dxy, p0 + dxy);
+    } else {
+      p->setBrush(QColor(0,0,0));
+      p->setPen(Qt::NoPen);
+      p->drawEllipse(p0, id/2, id/2);
+    }
   } else {
+    // draw surrounding pad
     double od = t.od.toMils();
     double extramils = extraMils(innet, t.od, t.od);
-    p->setBrush(brushColor(selected, innet));
-    if (t.square)
-      p->drawRect(QRectF(p0
-                         - QPointF(od/2+extramils/2, od/2+extramils/2),
-                         QSizeF(od+extramils, od+extramils)));
-    else 
-      p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
+    if (dx>0) {
+      p->setPen(QPen(brushColor(selected, innet), od+extramils, Qt::SolidLine,
+		     t.square ? Qt::SquareCap : Qt::RoundCap));
+      p->drawLine(p0 - dxy, p0 + dxy);
+    } else {
+      p->setBrush(brushColor(selected, innet));
+      p->setPen(QPen(Qt::NoPen));
+      if (t.square)
+	p->drawRect(QRectF(p0
+			   - QPointF(od/2+extramils/2, od/2+extramils/2),
+			   QSizeF(od+extramils, od+extramils)));
+      else 
+	p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
+    }
   }
   if (subl==Sublayer::Main && layer!=Layer::Invalid && t.fpcon==layer) {
-    double dxm = (t.od/2 + brd.padClearance(t.od, t.od)
+    double dym = (t.od/2 + brd.padClearance(t.od, t.od)
                   + brd.fpConOverlap()).toMils();
+    double dxm = dym + t.slotlength.toMils()/2;
+    double cs = cos(PI*t.rota/180);
+    double sn = cos(PI*t.rota/180);
+    QPointF dmaj(cs*dxm, sn*dxm);
+    QPointF dmin(-sn*dym, cs*dym);
     p->setPen(QPen(brushColor(selected, innet),
                    brd.fpConWidth(t.od, t.od).toMils(),
                    Qt::SolidLine, Qt::FlatCap));
-    p->drawLine(p0 - QPointF(dxm, 0), p0 + QPointF(dxm, 0));
-    p->drawLine(p0 - QPointF(0, dxm), p0 + QPointF(0, dxm));
+    p->drawLine(p0 - dmaj, p0 + dmaj);
+    p->drawLine(p0 - dmin, p0 + dmin);
   }
 }
 
 void ORenderer::drawNPHole(NPHole const &h, bool selected, bool /*innet*/) {
   if (layer!=Layer::Invalid)
     return;
-  p->setBrush(selected ? QColor(255, 255, 255) : QColor(180, 180, 180));
   Point p1 = origin + h.p;
   if (selected && toplevel) 
     p1 += movingdelta;
-  p->drawEllipse(p1.toMils(), h.d.toMils()/2, h.d.toMils()/2);
+  QPointF p0 = p1.toMils();
+  double id = h.d.toMils();
+  QColor col(selected ? QColor(255, 255, 255) : QColor(180, 180, 180));
+  if (h.slotlength.isPositive()) {
+    double dx = h.slotlength.toMils()/2;
+    constexpr double PI = 4*atan(1);
+    QPoint dxy(dx*cos(PI*h.rota/180), dx*sin(PI*h.rota/180));
+    p->setPen(QPen(col, id, Qt::SolidLine, Qt::RoundCap));
+    p->drawLine(p0 - dxy, p0 + dxy);
+  } else {
+    p->setBrush(col);
+    p->drawEllipse(p0, id/2, id/2);
+  }
 }
 
 void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {

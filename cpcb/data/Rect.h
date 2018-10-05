@@ -32,6 +32,10 @@ public:
   Rect translated(Point const &dxy) const;
   Point center() const;
   bool isEmpty() const;
+  Point topLeft() const;
+  Point topRight() const;
+  Point bottomLeft() const;
+  Point bottomRight() const;
 };
 
 QDebug operator<<(QDebug, Rect const &);

@@ -7,12 +7,14 @@
 #include "Rect.h"
 #include <QXmlStreamReader>
 #include <QDebug>
+#include "FreeRotation.h"
 
 class NPHole {
 public:
   Point p;
   Dim d;
   Dim slotlength;
+  FreeRotation rota;
 public:
   NPHole();
   bool isValid() const { return !d.isNull(); }
