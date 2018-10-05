@@ -6,8 +6,8 @@
 
 #include "Point.h"
 #include "Layer.h"
-#include "Orient.h"
 #include "Rect.h"
+#include "FreeRotation.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 
@@ -16,7 +16,8 @@ public:
   Point p; // left, baseline of text
   Dim fontsize;
   Layer layer;
-  Orient orient;
+  FreeRotation rota;
+  bool flip;
   QString text;
 public:
   Text();

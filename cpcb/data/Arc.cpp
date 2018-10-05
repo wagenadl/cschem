@@ -5,7 +5,6 @@
 Arc::Arc() {
   layer = Layer::Silk;
   angle = 360;
-  rot = 0;
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Arc const &t) {
@@ -15,7 +14,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Arc const &t) {
   s.writeAttribute("lw", t.linewidth.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
   s.writeAttribute("ang", QString::number(t.angle));
-  s.writeAttribute("rot", QString::number(t.rot));
+  s.writeAttribute("rota", QString::number(t.rota));
   s.writeEndElement();
   return s;
 }
@@ -26,21 +25,26 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Arc &t) {
   auto a = s.attributes();
   t = Arc();
   t.center = Point::fromString(a.value("p").toString(), &ok);
-  if (ok)
-    t.radius  = Dim::fromString(a.value("r").toString(), &ok);
-  if (ok)
-    t.linewidth = Dim::fromString(a.value("lw").toString(), &ok);
-  if (ok) {
-    if (a.hasAttribute("ext")) {
-      t.setExtent(Arc::Extent(a.value("ext").toInt(&ok)));
+  t.radius  = Dim::fromString(a.value("r").toString(), &ok);
+  t.linewidth = Dim::fromString(a.value("lw").toString(), &ok);
+  if (a.hasAttribute("ext")) {
+    t.setExtent(Arc::Extent(a.value("ext").toInt(&ok)));
+  } else {
+    t.angle = a.value("ang").toInt(&ok);
+    if (a.hasAttribute("rot")) {
+      /* In older versions, if rot=0, arc was centred around 12 o'clock,
+         unless angle was negative,
+         in which case arc ran clockwise from 12 o'clock. */
+      t.rota = FreeRotation(a.value("rot").toInt(&ok) * 90);
+      if (t.angle<0) 
+        t.angle = -t.angle;
+      else
+        t.rota -= t.angle/2;
     } else {
-      t.angle = a.value("ang").toInt(&ok);
-      if (ok)
-        t.rot = a.value("rot").toInt(&ok);
+      t.rota = FreeRotation(a.value("rota").toInt(&ok));
     }
   }
-  if (ok)
-    t.layer = Layer(a.value("l").toInt(&ok));
+  t.layer = Layer(a.value("l").toInt(&ok));
   s.skipCurrentElement();
   return s;
 }
@@ -51,32 +55,15 @@ QDebug operator<<(QDebug d, Arc const &t) {
     << t.radius
     << t.linewidth
     << t.layer
-    << t.angle << t.rot
+    << t.angle << t.rota
     << ")";
   return d;
 }
 
-int startangle(Arc const &a) {
-  // 0 is +x (right), 90 is +y (down)
-  int a0 = 90 * (a.rot&3) - 90;
-  if (a.angle<0) 
-    return a0;
-  else
-    return a0 - a.angle/2;
-}
-
-int endangle(Arc const &a) {
-  int a0 = 90 * (a.rot&3) - 90;
-  if (a.angle<0)
-    return a0 - a.angle;
-  else
-    return a0 + a.angle/2;
-}
-
 Rect Arc::boundingRect() const {
   Rect rect(center, center);
-  int a0 = startangle(*this);
-  int a1 = endangle(*this);
+  int a0 = rota - 90;
+  int a1 = a0 + angle;
   constexpr double PI = 4*atan(1);
   for (int a=a0; a<=a1; a+=15) {
     double phi = a*PI/180;
@@ -109,23 +96,16 @@ void Arc::flipUpDown(Dim y) {
 }
 
 void Arc::flipLeftRight() {
-  rot &= 3;
-  if (angle<0) {
-    rot = 3 - rot;
-  } else {
-    if (rot==1)
-      rot = 3;
-    else if (rot==3)
-      rot = 1;
-  }
+  rota += angle;
+  rota = -rota;
 }
 
 void Arc::rotateCW() {
-  rot = (rot + 1) & 3;
+  rota += 90;
 }
 
 void Arc::rotateCCW() {
-  rot = (rot - 1) & 3;
+  rota -= 90;
 }
 
 void Arc::setLayer(Layer l) {
@@ -139,47 +119,47 @@ Arc::Extent Arc::extent() const {
 }
 
 void Arc::setExtent(Arc::Extent e) {
-  // old style
+  // ancient style
   switch (e) {
   case Arc::Extent::Full:
     angle = 360;
-    rot = 0;
+    rota = FreeRotation(0);
     break;
   case Arc::Extent::LeftHalf:
     angle = 180;
-    rot = 3;
+    rota = FreeRotation(180);
     break;
   case Arc::Extent::RightHalf:
     angle = 180;
-    rot = 1;
+    rota = FreeRotation(0);
     break;
   case Arc::Extent::TopHalf:
     angle = 180;
-    rot = 0;
+    rota = FreeRotation(270);
     break;
   case Arc::Extent::BottomHalf:
     angle = 180;
-    rot = 2;
+    rota = FreeRotation(90);
     break;
   case Arc::Extent::TLQuadrant:
-    angle = -90;
-    rot = 3;
+    angle = 90;
+    rota = FreeRotation(270);
     break;
   case Arc::Extent::TRQuadrant:
-    angle = -90;
-    rot = 0;
+    angle = 90;
+    rota = FreeRotation(0);
     break;
   case Arc::Extent::BRQuadrant:
-    angle = -90;
-    rot = 1;
+    angle = 90;
+    rota = FreeRotation(90);
     break;
   case Arc::Extent::BLQuadrant:
-    angle = -90;
-    rot = 2;
+    angle = 90;
+    rota = FreeRotation(180);
     break;
   default:
     angle = 360;
-    rot = 0;
+    rota = FreeRotation(0);
     break;
   }
 }

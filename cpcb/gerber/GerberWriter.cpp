@@ -298,6 +298,9 @@ void GWData::collectNonCopperApertures(GerberFile &out, Gerber::Layer layer) {
   Gerber::Apertures
     &aps(out.newApertures(Gerber::Apertures::Func::Material));
 
+  qDebug() << "cnca" << int(layer);
+  for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys())
+    qDebug() << " fs " << spec;
   for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys()) 
     out.ensureFont(spec);
 
@@ -307,6 +310,8 @@ void GWData::collectNonCopperApertures(GerberFile &out, Gerber::Layer layer) {
       aps.ensure(Gerber::Circ(lw));
     for (Point p: collector.smdPads(mapLayer(layer)).keys())
       aps.ensure(Gerber::Rect(p.x, p.y));
+    for (Dim lw: collector.arcs(mapLayer(layer)).keys())
+      aps.ensure(Gerber::Circ(lw));
     break;
   case Gerber::Layer::TopSolderMask:
   case Gerber::Layer::BottomSolderMask:
@@ -391,6 +396,13 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
       aps.ensure(Gerber::Rect(p.x, p.y));
     out.writeApertures(aps);
   }
+
+  qDebug() << "cca" << int(layer);
+  for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys())
+    qDebug() << " fs " << spec;
+  for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys()) 
+    out.ensureFont(spec);
+  out.writeApertures(Gerber::Apertures::Func::Material);
 }
 
 bool GWData::writeTextClearance(GerberFile &out, Gerber::Layer layer) {
@@ -422,11 +434,16 @@ bool GWData::writeText(GerberFile &out, Gerber::Layer layer) {
   { // Output all text
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive
+    qDebug() << "writetext" << int(layer);
     auto const &txts = collector.texts(mapLayer(layer));
     for (Gerber::FontSpec spec: txts.keys()) {
+      qDebug() << " fs" << spec;
       Gerber::Font const &font(out.font(spec));
-      for (Text const &txt: txts[spec])
+      for (Text const &txt: txts[spec]) {
+        qDebug() << "txt " << txt;
+        out << "G04 text " << txt.text << "*\n";
 	font.writeText(out, txt);
+      }
     }
   }
   return true;
@@ -493,56 +510,27 @@ static void writeTraces(GerberFile &out, Gerber::Apertures const &aps,
   }
 }
 
-constexpr bool ARC_USE_STRAIGHT = false;//true;
-
 static void writeArcs(GerberFile &out, Gerber::Apertures const &aps,
                         QMap<Dim, QList<Arc>> const &arcs) {
   constexpr double PI = 4*atan(1);
   out << "%LPD*%\n"; // positive
-  if (ARC_USE_STRAIGHT) {
-    out << "G01*\n"; // linear
-  } else {
-    out << "G75*\n"; // multiquadrant
-  }
+  out << "G75*\n"; // multiquadrant
   for (Dim lw: arcs.keys()) {
     out << aps.select(Gerber::Circ(lw));
     for (Arc const &arc: arcs[lw]) {
-      qDebug() << "GWARC" << arc << arc.rot << arc.angle;
-      double astart, aend;
-      if (arc.angle<0) {
-        // clockwise from 12 o'clock [before flip] apart from rot.
-        astart = PI/180*(90*arc.rot + 90);
-        aend = PI/180*(90*arc.rot + fabs(arc.angle) + 90);
-      } else {
-        // symmetric around 12 o'clock [before flip] apart from rotation
-        astart = PI/180*(90*arc.rot - arc.angle/2 + 90);
-        aend = PI/180*(90*arc.rot + arc.angle/2 + 90);
-      }
-      qDebug() << "astartend" << astart << aend;
-      if (ARC_USE_STRAIGHT) {
-	int N = 6 + int((aend-astart) * arc.radius.toMils()/30.0);
-	out << Gerber::point(arc.center
-			     + Point(arc.radius*cos(astart),
-				     arc.radius*sin(astart))) << "D02*\n";
-	for (int n=1; n<=N; n++) {
-	  double a = astart + n*(aend-astart)/N;
-	  out << Gerber::point(arc.center
-			       + Point(arc.radius*cos(a),
-				       arc.radius*sin(a))) << "D01*\n";
-	}
-      } else {
-	out << "G01" << Gerber::point(arc.center
-				      + Point(arc.radius*cos(astart),
-					      arc.radius*sin(astart)))
-	    << "D02*\n";
-	out << "G03"
-	    << Gerber::point(arc.center
-			     + Point(arc.radius*cos(aend),
-				     arc.radius*sin(aend)))
-	    << "I" << Gerber::coord(-arc.radius*cos(astart))
-	    << "J" << Gerber::coord(-arc.radius*sin(astart))
-	    << "D01*\n";
-      }
+      double astart = PI/180*(arc.rota + 90);
+      double aend = astart + PI/180*arc.angle;
+      out << "G01" << Gerber::point(arc.center
+                                    + Point(arc.radius*cos(astart),
+                                            arc.radius*sin(astart)))
+          << "D02*\n";
+      out << "G03"
+          << Gerber::point(arc.center
+                           + Point(arc.radius*cos(aend),
+                                   arc.radius*sin(aend)))
+          << "I" << Gerber::coord(-arc.radius*cos(astart))
+          << "J" << Gerber::coord(-arc.radius*sin(astart))
+          << "D01*\n";
     }
   }
   out << "G01*\n";

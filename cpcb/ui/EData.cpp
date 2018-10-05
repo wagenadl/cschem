@@ -302,12 +302,24 @@ void EData::pressText(Point p) {
   Text t;
   t.p = p;
   t.fontsize = props.fs;
-  t.orient = props.orient;
+  t.rota = props.rota;
+  t.flip = props.flip;
   t.text = props.text;
   t.layer = props.layer;
   UndoCreator uc(this, true);
   here.insert(Object(t));
 } 
+
+void EData::pressNPHole(Point p) {
+  p = p.roundedTo(layout.board().grid);
+  Group &here(currentGroup());
+  NPHole t;
+  t.p = p;
+  t.d = props.od;
+  UndoCreator uc(this, true);
+  here.insert(Object(t));
+  ed->update();
+}
 
 void EData::pressHole(Point p) {
   p = p.roundedTo(layout.board().grid);
@@ -351,8 +363,14 @@ void EData::pressArc(Point p) {
   t.center = p;
   t.radius = props.id / 2;
   t.linewidth = props.linewidth;
-  t.angle = props.arcangle;
-  t.rot = props.orient.rot;
+  if (props.arcangle<0) {
+    t.angle = -props.arcangle;
+    t.rota = props.rota;
+  } else {
+    t.angle = props.arcangle;
+    t.rota = props.rota;
+    t.rota -= t.angle/2;
+  }
   t.layer = props.layer;
   UndoCreator uc(this, true);
   here.insert(Object(t));
@@ -433,7 +451,6 @@ NodeID EData::visibleNodeAt(Group const &grp, Point p, Dim mrg) const {
 }
 
 void EData::pressOrigin(Point p) {
-  Dim mrg = pressMargin();
   NodeID node = visibleNodeAt(p);
   Object const &obj(currentGroup().object(node));
   if (obj.isPad()) {
@@ -484,6 +501,9 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
 	p1 = Prio::TopObject;
       else if (brd.layervisible[Layer::Bottom])
 	p1 = Prio::BottomObject;
+      break;
+    case Object::Type::NPHole:
+      p1 = Prio::Silk;
       break;
     case Object::Type::Group:
       p1 = Prio::Silk;

@@ -8,7 +8,7 @@
 #include "Mode.h"
 #include "data/PCBFileIO.h"
 #include "data/Layout.h"
-#include "data/Orient.h"
+#include "data/FreeRotation.h"
 #include "data/Object.h"
 #include "ORenderer.h"
 #include "data/LinkedSchematic.h"
@@ -50,6 +50,7 @@ public:
   void pressPad(Point);
   void pressArc(Point);
   void pressHole(Point);
+  void pressNPHole(Point);
   void pressText(Point);
   void pressTracing(Point);
   void pressPickingUp(Point);

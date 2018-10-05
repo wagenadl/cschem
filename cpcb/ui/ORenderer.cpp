@@ -194,6 +194,16 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   }
 }
 
+void ORenderer::drawNPHole(NPHole const &h, bool selected, bool /*innet*/) {
+  if (layer!=Layer::Invalid)
+    return;
+  p->setBrush(selected ? QColor(255, 255, 255) : QColor(180, 180, 180));
+  Point p1 = origin + h.p;
+  if (selected && toplevel) 
+    p1 += movingdelta;
+  p->drawEllipse(p1.toMils(), h.d.toMils()/2, h.d.toMils()/2);
+}
+
 void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   if (subl == Sublayer::Plane)
     return;
@@ -247,16 +257,8 @@ void ORenderer::drawArc(Arc const &t, bool selected) {
   double r = t.radius.toMils();
   QRectF rect(c.toMils() - QPointF(r,r), c.toMils() + QPointF(r,r));
   // For Painter, 0 = right, 16*90 = top, etc.
-  int start_ang;
-  int span_ang;
-  if (t.angle<0) {
-    start_ang = 90 + t.angle;
-    span_ang = -t.angle;
-  } else {
-    start_ang = 90 - t.angle/2;
-    span_ang = t.angle;
-  }
-  start_ang -= 90 * (t.rot&3);
+  int start_ang = 90 - t.rota - t.angle;
+  int span_ang = t.angle;
   p->drawArc(rect, 16*start_ang, 16*span_ang);
 }
 
@@ -290,14 +292,22 @@ void ORenderer::drawText(Text const &t, bool selected) {
     pt += movingdelta;
   p->save();
   p->setPen(QPen(QColor(255,255,255), sf.lineWidth().toMils()));
+
+  //Rect r = t.boundingRect();
+  //p->drawRect(r.toMils());
+  //p->drawRect(Rect(t.p - Point(Dim::fromMils(5), Dim::fromMils(5)),
+  //                 t.p + Point(Dim::fromMils(5), Dim::fromMils(5))).toMils());
+  
   p->translate(pt.toMils());
 
   //  p->setPen(QPen(QColor(255,255,255), 2));
   //  p->drawEllipse(QPointF(0,0), 5,5);
 
-  p->rotate(90*t.orient.rot);
+  p->rotate(t.rota);
+  int xflip = ((t.layer==Layer::Bottom) ^ t.flip) ? -1 : 1;
 
-  int xflip = ((t.layer==Layer::Bottom) ^ t.orient.flip) ? -1 : 1;
+  qDebug() << "drawtext" << t.text << " at " << pt << " rotated" << t.rota << xflip;
+  
   p->scale(xflip*scl, -scl);
   p->setPen(QPen(layerColor(t.layer, selected), sf.lineWidth().toMils(),
 		Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -332,6 +342,9 @@ void ORenderer::drawObject(Object const &o, bool selected,
    break;
   case Object::Type::Hole:
     drawHole(o.asHole(), selected, !subnet.isEmpty());
+    break;
+  case Object::Type::NPHole:
+    drawNPHole(o.asNPHole(), selected, !subnet.isEmpty());
     break;
   case Object::Type::Pad: 
     drawPad(o.asPad(), selected, !subnet.isEmpty());
