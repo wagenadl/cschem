@@ -293,10 +293,10 @@ void ORenderer::drawText(Text const &t, bool selected) {
   p->save();
   p->setPen(QPen(QColor(255,255,255), sf.lineWidth().toMils()));
 
-  Rect r = t.boundingRect();
-  p->drawRect(r.toMils());
-  p->drawRect(Rect(t.p - Point(Dim::fromMils(5), Dim::fromMils(5)),
-                   t.p + Point(Dim::fromMils(5), Dim::fromMils(5))).toMils());
+  //Rect r = t.boundingRect();
+  //p->drawRect(r.toMils());
+  //p->drawRect(Rect(t.p - Point(Dim::fromMils(5), Dim::fromMils(5)),
+  //                 t.p + Point(Dim::fromMils(5), Dim::fromMils(5))).toMils());
   
   p->translate(pt.toMils());
 
