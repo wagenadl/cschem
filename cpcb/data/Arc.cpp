@@ -15,6 +15,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Arc const &t) {
   s.writeAttribute("l", QString::number(int(t.layer)));
   s.writeAttribute("ang", QString::number(t.angle));
   s.writeAttribute("rota", QString::number(t.rota));
+  // we call it "rota", because there was an older convention...
   s.writeEndElement();
   return s;
 }
