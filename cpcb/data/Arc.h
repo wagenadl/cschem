@@ -6,6 +6,7 @@
 
 #include "Rect.h"
 #include "Layer.h"
+#include "FreeRotation.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 
@@ -27,13 +28,12 @@ public:
   Point center;
   Dim radius; 
   Dim linewidth;
-  int angle; // degrees
-  /* If rot=0, arc is centred around 12 o'clock, unless angle is negative,
-     in which case arc runs clockwise from 12 o'clock. */
-  int rot; // as in Orient
+  int angle; // span, degrees
+  FreeRotation rota;
   Layer layer;
 public:
   Arc();
+  void rotateFreely(int);
   void rotateCW();
   void rotateCCW();
   void flipLeftRight();
