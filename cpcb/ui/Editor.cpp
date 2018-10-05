@@ -565,7 +565,6 @@ void Editor::setArcAngle(int angle) {
                << FreeRotation(210);
     }
   }
-  d->emitSelectionStatus();
 }
 
 void Editor::setLineWidth(Dim l) {
