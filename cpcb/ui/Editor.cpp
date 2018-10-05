@@ -551,9 +551,21 @@ void Editor::setArcAngle(int angle) {
     Object &obj(here.object(id));
     if (obj.isArc()) {
       uc.realize();
-      obj.asArc().angle = angle;
+      Arc &arc(obj.asArc());
+      int a0 = (arc.rota + arc.angle/2) / 90.0 + .49;
+      qDebug() << arc.rota << arc.angle << a0 << angle;
+      if (angle<0) {
+        arc.angle = -angle;
+        arc.rota = FreeRotation(a0*90);
+      } else {
+        arc.angle = angle;
+        arc.rota = FreeRotation(a0*90 - angle/2);
+      }
+      qDebug() << " to " << arc.rota << arc.angle << a0*90 - angle/2
+               << FreeRotation(210);
     }
   }
+  d->emitSelectionStatus();
 }
 
 void Editor::setLineWidth(Dim l) {
@@ -755,11 +767,11 @@ void Editor::setRefText(QString t) {
 }
 
 void Editor::setRotation(int rot) {
-  d->props.orient.rot = rot;
+  d->props.rota = FreeRotation(rot);
 }
 
 void Editor::setFlipped(bool f) {
-  d->props.orient.flip = f;
+  d->props.flip = f;
 }
 
 void Editor::setFontSize(Dim fs) {

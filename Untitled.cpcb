@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<cpcb xmlns="http://www.danielwagenaar.net/cpcb-ns.html">
+  <board w="965200" h="635000" grid="12700" metric="0" planesvis="1" layer1vis="1" layer2vis="1" layer3vis="1"/>
+  <group ref="">
+    <text p="469900 304800" fs="12700" l="2" rota="0" text="Top"/>
+    <arc p="406400 254000" r="5080" lw="2540" l="1" ang="180" rota="270"/>
+    <arc p="444500 266700" r="5080" lw="2540" l="2" ang="360" rota="180"/>
+    <arc p="520700 266700" r="5080" lw="2540" l="2" ang="180" rota="270"/>
+    <arc p="469900 279400" r="5080" lw="2540" l="2" ang="180" rota="90"/>
+    <arc p="393700 279400" r="5080" lw="2540" l="1" ang="90" rota="270"/>
+    <text p="609913 291152" fs="12700" l="3" rota="90" text="Bottom"/>
+    <text p="470223 126677" fs="12700" l="1" rota="270" flip="1" text="RotFlip"/>
+    <text p="304800 292100" fs="12700" l="1" rota="0" text="Hello"/>
+    <text p="330200 342900" fs="38100" l="1" rota="0" text="Big"/>
+  </group>
+</cpcb>

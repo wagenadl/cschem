@@ -302,7 +302,8 @@ void EData::pressText(Point p) {
   Text t;
   t.p = p;
   t.fontsize = props.fs;
-  t.orient = props.orient;
+  t.rota = props.rota;
+  t.flip = props.flip;
   t.text = props.text;
   t.layer = props.layer;
   UndoCreator uc(this, true);
@@ -362,8 +363,14 @@ void EData::pressArc(Point p) {
   t.center = p;
   t.radius = props.id / 2;
   t.linewidth = props.linewidth;
-  t.angle = props.arcangle;
-  t.rot = props.orient.rot;
+  if (props.arcangle<0) {
+    t.angle = -props.arcangle;
+    t.rota = props.rota;
+  } else {
+    t.angle = props.arcangle;
+    t.rota = props.rota;
+    t.rota -= t.angle/2;
+  }
   t.layer = props.layer;
   UndoCreator uc(this, true);
   here.insert(Object(t));

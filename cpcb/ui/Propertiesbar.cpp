@@ -298,9 +298,11 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
   bool got = false;
   int arcangle = 0; // "invalid"
   // set angle if all are same
+  qDebug() << "fAA";
   for (int k: objects) {
     Object const &obj(here.object(k));
     if (obj.isArc()) {
+      qDebug() << arcangle << obj.asArc().angle << obj.asArc().rota;
       if (got) {
 	if (obj.asArc().angle != arcangle) {
 	  arcangle = 0;
@@ -312,11 +314,14 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
       }
     }
   }
+  qDebug() << "checking" << arcangle;
   arc360->setChecked(arcangle==360);
   arc300->setChecked(arcangle==300);  
   arc240->setChecked(arcangle==240);  
   arc180->setChecked(arcangle==180);  
-  arc_90->setChecked(arcangle==-90);
+  arc_90->setChecked(arcangle==90);
+  if (arcangle==90)
+    editor->properties().arcangle = -arcangle;
   if (arcangle!=0)
     editor->properties().arcangle = arcangle;
 }
@@ -506,7 +511,7 @@ void PBData::hideAndShow() {
     if (!up->isChecked() && !right->isChecked()
 	&& !down->isChecked() && !left->isChecked()) {
       up->setChecked(true);
-      editor->properties().orient.rot = 0;
+      editor->properties().rota = FreeRotation();
     }
     if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
       silk->setChecked(true);
@@ -528,7 +533,7 @@ void PBData::hideAndShow() {
     if (!up->isChecked() && !right->isChecked()
 	&& !down->isChecked() && !left->isChecked()) {
       up->setChecked(true);
-      editor->properties().orient.rot = 0;
+      editor->properties().rota = FreeRotation(0);
     }
     layera->setEnabled(true);
     if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
@@ -948,21 +953,21 @@ void PBData::setupUI() {
   QObject::connect(right, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) 
-		       editor->setRotation(1);
+		       editor->setRotation(90);
 		   });
   down = makeIconTool(orientc, "Down", true, true);
   QObject::connect(down, &QAction::triggered,
 		   [this](bool b) {
 		     if (b) 
-		       editor->setRotation(2);
+		       editor->setRotation(180);
 		   });
   left = makeIconTool(orientc, "Left", true, true);
   QObject::connect(left, &QAction::triggered,
 		   [this](bool b) {
 		     if (b)
-		       editor->setRotation(3);
+		       editor->setRotation(270);
 		   });
-  flipped = makeIconTool(c3, "Flipped", true);
+  flipped = makeIconTool(orientc, "Flipped", true);
   QObject::connect(flipped, &QAction::triggered,
 		   [this](bool b) {
 		     editor->setFlipped(b);
@@ -1091,9 +1096,9 @@ void Propertiesbar::forwardAllProperties() {
   d->editor->setSquare(d->square->isChecked());
   d->editor->setFontSize(d->fs->value());
   d->editor->setRefText(d->text->text());
-  d->editor->setRotation(d->right->isChecked() ? 1
-			 : d->down->isChecked() ? 2
-			 : d->left->isChecked() ? 3
+  d->editor->setRotation(d->right->isChecked() ? 90
+			 : d->down->isChecked() ? 180
+			 : d->left->isChecked() ? 270
 			 : 0);
   d->editor->setFlipped(d->flipped->isChecked());
 }

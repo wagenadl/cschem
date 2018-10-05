@@ -20,13 +20,9 @@ namespace Gerber {
       int sgn = spec.flip ? -1 : 1;
       Dim x = scl*sgn*p.x;
       Dim y = -scl*p.y;
-      switch (spec.rot & 3) {
-      case 0: return point(p0 + Point(x, y));
-      case 1: return point(p0 + Point(-y, x));
-      case 2: return point(p0 + Point(-x, -y));
-      case 3: return point(p0 + Point(y, -x));
-      }
-      return point(Point()); // not executed
+      Point dp(x*spec.rota.cos() - y*spec.rota.sin(),
+               x*spec.rota.sin() + y*spec.rota.cos());
+      return point(p0 + dp);
     };
     
     QVector<Polyline> strokes = sf->character(c);
@@ -47,14 +43,8 @@ namespace Gerber {
     output << ap->select(Circ(lw));
     double scl = sf->scaleFactor(txt.fontsize);
     Dim dx = sf->dx() * scl;
-    Point dxy;
-    int sgn = txt.orient.flip ? -1 : 1;
-    switch (txt.orient.rot & 3) {
-    case 0: dxy = Point(sgn*dx, Dim()); break;
-    case 1: dxy = Point(Dim(), sgn*dx); break;
-    case 2: dxy = Point(-sgn*dx, Dim()); break;
-    case 3: dxy = Point(Dim(), -sgn*dx); break;
-    }
+    int sgn = txt.flip ? -1 : 1;
+    Point dxy(sgn*txt.rota.cos()*dx, sgn*txt.rota.sin()*dx);
     Point p = txt.p;
     for (int k=0; k<txt.text.size(); k++) {
       writeChar(output, p, txt.text[k].unicode());

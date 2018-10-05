@@ -8,7 +8,7 @@
 #include "Mode.h"
 #include "data/PCBFileIO.h"
 #include "data/Layout.h"
-#include "data/Orient.h"
+#include "data/FreeRotation.h"
 #include "data/Object.h"
 #include "ORenderer.h"
 #include "data/LinkedSchematic.h"
