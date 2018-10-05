@@ -96,9 +96,9 @@ bool Polyline::acceptableMove(int idx, Point p) const {
   Segment a(p, vertex(idx+1));
   Segment b(vertex(idx-1), p);
   for (int tst=idx+2; tst<idx-1+N; tst++)
-    if (a.touches(edge(tst)))
+    if (a.intersects(edge(tst)))
       return false;
-  if (edge(idx+1).touches(b))
+  if (edge(idx+1).intersects(b))
     return false;
   if (edge(idx+1).betweenEndpoints(p))
     return false;

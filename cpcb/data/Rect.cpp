@@ -14,6 +14,22 @@ Point Rect::center() const {
   return Point(left + width/2, top + height/2);
 }
 
+Point Rect::topLeft() const {
+  return Point(left, top);
+}
+
+Point Rect::topRight() const {
+  return Point(right(), top);
+}
+
+Point Rect::bottomLeft() const {
+  return Point(left, bottom());
+}
+
+Point Rect::bottomRight() const {
+  return Point(right(), bottom());
+}
+
 QString Rect::toString() const {
   return left.toString() + " " + top.toString()
      + " " + width.toString() + " " + height.toString();

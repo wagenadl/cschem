@@ -184,12 +184,15 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
     if (obj.isHole()) {
       Dim id1 = obj.asHole().id;
       Dim od1 = obj.asHole().od;
+      Dim sl1 = obj.asHole().slotlength;
       bool sq = obj.asHole().square;
       if (got) {
 	if (id1 != id->value())
 	  id->setNoValue();
 	if (od1 != od->value())
 	  od->setNoValue();
+	if (sl1 != slotlength->value())
+	  slotlength->setNoValue();
 	if (sq && circle->isChecked())
 	  circle->setChecked(false);
 	else if (!sq && square->isChecked())
@@ -197,6 +200,7 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
       } else {
 	id->setValue(id1);
 	od->setValue(od1);
+	slotlength->setValue(sl1);
 	if (sq)
 	  square->setChecked(true);
 	else
@@ -205,11 +209,15 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
       }
     } else if (obj.isNPHole()) {
       Dim id1 = obj.asNPHole().d;
+      Dim sl1 = obj.asNPHole().slotlength;
       if (got) {
         if (id1 != id->value())
           id->setNoValue();
+	if (sl1 != slotlength->value())
+	  slotlength->setNoValue();
       } else {
         id->setValue(id1);
+	slotlength->setValue(sl1);
         got = true;
       }
     }
@@ -302,7 +310,7 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
   for (int k: objects) {
     Object const &obj(here.object(k));
     if (obj.isArc()) {
-      qDebug() << arcangle << obj.asArc().angle << obj.asArc().rota;
+      qDebug() << "fAA arc" << arcangle << obj.asArc().angle << obj.asArc().rota;
       if (got) {
 	if (obj.asArc().angle != arcangle) {
 	  arcangle = 0;
@@ -844,9 +852,8 @@ void PBData::setupUI() {
   makeIcon(slotlengthc, "SlotLength")->setToolTip("Slot length");
   slotlength = makeDimSpinner(slotlengthc);
   slotlength->setMinimumValue(Dim::fromInch(0.00));
-  QObject::connect(id, &DimSpinner::valueEdited,
+  QObject::connect(slotlength, &DimSpinner::valueEdited,
 		   [this](Dim d) {
-                     qDebug() << "EDITOR SETSLOTLENGTH";
 		     editor->setSlotLength(d);
                    });
   

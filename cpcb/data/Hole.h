@@ -6,6 +6,7 @@
 
 #include "Rect.h"
 #include "Layer.h"
+#include "FreeRotation.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 
@@ -15,6 +16,7 @@ public:
   Dim id;
   Dim od;
   Dim slotlength;
+  FreeRotation rota;
   bool square;
   QString ref;
   Layer fpcon;

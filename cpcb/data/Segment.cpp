@@ -74,7 +74,7 @@ bool Segment::onSegment(Point p, Dim mrg) const {
   return a < m*b;
 }
 
-bool Segment::touches(Segment const &t, Point *intersection) const {
+bool Segment::intersects(Segment const &t, Point *intersection) const {
   bool res;
   Point p = intersectionWith(t, &res);
   if (intersection)
@@ -83,7 +83,6 @@ bool Segment::touches(Segment const &t, Point *intersection) const {
 }
 
 Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
-  /* This implementation is really primitive; it ignores segment width */
   /* Mathematical idea: represent us as p1 + a dp where a in [0, 1] and
      other segment as p1' + a' dp' (where a' in [0, 1]). Find intersection.
      We have x = x1 + a dx = x1' + a' dx' and y = y1 + a dy = y1' + a' dy'.
@@ -159,4 +158,24 @@ double Segment::angle(Segment const &t) const {
   while (a<-PI)
     a += 2*PI;
   return a;
+}
+
+Segment Segment::orthogonallyDisplaced(Dim d) const {
+  double us = atan2(p2.y.toMils() - p1.y.toMils(),
+		    p2.x.toMils() - p1.x.toMils());
+  Point dxy(d*sin(us), d*cos(us));
+  return Segment(p1 + dxy, p2 + dxy);
+}
+
+bool Segment::intersects(Rect r) const {
+  return r.contains(p1) || r.contains(p2)
+    || intersects(Segment(r.topLeft(), r.topRight()))
+    || intersects(Segment(r.topRight(), r.bottomRight()))
+    || intersects(Segment(r.bottomRight(), r.bottomLeft()))
+    || intersects(Segment(r.bottomLeft(), r.topLeft()));
+}
+
+QDebug operator<<(QDebug d, Segment const &t) {
+  d << "Segment(" << t.p1 << t.p2 << ")";
+  return d;
 }

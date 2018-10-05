@@ -57,14 +57,78 @@ bool Trace::onSegment(Point p, Dim mrg) const {
 }
 
 bool Trace::touches(class Trace const &t, Point *pt) const {
-  if (layer == t.layer) {
-    /* This implementation is really primitive; it ignores trace width */
-    return Segment::touches(t, pt);
-  } else {
+  // this is ridiculously elaborate, but more or less correct
+  if (layer != t.layer)
     return false;
+  if (!boundingRect().intersects(t.boundingRect()))
+    return false;
+
+  if (t.onSegment(p1, width/2)) {
+    if (pt)
+      *pt = p1;
+    return true;
+  } else if (t.onSegment(p2, width/2)) {
+    if (pt)
+      *pt = p1;
+    return true;
+  } else if (onSegment(t.p1, t.width/2)) {
+    if (pt)
+      *pt = t.p1;
+    return true;
+  } else if (onSegment(t.p2, t.width/2)) {
+    if (pt)
+      *pt = t.p2;
+    return true;
   }
+  
+  if (intersects(t, pt))
+    return true;
+  else if (orthogonallyDisplaced(width/2).intersects(t, pt)
+      || orthogonallyDisplaced(-width/2).intersects(t, pt))
+    return true;
+  else if (intersects(t.orthogonallyDisplaced(t.width/2), pt)
+      || intersects(t.orthogonallyDisplaced(-t.width/2), pt))
+    return true;
+  else
+    return false;
+}
+
+bool Trace::touches(class Segment const &t, Point *pt) const {
+  if (!boundingRect().intersects(t.boundingRect()))
+    return false;
+
+  if (t.onSegment(p1, width/2)) {
+    if (pt)
+      *pt = p1;
+    return true;
+  } else if (t.onSegment(p2, width/2)) {
+    if (pt)
+      *pt = p1;
+    return true;
+  } else if (onSegment(t.p1)) {
+    if (pt)
+      *pt = t.p1;
+    return true;
+  } else if (onSegment(t.p2)) {
+    if (pt)
+      *pt = t.p2;
+    return true;
+  }
+
+  if (intersects(t, pt))
+    return true;
+  else if (orthogonallyDisplaced(width/2).intersects(t, pt)
+      || orthogonallyDisplaced(-width/2).intersects(t, pt))
+    return true;
+  else
+    return false;
 }
 
 bool Trace::operator==(Trace const &t) const {
   return layer==t.layer && width==t.width && p1==t.p1 && p2==t.p2;
+}
+
+bool Trace::touches(Rect r) const {
+  r.grow(width);
+  return intersects(r);
 }

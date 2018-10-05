@@ -553,7 +553,7 @@ void Editor::setArcAngle(int angle) {
       uc.realize();
       Arc &arc(obj.asArc());
       int a0 = (arc.rota + arc.angle/2) / 90.0 + .49;
-      qDebug() << arc.rota << arc.angle << a0 << angle;
+      qDebug() << "setarcangle" << arc.rota << arc.angle << a0 << angle;
       if (angle<0) {
         arc.angle = -angle;
         arc.rota = FreeRotation(a0*90);
