@@ -107,7 +107,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Text const &t) {
   s.writeAttribute("p", t.p.toString());
   s.writeAttribute("fs", t.fontsize.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
-  s.writeAttribute("rota", QString::number(t.rota));
+  s.writeAttribute("rot", QString::number(t.rota));
   if (t.flip)
     s.writeAttribute("flip", "1");
   s.writeAttribute("text", t.text);
@@ -125,7 +125,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Text &t) {
     t.rota = FreeRotation(bits[0].toInt() * 90);
     t.flip = bits[1].toInt() ? true : false;
   } else {
-    t.rota = FreeRotation(a.value("rota").toInt());
+    t.rota = FreeRotation(a.value("rot").toInt());
     t.flip = a.value("flip").toInt() ? true : false;
   }
   t.text = a.value("text").toString();
