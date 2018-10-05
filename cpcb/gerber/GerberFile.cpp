@@ -21,18 +21,23 @@ GerberFile::~GerberFile() {
 }
 
 Gerber::Font &GerberFile::ensureFont(Gerber::FontSpec fs) {
-  if (!aps.contains(Gerber::Apertures::Func::NonConductor))
-    newApertures(Gerber::Apertures::Func::NonConductor);
+  if (!aps.contains(Gerber::Apertures::Func::Material))
+    newApertures(Gerber::Apertures::Func::Material);
   auto it = fonts.find(fs);
   if (it==fonts.end())
     return *fonts.insert(fs,
-           Gerber::Font(&aps[Gerber::Apertures::Func::NonConductor], fs));
+           Gerber::Font(&aps[Gerber::Apertures::Func::Material], fs));
   else
     return *it;
 }
 
 Gerber::Font const &GerberFile::font(Gerber::FontSpec fs) const {
   auto it = fonts.find(fs);
+  if (it==fonts.end()) {
+    qDebug() << "fontnotfound" << fs;
+    for (Gerber::FontSpec f: fonts.keys())
+      qDebug() << "  != " << f;
+  }
   Q_ASSERT(it!=fonts.end());
   return *it;
 }
@@ -96,8 +101,8 @@ Gerber::Apertures const &GerberFile::apertures(Gerber::Apertures::Func func)
 }
 
 void GerberFile::writeApertures(Gerber::Apertures::Func func) {
-  Q_ASSERT(aps.contains(func));
-  writeApertures(aps[func]);
+  if (aps.contains(func)) 
+    writeApertures(aps[func]);
 }
 
 void GerberFile::writeApertures(Gerber::Apertures const &ap) {

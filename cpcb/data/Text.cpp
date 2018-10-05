@@ -5,6 +5,7 @@
 
 Text::Text() {
   groupaffiliation = -1;
+  flip = false;
 }
 
 void Text::setGroupAffiliation(int id) {
@@ -21,16 +22,21 @@ Rect Text::boundingRect() const {
   Dim w(scl*sf.width(text));
   Dim asc(scl*sf.ascent());
   Dim desc(scl*sf.descent());
-  bool efflip = orient.flip ^ (layer==Layer::Bottom);
+  bool efflip = flip ^ (layer==Layer::Bottom);
+  int effrot = rota;//efflip ? -rota : rota;
   if (efflip)
     w = -w;
-  switch (orient.rot & 3) {
-  case 0: return Rect(p + Point(Dim(), desc), p + Point(w, -asc));
-  case 1: return Rect(p + Point(asc, Dim()), p + Point(-desc, w));
-  case 2: return Rect(p + Point(Dim(), -desc), p + Point(-w, asc));
-  case 3: return Rect(p + Point(-asc, Dim()), p + Point(desc, -w));
+  Rect r0(p + Point(Dim(), desc), p + Point(w, -asc));
+  if (effrot) {
+    Rect r(p, p);
+    r|= Point(r0.left, r0.top).rotated(effrot, p);
+    r|= Point(r0.right(), r0.top).rotated(effrot, p);
+    r|= Point(r0.left, r0.bottom()).rotated(effrot, p);
+    r|= Point(r0.right(), r0.bottom()).rotated(effrot, p);
+    return r;
+  } else {
+    return r0;
   }
-  return Rect(); // not executed 
 }
 
 void Text::flipLeftRight() {
@@ -43,25 +49,27 @@ void Text::flipLeftRight(Dim x0) {
 	   << "br=" << boundingRect()
 	   << "center=" << boundingRect().center()
 	   << "target=" << ctarget;
-  orient.flip = !orient.flip;
-  if (orient.rot&1)
-    orient.rot ^= 2;
+  flip = !flip;
+  rota = -rota;
   Point c1 = boundingRect().center();
   qDebug() << "new center" << c1;
   p += ctarget - c1; // shift it back so center is maintained
   qDebug() << "new p" << p;
 }
+
 void Text::flipUpDown() {
   flipUpDown(boundingRect().center().y);
 }
 
 void Text::flipUpDown(Dim y0) {
+  qDebug() << "text::flipupdown" << *this << y0;
   Point ctarget = boundingRect().center().flippedUpDown(y0);
-  orient.flip = !orient.flip;
-  if ((orient.rot&1) == 0)
-    orient.rot ^= 2;
+  rotateCCW();
+  flipLeftRight();
+  rotateCW();
   Point c1 = boundingRect().center();
   p += ctarget - c1; // shift it back so center is maintained
+  qDebug() << "  now" << *this;
 }
 
 void Text::rotateCCW() {
@@ -70,7 +78,7 @@ void Text::rotateCCW() {
 
 void Text::rotateCCW(Point const &p0) {
   Point ctarget = boundingRect().center().rotatedCCW(p0);
-  orient.rot = (orient.rot + 1) & 3;
+  rota -= 90;
   Point c1 = boundingRect().center();
   p += ctarget - c1; // shift it back so center is maintained
 }
@@ -81,7 +89,7 @@ void Text::rotateCW() {
 
 void Text::rotateCW(Point const &p0) {
   Point ctarget = boundingRect().center().rotatedCW(p0);
-  orient.rot = (orient.rot + 1) & 3;
+  rota += 90;
   Point c1 = boundingRect().center();
   p += ctarget - c1; // shift it back so center is maintained
 }
@@ -99,7 +107,9 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Text const &t) {
   s.writeAttribute("p", t.p.toString());
   s.writeAttribute("fs", t.fontsize.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
-  s.writeAttribute("ori", t.orient.toString());
+  s.writeAttribute("rota", QString::number(t.rota));
+  if (t.flip)
+    s.writeAttribute("flip", "1");
   s.writeAttribute("text", t.text);
   s.writeEndElement();
   return s;
@@ -109,22 +119,17 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Text &t) {
   bool ok;
   auto a = s.attributes();
   t.p = Point::fromString(a.value("p").toString(), &ok);
-  if (ok)
-    t.fontsize = Dim::fromString(a.value("fs").toString(), &ok);
-  else
-    t.fontsize = Dim();
-  if (ok)
-    t.orient = Orient::fromString(a.value("ori").toString(), &ok);
-  else
-    t.orient = Orient();
-  if (ok)
-    t.text = a.value("text").toString();
-  else
-    t.text = "";
-  if (ok)
-    t.layer = Layer(a.value("l").toInt());
-  else
-    t.layer = Layer::Invalid;
+  t.fontsize = Dim::fromString(a.value("fs").toString(), &ok);
+  if (a.hasAttribute("ori")) {
+    QStringList bits = a.value("ori").toString().split(" ");
+    t.rota = FreeRotation(bits[0].toInt() * 90);
+    t.flip = bits[1].toInt() ? true : false;
+  } else {
+    t.rota = FreeRotation(a.value("rota").toInt());
+    t.flip = a.value("flip").toInt() ? true : false;
+  }
+  t.text = a.value("text").toString();
+  t.layer = Layer(a.value("l").toInt());
   s.skipCurrentElement();
   return s;
 }
@@ -133,7 +138,8 @@ QDebug operator<<(QDebug d, Text const &t) {
   d << "Text(" << t.p
     << t.layer
     << t.text
-    << t.orient
+    << int(t.rota)
+    << t.flip
     << t.fontsize
     << t.groupAffiliation()
     << ")";

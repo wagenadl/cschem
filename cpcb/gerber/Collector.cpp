@@ -62,8 +62,11 @@ void Collector::collect(Group const &grp) {
     } break;
     case Object::Type::Text: {
       Text text(obj.asText());
+      qDebug() << "collected" << text;
       text.flipUpDown(d->mirrory);
-      Gerber::FontSpec fs(text.fontsize, text.orient.rot, text.orient.flip);
+      if (text.layer==Layer::Bottom)
+        text.flip = !text.flip;
+      Gerber::FontSpec fs(text.fontsize, text.rota, text.flip);
       d->texts[text.layer][fs] << text;
     } break;
     case Object::Type::Arc: {
