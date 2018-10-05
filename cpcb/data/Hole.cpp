@@ -12,6 +12,17 @@ Hole::Hole() {
 Rect Hole::boundingRect() const {
   Dim r = od/2;
   Rect rct(p - Point(r, r), p + Point(r, r));
+  if (rota%90!=0 || slotlength.isPositive()) {
+    Dim dx = slotlength/2;
+    Point nw(-r-dx, -r);
+    Point ne(r+dx, -r);
+    Point sw(-r-dx, r);
+    Point se(r+dx, r);
+    rct |= p + nw.rotated(rota);
+    rct |= p + ne.rotated(rota);
+    rct |= p + sw.rotated(rota);
+    rct |= p + se.rotated(rota);
+  }
   return rct;
 }
 
@@ -28,6 +39,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
     s.writeAttribute("noclear", "1");
   if (t.slotlength.isPositive())
     s.writeAttribute("sl", t.slotlength.toString());
+  if (t.rota)
+    s.writeAttribute("rot", QString::number(t.rota));
   s.writeEndElement();
   return s;
 }
@@ -38,16 +51,13 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
   auto a = s.attributes();
   t.ref = a.value("ref").toString();
   t.p = Point::fromString(a.value("p").toString(), &ok);
-  if (ok)
-    t.square = a.value("sq").toInt(&ok);
-  if (ok)
-    t.id = Dim::fromString(a.value("id").toString(), &ok);
-  if (ok)
-    t.od = Dim::fromString(a.value("od").toString(), &ok);
+  t.square = a.value("sq").toInt(&ok);
+  t.id = Dim::fromString(a.value("id").toString(), &ok);
+  t.od = Dim::fromString(a.value("od").toString(), &ok);
   t.fpcon = Layer(a.value("fp").toInt());
   t.noclear = a.value("noclear").toInt() != 0;
-  if (ok)
-    t.slotlength = Dim::fromString(a.value("slotlength").toString());
+  t.slotlength = Dim::fromString(a.value("slotlength").toString());
+  t.rota = FreeRotation(a.value("rot").toInt());
   s.skipCurrentElement();
   return s;
 }
@@ -62,6 +72,7 @@ QDebug operator<<(QDebug d, Hole const &t) {
     << int(t.fpcon)
     << (t.noclear ? "noclear" : "")
     << t.slotlength
+    << t.rota
     << ")";
   return d;
 }
@@ -69,19 +80,44 @@ QDebug operator<<(QDebug d, Hole const &t) {
 bool Hole::touches(Trace const &t) const {
   if (!(t.layer==Layer::Top || t.layer==Layer::Bottom))
     return false;
+  if (!t.touches(boundingRect()))
+    return false;
   if (p==t.p1 || p==t.p2)
     return true;
-  return t.onSegment(p, od/2)
-    || (square
-	&& (t.onSegment(p + Point(od/2, od/2))
-	    || t.onSegment(p + Point(od/2, -od/2))
-	    || t.onSegment(p + Point(-od/2, od/2))
-	    || t.onSegment(p + Point(-od/2, -od/2))));
+  if (t.onSegment(p, od/2))
+    return true;
+  if (square) {
+    Segment t1;
+    t1.p1 = t.p1.rotated(-rota, p);
+    t1.p2 = t.p2.rotated(-rota, p);
+    Point dxy(slotlength/2+od/2,od/2);
+    Rect r0(p - dxy, p + dxy);
+    return t1.intersects(r0)
+      || t1.orthogonallyDisplaced(-t.width/2).intersects(r0)
+      || t1.orthogonallyDisplaced(t.width/2).intersects(r0);
+  } else {
+    if (slotlength.isPositive()) {
+      constexpr double PI = 4*atan(1.0);
+      Trace me;
+      me.layer = t.layer;
+      me.width = od;
+      Point dxy(cos(PI*rota/180)*slotlength/2,
+		sin(PI*rota/180)*slotlength/2);
+      me.p1 = p + dxy;
+      me.p2 = p - dxy;
+      return t.touches(me);
+    } else {
+      return false;
+    }
+  }
 }
 
 bool Hole::touches(FilledPlane const &fp) const {
-  if (noclear || fpcon==fp.layer)
-    return fp.perimeter.contains(p, od/2);
-  else
+  if (noclear || fpcon==fp.layer) {
+    if (fp.perimeter.contains(p, od/2))
+      return true;
+    return false; // this is not quite good enough
+  } else {
     return false;
+  }
 }
