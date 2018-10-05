@@ -121,3 +121,18 @@ bool Hole::touches(FilledPlane const &fp) const {
     return false;
   }
 }
+
+void Hole::rotateCW(Point const &p0) {
+  rota += 90;
+  p.rotateCW(p0);
+}
+
+void Hole::flipLeftRight(Dim const &x0) {
+  rota.flipLeftRight();
+  p.flipLeftRight(x0);
+}
+
+void Hole::flipUpDown(Dim const &y0) {
+  rota.flipUpDown();
+  p.flipUpDown(y0);
+}
