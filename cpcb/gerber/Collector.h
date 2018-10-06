@@ -16,6 +16,7 @@ public:
   void collect(Group const &root);
 public:
   QMap<Dim, QList<Hole>> const &holes() const; // key is ID
+  QMap<Dim, QList<NPHole>> const &npHoles() const; // key is D
   QMap<Dim, QList<Hole>> const &roundHolePads(Layer) const; // key is OD
   QMap<Dim, QList<Hole>> const &squareHolePads(Layer) const; // key is OD
   QMap<Point, QList<Pad>> const &smdPads(Layer) const; // key is (W,H)

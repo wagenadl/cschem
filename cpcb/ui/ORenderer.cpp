@@ -233,6 +233,7 @@ void ORenderer::drawNPHole(NPHole const &h, bool selected, bool /*innet*/) {
     p->drawLine(p0 - dxy, p0 + dxy);
   } else {
     p->setBrush(col);
+    p->setPen(Qt::NoPen);
     p->drawEllipse(p0, id/2, id/2);
   }
 }
