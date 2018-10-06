@@ -353,6 +353,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Object &o) {
   } else if (name=="nphole") {
     NPHole t;
     s >> t;
+    qDebug() << "read nphole" << t;
     o = Object(t);
   } else if (name=="pad") {
     Pad t;

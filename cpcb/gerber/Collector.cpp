@@ -9,6 +9,7 @@ class ColData {
 public:
   Dim mirrory;
   QMap<Dim, QList<Hole>> holes;
+  QMap<Dim, QList<NPHole>> npHoles;
   QMap<Layer, QMap<Dim, QList<Hole>>> roundHolePads;
   QMap<Layer, QMap<Dim, QList<Hole>>> squareHolePads;
   QMap<Layer, QMap<Point, QList<Pad>>> smdPads;
@@ -40,6 +41,11 @@ void Collector::collect(Group const &grp) {
       auto &map(hole.square ? d->squareHolePads : d->roundHolePads);
       map[Layer::Top][hole.od] << hole;
       map[Layer::Bottom][hole.od] << hole;
+    } break;
+    case Object::Type::NPHole: {
+      NPHole hole(obj.asNPHole());
+      hole.flipUpDown(d->mirrory);
+      d->npHoles[hole.d] << hole;
     } break;
     case Object::Type::Pad: {
       Pad pad(obj.asPad());
@@ -79,6 +85,10 @@ void Collector::collect(Group const &grp) {
 
 QMap<Dim, QList<Hole>> const &Collector::holes() const {
   return d->holes;
+}
+
+QMap<Dim, QList<NPHole>> const &Collector::npHoles() const {
+  return d->npHoles;
 }
 
 QMap<Dim, QList<Hole>> const &

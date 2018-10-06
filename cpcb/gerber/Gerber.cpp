@@ -15,22 +15,24 @@ namespace Gerber {
   }
   QString layerInfix(Layer l) {
     switch (l) {
-    case Gerber::Layer::BoardOutline: return "0-Profile";
-    case Gerber::Layer::ThroughHoles: return "1-Drill";
-    case Gerber::Layer::BottomCopper: return "6-Bottom";
-    case Gerber::Layer::BottomSolderMask: return "7-BottomMask";
-    case Gerber::Layer::BottomPasteMask: return "8-BottomPaste";
-    case Gerber::Layer::TopCopper: return "4-Top";
-    case Gerber::Layer::TopSolderMask: return "5-TopMask";
-    case Gerber::Layer::TopSilk: return "2-Silk";
-    case Gerber::Layer::TopPasteMask: return "3-TopPaste";
+    case Gerber::Layer::BoardOutline: return "BoardOutline";
+    case Gerber::Layer::ThroughHoles: return "drill_PTH";
+    case Gerber::Layer::BottomCopper: return "BottomLayer";
+    case Gerber::Layer::BottomSolderMask: return "BottomSolderMaskLayer";
+    case Gerber::Layer::BottomPasteMask: return "BottomPasteMaskLayer";
+    case Gerber::Layer::TopCopper: return "TopLayer";
+    case Gerber::Layer::TopSolderMask: return "TopSolderMaskLayer";
+    case Gerber::Layer::TopSilk: return "TopSilkLayer";
+    case Gerber::Layer::TopPasteMask: return "TopPasteMaskLayer";
+    case Gerber::Layer::NonplatedHoles: return "drill_NPTH";
     default: return "";
     }
   }
   QString layerSuffix(Layer l) {
     switch (l) {
     case Gerber::Layer::BoardOutline: return "GKO";
-    case Gerber::Layer::ThroughHoles: return "DRI";
+    case Gerber::Layer::ThroughHoles: return "DRL";
+    case Gerber::Layer::NonplatedHoles: return "DRL";
     case Gerber::Layer::BottomCopper: return "GBL";
     case Gerber::Layer::BottomSolderMask: return "GBS";
     case Gerber::Layer::BottomPasteMask: return "GBP";
