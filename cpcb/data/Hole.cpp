@@ -56,7 +56,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
   t.od = Dim::fromString(a.value("od").toString(), &ok);
   t.fpcon = Layer(a.value("fp").toInt());
   t.noclear = a.value("noclear").toInt() != 0;
-  t.slotlength = Dim::fromString(a.value("slotlength").toString());
+  t.slotlength = Dim::fromString(a.value("sl").toString());
   t.rota = FreeRotation(a.value("rot").toInt());
   s.skipCurrentElement();
   return s;
@@ -136,3 +136,16 @@ void Hole::flipUpDown(Dim const &y0) {
   rota.flipUpDown();
   p.flipUpDown(y0);
 }
+
+bool Hole::isSlot() const {
+  return slotlength.isPositive();
+}
+
+Segment Hole::slotEnds() const {
+  constexpr double PI = 4*atan(1);
+  double phi = rota*PI/180;
+  Point dp = Point(slotlength/2*cos(phi), slotlength/2*sin(phi));
+  return Segment(p-dp, p+dp);
+}
+
+  

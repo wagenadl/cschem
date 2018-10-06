@@ -9,6 +9,7 @@
 #include "FreeRotation.h"
 #include <QXmlStreamReader>
 #include <QDebug>
+#include "Segment.h"
 
 class Hole {
 public:
@@ -30,6 +31,8 @@ public:
   void rotateCW(Point const &p0);
   void flipLeftRight(Dim const &x0);
   void flipUpDown(Dim const &y0);
+  bool isSlot() const;
+  Segment slotEnds() const;
 };
 
 QDebug operator<<(QDebug, Hole const &);
