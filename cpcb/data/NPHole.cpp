@@ -34,7 +34,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, NPHole &t) {
   auto a = s.attributes();
   t.p = Point::fromString(a.value("p").toString(), &ok);
   t.d = Dim::fromString(a.value("d").toString(), &ok);
-  t.slotlength = Dim::fromString(a.value("slotlength").toString());
+  t.slotlength = Dim::fromString(a.value("sl").toString());
   t.rota = FreeRotation(a.value("rot").toInt());
   s.skipCurrentElement();
   return s;
@@ -63,4 +63,15 @@ void NPHole::flipLeftRight(Dim const &x0) {
 void NPHole::flipUpDown(Dim const &y0) {
   rota.flipUpDown();
   p.flipUpDown(y0);
+}
+
+bool NPHole::isSlot() const {
+  return slotlength.isPositive();
+}
+
+Segment NPHole::slotEnds() const {
+  constexpr double PI = 4*atan(1);
+  double phi = rota*PI/180;
+  Point dp = Point(slotlength/2*cos(phi), slotlength/2*sin(phi));
+  return Segment(p-dp, p+dp);
 }

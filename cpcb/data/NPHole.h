@@ -5,6 +5,7 @@
 #define NPHOLE_H
 
 #include "Rect.h"
+#include "Segment.h"
 #include <QXmlStreamReader>
 #include <QDebug>
 #include "FreeRotation.h"
@@ -22,6 +23,8 @@ public:
   void rotateCW(Point const &p0);
   void flipLeftRight(Dim const &x0);
   void flipUpDown(Dim const &y0);
+  bool isSlot() const;
+  Segment slotEnds() const;
 };
 
 QDebug operator<<(QDebug, NPHole const &);

@@ -18,8 +18,7 @@ public:
   // Following return true if OK
   bool writeBoardOutline();
   bool writeThroughHoles();
-  bool writeThroughHolesGerber();
-  bool writeThroughHolesExcellon();
+  bool writeNPHoles();
   bool writeCopper(Gerber::Layer);
   bool writePasteMask(Gerber::Layer);
   bool writeSolderMask(Gerber::Layer);
@@ -92,8 +91,10 @@ bool GerberWriter::writeLayer(Gerber::Layer layer) {
   switch (layer) {
   case Gerber::Layer::BoardOutline:
     return d->writeBoardOutline();
-   case Gerber::Layer::ThroughHoles:
-     return d->writeThroughHoles();
+  case Gerber::Layer::ThroughHoles:
+    return d->writeThroughHoles();
+  case Gerber::Layer::NonplatedHoles:
+    return d->writeNPHoles();
   case Gerber::Layer::BottomCopper: case Gerber::Layer::TopCopper:
     return d->writeCopper(layer);
   case Gerber::Layer::BottomPasteMask: case Gerber::Layer::TopPasteMask:
@@ -131,13 +132,55 @@ bool GWData::writeBoardOutline() {
     break;
   case Board::Shape::Round:
     if (brd.width==brd.height) {
-      // simple circle
-      out << "G01" << "X0Y" << Gerber::coord(brd.height/2) << "D02*\n";
-      out << "G03" << "X0Y" << Gerber::coord(brd.height/2)
+      // simple circle: use left edge as start/end
+      out << "G01"
+          << "X0Y" << Gerber::coord(brd.height/2) << "D02*\n";
+      out << "G03"
+          << "X0Y" << Gerber::coord(brd.height/2)
 	  << "I" <<  Gerber::coord(brd.width/2)
 	  << "J0" << "D01*\n";
     } else if (brd.width<brd.height) {
+      // vertically oriented obrect. start at top of left edge
+      out << "G01"
+          << "X0Y" << Gerber::coord(brd.width/2) << "D02*\n";
+      out << "G03"
+          << "X" << Gerber::coord(brd.width)
+          << "Y" << Gerber::coord(brd.width/2)
+	  << "I" << Gerber::coord(brd.width/2) << "J0"
+          << "D01*\n"; // draw top half circle
+      out << "G01" 
+          << "X" << Gerber::coord(brd.width)
+          << "Y" << Gerber::coord(brd.height - brd.width/2)
+          << "D01*\n"; // draw right edge
+      out << "G03"
+          << "X0"
+          << "Y" << Gerber::coord(brd.height - brd.width/2)
+	  << "I" << Gerber::coord(-brd.width/2) << "J0"
+          << "D01*\n"; // draw bottom half circle
+      out << "G01" 
+          << "X0" << "Y" << Gerber::coord(brd.width/2)
+          << "D01*\n"; // draw left edge
     } else {
+      // horizontally oriented obrect. start at left of bottom edge
+      out << "G01"
+          << "X" << Gerber::coord(brd.height/2) << "Y0" << "D02*\n";
+      out << "G02"
+          << "X" << Gerber::coord(brd.height/2)
+          << "Y" << Gerber::coord(brd.height)
+	  << "I0" << "J" << Gerber::coord(brd.height/2)
+          << "D01*\n"; // draw left half circle
+      out << "G01" 
+          << "X" << Gerber::coord(brd.width - brd.height/2)
+          << "Y" << Gerber::coord(brd.height)
+          << "D01*\n"; // draw top edge
+      out << "G02"
+          << "X" << Gerber::coord(brd.width - brd.height/2)
+          << "Y0"
+	  << "I0" << "J" << Gerber::coord(-brd.height/2)
+          << "D01*\n"; // draw right half circle
+      out << "G01" 
+          << "X" << Gerber::coord(brd.height/2) << "Y0"
+          << "D01*\n"; // draw bottom edge
     }
     break;
   }
@@ -145,14 +188,22 @@ bool GWData::writeBoardOutline() {
   return true;
 }
 
-bool GWData::writeThroughHoles() {
-  return writeThroughHolesExcellon();
+static QString excellonMetric(Point p) {
+  return QString("X%1Y%2")
+    .arg(int(round(p.x.toMM()*1000)), 6, 10, QChar('0'))
+    .arg(int(round(p.y.toMM()*1000)), 6, 10, QChar('0'));
 }
 
-bool GWData::writeThroughHolesExcellon() {
+static QString excellonInch(Point p) {
+  return QString("X%1Y%2")
+    .arg(int(round(p.x.toMils()*10)), 6, 10, QChar('0'))
+    .arg(int(round(p.y.toMils()*10)), 6, 10, QChar('0'));
+}
+
+bool GWData::writeThroughHoles() {
   QFile f(dir.absoluteFilePath(dir.dirName()
-			       + "-" + layerInfix(Gerber::Layer::ThroughHoles)
-			       + ".TXT"));
+       + "-" + layerInfix(Gerber::Layer::ThroughHoles)
+       + "." + layerSuffix(Gerber::Layer::ThroughHoles)));
   if (!f.open(QFile::WriteOnly)) {
     qDebug() << "Could not create file" << f.fileName();
     return false;
@@ -196,26 +247,14 @@ bool GWData::writeThroughHolesExcellon() {
       if (h.isSlot()) {
         Segment s(h.slotEnds());
         if (metric) 
-          out << QString("X%1Y%2G85X%3Y%4\n")
-            .arg(int(round(s.p1.x.toMM()*1000)), 6, 10, QChar('0'))
-            .arg(int(round(s.p1.y.toMM()*1000)), 6, 10, QChar('0'))
-            .arg(int(round(s.p2.x.toMM()*1000)), 6, 10, QChar('0'))
-            .arg(int(round(s.p2.y.toMM()*1000)), 6, 10, QChar('0'));
+          out << excellonMetric(s.p1) << "G85" << excellonMetric(s.p2) << "\n";
         else
-          out << QString("X%1Y%2G85X%3Y%4\n")
-            .arg(int(round(s.p1.x.toMils()*10)), 6, 10, QChar('0'))
-            .arg(int(round(s.p1.y.toMils()*10)), 6, 10, QChar('0'))
-            .arg(int(round(s.p2.x.toMils()*10)), 6, 10, QChar('0'))
-            .arg(int(round(s.p2.y.toMils()*10)), 6, 10, QChar('0'));
+          out << excellonInch(s.p1) << "G85" << excellonInch(s.p2) << "\n";
       } else {
         if (metric)
-          out << QString("X%1Y%2\n")
-            .arg(int(round(h.p.x.toMM()*1000)), 6, 10, QChar('0'))
-            .arg(int(round(h.p.y.toMM()*1000)), 6, 10, QChar('0'));
+          out << excellonMetric(h.p) << "\n";
         else 
-          out << QString("X%1Y%2\n")
-            .arg(int(round(h.p.x.toMils()*10)), 6, 10, QChar('0'))
-            .arg(int(round(h.p.y.toMils()*10)), 6, 10, QChar('0'));
+          out << excellonInch(h.p) << "\n";
       }
     }
   }
@@ -223,30 +262,65 @@ bool GWData::writeThroughHolesExcellon() {
   return true;
 }
 
-bool GWData::writeThroughHolesGerber() {
-  GerberFile out(dir, Gerber::Layer::ThroughHoles, uuid);
-  if (!out.isValid())
+bool GWData::writeNPHoles() {
+  QFile f(dir.absoluteFilePath(dir.dirName()
+       + "-" + layerInfix(Gerber::Layer::NonplatedHoles)
+       + "." + layerSuffix(Gerber::Layer::NonplatedHoles)));
+  if (!f.open(QFile::WriteOnly)) {
+    qDebug() << "Could not create file" << f.fileName();
     return false;
+  }
+  QTextStream out(&f);
+  
+  // Output header
+  out << "; NPTH drill file created by cpcb\n";
+  out << "M48\n";
+  if (metric)
+    out << "METRIC,LZ\n";
+  else
+    out << "INCH,LZ\n";
+  out << "FMAT,2\n";
+  int toolidx = 0;
+  QMap<Dim, int> toolindex;
+  for (Dim d: collector.npHoles().keys()) {
+    ++toolidx;
+    toolindex[d] = toolidx;
+    if (metric)
+      out << QString("T%1C%2\n")
+	.arg(toolidx, 2, 10, QChar('0'))
+	.arg(d.toMM(), 0, 'f', 3);
+    else
+      out << QString("T%1C%2\n")
+	.arg(toolidx, 2, 10, QChar('0'))
+	.arg(d.toInch(), 0, 'f', 4);
+  }
+  out << "%\n";
 
-  Gerber::Apertures &aps(out
-			 .newApertures(Gerber::Apertures::Func::ComponentDrill));
-  for (Dim d: collector.holes().keys())
-    aps.ensure(Gerber::Circ(d));
-  out << "%TA.DrillTolerance,0.10000,0.03000*%\n";
-  out.writeApertures(aps);
-
-  out << "G01*\n";
-  out << "%LPD*%\n";
-
-  for (Dim d: collector.holes().keys()) {
-    out << aps.select(Gerber::Circ(d));
-    for (Hole const &h: collector.holes()[d]) {
-      if (h.slotlength.isPositive())
-        qDebug() << "Warning: Slotting not yet supported in Gerber drill files";
-      out << Gerber::point(h.p) << "D03*\n";
+  // Output body
+  if (metric)
+    out << "M71\n"; // explicit mm
+  else
+    out << "M72\n"; // explicit inch
+  out << "G05\n";
+  out << "G90\n";
+  for (Dim d: collector.npHoles().keys()) {
+    out << QString("T%1\n").arg(toolindex[d], 2, 10, QChar('0'));
+    for (NPHole const &h: collector.npHoles()[d]) {
+      if (h.isSlot()) {
+        Segment s(h.slotEnds());
+        if (metric) 
+          out << excellonMetric(s.p1) << "G85" << excellonMetric(s.p2) << "\n";
+        else
+          out << excellonInch(s.p1) << "G85" << excellonInch(s.p2) << "\n";
+      } else {
+        if (metric)
+          out << excellonMetric(h.p) << "\n";
+        else 
+          out << excellonInch(h.p) << "\n";
+      }
     }
   }
-  out << "M02*\n"; // terminate file
+  out << "M30\n";
   return true;
 }
 
@@ -789,6 +863,8 @@ bool GerberWriter::writeAllLayers() {
   if (!writeLayer(Gerber::Layer::BoardOutline))
     return false;
   if (!writeLayer(Gerber::Layer::ThroughHoles))
+    return false;
+  if (!writeLayer(Gerber::Layer::NonplatedHoles))
     return false;
   if (!writeLayer(Gerber::Layer::BottomCopper))
     return false;
