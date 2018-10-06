@@ -192,15 +192,31 @@ bool GWData::writeThroughHolesExcellon() {
   out << "G90\n";
   for (Dim d: collector.holes().keys()) {
     out << QString("T%1\n").arg(toolindex[d], 2, 10, QChar('0'));
-    for (Point p: collector.holes()[d]) {
-      if (metric)
-	out << QString("X%1Y%2\n")
-	  .arg(int(round(p.x.toMM()*1000)), 6, 10, QChar('0'))
-	  .arg(int(round(p.y.toMM()*1000)), 6, 10, QChar('0'));
-      else 
-	out << QString("X%1Y%2\n")
-	  .arg(int(round(p.x.toMils()*10)), 6, 10, QChar('0'))
-	  .arg(int(round(p.y.toMils()*10)), 6, 10, QChar('0'));
+    for (Hole const &h: collector.holes()[d]) {
+      if (h.isSlot()) {
+        Segment s(h.slotEnds());
+        if (metric) 
+          out << QString("X%1Y%2G85X%3Y%4\n")
+            .arg(int(round(s.p1.x.toMM()*1000)), 6, 10, QChar('0'))
+            .arg(int(round(s.p1.y.toMM()*1000)), 6, 10, QChar('0'))
+            .arg(int(round(s.p2.x.toMM()*1000)), 6, 10, QChar('0'))
+            .arg(int(round(s.p2.y.toMM()*1000)), 6, 10, QChar('0'));
+        else
+          out << QString("X%1Y%2G85X%3Y%4\n")
+            .arg(int(round(s.p1.x.toMils()*10)), 6, 10, QChar('0'))
+            .arg(int(round(s.p1.y.toMils()*10)), 6, 10, QChar('0'))
+            .arg(int(round(s.p2.x.toMils()*10)), 6, 10, QChar('0'))
+            .arg(int(round(s.p2.y.toMils()*10)), 6, 10, QChar('0'));
+      } else {
+        if (metric)
+          out << QString("X%1Y%2\n")
+            .arg(int(round(h.p.x.toMM()*1000)), 6, 10, QChar('0'))
+            .arg(int(round(h.p.y.toMM()*1000)), 6, 10, QChar('0'));
+        else 
+          out << QString("X%1Y%2\n")
+            .arg(int(round(h.p.x.toMils()*10)), 6, 10, QChar('0'))
+            .arg(int(round(h.p.y.toMils()*10)), 6, 10, QChar('0'));
+      }
     }
   }
   out << "M30\n";
@@ -224,8 +240,11 @@ bool GWData::writeThroughHolesGerber() {
 
   for (Dim d: collector.holes().keys()) {
     out << aps.select(Gerber::Circ(d));
-    for (Point p: collector.holes()[d]) 
-      out << Gerber::point(p) << "D03*\n";
+    for (Hole const &h: collector.holes()[d]) {
+      if (h.slotlength.isPositive())
+        qDebug() << "Warning: Slotting not yet supported in Gerber drill files";
+      out << Gerber::point(h.p) << "D03*\n";
+    }
   }
   out << "M02*\n"; // terminate file
   return true;
@@ -465,6 +484,26 @@ bool GWData::writeText(GerberFile &out, Gerber::Layer layer) {
   return true;
 }
 
+static void writeRotatedRect(GerberFile &out,
+                             Point const &p, Dim dx, Dim dy,
+                             FreeRotation rota) {
+  auto pt = [&](Point dp) { return Gerber::point(p + dp.rotated(rota)/2); };
+  out << "G01*\n"; // linear
+  out << "G36*\n"; // linear
+  out << pt(Point(dx, dy)) << "D02*\n";
+  out << pt(Point(-dx, dy)) << "D01*\n";
+  out << pt(Point(-dx, -dy)) << "D01*\n";
+  out << pt(Point(dx, -dy)) << "D01*\n";
+  out << pt(Point(dx, dy)) << "D01*\n";
+  out << "G37*\n";
+}  
+
+static void writeSlotSegment(GerberFile &out, Hole const &hole) {
+  Segment s = hole.slotEnds();
+  out << Gerber::point(s.p1) << "D02*\n";
+  out << Gerber::point(s.p2) << "D01*\n";
+}
+
 bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
   Layer l = mapLayer(layer);
   
@@ -488,16 +527,36 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
   for (Dim od: collector.roundHolePads(l).keys()) {
     Dim mrg = 2*layout.board().padClearance(od, od);
     out << aps.select(Gerber::Circ(od + mrg));
-    for (Collector::PadInfo const &padi: collector.roundHolePads(l)[od])
-      if (!padi.noclear)
-        out << Gerber::point(padi.p) << "D03*\n";
+    for (Hole const &hole: collector.roundHolePads(l)[od]) {
+      if (!hole.noclear) {
+        if (hole.isSlot()) 
+          writeSlotSegment(out, hole);
+        else 
+          out << Gerber::point(hole.p) << "D03*\n";
+      }
+    }
   }
   for (Dim od: collector.squareHolePads(l).keys()) {
     Dim mrg = 2*layout.board().padClearance(od, od);
     out << aps.select(Gerber::Rect(od + mrg, od + mrg));
-    for (Collector::PadInfo const &padi: collector.squareHolePads(l)[od])
-      if (!padi.noclear)
-        out << Gerber::point(padi.p) << "D03*\n";
+    for (Hole const &hole: collector.squareHolePads(l)[od]) {
+      if (!hole.noclear) {
+        if (hole.isSlot()) {
+          if (hole.rota%90) {
+            writeRotatedRect(out,
+                             hole.p,
+                             hole.slotlength + hole.od, hole.od,
+                             hole.rota);
+          } else {
+            Segment s = hole.slotEnds();
+            out << Gerber::point(s.p1) << "D02*\n";
+            out << Gerber::point(s.p2) << "D01*\n";
+          }
+        } else {
+          out << Gerber::point(hole.p) << "D03*\n";
+        }
+      }
+    }
   }
 
   // SMD pads
@@ -505,11 +564,19 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
   for (Point p: pads.keys()) {
     Dim mrg = 2*layout.board().padClearance(p.x, p.y);
     out << aps.select(Gerber::Rect(p.x + mrg, p.y + mrg));
-    for (Collector::PadInfo const &padi: pads[p])
-      if (!padi.noclear)
-        out << Gerber::point(padi.p) << "D03*\n";
+    for (Pad const &pad: pads[p]) {
+      if (!pad.noclear) {
+        if (pad.rota) 
+          writeRotatedRect(out,
+                           pad.p,
+                           pad.width, pad.height,
+                           pad.rota);
+        else 
+          out << Gerber::point(pad.p) << "D03*\n";
+      }
+    }
   }
-
+  
   return true;
 }
 
@@ -552,26 +619,55 @@ static void writeArcs(GerberFile &out, Gerber::Apertures const &aps,
   out << "G01*\n";
 }
 
+class PointRota {
+public:
+  PointRota(Point const &p, FreeRotation const &r, Dim const &x=Dim()):
+    p(p), r(r), x(x) {}
+  Point p;
+  FreeRotation r;
+  Dim x;
+};
+
 static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
                         Board const &brd, Dim w, Dim h,
-                        QList<Collector::PadInfo> const &lst) {
+                        QList<PointRota> const &lst) {
   Dim fpcw = brd.fpConWidth(w, h);
   Dim dxm = w/2 + brd.padClearance(w, h) - fpcw/2
     + Board::fpConOverlap();
   Dim dym = h/2 + brd.padClearance(w, h) - fpcw/2
     + Board::fpConOverlap();
-  qDebug() << w/2 << brd.padClearance(w,h) << fpcw << Board::fpConOverlap() << dxm;
-  qDebug() << h/2 << dym;
   out << trcaps.select(Gerber::Rect(fpcw));
-  for (Collector::PadInfo const &padi: lst) {
-    if (padi.fpcon) {
-      out << Gerber::point(padi.p - Point(dxm,Dim())) << "D02*\n";
-      out << Gerber::point(padi.p + Point(dxm,Dim())) << "D01*\n";
-      out << Gerber::point(padi.p - Point(Dim(),dym)) << "D02*\n";
-      out << Gerber::point(padi.p + Point(Dim(),dym)) << "D01*\n";
-    }
+  for (auto const &pr: lst) {
+    auto pt = [&](Dim dx, Dim dy) {
+      return Gerber::point(pr.p + Point(dx, dy).rotated(pr.r));
+    };
+    out << pt(-dxm-pr.x/2, Dim()) << "D02*\n";
+    out << pt(dxm+pr.x/2, Dim()) << "D01*\n";
+    out << pt(Dim(), -dym) << "D02*\n";
+    out << pt(Dim(), dym) << "D01*\n";
   }
 }
+
+static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
+                        Board const &brd, Dim w, Dim h,
+                        QList<Pad> const &lst) {
+  QList<PointRota> sel;
+  for (Pad const &p: lst) 
+    if (p.fpcon)
+      sel << PointRota(p.p, p.rota);
+  writeFPCons(out, trcaps, brd, w, h, sel);
+}
+
+static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
+                        Board const &brd, Dim w, Dim h,
+                        QList<Hole> const &lst, Layer layer) {
+  QList<PointRota> sel;
+  for (Hole const &p: lst) 
+    if (p.fpcon==layer)
+      sel << PointRota(p.p, p.rota, p.slotlength);
+  writeFPCons(out, trcaps, brd, w, h, sel);
+}
+
 
 static void writeComponentPads(GerberFile &out,
                                Board const &brd,
@@ -594,12 +690,23 @@ static void writeComponentPads(GerberFile &out,
       out << padaps.select(Gerber::Rect(d, d));
     else
       out << padaps.select(Gerber::Circ(d));
-    for (Collector::PadInfo const &padi: pads[od])
-      out << Gerber::point(padi.p) << "D03*\n";
+    for (Hole const &hole: pads[od]) {
+      if (hole.isSlot()) {
+        if (hole.rota && hole.square) {
+          writeRotatedRect(out, hole.p,
+                           hole.od + hole.slotlength, hole.od,
+                           hole.rota);
+        } else {
+          writeSlotSegment(out, hole);
+        }
+      } else {
+        out << Gerber::point(hole.p) << "D03*\n";
+      }
+    }
     if (!mask) {
       Gerber::Apertures const
         &trcaps(out.apertures(Gerber::Apertures::Func::Conductor));
-      writeFPCons(out, trcaps, brd, od, od, pads[od]);
+      writeFPCons(out, trcaps, brd, od, od, pads[od], l);
     }
   }
 }
@@ -623,8 +730,13 @@ static void writeSMDPads(GerberFile &out,
     if (mask)
       mrg = brd.maskMargin(p.x, p.y);
     out << padaps.select(Gerber::Rect(w + 2*mrg, h + 2*mrg));
-    for (Collector::PadInfo const &padi: pads[p])
-      out << Gerber::point(padi.p) << "D03*\n";
+    for (Pad const &pad: pads[p]) {
+      if (pad.rota) 
+        writeRotatedRect(out, pad.p,
+                         pad.width, pad.height, pad.rota);
+      else 
+        out << Gerber::point(pad.p) << "D03*\n";
+    }
     if (copper) {
       Gerber::Apertures const
         &trcaps(out.apertures(Gerber::Apertures::Func::Conductor));

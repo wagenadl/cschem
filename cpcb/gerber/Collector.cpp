@@ -8,10 +8,10 @@
 class ColData {
 public:
   Dim mirrory;
-  QMap<Dim, QSet<Point>> holes;
-  QMap<Layer, QMap<Dim, QList<Collector::PadInfo>>> roundHolePads;
-  QMap<Layer, QMap<Dim, QList<Collector::PadInfo>>> squareHolePads;
-  QMap<Layer, QMap<Point, QList<Collector::PadInfo>>> smdPads;
+  QMap<Dim, QList<Hole>> holes;
+  QMap<Layer, QMap<Dim, QList<Hole>>> roundHolePads;
+  QMap<Layer, QMap<Dim, QList<Hole>>> squareHolePads;
+  QMap<Layer, QMap<Point, QList<Pad>>> smdPads;
   QMap<Layer, QMap<Dim, QList<Trace>>> traces;
   QMap<Layer, QMap<Dim, QList<Arc>>> arcs;
   QMap<Layer, QList<Polyline>> filledPlanes;
@@ -34,25 +34,17 @@ void Collector::collect(Group const &grp) {
       collect(obj.asGroup());
       break;
     case Object::Type::Hole: {
-      Hole const &hole(obj.asHole());
-      Point p(hole.p.flippedUpDown(d->mirrory));
-      d->holes[hole.id] << p;
-      PadInfo padi;
-      padi.p = p;
-      padi.noclear = hole.noclear;
+      Hole hole(obj.asHole());
+      hole.flipUpDown(d->mirrory);
+      d->holes[hole.id] << hole;
       auto &map(hole.square ? d->squareHolePads : d->roundHolePads);
-      padi.fpcon = hole.fpcon==Layer::Top;
-      map[Layer::Top][hole.od] << padi;
-      padi.fpcon = hole.fpcon==Layer::Bottom;
-      map[Layer::Bottom][hole.od] << padi;
+      map[Layer::Top][hole.od] << hole;
+      map[Layer::Bottom][hole.od] << hole;
     } break;
     case Object::Type::Pad: {
-      Pad const &pad(obj.asPad());
-      PadInfo padi;
-      padi.p = pad.p.flippedUpDown(d->mirrory);
-      padi.noclear = pad.noclear;
-      padi.fpcon = pad.fpcon;
-      d->smdPads[pad.layer][Point(pad.width, pad.height)] << padi;
+      Pad pad(obj.asPad());
+      pad.flipUpDown(d->mirrory);
+      d->smdPads[pad.layer][Point(pad.width, pad.height)] << pad;
     } break;
     case Object::Type::Trace: {
       Trace trace(obj.asTrace());
@@ -62,7 +54,6 @@ void Collector::collect(Group const &grp) {
     } break;
     case Object::Type::Text: {
       Text text(obj.asText());
-      qDebug() << "collected" << text;
       text.flipUpDown(d->mirrory);
       if (text.layer==Layer::Bottom)
         text.flip = !text.flip;
@@ -86,23 +77,22 @@ void Collector::collect(Group const &grp) {
   }
 }
 
-QMap<Dim, QSet<Point>> const &Collector::holes() const {
+QMap<Dim, QList<Hole>> const &Collector::holes() const {
   return d->holes;
 }
 
-QMap<Dim, QList<Collector::PadInfo>> const &
+QMap<Dim, QList<Hole>> const &
   Collector::roundHolePads(Layer l) const {
   return d->roundHolePads[l];
 }
 
-QMap<Dim, QList<Collector::PadInfo>> const &
+QMap<Dim, QList<Hole>> const &
   Collector::squareHolePads(Layer l) const {
   return d->squareHolePads[l];
 }
 
-QMap<Point, QList<Collector::PadInfo>> const &Collector::smdPads(Layer l) const {
+QMap<Point, QList<Pad>> const &Collector::smdPads(Layer l) const {
   return d->smdPads[l];
-  // not strictly const: could create empty map, but that's OK
 }
 
 QMap<Dim, QList<Trace>> const &Collector::traces(Layer l) const {
