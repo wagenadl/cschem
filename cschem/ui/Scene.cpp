@@ -29,7 +29,6 @@ public:
     postpone = 0;
   }
   void rebuild();
-  void keyPressAnywhere(QKeyEvent *);
   void finalizeConnection();
   void startConnectionFromPin(QPointF);
   void startConnectionFromConnection(QPointF);
@@ -50,7 +49,8 @@ public:
   void flipElementOrSelection(); // creates undo step
   void rebuildAsNeeded(CircuitMod const &cm);
   void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
-  void backspace();
+  void key_delete();
+  void key_backspace();
   void startSymbolDragIn(QString sym, QPointF sp);
   bool startSvgDragIn(QString fn, QPointF sp);
   QPointF moveDragIn(QPointF sp);
@@ -332,6 +332,9 @@ QPointF Scene::pinPosition(int eltid, QString pin) const {
   return d->pinPosition(eltid, pin);
 }
 
+QPointF Scene::pinPosition(PinID pid) const {
+  return pinPosition(pid.element(), pid.pin());
+}
 
 SymbolLibrary const &Scene::library() const {
   return d->lib();
@@ -578,30 +581,20 @@ void Scene::keyPressEvent(QKeyEvent *e) {
     d->connbuilder->keyPress(e);
     if (d->connbuilder->isComplete())
       d->finalizeConnection();
-    return;
-  }
-  
-  if (focusItem()==0) {
-    d->keyPressAnywhere(e);
   } else {
     QGraphicsScene::keyPressEvent(e);
   }
 }
 
-void SceneData::keyPressAnywhere(QKeyEvent *e) {
-  QSet<int> ee = selectedElements();
-  switch (e->key()) {
-  // case Qt::Key_R:
-  //   if (!ee.isEmpty()) {
-  //     preact();
-  //     rotateSelection();
-  //   } else if (hovermanager->onElement()) {
-  //     preact();
-  //     rotateElement(hovermanager->element(),
-  //                   (e->modifiers() & Qt::ShiftModifier) ? -1 : 1);
-  //   }
-  //   break;
-  case Qt::Key_Delete:
+void Scene::key_delete() {
+  d->key_delete();
+}
+
+void SceneData::key_delete() {
+  if (connbuilder) {
+    delete connbuilder;
+    connbuilder = 0;
+  } else {
     if (hovermanager->onElement()) {
       preact();
       CircuitMod cm(circ(), lib());
@@ -613,30 +606,29 @@ void SceneData::keyPressAnywhere(QKeyEvent *e) {
       cm.deleteConnectionSegment(hovermanager->connection(),
                                  hovermanager->segment());
       rebuildAsNeeded(cm);
-    } else if (!ee.isEmpty()) {
-      preact();
-      CircuitMod cm(circ(), lib());
-      cm.deleteElements(ee);
-      rebuildAsNeeded(cm);
+    } else {
+      QSet<int> ee = selectedElements();
+      if (!ee.isEmpty()) {
+        preact();
+        CircuitMod cm(circ(), lib());
+        cm.deleteElements(ee);
+        rebuildAsNeeded(cm);
+      }
     }
-    break;
-  case Qt::Key_Backspace:
-    backspace();
-    break;
   }
 }
 
-void SceneData::backspace() {
+void Scene::key_backspace() {
+  d->key_backspace();
+}
+
+void SceneData::key_backspace() {
   SceneAnnotation *sa
     = dynamic_cast<SceneAnnotation *>(scene->itemAt(mousexy,
 						    QTransform()));
   if (sa)
     sa->backspace();
 }
-
-//void Scene::makeUndoStep() {
-//  d->preact();
-//}
 
 void Scene::undo() {
   d->undo();

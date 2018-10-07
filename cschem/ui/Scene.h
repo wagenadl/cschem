@@ -19,7 +19,7 @@ public:
   Circuit const &circuit() const;
   Schem const &schem() const;
   QPointF pinPosition(int eltid, QString pin) const;
-  QPointF pinPosition(PinID pid) const { return pinPosition(pid.element(), pid.pin()); }
+  QPointF pinPosition(PinID pid) const;
   void moveSelection(QPoint delta, bool nomagnet);
   void tentativelyMoveSelection(QPoint delta, bool first, bool nomagnet);
   QSet<int> selectedElements() const;
@@ -40,6 +40,8 @@ public:
   void pasteFromClipboard();
   void undo();
   void redo();
+  void key_delete();
+  void key_backspace();
   void removeDangling();
   void plonk(QString symbol, QPointF scenepos, bool merge=false);
   void rotate(int dir=1);
