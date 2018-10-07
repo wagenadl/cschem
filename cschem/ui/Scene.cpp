@@ -519,7 +519,7 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     purp = HoverManager::Purpose::None;
   else if (e->modifiers() & Qt::ControlModifier)
     purp = HoverManager::Purpose::Connecting;
-  
+
   d->hovermanager->setPrimaryPurpose(purp);
   d->hovermanager->update(e->scenePos());
   if (d->connbuilder) {
