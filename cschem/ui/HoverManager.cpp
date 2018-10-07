@@ -251,6 +251,7 @@ void HoverManagerData::update() {
   else
     isjunc = false;
 
+  int oseg = seg;
   // see if we previous connection is still current
   if (con>0)
     if (!cons.contains(con))
@@ -278,6 +279,10 @@ void HoverManagerData::update() {
   } else if (onConnection()) {
     Connection ccc(scene->circuit().connections[con]);
     auto const &lib = scene->library();
+    if (oseg!=seg) {
+      unhighlightSegment();
+      highlightSegment();
+    }
     if (seg==0
 	&& ccc.danglingStart()
 	&& !ccc.via.isEmpty()
