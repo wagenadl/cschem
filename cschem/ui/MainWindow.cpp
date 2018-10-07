@@ -232,8 +232,6 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::resolveConflictsAction);
   menu->addAction(act);
 
-  
-
   menu = menuBar()->addMenu(tr("&View"));
 
   act = new QAction(tr("&Zoom in"), this);
@@ -273,6 +271,16 @@ void MainWindow::createActions() {
   act->setStatusTip(tr("Information about this program"));
   connect(act, &QAction::triggered, this, &MainWindow::aboutAction);
   menu->addAction(act);
+
+  act = new QAction(tr("Delete element or trace"), this);
+  act->setShortcut(QKeySequence(Qt::Key_Delete));
+  addAction(act);
+  connect(act, &QAction::triggered, [this]() { d->scene->key_delete(); });
+
+  act = new QAction(tr("Delete annotation"), this);
+  act->setShortcut(QKeySequence(Qt::Key_Backspace));
+  addAction(act);
+  connect(act, &QAction::triggered, [this]() { d->scene->key_backspace(); });
 }
 
 void MainWindow::createStatusBar() {
