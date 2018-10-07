@@ -225,7 +225,7 @@ ConnBuilder::~ConnBuilder() {
   delete d;
 }
 
-void ConnBuilder::startFromConnection(QPointF fromPos, int conId, int seg) {
+void ConnBuilder::startFromConnection(QPointF fromPos, int conId, int /*seg*/) {
   CircuitMod cm(d->circ, d->lib);
   int junc = cm.injectJunction(conId, d->lib.downscale(fromPos));
   if (junc>0) {
@@ -318,10 +318,10 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
   gli2->setLine(QLineF(p1, p));
 }
 
-void ConnBuilder::mousePress(QGraphicsSceneMouseEvent *e) {
+void ConnBuilder::mousePress(QGraphicsSceneMouseEvent *) {
 }
 
-void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *e) {
+void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *) {
   if (d->points.isEmpty())
     return;
   if (!d->fixPenultimate())
