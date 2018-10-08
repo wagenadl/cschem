@@ -31,13 +31,13 @@
      inkscape:snap-midpoints="false"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:zoom="4.9493336"
-     inkscape:cx="1456.8324"
-     inkscape:cy="1317.9876"
+     inkscape:zoom="3.4997074"
+     inkscape:cx="106.15688"
+     inkscape:cy="33.136837"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g5577"
+     inkscape:current-layer="svg8"
      inkscape:snap-intersection-paths="true"
      inkscape:object-paths="true">
     <inkscape:grid
@@ -1209,7 +1209,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        width="28"
        height="7"
        x="133"
-       y="1157"
+       y="1153.5"
        ry="3.5"
        rx="3.5"
        inkscape:label="annotation:name:left" />
@@ -1219,7 +1219,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        width="28"
        height="7"
        x="133"
-       y="1191"
+       y="1195.5"
        ry="3.5"
        rx="3.5"
        inkscape:label="annotation:value:left" />
@@ -2072,7 +2072,8 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
   </g>
   <g
      id="g2499"
-     inkscape:label="part:passive:inductor">
+     inkscape:label="part:passive:inductor"
+     transform="translate(7,7)">
     <path
        d="m 371,1178 h -14 c -0.0421,-16.399 -14.02104,-16.399 -14,0 -0.021,-16.399 -14.04182,-16.3407 -14,0 -2.6e-4,-16.4572 -14.04236,-16.4572 -14,0 2.8e-4,-16.3407 -13.97896,-16.399 -14,0 -0.0421,-16.399 -13.91338,-16.399 -13.91338,0 H 273"
        style="fill:none;stroke:#000000;stroke-width:1.54400086;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -2097,8 +2098,8 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="rect2568-2-9-1-3-18"
        width="28"
        height="7"
-       x="301"
-       y="1150.5"
+       x="303.85739"
+       y="1146.5"
        ry="3.5"
        rx="3.5"
        inkscape:label="annotation:name:left" />
@@ -2107,8 +2108,8 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        id="rect2568-2-9-1-3-626-3-6"
        width="28"
        height="7"
-       x="300"
-       y="1185"
+       x="304.00034"
+       y="1188.5"
        ry="3.5"
        rx="3.5"
        inkscape:label="annotation:value:left" />
@@ -5163,4 +5164,14 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          id="title1505-7-3-93-1-7">cp:4/2.Y</title>
     </circle>
   </g>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:0%;font-family:'DejaVu Sans Mono';-inkscape-font-specification:'DejaVu Sans Mono';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="14"
+     y="1519"
+     id="text38-7"><tspan
+       id="tspan36-5"
+       x="14"
+       y="1519"
+       style="font-size:13.33333302px;line-height:14">Modifications for CSchem   Copyright © 2018 Daniel Wagenaar</tspan></text>
 </svg>
