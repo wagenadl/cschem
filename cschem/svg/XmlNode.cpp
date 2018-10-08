@@ -16,6 +16,21 @@ XmlNode::XmlNode() {
   d = new XmlNodeData;
 }
 
+XmlNode XmlNode::elementNode(XmlElement const &elt) {
+  XmlNode n;
+  n.d->type = Type::Element;
+  n.d->element = elt;
+  return n;
+}
+  
+
+XmlNode XmlNode::textNode(QString str) {
+  XmlNode n;
+  n.d->type = Type::Text;
+  n.d->text = str;
+  return n;
+}
+
 XmlNode::XmlNode(XmlNode const &o) {
   d = o.d;
 }
@@ -52,6 +67,10 @@ XmlElement &XmlNode::element() {
 
 QString XmlNode::text() const {
   return d->text;
+}
+
+void XmlNode::setText(QString s) {
+  d->text = s;
 }
 
 void XmlNode::write(QXmlStreamWriter &writer) const {

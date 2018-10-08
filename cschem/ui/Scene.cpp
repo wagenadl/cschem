@@ -804,10 +804,14 @@ void Scene::modifyElementAnnotations(Element const &elt) {
 void SceneData::modifyContainerAndSiblings(Element const &elt, QString oldname) {
   // we are going to change our container, iff there is only one
   int containerid = -1;
+  qDebug() << "modifycontainerandsiblings" << elt << oldname;
   QString cname = PartNumbering::cname(oldname);
   for (Element const &e: circ().elements) {
     if (!e.isContainer())
       continue;
+    qDebug() << "  cf" << e;
+    if (e.name==oldname)
+      return; // don't do anything if a duplicate container exists
     if (e.name==cname) {
       if (containerid>0)
         return; // we won't modify any container if there is duplication
@@ -836,11 +840,16 @@ void SceneData::modifyContainerAndSiblings(Element const &elt, QString oldname) 
 void SceneData::modifyContents(Element const &elt, QString oldname, int sibid) {
   // Modify any contained elements as well
   // But! If any name occurs more than once, don't touch it
-  QList<Element> affectedelts;
+  for (Element const &e: circ().elements) 
+    if (e.isContainer() && e.name==oldname)
+      return; // don't do it if double container names
+    
   QMap<QString, int> namecnt;
-  for (Element const &e: circ().elements)
+  for (Element const &e: circ().elements) 
     if (!e.isContainer() && e.cname()==oldname)
       namecnt[e.name]++;
+  
+  QList<Element> affectedelts;
   for (Element const &e: circ().elements) {
     if (e.id==elt.id || e.id==sibid)
       continue;

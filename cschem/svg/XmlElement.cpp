@@ -124,3 +124,27 @@ QString XmlElement::label() const {
     txt = attributes().value("inkscape:label").toString();
   return txt;
 }
+
+void XmlElement::setTitle(QString t) {
+  for (XmlNode &c: d->children) {
+    if (c.type()==XmlNode::Type::Element) {
+      XmlElement &elt = c.element();
+      if (elt.qualifiedName() == "title") {
+        for (XmlNode &c: elt.d->children) {
+          if (c.type()==XmlNode::Type::Text) {
+            c.setText(t);
+            return;
+          }
+        }
+      } else {
+        break; // title must be first element
+      }
+    }
+  }
+  XmlElement ttlelt;
+  ttlelt.d->qualifiedName = "title";
+  ttlelt.d->valid = true;
+  ttlelt.d->children << XmlNode::textNode(t);
+  XmlNode ttl(XmlNode::elementNode(ttlelt));
+  d->children.push_front(ttl);
+}
