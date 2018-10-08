@@ -213,10 +213,9 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
 
   for (int id: eltids) {
     if (circ().elements.contains(id)) {
-      if (elts.contains(id))
-        elts[id]->rebuild();
-      else
+      if (!elts.contains(id))
         elts[id] = new SceneElement(scene, circ().elements[id]);
+      elts[id]->rebuild();
     } else if (elts.contains(id)) {
       delete elts[id];
       elts.remove(id);
@@ -314,8 +313,10 @@ void SceneData::rebuild() {
     delete i;
   textuals.clear();
 
-  for (auto const &c: circ().elements) 
+  for (auto const &c: circ().elements) {
     elts[c.id] = new SceneElement(scene, c);
+    elts[c.id]->rebuild();
+  }
   
   for (auto const &c: circ().connections)
     conns[c.id] = new SceneConnection(scene, c);
