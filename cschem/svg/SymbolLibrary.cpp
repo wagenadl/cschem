@@ -52,7 +52,6 @@ void SymbolLibrary::insert(Symbol const &p) {
 void SymbolLibrary::scanSymbols(XmlElement const &src) {
   if (src.qualifiedName()=="g") {
     QString label = src.label();
-    qDebug() << "scan g" << label;
     if (label.startsWith("part:") || label.startsWith("port:")
         || label=="junction") {
       insert(Symbol(src));
