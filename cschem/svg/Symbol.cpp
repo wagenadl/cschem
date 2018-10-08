@@ -135,10 +135,12 @@ Symbol::Symbol() {
 
 Symbol::Symbol(XmlElement const &elt, QString name): Symbol() {
   d->elt = elt;
-  if (name.isEmpty())
+  if (name.isEmpty()) {
     d->name = elt.label();
-  else
+  } else {
     d->name = name;
+    d->elt.setTitle(name);
+  }
   d->ncpins = 0;
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
