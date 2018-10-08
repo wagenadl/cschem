@@ -320,7 +320,6 @@ void SceneData::rebuild() {
   for (auto const &c: circ().connections)
     conns[c.id] = new SceneConnection(scene, c);
 
-  qDebug() << "#text" << circ().textuals.size();
   for (auto const &c: circ().textuals)
     textuals[c.id] = new SceneTextual(scene, c);
 
