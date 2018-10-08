@@ -31,6 +31,7 @@ public:
   void writeEndElement(QXmlStreamWriter &dst) const;
   QString title() const; // the text of any contained title element
   QString label() const; // title or inkscape:label
+  void setTitle(QString title);
 private:
   QSharedDataPointer<XmlElementData> d;
 };

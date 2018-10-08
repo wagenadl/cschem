@@ -26,8 +26,12 @@ public:
   class XmlElement const &element() const;
   class XmlElement &element();
   QString text() const;
+  void setText(QString);
   void write(QXmlStreamWriter &writer) const;
   QString toString() const;
+public:
+  static XmlNode elementNode(XmlElement const &);
+  static XmlNode textNode(QString str);
 private:
   QSharedDataPointer<XmlNodeData> d;
 };

@@ -102,9 +102,14 @@ void Schem::saveSymbolLibrary(QXmlStreamWriter &sw, bool onlyused) const {
     for (QString s: d->library.symbolNames())
       syms << s;
   
-  for (QString sym: syms) 
-    if (d->library.contains(sym))
-      d->library.symbol(sym).element().write(sw);
+  for (QString sym: syms) {
+    if (d->library.contains(sym)) {
+      Symbol const &symbol(d->library.symbol(sym));
+      XmlElement elt(symbol.element());
+      qDebug() << "writing for " << symbol.name() << elt.title();
+      elt.write(sw);
+    }
+  }
   
   sw.writeEndElement();
 
