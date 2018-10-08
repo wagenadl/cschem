@@ -765,10 +765,11 @@ void Scene::modifyElementAnnotations(Element const &elt) {
   Element elt0 = d->circ().elements[id];
   QString oldname = elt0.name;
   elt0.copyAnnotationsFrom(elt);
-
+  qDebug() << "scene MEA" << oldname << elt0.name;
   if (!elt.value.isEmpty()) {
     // Add fraction prefix to value if appropriate
     int cid = d->circ().containerOf(id);
+    qDebug() << "  cid=" << cid;
     if (cid>0) {
       Q_ASSERT(d->circ().elements.contains(cid));
       Element const &cont(d->circ().elements[cid]);
@@ -801,16 +802,17 @@ void Scene::modifyElementAnnotations(Element const &elt) {
 }
 
 void SceneData::modifyContainerAndSiblings(Element const &elt, QString oldname) {
-  int containerid = -1; // this crazy way of finding it ourselves
-  // prevents an infinite recursion. I should be able to break
-  // that in another way, but not today.
+  // we are going to change our container, iff there is only one
+  int containerid = -1;
   QString cname = PartNumbering::cname(oldname);
   for (Element const &e: circ().elements) {
-    if (e.id==elt.id)
+    if (!e.isContainer())
       continue;
     if (e.name==cname) {
-      containerid = e.id;
-      break;
+      if (containerid>0)
+        return; // we won't modify any container if there is duplication
+      else
+        containerid = e.id;
     }
   }
   if (containerid<0)
@@ -832,31 +834,26 @@ void SceneData::modifyContainerAndSiblings(Element const &elt, QString oldname) 
 }
 
 void SceneData::modifyContents(Element const &elt, QString oldname, int sibid) {
-  // modify any contained elements as well
+  // Modify any contained elements as well
+  // But! If any name occurs more than once, don't touch it
   QList<Element> affectedelts;
+  QMap<QString, int> namecnt;
+  for (Element const &e: circ().elements)
+    if (!e.isContainer() && e.cname()==oldname)
+      namecnt[e.name]++;
   for (Element const &e: circ().elements) {
     if (e.id==elt.id || e.id==sibid)
       continue;
-    bool affected = e.name==oldname;
-    if (!affected) {
-      int idx = e.name.indexOf(".");
-      if (idx>0 && e.name.left(idx)==oldname)
-	affected = true;
-    }
-    if (affected) {
-      qDebug() << "affected" << e.name << e.id;
-      affectedelts << e;
-    }
+    if (e.cname()!=oldname)
+      continue;
+    if (namecnt[e.name]>1)
+      continue;
+    affectedelts << e;
   }
   for (Element e: affectedelts) {
     qDebug() << "affected now" << e.name << e.id;
-    if (!elt.name.isEmpty()) {
-      int idx = e.name.indexOf(".");
-      if (idx>0) 
-	e.name = elt.name + "." + e.name.mid(idx+1);
-      else
-	e.name = elt.name;
-    }
+    if (!elt.name.isEmpty())
+      e.name = elt.name + e.csuffix();
     Symbol const &symbol = schem.library().symbol(elt.symbol());
     int nSlots = symbol.isValid() ? symbol.slotCount() : 1;
     QString pfx = Symbol::prefixForSlotCount(nSlots);
@@ -869,7 +866,6 @@ void SceneData::modifyContents(Element const &elt, QString oldname, int sibid) {
       elts[e.id]->rebuild();
   }
 }
-
 
 void Scene::modifyConnection(int id, QPolygonF newpath) {
   if (!connections().contains(id))
