@@ -43,6 +43,11 @@ SceneAnnotation::~SceneAnnotation() {
 
 void SceneAnnotation::focusOutEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusOutEvent(e);
+  QTextCursor tc = textCursor();
+  if (tc.hasSelection()) {
+    tc.clearSelection();
+    setTextCursor(tc);
+  }
   emit returnPressed(); // hmmm..
 }
 
