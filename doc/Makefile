@@ -4,7 +4,8 @@ ALL: cschem-userguide.pdf
 	pdflatex $<
 	pdflatex $<
 
-images: ug-battery.pdf ug-ground.pdf ug-opamp-cont.pdf ug-opamp.pdf
+images: ug-battery.pdf ug-ground.pdf ug-opamp-cont.pdf ug-opamp.pdf \
+	ug-pdamp.pdf ug-pdamp-cont.pdf
 
 ug-%.pdf: ../doc/ug-%.svg
 	svg2pdf $< $@
