@@ -94,8 +94,13 @@ man: build/cpcb.1 build/cschem.1
 build/%.1: doc/%.1.txt
 	a2x --doctype manpage --format manpage --no-xmllint --destination build $<
 
+userguide:;
+	/bin/cp -u doc/Makefile build/Makefile.doc
+	+make -C build -f Makefile.doc
+
 tar: all
 	git archive -o ../cschem.tar.gz --prefix=cschem/ HEAD
 
 .PHONY: all clean tar man install prep debug prep-cschem prep-cpcb \
-	debug-cpcb debug-cschem release-cpcb debug-cschem cschem cpcb
+	debug-cpcb debug-cschem release-cpcb debug-cschem cschem cpcb \
+	userguide

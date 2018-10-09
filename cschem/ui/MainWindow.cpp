@@ -526,7 +526,7 @@ void MainWindow::exportCircuitAction() {
   QFileDialog dlg;
   dlg.setWindowTitle(tr("Export schematic as svg…"));
   dlg.setAcceptMode(QFileDialog::AcceptSave);
-  dlg.setDefaultSuffix("schem");
+  dlg.setDefaultSuffix("svg");
   dlg.setDirectory(d->lastdir);
   //dlg.setFilter(QDir::AllFiles);
   dlg.setNameFilter(tr("Scalable vector graphics (*.svg)"));
