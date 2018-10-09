@@ -28,7 +28,7 @@
     </g>
     
     
-  </g></g><text style="fill:#000000;stroke:none;text-anchor:middle;font-family:Lato;font-style:normal;font-size:21px" x="60" y="6.3">V_out</text></g><g transform="translate(-77,7)"><g transform=" translate(-119,-1178)"><g id="g7619" inkscape:label="part:passive:resistor">
+  </g></g><text style="fill:#000000;stroke:none;text-anchor:middle;font-family:Lato;font-style:normal;font-size:21px" x="53" y="6.3">Vout</text></g><g transform="translate(-77,7)"><g transform=" translate(-119,-1178)"><g id="g7619" inkscape:label="part:passive:resistor">
     <g id="g2358">
       <path inkscape:connector-curvature="0" id="path3970" style="fill:none;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 182,1178 h -10.5 l -3.5,-7 -7,14 -7,-14 -7,14 -7,-14 -7,14 -3.5,-7 H 119"/>
     </g>
