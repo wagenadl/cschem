@@ -193,7 +193,7 @@ QRectF annotationBox(QPointF p, QString txt) {
   QFontMetricsF fm(af);
   double virtualcenterdy = af.pixelSize() * .3;
   QRectF rf(fm.boundingRect(txt));
-  rf.translate(p.x() - rf.width()/2, p.y() + virtualcenterdyv);
+  rf.translate(p.x() - rf.width()/2, p.y() + virtualcenterdy);
   return rf;
 }
 
