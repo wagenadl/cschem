@@ -193,8 +193,7 @@ QRectF annotationBox(QPointF p, QString txt) {
   QFontMetricsF fm(af);
   double virtualcenterdy = af.pixelSize() * .3;
   QRectF rf(fm.boundingRect(txt));
-  rf.translate(p.x() - rf.width()/2, p.y() + virtualcenterdy);
-  qDebug() << "abox" << p << txt << rf;
+  rf.translate(p.x() - rf.width()/2, p.y() + virtualcenterdyv);
   return rf;
 }
 
@@ -213,7 +212,6 @@ QRectF Geometry::visualBoundingRect(Element const &elt) const {
   QTransform xf(d->symbolToSceneTransformation(elt));
   QRectF bb0(prt.shiftedBBox());
   QRectF bb = xf.mapRect(bb0);
-  qDebug() << "visbr0" << bb0 << xf << bb << elt;
   if (elt.nameVisible)
     bb |= annotationBox(d->lib.upscale(elt.position)
                         + QPointF(elt.namePosition),
@@ -222,7 +220,6 @@ QRectF Geometry::visualBoundingRect(Element const &elt) const {
     bb |= annotationBox(d->lib.upscale(elt.position)
                         + QPointF(elt.valuePosition),
                         elt.value);
-  qDebug() << "visbr" << bb << elt;
   return bb;
 }
 
@@ -240,7 +237,6 @@ QRectF Geometry::visualBoundingRect() const {
   }
   for (Textual const &txt: d->circ.textuals)
     r |= textualBox(d->lib.upscale(txt.position), txt.text);
-  qDebug() << "visbr" << r;
   return r;
 }
 
