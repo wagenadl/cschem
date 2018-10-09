@@ -3,3 +3,6 @@
 build
 test/test
 test/Makefile
+BROWSE
+TAGS
+cschem-doxy

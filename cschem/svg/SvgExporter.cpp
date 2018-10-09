@@ -148,7 +148,7 @@ void SvgExporterData::writeConnection(QXmlStreamWriter &sw,
 }
 
 void SvgExporterData::writeBBox(QXmlStreamWriter &sw) {
-  QRectF bbox = lib.upscale(geom.boundingRect());
+  QRectF bbox = geom.visualBoundingRect();
   double s = lib.scale();
   double mrg = 1*s;
   bbox += QMarginsF(mrg, mrg, mrg, mrg);

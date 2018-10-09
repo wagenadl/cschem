@@ -69,6 +69,6 @@ public:
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &, Element const &);
 QXmlStreamReader &operator>>(QXmlStreamReader &, Element &);
-QDebug &operator<<(QDebug &, Element const &);
+QDebug operator<<(QDebug, Element const &);
 
 #endif
