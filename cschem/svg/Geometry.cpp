@@ -37,6 +37,7 @@ public:
   QPolygon connectionPath(Connection const &con) const;
   QTransform symbolToCircuitTransformation(Element const &elt) const;
   QTransform symbolToSceneElementTransformation(Element const &elt) const;
+  QTransform symbolToSceneTransformation(Element const &elt) const;
 public:
   Circuit circ;
   SymbolLibrary lib;
@@ -82,6 +83,16 @@ QTransform GeometryData::symbolToCircuitTransformation(Element const &elt)
 QTransform GeometryData::symbolToSceneElementTransformation(Element const &elt)
   const {
   QTransform xf;
+  xf.rotate(-elt.rotation*90);
+  if (elt.flipped)
+    xf.scale(-1, 1);
+  return xf;
+}
+
+QTransform GeometryData::symbolToSceneTransformation(Element const &elt) const {
+  QTransform xf;
+  double s = lib.scale();
+  xf.translate(s*elt.position.x(), s*elt.position.y());
   xf.rotate(-elt.rotation*90);
   if (elt.flipped)
     xf.scale(-1, 1);
@@ -138,12 +149,6 @@ QPoint GeometryData::pinPosition(int eltid, QString pin) const {
   return pinPosition(circ.elements[eltid], pin);
 }
 
-QRect Geometry::boundingRect(int elt, bool withAnnots) const {
-  if (d)
-    return boundingRect(d->circ.elements[elt], withAnnots);
-  else
-    return QRect();
-}
 
 QRectF Geometry::svgBoundingRect(Element const &elt) const {
   if (!d) {
@@ -184,54 +189,58 @@ QRectF Geometry::defaultAnnotationSvgBoundingRect(Element const &elt,
 }
 
 QRectF annotationBox(QPointF p, QString txt) {
-  QFontMetricsF fm(Style::annotationFont());
+  QFont af(Style::annotationFont());
+  QFontMetricsF fm(af);
+  double virtualcenterdy = af.pixelSize() * .3;
   QRectF rf(fm.boundingRect(txt));
-  QPointF wh(rf.width(), rf.height());
-  return QRectF(p - wh/2, p+wh/2);
+  rf.translate(p.x() - rf.width()/2, p.y() + virtualcenterdy);
+  qDebug() << "abox" << p << txt << rf;
+  return rf;
 }
 
-QRect textualBox(QPoint p, QString txt, SymbolLibrary const &lib) {
-  // really crude!
-  QFontMetricsF fm(Style::annotationFont());
+QRectF textualBox(QPointF p, QString txt) {
+  QFont af(Style::annotationFont());
+  QFontMetricsF fm(af);
+  double virtualcenterdy = af.pixelSize() * .3;
   QRectF rf(fm.boundingRect(txt));
-  QPoint wh = lib.downscale(QPointF(rf.width(), rf.height()));
-  return QRect(p - QPoint(0, wh.y()/2),
-	       p + QPoint(wh.x(), wh.y()/2));
+  rf.translate(p.x(), p.y() + virtualcenterdy);
+  return rf;
 }
 
-QRect Geometry::boundingRect(Element const &elt, bool withAnnots) const {
-  if (!d)
-    return QRect();
+QRectF Geometry::visualBoundingRect(Element const &elt) const {
+  Q_ASSERT(d);
   Symbol const &prt(d->lib.symbol(elt.symbol()));
-  QRectF bb = prt.shiftedBBox();
-  if (withAnnots) {
-    if (elt.nameVisible)
-      bb |= annotationBox(d->lib.upscale(elt.position)
-			  + QPointF(elt.namePosition),
-			  elt.name);
-    if (elt.valueVisible)
-      bb |= annotationBox(d->lib.upscale(elt.position)
-			  + QPointF(elt.valuePosition),
-			  elt.value);
-  }
-  QTransform xf = d->symbolToCircuitTransformation(elt);
-  bb = xf.mapRect(bb);
-  bb.adjust(-0.5, -0.5, 1, 1);
-  return bb.toRect();
+  QTransform xf(d->symbolToSceneTransformation(elt));
+  QRectF bb0(prt.shiftedBBox());
+  QRectF bb = xf.mapRect(bb0);
+  qDebug() << "visbr0" << bb0 << xf << bb << elt;
+  if (elt.nameVisible)
+    bb |= annotationBox(d->lib.upscale(elt.position)
+                        + QPointF(elt.namePosition),
+                        elt.name);
+  if (elt.valueVisible)
+    bb |= annotationBox(d->lib.upscale(elt.position)
+                        + QPointF(elt.valuePosition),
+                        elt.value);
+  qDebug() << "visbr" << bb << elt;
+  return bb;
 }
 
-QRect Geometry::boundingRect(bool withTexts) const {
-  QRect r;
-  if (d) {
-    for (Element const &elt: d->circ.elements)
-      r |= boundingRect(elt, withTexts);
-    for (Connection const &con: d->circ.connections)
-      for (QPoint p: con.via)
-	r |= QRect(p, p);
-    if (withTexts)
-      for (Textual const &txt: d->circ.textuals)
-	r |= textualBox(txt.position, txt.text, d->lib);
+QRectF Geometry::visualBoundingRect() const {
+  Q_ASSERT(d);
+  QRectF r;
+  for (Element const &elt: d->circ.elements)
+    r |= visualBoundingRect(elt);
+  for (Connection const &con: d->circ.connections) {
+    for (QPoint p: con.via) {
+      QPointF pf(d->lib.upscale(p));
+      QPointF dp(1e-3, 1e-3);
+      r |= QRectF(pf - dp, pf + dp);
+    }
   }
+  for (Textual const &txt: d->circ.textuals)
+    r |= textualBox(d->lib.upscale(txt.position), txt.text);
+  qDebug() << "visbr" << r;
   return r;
 }
 
@@ -241,7 +250,7 @@ QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {
   QTransform xf = symbolToCircuitTransformation(elt);
   QPoint p0 = xf.map(pp).toPoint();
   
-  if  (elt.flipped)
+  if (elt.flipped)
     pp = QPointF(-pp.x(), pp.y());
   for (int k=0; k<elt.rotation; k++)
     pp = QPointF(pp.y(), -pp.x());
