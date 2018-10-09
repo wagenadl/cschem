@@ -445,7 +445,7 @@ void Scene::moveSelection(QPoint delta, bool nomagnet) {
 }
 
 void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
-  if (d->hovermanager->onNothing()) {
+  if (d->hovermanager->onNothing() && !itemAt(e->scenePos(), QTransform())) {
     qDebug() << "Double click in space" << e->scenePos();
     d->newTextual(e->scenePos());
   } else {
