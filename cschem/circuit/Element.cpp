@@ -167,7 +167,7 @@ void Element::copyAnnotationsFrom(Element const &o) {
   nameVisible = o.nameVisible;
 }
 
-QDebug &operator<<(QDebug &dbg, Element const &elt) {
+QDebug operator<<(QDebug dbg, Element const &elt) {
   dbg << elt.report();
   return dbg;
 }
