@@ -1,0 +1,284 @@
+\documentclass[11pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptm}
+\usepackage{newcent}
+\usepackage[letterpaper]{geometry}
+\usepackage{graphicx}
+\usepackage[perpage]{footmisc}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{footnote}
+\usepackage{enumitem}
+\makesavenoteenv{tabular}
+
+\def\Ohm{$\Omega$}
+
+\begin{document}
+\thispagestyle{empty}
+\begin{centering}
+  {\Huge cschem}
+  \vskip30pt
+
+  {\Large easy-to-use electronic circuit layout}
+  \vskip60pt
+
+  {\large Daniel A. Wagenaar}
+  \vfill
+  
+  {Copyright (c) 2018}
+  
+\end{centering}
+\pagebreak
+~
+\vfill
+\noindent Copyright (C) 2018 Daniel A. Wagenaar\medskip
+
+``cschem'' is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see http://www.gnu.org/licenses.
+\pagebreak
+
+\chapter{Introduction}
+
+This document describes the installation and usage of ``cschem'', a
+(hopefully) easy-to-use program for drawing electronic circuit
+diagrams written by Daniel Wagenaar. 
+
+\section{Why use cschem?}
+
+There are any number of software packages available that allow you to
+draw circuit diagrams. So why should you choose ``cschem''? CSchem is
+for you if:
+\begin{itemize}
+  \item You like your circuit diagrams to look ready for publication
+    straight from design;
+  \item You like concentrating on the principles of your circuit while
+    drawing the design (and leave the specific choices of components
+    until the next day);
+  \item You like to have quick access to the most commonly used
+    symbols;
+    \item You either don't need more uncommon symbols or are willing
+      to draw them in an SVG editor.
+\end{itemize}\pagebreak
+
+\noindent However, cschem may not be for you if:
+\begin{itemize}
+  \item You need to draw very large circuits that span multiple
+    sheets;
+  \item You need to specify lots of parameters with your components
+    for an automated layout workflow. (CSchem will allow you to
+    specify component values or part numbers, but does not have
+    specific fields for vendors, packaging information, etc.)
+  \item You need to have access to a large library of predrawn components.
+  \item You need a help desk on-call.
+\end{itemize}
+\noindent Lastly, a note on development. CSchem is being developed by an
+active research scientist. Practically, that means two things: On the
+positive side, it means that I have a vested interest in fixing bugs
+and improving cschem, because I use it regularly. On the negative side, that
+means that, by and large, new features are added only when I need them
+and bugs are fixed when I have time. I certainly do welcome feature
+requests, but I cannot guarantee that they will get implemented
+quickly or at all. (If you are in a hurry, I will consider (paid)
+consultancy related to cschem.) Finally, I definitely welcome
+contributions to either the code or the documentation. I would be very
+happy if cschem turned into a community-supported open source project.
+
+\section{Features}
+
+CSchem circuit designs consist of a single, conceptually infinitely
+large sheet containing ``elements'' and ``connections.''
+
+Elements are things like resistors and opamps, connections are simple
+wires connecting between pins of elements. Each element has up to two
+pieces of text associated with it: a circuit ``reference'' (e.g.,
+``$R_1$,'' ``$J_2$,'' or ``$A_{3.2}$'') and a ``part/value''
+designation. The ``part/value'' designation is free-form. You can use
+it for a resistor value (e.g., ``10 k\Ohm'' or ``1 \Ohm{} 3 W'') or
+for a part number (e.g., ``OPA2350'') or for an arbitrary
+label.
+
+Connections are wires between (pins of) elements. Where wires meet, a
+``junction'' symbol is automatically inserted. Of course, wires can
+also cross without electrical contact. Connections normally are
+constrained to run horizontally or vertically with right-angle elbows.
+
+The only graphical element that cschem supports other than elements
+and connections are arbitrary textual annotations that can be placed anywhere on
+the sheet.
+
+At present, cschem does not have explicit support for buses with
+multiple signal wires or for splitting a drawing across multiple sheets.
+
+\section{Contacting the author}
+
+If you like cschem or find fault with it, if you discover a bug or have a
+suggestion for a new feature, if you are interested in improving this
+documentation or have a patch to contribute to the code, I want to
+hear from you. My contact information is at
+http://www.danielwagenaar.net. I very much look forward to hearing
+from you. I realize that this guide is extremely terse, and I
+really do welcome questions, particularly if they help me to improve
+cschem or its documentation.\bigskip
+
+\noindent Pasadena, October 2018
+
+\chapter{Installation}
+
+The latest version of the software can always be downloaded from\break
+http://www.danielwagenaar.net/cschem.
+
+\section{Installing precompiled binaries}
+
+Binary packages for Windows and Mac OS X will be provided as time
+permits. You can help focus my attention on binaries simply by
+expressing an interest.
+
+% Installation on Windows should be easy using the provided ``cschem.msi''
+% installation package. Installation on Mac OS X should be
+% straightforward by unpacking the ``cschem-mac.tgz'' archive and placing
+% ``cschem.app'' anywhere on your hard disk.  Installation on Debian,
+% Ubuntu, or Mint Linux should be equally easy using the provided
+% ``cschem.deb'' installation package. At present, installation on other
+% flavors of Linux will require compiling the sources yourself, but this
+% should be straightforward (see below).
+
+% Please note that development occurs
+% primarily on Linux, so the Windows and Mac OS versions may lag
+% behind.
+
+\section{Compiling the source}
+To compile the source,  start from the provided
+``cschem.tar.gz'' archive or check out the git source at
+http://github.com/wagenadl/cschem. Compilation requires
+``Qt'' version 5.6 or later. (CSchem can also compile with Qt 4.8 on
+Linux with minor changes to the ``Makefile''.)
+
+\subsection{Compiling on Linux or Mac OS}
+
+You will need a C++ compiler and ``make''. On Ubuntu Linux, this is as simple
+as ``sudo apt-get install g++ make''. On Mac OS, you need the
+``Command Line tools for XCode'' from the Apple Developers' web
+site\footnote{https://developer.apple.com/xcode.}.
+
+Open a terminal and ``cd'' to the root of the unpacked source
+archive. Then type ``make'' and fetch a cup of tea. Then, either
+manually copy the file ``build/cschem/cschem'' to some location on your PATH, or type ``sudo make
+install'' to install into ``/usr/local/bin''.
+
+\subsection{Compiling on Windows}
+
+Details to follow. Again, feel free to ask!
+% You will need a C++ compiler. I have successfully used both MinGW and
+% Microsoft Visual Studio.
+% 
+% First, run ``updatesources.sh'' in the
+% ``tools'' subfolder in a Cygwin shell. Then open, one by one,
+% ``src/cschem.pro''
+% and ``webgrab/webgrab.pro'' in Qt
+% Creator and follow the standard build steps.
+
+\chapter{Using cschem}
+
+CSchem has a deliberately sparse user interface that may take a little
+getting used to. It is the author's hope, however, that users will
+quickly get to appreciate the simplicity of the system.
+
+\section{Placing elements}
+
+To place an element with a predefined symbol, simply drag the symbol
+from the sidebar onto the design. To place custom elements, drag in
+their SVG file from a filer window. (For more on custom elements, see
+below.) Elements can be moved around simply by dragging the mouse.
+
+\section{Placing connections}
+
+Connections can be placed starting at pins of elements simply by
+dragging the mouse. The connection will start in the direction of
+initial motion, so drag away from the element to avoid tangles. Click
+to fix elbows in the connection; click on a pin of an element or on
+another connection to complete the connection. Press ``Return'' to
+terminate a partially drawn connection and leave it dangling. Press
+``Escape'' or ``Delete'' to abandon a partially drawn connection and
+remove it. To start drawing a new connection starting from an existing
+connection, hold ``Control'' and hover over the old connection. A
+transient marker will appear just as when you hover over a pin, and
+you can drag out a new connection from that point.
+
+Existing connections can be
+moved and reshaped simply by dragging the mouse. Sometimes,
+connections and up with several unnecessary elbows. To simplify a
+connection, double click on a segment that you would like to go
+away. If you accidentally draw a connection through an element, it can
+be hard to ``grab'' it and move it away. In that case, simply draw a
+brand new connection with the same endpoints but a better path. This
+duplicate connection will cause the previous poorly laid out
+connection to vanish.
+
+\section{Adding text}
+
+Textual annotations can be placed anywhere on the canvas simply by
+double clicking. At present, special formatting is not supported, but
+your requests will be considered. To remove an annotation, simply
+delete all the text in it. (Press ``Control''+``A'' then ``Backspace''
+or ``Delete.'')
+
+\section{More about elements}
+
+It is conceptually useful to distinguish between several kinds of
+elements:
+\begin{description}
+  \item[Ports] These are nonphysical entities such as a ground
+    reference or markers to give names to signal traces.
+    \item[Parts] These are mostly straightforward physical entities such as resistors,
+      transistors, and connectors, but also more complex entities like
+      logic gates and opamps.
+    \item[Containers] These are the physical devices that contain
+      one or more logic gates or opamps.
+\end{description}
+
+\begin{figure}[h]
+  \def\subfig#1#2{{\bf(#1)}\raisebox{-.25in}{\raisebox{-.5\height}{\includegraphics[scale=.75]{#2.pdf}}}}
+  \mbox{}\hfill
+  \subfig{a}{ug-ground}
+  \hfill
+  \subfig{b}{ug-battery}
+  \hfill
+  \subfig{c}{ug-opamp}
+  \hfill
+  \subfig{d}{ug-opamp-cont}
+  \hfill\mbox{}
+\end{figure}
+
+\section{Parts list}
+
+To open a parts list as a side panel, use the ``View'' menu or press
+``Control''+``Shift''+``L''. The parts list can be used to
+conveniently modify the ``reference'' and ``part/value'' text
+associated with different elements, and allows you to add arbitrary
+notes to any elements. (Those notes are not displayed on the canvas.)
+
+\section{Exporting and printing}
+
+
+
+\section{Conclusion}
+
+I hope that cschem will be useful to you, and that it will encourage you
+to take more---and more usable---notes. I love to hear happy users'
+stories. I also welcome bug reports of all kinds. And in the unlikely
+event that cschem appears to have chewed up your notes, please do not
+just throw away the broken notebook. Although I cannot make any
+guarantees (see the GPL license text!), it almost certainly can be
+fixed. And I would be happy to try and help.
+
+\end{document}

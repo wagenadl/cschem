@@ -149,10 +149,9 @@ void SvgExporterData::writeConnection(QXmlStreamWriter &sw,
 
 void SvgExporterData::writeBBox(QXmlStreamWriter &sw) {
   QRectF bbox = lib.upscale(geom.boundingRect());
-  // Add space for annotations. This could be more elegant:
   double s = lib.scale();
-  double mrg = 6*s;
-  bbox.adjust(-mrg, -mrg, mrg, mrg);
+  double mrg = 1*s;
+  bbox += QMarginsF(mrg, mrg, mrg, mrg);
 
   sw.writeAttribute("width", QString("%1").arg(bbox.width()));
   sw.writeAttribute("height", QString("%1").arg(bbox.height()));
@@ -173,8 +172,8 @@ bool SvgExporter::exportSvg(QString const &fn) {
   QFile file(fn);
   if (file.open(QFile::WriteOnly)) {
     QXmlStreamWriter sw(&file);
-    sw.setAutoFormatting(true);
-    sw.setAutoFormattingIndent(2);
+    sw.setAutoFormatting(false);
+    //    sw.setAutoFormattingIndent(0);
     sw.writeStartDocument("1.0", false);
     sw.writeStartElement("svg");
     Symbol::writeNamespaces(sw);

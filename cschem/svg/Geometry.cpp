@@ -4,9 +4,11 @@
 
 #include "circuit/Circuit.h"
 #include "svg/SymbolLibrary.h"
+#include "ui/Style.h"
 #include <QDebug>
 #include <QTransform>
 #include <QMap>
+#include <QFontMetricsF>
 #include <math.h>
 
 class OrderedPoint: public QPoint {
@@ -181,14 +183,20 @@ QRectF Geometry::defaultAnnotationSvgBoundingRect(Element const &elt,
   }
 }
 
-QRect annotationBox(QPoint p, QString txt) {
-  // really crude!
-  return QRect(p - QPoint(1+txt.size()/2, 1), p + QPoint(1+txt.size()/2, 1));
+QRectF annotationBox(QPointF p, QString txt) {
+  QFontMetricsF fm(Style::annotationFont());
+  QRectF rf(fm.boundingRect(txt));
+  QPointF wh(rf.width(), rf.height());
+  return QRectF(p - wh/2, p+wh/2);
 }
 
-QRect textualBox(QPoint p, QString txt) {
+QRect textualBox(QPoint p, QString txt, SymbolLibrary const &lib) {
   // really crude!
-  return QRect(p - QPoint(0, 1), p + QPoint(1+txt.size(), 1));
+  QFontMetricsF fm(Style::annotationFont());
+  QRectF rf(fm.boundingRect(txt));
+  QPoint wh = lib.downscale(QPointF(rf.width(), rf.height()));
+  return QRect(p - QPoint(0, wh.y()/2),
+	       p + QPoint(wh.x(), wh.y()/2));
 }
 
 QRect Geometry::boundingRect(Element const &elt, bool withAnnots) const {
@@ -196,19 +204,19 @@ QRect Geometry::boundingRect(Element const &elt, bool withAnnots) const {
     return QRect();
   Symbol const &prt(d->lib.symbol(elt.symbol()));
   QRectF bb = prt.shiftedBBox();
-  QTransform xf = d->symbolToCircuitTransformation(elt);
-  bb = xf.mapRect(bb);
   if (withAnnots) {
     if (elt.nameVisible)
-      bb |= annotationBox(elt.position
-			  + d->lib.downscale(QPointF(elt.namePosition)),
+      bb |= annotationBox(d->lib.upscale(elt.position)
+			  + QPointF(elt.namePosition),
 			  elt.name);
     if (elt.valueVisible)
-      bb |= annotationBox(elt.position
-			  + d->lib.downscale(QPointF(elt.valuePosition)),
+      bb |= annotationBox(d->lib.upscale(elt.position)
+			  + QPointF(elt.valuePosition),
 			  elt.value);
   }
-  bb.adjust(-0.5, -0.5, 0.5, 0.5);
+  QTransform xf = d->symbolToCircuitTransformation(elt);
+  bb = xf.mapRect(bb);
+  bb.adjust(-0.5, -0.5, 1, 1);
   return bb.toRect();
 }
 
@@ -217,9 +225,12 @@ QRect Geometry::boundingRect(bool withTexts) const {
   if (d) {
     for (Element const &elt: d->circ.elements)
       r |= boundingRect(elt, withTexts);
+    for (Connection const &con: d->circ.connections)
+      for (QPoint p: con.via)
+	r |= QRect(p, p);
     if (withTexts)
       for (Textual const &txt: d->circ.textuals)
-	r |= textualBox(txt.position, txt.text);
+	r |= textualBox(txt.position, txt.text, d->lib);
   }
   return r;
 }
