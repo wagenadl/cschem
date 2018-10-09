@@ -5,6 +5,7 @@
 #include <QSet>
 #include <QObject>
 #include <QRegularExpression>
+#include <QDebug>
 
 QString PartNumbering::abbreviation(QString symbol) {
   static QStringList map{
@@ -42,24 +43,22 @@ bool PartNumbering::initiallyShowName(QString symbol) {
 
 
 QString PartNumbering::nameToHtml(QString name) {
-  if (isNameWellFormed(name))
+  if (name.left(1)=="V")
+    return "<i>V</i><sub>" + name.mid(1) + "</sub>";
+  else if (isNameWellFormed(name))
     return "<i>" + prefix(name) + "</i>"
       + "<sub>" + cnumber(name) + csuffix(name) + "</sub>";
-  return name;
+  else
+    return name;
 }
 
 QString PartNumbering::prettyValue(QString value, QString name) {
-  QString pfx = name.left(1);
-  QString sfx = name.mid(1);
-  if (sfx.toDouble()>0) {
-    if (pfx=="R" && value.endsWith("."))
-      value = value.left(value.size()-1) + QObject::tr("Ω");
-    else if (pfx=="C" || pfx=="L")
-      value.replace("u", QObject::tr("μ"));
-  }
-  if (pfx=="R" || pfx=="C" || pfx=="L") {
-    // insert space after number?
-  }
+  value.replace("Ohm", "Ω");
+  value.replace("uF", "μF");
+  value.replace("uH", "μH");
+  if (isNameWellFormed(name) && prefix(name)=="R")
+    if (value.endsWith("."))
+      value = value.left(value.size()-1) + "Ω";
   return value;
 }
 
