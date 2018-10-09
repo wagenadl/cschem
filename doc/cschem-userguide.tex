@@ -16,7 +16,7 @@
 \begin{document}
 \thispagestyle{empty}
 \begin{centering}
-  {\Huge cschem}
+  {\Huge CSchem}
   \vskip30pt
 
   {\Large easy-to-use electronic circuit layout}
@@ -33,7 +33,7 @@
 \vfill
 \noindent Copyright (C) 2018 Daniel A. Wagenaar\medskip
 
-``cschem'' is free software: you can redistribute it and/or modify
+``CSchem'' is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
@@ -49,14 +49,16 @@ along with this program.  If not, see http://www.gnu.org/licenses.
 
 \chapter{Introduction}
 
-This document describes the installation and usage of ``cschem'', a
+This document describes the installation and usage of ``CSchem'', a
 (hopefully) easy-to-use program for drawing electronic circuit
-diagrams written by Daniel Wagenaar. 
+diagrams written by Daniel Wagenaar. A companion program, ``cpcb'',
+is provided for instantiating circuits on a PCB. This program is
+documented separately.
 
-\section{Why use cschem?}
+\section{Why use CSchem?}
 
 There are any number of software packages available that allow you to
-draw circuit diagrams. So why should you choose ``cschem''? CSchem is
+draw circuit diagrams. So why should you choose CSchem? CSchem is
 for you if:
 \begin{itemize}
   \item You like your circuit diagrams to look ready for publication
@@ -70,7 +72,7 @@ for you if:
       to draw them in an SVG editor.
 \end{itemize}\pagebreak
 
-\noindent However, cschem may not be for you if:
+\noindent However, CSchem may not be for you if:
 \begin{itemize}
   \item You need to draw very large circuits that span multiple
     sheets;
@@ -84,14 +86,14 @@ for you if:
 \noindent Lastly, a note on development. CSchem is being developed by an
 active research scientist. Practically, that means two things: On the
 positive side, it means that I have a vested interest in fixing bugs
-and improving cschem, because I use it regularly. On the negative side, that
+and improving CSchem, because I use it regularly. On the negative side, that
 means that, by and large, new features are added only when I need them
 and bugs are fixed when I have time. I certainly do welcome feature
 requests, but I cannot guarantee that they will get implemented
 quickly or at all. (If you are in a hurry, I will consider (paid)
-consultancy related to cschem.) Finally, I definitely welcome
+consultancy related to CSchem.) Finally, I definitely welcome
 contributions to either the code or the documentation. I would be very
-happy if cschem turned into a community-supported open source project.
+happy if CSchem turned into a community-supported open source project.
 
 \section{Features}
 
@@ -112,30 +114,30 @@ Connections are wires between (pins of) elements. Where wires meet, a
 also cross without electrical contact. Connections normally are
 constrained to run horizontally or vertically with right-angle elbows.
 
-The only graphical element that cschem supports other than elements
+The only graphical element that CSchem supports other than elements
 and connections are arbitrary textual annotations that can be placed anywhere on
 the sheet.
 
-At present, cschem does not have explicit support for buses with
+At present, CSchem does not have explicit support for buses with
 multiple signal wires or for splitting a drawing across multiple sheets.
 
 \section{Contacting the author}
 
-If you like cschem or find fault with it, if you discover a bug or have a
+If you like CSchem or find fault with it, if you discover a bug or have a
 suggestion for a new feature, if you are interested in improving this
 documentation or have a patch to contribute to the code, I want to
 hear from you. My contact information is at
 http://www.danielwagenaar.net. I very much look forward to hearing
 from you. I realize that this guide is extremely terse, and I
 really do welcome questions, particularly if they help me to improve
-cschem or its documentation.\bigskip
+CSchem or its documentation.\bigskip
 
 \noindent Pasadena, October 2018
 
 \chapter{Installation}
 
 The latest version of the software can always be downloaded from\break
-http://www.danielwagenaar.net/cschem.
+http://www.danielwagenaar.net/CSchem.
 
 \section{Installing precompiled binaries}
 
@@ -143,12 +145,12 @@ Binary packages for Windows and Mac OS X will be provided as time
 permits. You can help focus my attention on binaries simply by
 expressing an interest.
 
-% Installation on Windows should be easy using the provided ``cschem.msi''
+% Installation on Windows should be easy using the provided ``CSchem.msi''
 % installation package. Installation on Mac OS X should be
-% straightforward by unpacking the ``cschem-mac.tgz'' archive and placing
-% ``cschem.app'' anywhere on your hard disk.  Installation on Debian,
+% straightforward by unpacking the ``CSchem-mac.tgz'' archive and placing
+% ``CSchem.app'' anywhere on your hard disk.  Installation on Debian,
 % Ubuntu, or Mint Linux should be equally easy using the provided
-% ``cschem.deb'' installation package. At present, installation on other
+% ``CSchem.deb'' installation package. At present, installation on other
 % flavors of Linux will require compiling the sources yourself, but this
 % should be straightforward (see below).
 
@@ -158,8 +160,8 @@ expressing an interest.
 
 \section{Compiling the source}
 To compile the source,  start from the provided
-``cschem.tar.gz'' archive or check out the git source at
-http://github.com/wagenadl/cschem. Compilation requires
+``CSchem.tar.gz'' archive or check out the git source at
+http://github.com/wagenadl/CSchem. Compilation requires
 ``Qt'' version 5.6 or later. (CSchem can also compile with Qt 4.8 on
 Linux with minor changes to the ``Makefile''.)
 
@@ -172,7 +174,7 @@ site\footnote{https://developer.apple.com/xcode.}.
 
 Open a terminal and ``cd'' to the root of the unpacked source
 archive. Then type ``make'' and fetch a cup of tea. Then, either
-manually copy the file ``build/cschem/cschem'' to some location on your PATH, or type ``sudo make
+manually copy the file ``build/CSchem/CSchem'' to some location on your PATH, or type ``sudo make
 install'' to install into ``/usr/local/bin''.
 
 \subsection{Compiling on Windows}
@@ -183,11 +185,11 @@ Details to follow. Again, feel free to ask!
 % 
 % First, run ``updatesources.sh'' in the
 % ``tools'' subfolder in a Cygwin shell. Then open, one by one,
-% ``src/cschem.pro''
+% ``src/CSchem.pro''
 % and ``webgrab/webgrab.pro'' in Qt
 % Creator and follow the standard build steps.
 
-\chapter{Using cschem}
+\chapter{Using CSchem}
 
 CSchem has a deliberately sparse user interface that may take a little
 getting used to. It is the author's hope, however, that users will
@@ -226,11 +228,35 @@ connection to vanish.
 
 \section{Adding text}
 
-Textual annotations can be placed anywhere on the canvas simply by
-double clicking. At present, special formatting is not supported, but
-your requests will be considered. To remove an annotation, simply
-delete all the text in it. (Press ``Control''+``A'' then ``Backspace''
-or ``Delete.'')
+Reference and part/value labels can be added to elements that don't
+already display them by double clicking on the element. These labels
+will move with the element and can be micropositioned by dragging with
+the mouse. To hide a label, hover over it with the mouse pointer and
+press ``Backspace.'' (This doesn't actually delete the annotation; it
+can be made visible again by double clicking the parent element.)
+
+Arbitrary textual annotations can be placed anywhere on the canvas
+simply by double clicking on the canvas. At present, special
+formatting is not supported, but your requests will be considered. To
+remove an annotation, simply delete all the text in it. (Press
+``Control''+``A'' then ``Backspace'' or ``Delete.'')
+
+\section{Parts list}
+
+To open a parts list as a side panel, use the ``View'' menu or press
+``Control''+``Shift''+``L''. The parts list can be used to
+conveniently modify the ``reference'' and ``part/value'' text
+associated with different elements, and allows you to add arbitrary
+notes to any elements. (Those notes are not displayed on the canvas.)
+
+\section{Exporting and printing}
+
+CSchem does not directly talk to printers. However, it can export the
+circuit diagram as vector graphics
+(SVG). In addition, the parts list can be exported as a CSV file. For
+further convenience, a bitmap image of the diagram can be copied to
+the system clipboard for direct inclusion in, e.g., an electronic lab
+notebook. Likewise, the parts list can be copied to the system clipboard.
 
 \section{More about elements}
 
@@ -246,39 +272,68 @@ elements:
       one or more logic gates or opamps.
 \end{description}
 
+A few examples (Figure~\ref{parteg}) should help explain this. Ports
+and simple parts are straightforward enough (Fig.~\ref{parteg}A
+and~B). Virtual parts (Fig.~\ref{parteg}C) and containers
+(Fig.~\ref{parteg}D) may need some explanation.
+
+\def\subfig#1#2{{\sf\small\bfseries#1}\raisebox{-.2in}{\raisebox{-.5\height}{\includegraphics[scale=.6]{#2.pdf}}}}
+
 \begin{figure}[h]
-  \def\subfig#1#2{{\bf(#1)}\raisebox{-.25in}{\raisebox{-.5\height}{\includegraphics[scale=.75]{#2.pdf}}}}
   \mbox{}\hfill
-  \subfig{a}{ug-ground}
+  \subfig{A}{ug-ground}
   \hfill
-  \subfig{b}{ug-battery}
+  \subfig{B}{ug-battery}
   \hfill
-  \subfig{c}{ug-opamp}
+  \subfig{C}{ug-opamp}
   \hfill
-  \subfig{d}{ug-opamp-cont}
+  \subfig{D}{ug-opamp-cont}
   \hfill\mbox{}
+  \caption{Several kinds of elements. {\bf A.}~A ground reference as
+    an example of a port. {\bf B.}~A battery as an example of a simple
+    part. {\bf C.}~An opamp as an example of a ``virtual part.'' {\bf
+      D.}~A ``container'' for two opamps.}\label{parteg}
 \end{figure}
 
-\section{Parts list}
 
-To open a parts list as a side panel, use the ``View'' menu or press
-``Control''+``Shift''+``L''. The parts list can be used to
-conveniently modify the ``reference'' and ``part/value'' text
-associated with different elements, and allows you to add arbitrary
-notes to any elements. (Those notes are not displayed on the canvas.)
-
-\section{Exporting and printing}
+Imagine the simple amplifier circuit for a photodiode in Fig.~\ref{pdamp}.
+%
+\begin{figure}[h]
+  \mbox{}\hfill\subfig{}{ug-pdamp}\hfill\mbox{}
+  \caption{A simple photodiode amplifier.}\label{pdamp}
+\end{figure}
+%
+\def\sub#1{\textrm{\scriptsize#1}}
+In this circuit, $V_\textrm{\scriptsize out}$ is related to the photocurrent
+$I_\sub{D}$ by $V_\sub{out} = R_1\;I_\sub{D}$. (To see this, consider that light
+hitting a photodiode induces a photocurrent to run from the cathode to
+the anode, i.e., in the reverse direction of the normal diode
+current. Because the opamp $A_1$ has near-infinite input impedance,
+that current can only run through $R_1$, which must therefore (Ohm's law) develop
+a voltage $V = I_\sub{D}\;R_1$.) In my opinion, this circuit is best drawn in
+this simple form: including the power connections to the opamp would
+make it harder to understand. However, if we are going to actually
+build this circuit, we do need the opamp to be powered. Rather than
+drawing power connections to the opamp symbol, however, I prefer to relegate
+that housekeeping stuff to a separate part of the diagram (as in Fig.~\ref{pdampcont}).
+%
+\begin{figure}[h]
+  \mbox{}\hfill\subfig{}{ug-pdamp-cont}\hfill\mbox{}
+  \caption{The photodiode amplifier with basic power supply.}\label{pdampcont}
+\end{figure}
+%
+That way, the boring stuff (such as the fact that we are using a 5-V
+power supply and an OPA350 opamp) does not get in the way of the
+interesting stuff. Note that the virtual opamp and the container are
+both labeled $A_1$, because they are ultimately one and the same when
+it comes to actually building the circuit.
 
 
 
 \section{Conclusion}
 
-I hope that cschem will be useful to you, and that it will encourage you
-to take more---and more usable---notes. I love to hear happy users'
-stories. I also welcome bug reports of all kinds. And in the unlikely
-event that cschem appears to have chewed up your notes, please do not
-just throw away the broken notebook. Although I cannot make any
-guarantees (see the GPL license text!), it almost certainly can be
-fixed. And I would be happy to try and help.
+I hope that CSchem will be useful to you. As mentioned before, CSchem
+is in active development, and I am very interested in your thoughts
+for improvement.
 
 \end{document}
