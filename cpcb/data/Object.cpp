@@ -595,6 +595,7 @@ QSet<Point> Object::allPoints() const {
   case Object::Type::Null:
     break;
   case Object::Type::NPHole:
+    pp << asNPHole().p;
     break;
   case Object::Type::Hole:
     pp << asHole().p;
@@ -625,6 +626,7 @@ QSet<Point> Object::allPoints(Layer lay) const {
   case Object::Type::Null:
     break;
   case Object::Type::NPHole:
+    pp << asNPHole().p;
     break;
   case Object::Type::Hole:
     if (lay==Layer::Top || lay==Layer::Bottom)
