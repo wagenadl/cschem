@@ -9,6 +9,7 @@
 #include "Style.h"
 #include "svg/Geometry.h"
 #include <QWidget>
+#include "circuit/Net.h"
 
 class PinMarker: public QGraphicsEllipseItem {
 public:
@@ -40,6 +41,7 @@ public:
     r = scene->library().scale();
     pinMarker = 0;
     haveMagnet = false;
+    movingcon = false;
   }
   void update();
   bool onElement() const;
@@ -68,6 +70,7 @@ public:
   int seg;
   bool fakepin;
   bool isjunc;
+  bool movingcon;
   SceneElement::WeakPtr hoverElt;
   SceneConnection::WeakPtr hoverCon;
   HoverManager::Purpose primaryPurpose;
@@ -212,6 +215,8 @@ bool HoverManagerData::onConnection() const {
 }
 
 void HoverManagerData::update() {
+  if (movingcon)
+    return; // is that right?
   auto const &elts = scene->elements();
   auto const &cons = scene->connections();
   //  auto const &lib = scene->library();
@@ -361,8 +366,10 @@ QString HoverManagerData::pointName(int e, QString p) const {
   return ""; // not executed
 }
 
-QString HoverManagerData::netName(int /*con*/) const {
-  return "connection"; // to be refined...
+QString HoverManagerData::netName(int con) const {
+  Net net(scene->circuit(), con);
+  QString name = net.name();
+  return name.isEmpty() ? "unnamed net" : "net “" + name + "”";
 }
 
 HoverManager::HoverManager(Scene *scene): d(new HoverManagerData(this, scene)) {
@@ -512,4 +519,12 @@ QPoint HoverManager::tentativelyMoveSelection(QPoint del, bool nomagnet) {
   d->showStickPoints(pts);
   
   return del;
+}
+
+void HoverManager::pressOnConnection() {
+  d->movingcon = true;
+}
+
+void HoverManager::mouseRelease() {
+  d->movingcon = false;
 }
