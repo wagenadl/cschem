@@ -253,7 +253,7 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   
   p->setPen(Qt::NoPen);
 
-  QPointF p0 = t.p.toMils();
+  QPointF p0 = (origin + t.p).toMils();
   if (toplevel && selected)
     p0 += movingdelta.toMils();
   

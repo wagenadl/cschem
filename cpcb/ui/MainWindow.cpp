@@ -68,14 +68,21 @@ public:
 };
 
 void MWData::resetFilename() {
-  filename = "Untitled.cpcb";
+  filename = "";
   setWindowTitle();
 }
 
 void MWData::setWindowTitle() {
   QString lbl = filename;
-  if (editor && !editor->isAsSaved())
-    lbl += " *";
+  if (editor && !editor->isAsSaved()) {
+    if (lbl.isEmpty())
+      lbl = "(Untitled) *";
+    else
+      lbl += " *";
+  } else {
+    if (lbl.isEmpty())
+      lbl = "CPCB";
+  }
   mw->setWindowTitle(lbl);
 }
 
