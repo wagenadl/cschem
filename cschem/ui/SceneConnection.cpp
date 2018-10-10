@@ -433,6 +433,8 @@ void SceneConnection::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
       && !circ.connections[d->id].danglingEnd())
     path.append(d->origpath.last());
   d->scene->modifyConnection(d->id, lib.simplifyPath(path));
+
+  d->moveseg = -1;
 }
 
 SceneConnection::WeakPtr::WeakPtr(SceneConnection *s,
