@@ -10,9 +10,13 @@
 #include "svg/Geometry.h"
 #include "circuit/CircuitMod.h"
 
-static QPen defaultPen() {
-  QPen p(QColor(0, 0, 0));
-  p.setWidthF(1.5);
+static QPen tentativePen() {
+  static QPen p(QColor(150, 180, 255), 1.5, Qt::DashDotLine);
+  return p;
+}
+
+static QPen fixedPen() {
+  static QPen p(QColor(0, 0, 0), 1.5, Qt::SolidLine);
   return p;
 }
 
@@ -71,7 +75,8 @@ bool ConnBuilderData::fixPenultimate() {
       && segments[0]->line().length() < scene->library().scale()
       && segments[1]->line().length() < scene->library().scale())
     return false;
-      
+
+  segments[segments.size()-2]->setPen(fixedPen());
   QLineF l = segments.last()->line();
   points << l.p1();
   return true;
@@ -80,7 +85,7 @@ bool ConnBuilderData::fixPenultimate() {
 QGraphicsLineItem *ConnBuilderData::newSegment() {
   QLineF l = segments.last()->line();
   auto *gli = new QGraphicsLineItem;
-  gli->setPen(defaultPen());
+  gli->setPen(tentativePen());
   gli->setLine(QLineF(l.p2(), l.p2()));
   segments << gli;
   return gli;  
@@ -255,13 +260,13 @@ void ConnBuilder::startFromPin(QPointF fromPos, int fromId, QString fromPin) {
   d->ensureStartJunction();
 
   auto *gli = new QGraphicsLineItem;
-  gli->setPen(defaultPen());
+  gli->setPen(tentativePen());
   gli->setLine(QLineF(p0, p1));
   d->segments << gli;
   addToGroup(gli);
 
   gli = new QGraphicsLineItem;
-  gli->setPen(defaultPen());
+  gli->setPen(tentativePen());
   gli->setLine(QLineF(p1, p1));
   d->segments << gli;
   addToGroup(gli);
@@ -319,15 +324,15 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
 }
 
 void ConnBuilder::mousePress(QGraphicsSceneMouseEvent *) {
-}
-
-void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *) {
   if (d->points.isEmpty())
     return;
   if (!d->fixPenultimate())
     return;
   addToGroup(d->newSegment());
   d->considerCompletion();
+}
+
+void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *) {
 }
 
 bool ConnBuilder::isComplete() const {

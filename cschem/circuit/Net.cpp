@@ -91,6 +91,7 @@ Net::Net(Circuit const &circ, int seedelt, QString seedpin):
 Net::Net(Circuit const &circ, int seedcon):
   d(new NetData(circ)) {
   d->addCon(seedcon);
+  d->determineName();
 }
 
 Net::~Net() {
