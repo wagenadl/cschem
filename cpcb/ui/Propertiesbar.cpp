@@ -849,12 +849,20 @@ void PBData::setupUI() {
   w = makeDimSpinner(wc);
   w->setValue(Dim::fromInch(.020));
   w->setMinimumValue(Dim::fromInch(0.005));
+  QObject::connect(w, &DimSpinner::valueEdited,
+		   [this](Dim d) {
+		     editor->setWidth(d);
+                   });
 
   hc = makeContainer(dimg);
   makeLabel(hc, "H", "Pad height");
   h = makeDimSpinner(hc);
   h->setValue(Dim::fromInch(.040));
   h->setMinimumValue(Dim::fromInch(0.005));
+  QObject::connect(h, &DimSpinner::valueEdited,
+		   [this](Dim d) {
+		     editor->setHeight(d);
+                   });
 
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
