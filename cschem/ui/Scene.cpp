@@ -491,6 +491,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
     }
     d->rbstart = e->scenePos();
   } else if (d->hovermanager->onConnection()) {
+    d->hovermanager->pressOnConnection();
     QGraphicsScene::mousePressEvent(e); // pass on to items
   } else if (item_at) {
     QGraphicsScene::mousePressEvent(e); // pass on to items
@@ -543,6 +544,7 @@ void Scene::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
                                       e->modifiers() & Qt::ControlModifier)
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
+  d->hovermanager->mouseRelease();
   d->hovermanager->update(e->scenePos());
   if (d->connbuilder) {
     d->connbuilder->mouseRelease(e);
