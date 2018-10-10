@@ -11,7 +11,7 @@
 #include "circuit/CircuitMod.h"
 
 static QPen tentativePen() {
-  static QPen p(QColor(150, 180, 255), 1.5, Qt::DashDotLine);
+  static QPen p(QColor(150, 180, 255), 1.5, Qt::DashDotLine, Qt::FlatCap);
   return p;
 }
 
@@ -332,7 +332,10 @@ void ConnBuilder::mousePress(QGraphicsSceneMouseEvent *) {
   d->considerCompletion();
 }
 
-void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *) {
+void ConnBuilder::mouseRelease(QGraphicsSceneMouseEvent *e) {
+  if (d->points.size()==1) 
+    if (d->horstart || d->verstart)
+      mousePress(e); // treat release as a press to fix first segment
 }
 
 bool ConnBuilder::isComplete() const {
