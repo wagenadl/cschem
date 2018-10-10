@@ -39,6 +39,9 @@ public:
   void newDrag(class Symbol const &);
   QPoint updateDrag(QPoint p);
   void doneDragging();
+public slots:
+  void pressOnConnection();
+  void mouseRelease();
 signals:
   void hoverChanged(QString); // message
 private:
