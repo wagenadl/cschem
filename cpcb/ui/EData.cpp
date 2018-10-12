@@ -327,7 +327,7 @@ void EData::pressNPHole(Point p) {
   Group &here(currentGroup());
   NPHole t;
   t.p = p;
-  t.d = props.od;
+  t.d = props.id;
   UndoCreator uc(this, true);
   here.insert(Object(t));
   ed->update();
