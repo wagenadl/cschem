@@ -33,7 +33,7 @@ public:
   Layer layer;
 public:
   Arc();
-  void rotateFreely(int);
+  void freeRotate(int degcw, Point const &p0);
   void rotateCW(); // around center
   void rotateCCW(); // around center
   void rotateCW(Point const &p0);

@@ -805,6 +805,19 @@ Group const &Editor::currentGroup() const {
   return d->layout.root().subgroup(d->crumbs);
 }
 
+void Editor::arbitraryRotation(int degCW) {
+  Group &here(d->currentGroup());
+  Rect box(d->selectionBounds());
+  if (box.isEmpty())
+    return;
+  Point center = box.center(); //.roundedTo(d->layout.board().grid);
+  UndoCreator uc(d);
+  if (!d->selection.isEmpty() || !selectedPoints().isEmpty())
+    uc.realize();
+  for (int id: d->selection)
+    here.object(id).freeRotate(degCW, center);
+}  
+
 void Editor::rotateCW(bool noundo) {
   Group &here(d->currentGroup());
   Rect box(d->selectionBounds());

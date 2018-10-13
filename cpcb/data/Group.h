@@ -57,6 +57,7 @@ public:
   int ensureRefText(int); // ensure that subgroup has reftext object
   void rotateCCW(Point p);
   void rotateCW(Point p);
+  void freeRotate(int degcw, Point const &p);
   void flipLeftRight(Dim x);
   void flipUpDown(Dim y);
   void translate(Point p);

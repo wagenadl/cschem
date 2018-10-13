@@ -5,6 +5,13 @@
 NPHole::NPHole() {
 }
 
+bool NPHole::contains(Point const &p1) const {
+  if (slotlength.isPositive())
+    return slotEnds().onSegment(p1, d/2);
+  else
+    return p.distance(p1) < d/2;
+}
+
 Rect NPHole::boundingRect() const {
   Dim r = d/2;
   if (slotlength.isPositive()) {
@@ -48,6 +55,11 @@ QDebug operator<<(QDebug d, NPHole const &t) {
     << t.rota
     << ")";
   return d;
+}
+
+void NPHole::freeRotate(int degcw, Point const &p0) {
+  rota += degcw;
+  p.freeRotate(degcw, p0);
 }
 
 void NPHole::rotateCW(Point const &p0) {

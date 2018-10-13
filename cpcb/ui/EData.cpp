@@ -490,7 +490,7 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
   int fave = -1;
   Prio prio = Prio::None;
   Board const &brd = layout.board();
-  auto better = [&prio](Prio p1) { return int(p1) > int(prio); };
+  auto better = [&prio](Prio p1) { return int(p1) >= int(prio); };
   for (int id: ids) {
     Prio p1 = Prio::None;
     Object const &obj = here.object(id);

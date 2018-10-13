@@ -561,7 +561,9 @@ bool GWData::writeText(GerberFile &out, Gerber::Layer layer) {
 static void writeRotatedRect(GerberFile &out,
                              Point const &p, Dim dx, Dim dy,
                              FreeRotation rota) {
-  auto pt = [&](Point dp) { return Gerber::point(p + dp.rotated(rota)/2); };
+  auto pt = [&](Point dp) {
+    return Gerber::point(p + dp.rotatedFreely(rota)/2);
+  };
   out << "G01*\n"; // linear
   out << "G36*\n"; // linear
   out << pt(Point(dx, dy)) << "D02*\n";
@@ -713,7 +715,7 @@ static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
   out << trcaps.select(Gerber::Rect(fpcw));
   for (auto const &pr: lst) {
     auto pt = [&](Dim dx, Dim dy) {
-      return Gerber::point(pr.p + Point(dx, dy).rotated(pr.r));
+      return Gerber::point(pr.p + Point(dx, dy).rotatedFreely(pr.r));
     };
     out << pt(-dxm-pr.x/2, Dim()) << "D02*\n";
     out << pt(dxm+pr.x/2, Dim()) << "D01*\n";
@@ -807,7 +809,7 @@ static void writeSMDPads(GerberFile &out,
     for (Pad const &pad: pads[p]) {
       if (pad.rota) 
         writeRotatedRect(out, pad.p,
-                         pad.width, pad.height, pad.rota);
+                         pad.width + 2*mrg, pad.height + 2*mrg, pad.rota);
       else 
         out << Gerber::point(pad.p) << "D03*\n";
     }

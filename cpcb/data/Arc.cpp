@@ -110,6 +110,11 @@ void Arc::rotateCW() {
   rota += 90;
 }
 
+void Arc::freeRotate(int degcw, Point const &p0) {
+  rota += degcw;
+  center.freeRotate(degcw, p0);
+}
+
 void Arc::rotateCW(Point const &p0) {
   center.rotateCW(p0);
   rota += 90;

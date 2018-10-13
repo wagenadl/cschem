@@ -193,8 +193,8 @@ void Statusbar::updateCursor() {
     QString txt;
     if (metric) 
       txt = QString("X:%1 mm Y:%2 mm")
-	.arg(p1.x.toInch(),5,'f',2, QChar(0x2007))
-	.arg(p1.y.toInch(),5,'f',2, QChar(0x2007));
+	.arg(p1.x.toMM(),5,'f',2, QChar(0x2007))
+	.arg(p1.y.toMM(),5,'f',2, QChar(0x2007));
     else
       txt = QString("X:%1” Y:%2”")
 	.arg(p1.x.toInch(),0,'f',3)
