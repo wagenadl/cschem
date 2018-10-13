@@ -40,8 +40,8 @@ public:
   Point &flipUpDown(Dim y=Dim());
   Point &rotateCW(Point const &p=Point());
   Point &rotateCCW(Point const &p=Point());
-  Point &rotate(int degreesCW, Point const &p=Point());
-  Point rotated(int degreesCW, Point const &p=Point()) const;
+  Point &freeRotate(int degreesCW, Point const &p=Point());
+  Point rotatedFreely(int degreesCW, Point const &p=Point()) const;
   inline static Dim distance(Point const &a, Point const &b) {
     return a.distance(b); }
   bool operator<(Point const &o) const { return y==o.y ? x<o.x : y<o.y; }

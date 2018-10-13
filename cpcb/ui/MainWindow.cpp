@@ -45,6 +45,7 @@ public:
   void fillBars();
   void boardSizeDialog();
   void openDialog();
+  void arbitraryRotation();
   bool exportAsDialog();
   bool exportPasteMaskDialog();
   bool saveAsDialog();
@@ -246,6 +247,14 @@ void MWData::linkSchematicDialog() {
                          + "”. Could the file be damaged?");
 }
 
+void MWData::arbitraryRotation() {
+  int angle = QInputDialog::getInt(mw, "Arbitrary rotation",
+				   "Clockwise angle (degrees):",
+				   0, -359, 359);
+  if (angle)
+    editor->arbitraryRotation(angle);
+}
+
 bool MWData::exportPasteMaskDialog() {
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
@@ -274,7 +283,7 @@ bool MWData::exportPasteMaskDialog() {
   Dim dflt = Dim::fromString(stg.value("shrinkage",
                                        Dim::fromInch(0.005).toString())
                              .toString());
-  double shrinkage = QInputDialog::getDouble(mw, "Export Paste mark",
+  double shrinkage = QInputDialog::getDouble(mw, "Export paste mark",
 					     "Shrinkage for cutouts ("
 					     + unit + "):",
 					     metric ? dflt.toMM()
@@ -452,7 +461,14 @@ void MWData::makeMenus() {
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
-  
+
+  a = edit->addAction("Arbitrary rotatio&n…",
+		      [this]() { arbitraryRotation(); },
+		      QKeySequence(Qt::ALT + Qt::Key_R));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+    
   a = edit->addAction("&Flip left–right", [this]() { editor->flipH(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_F));
   QObject::connect(editor, &Editor::selectionChanged,

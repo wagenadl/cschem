@@ -71,14 +71,13 @@ public:
   FilledPlane &asPlane();
   Type type() const;
   bool touches(Point p, Dim mrg=Dim()) const;
-  /* Note: Touches returns false for filled planes, because they are
-     not to be selected along with other stuff. */
   Rect boundingRect() const;
   Layer layer() const;
   void translate(Point const &);
   Object translated(Point const &) const;
   void rotateCCW(Point const &);
   void rotateCW(Point const &);
+  void freeRotate(int degCW, Point const &);
   void flipLeftRight(Dim x);
   void flipUpDown(Dim y);
   QSet<Point> pinPoints() const; // recursive

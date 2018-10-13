@@ -402,6 +402,8 @@ bool Object::touches(Point p, Dim mrg) const {
     return asArc().onEdge(p, mrg);
   case Type::Plane:
     return asPlane().contains(p);
+  case Type::NPHole:
+    return asNPHole().contains(p);
   default:
     return boundingRect().grow(mrg/2).contains(p);
   }
@@ -523,6 +525,37 @@ void Object::rotateCW(Point const &p0) {
     break;
   case Type::Group:
     asGroup().rotateCW(p0);
+    break;
+  }
+}
+
+void Object::freeRotate(int degCW, Point const &p0) {
+  switch (type()) {
+  case Type::Null:
+    break;
+  case Type::Hole:
+    asHole().freeRotate(degCW, p0);
+    break;
+  case Type::NPHole:
+    asNPHole().freeRotate(degCW, p0);
+    break;
+  case Type::Pad:
+    asPad().freeRotate(degCW, p0);
+    break;
+  case Type::Arc:
+    asArc().freeRotate(degCW, p0);
+    break;
+  case Type::Text:
+    asText().freeRotate(degCW, p0);
+    break;
+  case Type::Trace:
+    asTrace().p1.freeRotate(degCW, p0);
+    asTrace().p2.freeRotate(degCW, p0);
+    break;
+  case Type::Plane:
+    break;
+  case Type::Group:
+    asGroup().freeRotate(degCW, p0);
     break;
   }
 }

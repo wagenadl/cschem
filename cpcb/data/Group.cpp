@@ -141,6 +141,13 @@ void Group::translate(Point p) {
     o.translate(p);
 }
 
+void Group::freeRotate(int degcw, Point const &p) {
+  d.detach();
+  d->hasbbox = false;
+  for (Object &o: d->obj)
+    o.freeRotate(degcw, p);
+}  
+
 void Group::rotateCCW(Point p) {
   d.detach();
   d->hasbbox = false;

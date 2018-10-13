@@ -9,6 +9,20 @@ Pad::Pad() {
   noclear = false;
 }
 
+
+void Pad::freeRotate(int degcw, Point const &p0) {
+  rota += degcw;
+  if (rota==180) {
+    rota = FreeRotation();
+  } else if (rota==90 || rota==270) {
+    Dim x = width;
+    width = height;
+    height = x;
+    rota = FreeRotation();
+  }
+  p.freeRotate(degcw, p0);
+}
+
 void Pad::rotateCW() {
   rota += 90;
   if (rota==180) {
@@ -82,11 +96,11 @@ Rect Pad::boundingRect() const {
   Point dp(width/2, height/2);
   if (rota) {
     Rect r(p, p);
-    r |= p+dp.rotated(rota);
-    r |= p+(-dp).rotated(rota);
+    r |= p+dp.rotatedFreely(rota);
+    r |= p+(-dp).rotatedFreely(rota);
     dp.y = -dp.y;
-    r |= p+dp.rotated(rota);
-    r |= p+(-dp).rotated(rota);
+    r |= p+dp.rotatedFreely(rota);
+    r |= p+(-dp).rotatedFreely(rota);
     return r;
   } else {
     return Rect(p - dp, p + dp);

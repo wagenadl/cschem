@@ -71,6 +71,7 @@ public slots:
   void setArcAngle(int angle);
   void rotateCW(bool noundo=false);
   void rotateCCW(bool noundo=false);
+  void arbitraryRotation(int angleCW);
   void flipH(bool noundo=false);
   void flipV();
   void setRotation(int); // this is not the way to rotate or flip things

@@ -271,7 +271,13 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   double extramils = extraMils(innet, t.width, t.height);
   p->setBrush(brushColor(selected, innet));
   QPointF dp(w+extramils, h+extramils);
-  p->drawRect(QRectF(p0 - dp/2, p0 + dp/2));
+  QRectF r(-dp/2, dp/2);
+  if (t.rota) {
+    QTransform xf; xf.rotate(t.rota);
+    p->drawPolygon(xf.map(r).translated(p0));
+  } else {
+    p->drawRect(r.translated(p0));
+  }
 
   if (subl==Sublayer::Main && t.fpcon) {
     Dim pc = brd.padClearance(t.width, t.height);
