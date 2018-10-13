@@ -357,15 +357,20 @@ bool GWData::writeCopper(Gerber::Layer layer) {
   if (!out.isValid())
     return false;
 
-  collectCopperClearanceApertures(out, layer);
+  bool hasFilledPlanes = !collector.filledPlanes(mapLayer(layer)).isEmpty();
+
+  if (hasFilledPlanes)
+    collectCopperClearanceApertures(out, layer);
   collectCopperApertures(out, layer);
-  
-  if (!writeFilledPlanes(out, layer))
-    return false;
-  if (!writeTrackAndPadClearance(out, layer))
-    return false;
-  if (!writeTextClearance(out, layer))
-    return false;
+
+  if (hasFilledPlanes) {
+    if (!writeFilledPlanes(out, layer))
+      return false;
+    if (!writeTrackAndPadClearance(out, layer))
+      return false;
+    if (!writeTextClearance(out, layer))
+      return false;
+  }
   if (!writeTracksAndPads(out, layer))
     return false;
   if (!writeText(out, layer))
