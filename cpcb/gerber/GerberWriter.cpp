@@ -462,7 +462,7 @@ void GWData::collectCopperClearanceApertures(GerberFile &out,
   }
   for (Point p: collector.smdPads(l).keys()) {
     Dim mrg(2*layout.board().padClearance(p.x, p.y));
-    aps.ensure(Gerber::Rect(p.x, p.y));
+    aps.ensure(Gerber::Rect(p.x + mrg, p.y + mrg));
   }
   out.writeApertures(aps);
 }
