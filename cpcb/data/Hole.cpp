@@ -18,10 +18,10 @@ Rect Hole::boundingRect() const {
     Point ne(r+dx, -r);
     Point sw(-r-dx, r);
     Point se(r+dx, r);
-    rct |= p + nw.rotated(rota);
-    rct |= p + ne.rotated(rota);
-    rct |= p + sw.rotated(rota);
-    rct |= p + se.rotated(rota);
+    rct |= p + nw.rotatedFreely(rota);
+    rct |= p + ne.rotatedFreely(rota);
+    rct |= p + sw.rotatedFreely(rota);
+    rct |= p + se.rotatedFreely(rota);
   }
   return rct;
 }
@@ -88,8 +88,8 @@ bool Hole::touches(Trace const &t) const {
     return true;
   if (square) {
     Segment t1;
-    t1.p1 = t.p1.rotated(-rota, p);
-    t1.p2 = t.p2.rotated(-rota, p);
+    t1.p1 = t.p1.rotatedFreely(-rota, p);
+    t1.p2 = t.p2.rotatedFreely(-rota, p);
     Point dxy(slotlength/2+od/2,od/2);
     Rect r0(p - dxy, p + dxy);
     return t1.intersects(r0)
@@ -125,6 +125,11 @@ bool Hole::touches(FilledPlane const &fp) const {
 void Hole::rotateCW(Point const &p0) {
   rota += 90;
   p.rotateCW(p0);
+}
+
+void Hole::freeRotate(int degcw, Point const &p0) {
+  rota += degcw;
+  p.freeRotate(degcw, p0);
 }
 
 void Hole::flipLeftRight(Dim const &x0) {

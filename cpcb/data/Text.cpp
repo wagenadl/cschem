@@ -29,10 +29,10 @@ Rect Text::boundingRect() const {
   Rect r0(p + Point(Dim(), desc), p + Point(w, -asc));
   if (effrot) {
     Rect r(p, p);
-    r|= Point(r0.left, r0.top).rotated(effrot, p);
-    r|= Point(r0.right(), r0.top).rotated(effrot, p);
-    r|= Point(r0.left, r0.bottom()).rotated(effrot, p);
-    r|= Point(r0.right(), r0.bottom()).rotated(effrot, p);
+    r|= Point(r0.left, r0.top).rotatedFreely(effrot, p);
+    r|= Point(r0.right(), r0.top).rotatedFreely(effrot, p);
+    r|= Point(r0.left, r0.bottom()).rotatedFreely(effrot, p);
+    r|= Point(r0.right(), r0.bottom()).rotatedFreely(effrot, p);
     return r;
   } else {
     return r0;
@@ -70,6 +70,14 @@ void Text::flipUpDown(Dim y0) {
   Point c1 = boundingRect().center();
   p += ctarget - c1; // shift it back so center is maintained
   qDebug() << "  now" << *this;
+}
+
+
+void Text::freeRotate(int degcw, Point const &p0) {
+  Point ctarget = boundingRect().center().rotatedFreely(degcw, p0);
+  rota += degcw;
+  p.freeRotate(degcw, p0);
+  p += ctarget - boundingRect().center();
 }
 
 void Text::rotateCCW() {

@@ -22,9 +22,14 @@ BoardSizeDialog::~BoardSizeDialog() {
 
 void BoardSizeDialog::setLayout(class Layout const &lay) {
   minrect = lay.root().boundingRect();
-  ui->width->setValue(lay.board().width);
-  ui->height->setValue(lay.board().height);
-  ui->round->setChecked(lay.board().shape==Board::Shape::Round);
+  Board const &brd(lay.board());
+  if (brd.isEffectivelyMetric()) {
+    ui->width->setMetric(true);
+    ui->height->setMetric(true);
+  }
+  ui->width->setValue(brd.width);
+  ui->height->setValue(brd.height);
+  ui->round->setChecked(brd.shape==Board::Shape::Round);
 }
 
 Board::Shape BoardSizeDialog::boardShape() const {

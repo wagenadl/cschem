@@ -25,13 +25,13 @@ Point Point::flippedUpDown(Dim y0) const {
   return Point(x, 2*y0 - y);
 }
 
-Point Point::rotated(int deg, Point const &p0) const {
+Point Point::rotatedFreely(int deg, Point const &p0) const {
   Point p = *this;
-  p.rotate(deg, p0);
+  p.freeRotate(deg, p0);
   return p;
 }
 
-Point &Point::rotate(int deg, Point const &p0) {
+Point &Point::freeRotate(int deg, Point const &p0) {
   constexpr double PI = 4*atan(1);
   double phi = deg*PI/180;
   double cs = cos(phi);
