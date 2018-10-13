@@ -14,6 +14,7 @@
 #include "BoardSizeDialog.h"
 #include "data/NetMismatch.h"
 
+#include <QTemporaryDir>
 #include <QDesktopServices>
 #include <QInputDialog>
 #include <QProcess>
@@ -323,26 +324,34 @@ bool MWData::exportAsDialog() {
 					    "Zip files (*.zip)");
   if (fn.isEmpty())
     return false;
-  if (fn.endsWith(".zip"))
+  while (fn.endsWith(".zip"))
     fn=fn.left(fn.size()-4);
+
+  QDir cwd = QDir::current();
+  
   if (!fn.startsWith("/"))
-    fn = QDir::current().absoluteFilePath(fn);
-  if (GerberWriter::write(editor->pcbLayout(), fn)) {
-    QString zipfn = fn + ".zip";
-    QStringList args;
-    args << "-j" << "-r" << zipfn << fn;
-    QDir::root().remove(zipfn);
-    if (QProcess::execute("zip", args)==0) {
-      QDir(fn).removeRecursively();
-      return true;
+    fn = cwd.absoluteFilePath(fn);
+  QString base = QFileInfo(fn).fileName();
+  QTemporaryDir td;
+  bool ok = false;
+  if (td.isValid()) {
+    if (GerberWriter::write(editor->pcbLayout(), td.filePath(base))) {
+      QDir::setCurrent(td.path());
+      QString zipfn = fn + ".zip";
+      QStringList args;
+      args << "-r" << zipfn << base;
+      QDir::root().remove(zipfn);
+      ok = QProcess::execute("zip", args)==0;
     }
   }
-
-  QMessageBox::warning(mw, "cpcb",
-		       "Could not export pcb as “"
-		       + fn + "”",
-		       QMessageBox::Ok);
-  return false;
+  QDir(td.filePath(base)).removeRecursively();
+  QDir::setCurrent(cwd.absolutePath());
+  if (!ok)
+    QMessageBox::warning(mw, "cpcb",
+                         "Could not export pcb as “"
+                         + fn + "”",
+                         QMessageBox::Ok);
+  return ok;
 }
 
 bool MWData::saveAsDialog() {
