@@ -622,19 +622,17 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
     out << aps.select(Gerber::Rect(od + mrg, od + mrg));
     for (Hole const &hole: collector.squareHolePads(l)[od]) {
       if (!hole.noclear) {
-        if (hole.isSlot()) {
-          if (hole.rota%90) {
-            writeRotatedRect(out,
-                             hole.p,
-                             hole.slotlength + hole.od, hole.od,
-                             hole.rota);
-          } else {
+	if (hole.rota%90) {
+	  writeRotatedRect(out,
+			   hole.p,
+			   hole.slotlength + hole.od + mrg, hole.od + mrg,
+			   hole.rota);
+	} else if (hole.isSlot()) {
             Segment s = hole.slotEnds();
             out << Gerber::point(s.p1) << "D02*\n";
             out << Gerber::point(s.p2) << "D01*\n";
-          }
         } else {
-          out << Gerber::point(hole.p) << "D03*\n";
+	    out << Gerber::point(hole.p) << "D03*\n";
         }
       }
     }
@@ -650,7 +648,7 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
         if (pad.rota) 
           writeRotatedRect(out,
                            pad.p,
-                           pad.width, pad.height,
+                           pad.width + mrg, pad.height + mrg,
                            pad.rota);
         else 
           out << Gerber::point(pad.p) << "D03*\n";
@@ -772,14 +770,12 @@ static void writeComponentPads(GerberFile &out,
     else
       out << padaps.select(Gerber::Circ(d));
     for (Hole const &hole: pads[od]) {
-      if (hole.isSlot()) {
-        if (hole.rota && hole.square) {
-          writeRotatedRect(out, hole.p,
-                           hole.od + hole.slotlength, hole.od,
-                           hole.rota);
-        } else {
+      if (hole.rota && hole.square) {
+	writeRotatedRect(out, hole.p,
+			 hole.od + hole.slotlength, hole.od,
+			 hole.rota);
+      } else if (hole.isSlot()) {
           writeSlotSegment(out, hole);
-        }
       } else {
         out << Gerber::point(hole.p) << "D03*\n";
       }

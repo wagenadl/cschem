@@ -20,8 +20,8 @@ namespace Gerber {
     return "XXX";
   }
 
-  Apertures::Apertures(Apertures::Func func, int apidx):
-    func_(func), apidx(apidx) {
+  Apertures::Apertures(Apertures::Func func, int apidx, bool useattr):
+    func_(func), apidx(apidx), useattr(useattr) {
   }
 
   Apertures::Func Apertures::func() const {
@@ -37,7 +37,8 @@ namespace Gerber {
     if (apCirc.isEmpty() && apRect.isEmpty()
 	&& apHole.isEmpty() && apSqHole.isEmpty())
       return;
-    output << "%TA.AperFunction," << funcName(func()) << "*%\n";    
+    if (useattr)
+      output << "%TA.AperFunction," << funcName(func()) << "*%\n";    
     for (Circ const &k: apCirc.keys())
       output << "%ADD" << apCirc[k]
 	     << "C," << real(k.diam) << "*%\n";
