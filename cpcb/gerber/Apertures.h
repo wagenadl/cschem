@@ -59,7 +59,7 @@ namespace Gerber {
     };
     static QString funcName(Func);
   public:
-    Apertures(Func func=Func::Invalid, int firstidx=10);
+    Apertures(Func func=Func::Invalid, int firstidx=10, bool useattr=false);
     Func func() const;
     int nextIndex() const { return apidx; }
     int firstIndex() const;
@@ -79,6 +79,7 @@ namespace Gerber {
     QMap<Rect, int> apRect;
     QMap<Hole, int> apHole;
     QMap<SqHole, int> apSqHole;
+    bool useattr;
   };
 
   QTextStream &operator<<(QTextStream &ts, Apertures &ap);
