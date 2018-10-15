@@ -15,6 +15,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 # Input
 QT += svg
-SOURCES += cttest.cpp CTItem.cpp
-HEADERS += CTItem.h
+SOURCES += unittest.cpp ../cpcb/ui/Expression.cpp
+
+#SOURCES += cttest.cpp CTItem.cpp
+#HEADERS += CTItem.h
+
 #SOURCES += reftest.cpp
+	
