@@ -463,6 +463,7 @@ void PBData::hideAndShow() {
   hc->setEnabled(false);
   idc->setEnabled(false);
   odc->setEnabled(false);
+  slotlengthc->setEnabled(false);
   squarec->setEnabled(false);
   orientc->setVisible(true);
   flipped->setVisible(true);
@@ -483,6 +484,7 @@ void PBData::hideAndShow() {
     dima->setEnabled(true);
     idc->setEnabled(true);
     odc->setEnabled(true);
+    slotlengthc->setEnabled(true);
     squarec->setEnabled(true);
     texta->setEnabled(true);
     text->setEnabled(true);
@@ -492,6 +494,7 @@ void PBData::hideAndShow() {
     dima->setEnabled(true);
     idc->setEnabled(true);
     odc->setEnabled(false);
+    slotlengthc->setEnabled(true);
     squarec->setEnabled(false);
     texta->setEnabled(false);
     break;
@@ -678,7 +681,7 @@ void PBData::setupUI() {
     QWidget *group = new QWidget;
     auto *lay = new QVBoxLayout;
     lay->setSpacing(8);
-    lay->setContentsMargins(0, 0, 0, 12);
+    lay->setContentsMargins(0, 0, 0, 16);
     group->setLayout(lay);
     *a = parent->addWidget(group);
     return group;
@@ -810,6 +813,8 @@ void PBData::setupUI() {
   QObject::connect(linewidth, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setLineWidth(d); });
 
+  ((QVBoxLayout*)(dimg->layout()))->addSpacing(8);
+  
   idc = makeContainer(dimg);
   makeLabel(idc, "⌀", "Hole diameter");
   id = makeDimSpinner(idc);
@@ -844,6 +849,27 @@ void PBData::setupUI() {
 		     editor->setOD(d);
 		   });
 
+  squarec = makeContainer(dimg);
+  makeLabel(squarec, "Shape");
+  circle = makeTextTool(squarec, "○", "Round");
+  circle->setChecked(true);
+  square = makeTextTool(squarec, "□", "Square");
+
+  QObject::connect(square, &QToolButton::clicked,
+		   [this]() {
+		     square->setChecked(true);
+		     circle->setChecked(false);
+		     editor->setSquare(true);
+		   });
+  QObject::connect(circle, &QToolButton::clicked,
+		   [this]() {
+		     circle->setChecked(true);
+		     square->setChecked(false);
+		     editor->setSquare(false);
+		   });
+
+  ((QVBoxLayout*)(dimg->layout()))->addSpacing(8);
+
   wc = makeContainer(dimg);
   makeLabel(wc, "W", "Pad width");
   w = makeDimSpinner(wc);
@@ -863,25 +889,6 @@ void PBData::setupUI() {
 		   [this](Dim d) {
 		     editor->setHeight(d);
                    });
-
-  squarec = makeContainer(dimg);
-  makeLabel(squarec, "Shape");
-  circle = makeTextTool(squarec, "○", "Round");
-  circle->setChecked(true);
-  square = makeTextTool(squarec, "□", "Square");
-
-  QObject::connect(square, &QToolButton::clicked,
-		   [this]() {
-		     square->setChecked(true);
-		     circle->setChecked(false);
-		     editor->setSquare(true);
-		   });
-  QObject::connect(circle, &QToolButton::clicked,
-		   [this]() {
-		     circle->setChecked(true);
-		     square->setChecked(false);
-		     editor->setSquare(false);
-		   });
 
   textg = makeGroup(&texta);
 
@@ -1064,7 +1071,9 @@ void Propertiesbar::reflectBoard(class Board const &b) {
   d->id->setMetric(m);
   d->od->setMetric(m);
   d->linewidth->setMetric(m);
+  d->slotlength->setMetric(m);
   d->fs->setMetric(m);
+  updateGeometry();
 }
 
 void Propertiesbar::forwardAllProperties() {
