@@ -4,10 +4,10 @@
 
 #define DIMSPINNER_H
 
-#include <QDoubleSpinBox>
+#include <QLineEdit>
 #include "data/Dim.h"
 
-class DimSpinner: public QDoubleSpinBox {
+class DimSpinner: public QLineEdit {
   Q_OBJECT;
 public:
   DimSpinner(QWidget *parent=0);
@@ -18,6 +18,8 @@ public:
   bool hasValue() const;
   Dim minimumValue() const;
   Dim maximumValue() const;
+  QSize sizeHint() const override;
+  QSize minimumSizeHint() const override;
 public slots:
   void setNoValue();
   void setValue(Dim, bool forceemit=false);
@@ -26,16 +28,20 @@ public slots:
   void setMetric(bool b=true);
   void setInch();
   void setStep(Dim);
+protected:
+  void focusOutEvent(QFocusEvent *) override;
+  void keyPressEvent(QKeyEvent *) override;
 signals:
   void valueEdited(Dim); // by user interaction (mouse or keyboard)
 private:
-  double valueFromText(QString const &) const override;
-  QString textFromValue(double) const override;
+  void parseValue();
+  void reflectValue();
+  void reflectValid(bool);
 private:
   bool hasvalue_;
   bool metric_;
   int suppress_signals; 
-  Dim minv, maxv;
+  Dim v, minv, maxv;
   Dim step;
   friend class SupSig;
 };

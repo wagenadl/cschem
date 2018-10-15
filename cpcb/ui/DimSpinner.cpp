@@ -1,51 +1,60 @@
 // DimSpinner.cpp
 
 #include "DimSpinner.h"
+#include "Expression.h"
+#include <QFontMetrics>
+#include <QKeyEvent>
 
-class SupSig {
-public:
-  SupSig(DimSpinner *ds, bool fake=false): ds(ds), fake(fake) {
-    if (!fake)
-      ds->suppress_signals++;
-  }
-  ~SupSig() {
-    if (!fake)
-      ds->suppress_signals--;
-  }
-private:
-  DimSpinner *ds;
-  bool fake;
-};
-
-DimSpinner::DimSpinner(QWidget *parent): QDoubleSpinBox(parent) {
+DimSpinner::DimSpinner(QWidget *parent): QLineEdit(parent) {
   metric_ = false;
   hasvalue_ = true;
   suppress_signals = 0;
   minv = Dim::fromInch(-100.);
   maxv = Dim::fromInch(100.);
   step = Dim::fromInch(.005);
+  setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+  setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+  QPalette p(palette());
+  //p.setColor(QPalette::Text, QColor(0, 0, 0));
+  setPalette(p);
   setInch();
-  connect(this,
-    static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
-	  [this](double v) {
-	    if (!hasvalue_ && hasValue()) {
-	      // meaning, we *now* have a value
-	      hasvalue_ = true;
-	      setMinimumValue(minv);
-	    }
-	    if (suppress_signals==0)
-	      valueEdited(metric_ ? Dim::fromMM(v) : Dim::fromInch(v));
+  connect(this, &QLineEdit::returnPressed,
+	  [this]() {
+            parseValue();
 	  });
+  connect(this, &QLineEdit::textEdited,
+          [this]() {
+            Expression expr;
+            expr.setMetric(metric_);
+            expr.parse(text());
+            reflectValid(expr.isValid());
+          });            
 }
 
 DimSpinner::~DimSpinner() {
 }
 
+void DimSpinner::keyPressEvent(QKeyEvent *e) {
+  if (e->key()==Qt::Key_Escape) {
+    Expression expr;
+    expr.setMetric(metric_);
+    expr.parse(text());
+    reflectValid(true);
+    reflectValue();
+    if (expr.isValid())
+      clearFocus();
+  } else {
+    QLineEdit::keyPressEvent(e);
+  }
+}
+
+void DimSpinner::focusOutEvent(QFocusEvent *e) {
+  QLineEdit::focusOutEvent(e);
+  parseValue();
+}
+
 Dim DimSpinner::value() const {
-  if (metric_)
-    return Dim::fromMM(QDoubleSpinBox::value());
-  else
-    return Dim::fromInch(QDoubleSpinBox::value());
+  return v;
 }
 
 bool DimSpinner::isMetric() const {
@@ -57,89 +66,100 @@ bool DimSpinner::isInch() const {
 }
 
 void DimSpinner::setNoValue() {
-  SupSig ss(this);
   hasvalue_ = false;
-  setMinimumValue(minv);
-  QDoubleSpinBox::setSpecialValueText("---");
-  QDoubleSpinBox::setValue(QDoubleSpinBox::minimum());
+  reflectValue();
 }
 
 bool DimSpinner::hasValue() const  {
-  return hasvalue_ ? true : value() > minv - step/2;
+  return hasvalue_;
 }
 
 void DimSpinner::setValue(Dim d, bool doemit) {
-  SupSig ss(this, doemit);
-  if (!hasvalue_) {
-    hasvalue_ = true;
-    QDoubleSpinBox::setSpecialValueText(QString());
-    setMinimumValue(minv);
-  }
-  if (metric_) 
-    QDoubleSpinBox::setValue(d.toMM());
-  else
-    QDoubleSpinBox::setValue(d.toInch());
+  hasvalue_ = true;
+  v = d;
+  reflectValue();
+  if (doemit)
+    emit valueEdited(v);
 }
 
 void DimSpinner::setStep(Dim d) {
-  SupSig ss(this);
   step = d;
-  QDoubleSpinBox::setSingleStep(metric_ ? d.toMM() : d.toInch());
 }
 
 void DimSpinner::setMinimumValue(Dim d) {
-  SupSig ss(this);
   minv = d;
-  double mv = metric_ ? minv.toMM() : minv.toInch();
-  if (hasvalue_) 
-    QDoubleSpinBox::setMinimum(mv);
-  else
-    QDoubleSpinBox::setMinimum(mv - QDoubleSpinBox::singleStep());
+  parseValue();
 }
 
 void DimSpinner::setMaximumValue(Dim d) {
-  SupSig ss(this);
   maxv = d;
-  double mv = metric_ ? maxv.toMM() : maxv.toInch();
-  QDoubleSpinBox::setMaximum(mv);
+  parseValue();
 }
 
 void DimSpinner::setMetric(bool b) {
-  SupSig ss(this);
-  if (b) {
-    bool ok = hasValue();
-    Dim d = value();
-    metric_ = true;
-    setSuffix(" mm");
-    setDecimals(2);
-    setStep(step);
-    setMinimumValue(minv);
-    setMaximumValue(maxv);
-    if (ok)
-      setValue(d);
-  } else {
-    setInch();
-  }
+  metric_ = b;
+  reflectValue();
+  updateGeometry();
 }
 
 void DimSpinner::setInch() {
-  SupSig ss(this);
-  Dim d = value();
-  bool ok = hasValue();
-  metric_ = false;
-  setSuffix("”");
-  setDecimals(3);
-  setStep(step);
-  setMinimumValue(minv);
-  setMaximumValue(maxv);
-  if (ok)
-    setValue(d);
+  setMetric(false);
 }
 
-double DimSpinner::valueFromText(QString const &s) const {
-  return QDoubleSpinBox::valueFromText(s);
+void DimSpinner::reflectValue() {
+  // show value in our text box
+  if (hasvalue_) {
+    if (metric_)
+      setText(QString("%1 mm").arg(v.toMM(), 0, 'f', 2, QChar('0')));
+    else
+      setText(QString("%1”").arg(v.toInch(), 0, 'f', 3, QChar('0')));
+  } else {
+    setText("---");
+  }
 }
 
-QString DimSpinner::textFromValue(double d) const {
-  return QDoubleSpinBox::textFromValue(d);
+void DimSpinner::parseValue() {
+  Expression expr;
+  expr.setMetric(metric_);
+  expr.parse(text());
+  if (expr.isValid()) {
+    reflectValid(true);
+    Dim v1 = metric_ ? Dim::fromMM(expr.value())
+      : Dim::fromInch(expr.value());
+    if (v1<minv)
+      v1 = minv;
+    else if (v1>maxv)
+      v1 = maxv;
+    if (v1 != v || hasvalue_) {
+      hasvalue_ = true;
+      v = v1;
+      reflectValue();
+      emit valueEdited(v);
+    }
+  } else {
+    // invalid
+    reflectValid(false);
+  }
+}
+
+void DimSpinner::reflectValid(bool val) {
+  QPalette p(palette());
+  QColor col(val ? QColor(0, 0, 0) : QColor(255, 0, 0));
+  p.setColor(QPalette::Normal, QPalette::Text, col);
+  p.setColor(QPalette::Inactive, QPalette::Text, col);
+  setPalette(p);
+}
+
+QSize DimSpinner::sizeHint() const {
+  QFontMetrics fm(font());
+  QString txt = metric_ ? "-000.00 mm" : "-00.000”";
+  QSize s = fm.boundingRect(txt).size();
+  return QSize(10*s.width()/9, 5*s.height()/4);
+}
+
+QSize DimSpinner::minimumSizeHint() const {
+  QFontMetrics fm(font());
+  QString txt = metric_ ? "0.00 mm" : "0.000”";
+  QSize s = fm.boundingRect(txt).size();
+  return QSize(s.width(), 5*s.height()/4);
 }
