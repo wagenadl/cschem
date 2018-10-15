@@ -185,19 +185,18 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
     // draw surrounding pad
     double od = t.od.toMils();
     double extramils = extraMils(innet, t.od, t.od);
-    if (dx>0) {
+    if (dx>0 || t.square) {
       p->setPen(QPen(brushColor(selected, innet), od+extramils, Qt::SolidLine,
-		     t.square ? Qt::SquareCap : Qt::RoundCap));
+		     t.square ? Qt::FlatCap : Qt::RoundCap));
+      if (t.square) {
+	dx += od/2 + extramils/2;
+	dxy = QPoint(dx*cos(PI*t.rota/180), dx*sin(PI*t.rota/180));
+      }
       p->drawLine(p0 - dxy, p0 + dxy);
     } else {
       p->setBrush(brushColor(selected, innet));
       p->setPen(QPen(Qt::NoPen));
-      if (t.square)
-	p->drawRect(QRectF(p0
-			   - QPointF(od/2+extramils/2, od/2+extramils/2),
-			   QSizeF(od+extramils, od+extramils)));
-      else 
-	p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
+      p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
     }
   }
   if (subl==Sublayer::Main && layer!=Layer::Invalid && t.fpcon==layer) {

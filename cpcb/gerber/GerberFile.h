@@ -14,7 +14,7 @@
 
 class GerberFile: public QTextStream {
 public:
-  GerberFile(QDir dir, Gerber::Layer layer, QString uuid="");
+  GerberFile(QDir dir, Gerber::Layer layer, QString uuid="", bool useattr=false);
   ~GerberFile();
   bool isValid() const;
   Gerber::Apertures &newApertures(Gerber::Apertures::Func);
@@ -35,6 +35,7 @@ private:
   int nextap;
   QMap<Gerber::Apertures::Func, Gerber::Apertures> aps;
   QMap<Gerber::FontSpec, Gerber::Font> fonts;
+  bool useattr;
 };
 
 #endif
