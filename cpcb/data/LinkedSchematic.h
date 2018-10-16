@@ -22,6 +22,7 @@ public:
   Schem schematic() const;
   Circuit circuit() const;
   QList<LinkedNet> nets() const;
+  Nodename pinAlias(Nodename const &) const;
 signals:
   void reloaded();
 private:

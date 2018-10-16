@@ -25,4 +25,6 @@ private:
   QSharedDataPointer<class NetData> d;
 };
 
+QDebug operator<<(QDebug, Net const &);
+
 #endif

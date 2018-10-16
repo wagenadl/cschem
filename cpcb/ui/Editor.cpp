@@ -213,7 +213,12 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void Editor::pretendOnNet(NodeID ids) {
-  d->onobject = d->currentGroup().humanName(ids);
+  Nodename nn(d->currentGroup().nodeName(ids));
+  Nodename alias(d->linkedschematic.pinAlias(nn));
+  if (alias.isValid())
+    d->onobject += alias.humanName();
+  else
+    d->onobject = nn.humanName();
   if (d->netsvisible)
     d->updateNet(ids);
   emit onObject(d->onobject);
