@@ -541,6 +541,8 @@ Nodename Group::nodeName(NodeID const &ids) const {
 }
 
 QString Group::humanName(NodeID const &ids) const {
+  return nodeName(ids).humanName();
+  /*
   if (ids.isEmpty())
     return ref;
   int id = ids.first();
@@ -563,6 +565,7 @@ QString Group::humanName(NodeID const &ids) const {
     return name + " of " + ref;
   else
     return name + ref;
+  */
 }
 
 NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace) const {

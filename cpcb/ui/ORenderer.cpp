@@ -353,8 +353,6 @@ void ORenderer::drawText(Text const &t, bool selected) {
   p->rotate(t.rota);
   int xflip = ((t.layer==Layer::Bottom) ^ t.flip) ? -1 : 1;
 
-  qDebug() << "drawtext" << t.text << " at " << pt << " rotated" << t.rota << xflip;
-  
   p->scale(xflip*scl, -scl);
   p->setPen(QPen(layerColor(t.layer, selected), sf.lineWidth().toMils(),
 		Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));

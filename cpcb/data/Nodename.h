@@ -9,6 +9,7 @@
 
 class Nodename {
 public:
+  Nodename();
   Nodename(QString component, QString pin);
   QString component() const { return comp_; }
   QString pin() const { return pin_; }
@@ -25,6 +26,7 @@ public:
   bool hasPinNumber() const;
   QString pinName() const;
   int pinNumber() const;
+  bool operator<(Nodename const &) const;
 private:
   QString comp_;
   QString pin_;
