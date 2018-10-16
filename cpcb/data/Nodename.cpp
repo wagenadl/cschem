@@ -8,6 +8,9 @@ Nodename::Nodename(QString component, QString pin):
   comp_(component), pin_(pin) {
 }
 
+Nodename::Nodename() {
+}
+
 QString Nodename::toString() const {
   if (pin_.isEmpty())
     return comp_;
@@ -18,12 +21,20 @@ QString Nodename::toString() const {
 QString Nodename::humanName() const {
   if (pin_.isEmpty())
     return comp_;
-  else
+  bool isnum;
+  pin_.toInt(&isnum);
+  if (isnum)
     return "pin " + pin_ + " of " + comp_;
+  else
+    return "pin “" + pin_ + "” of " + comp_;
 }
 
 bool Nodename::isValid() const {
   return !comp_.isEmpty();
+}
+
+bool Nodename::operator<(Nodename const &o) const {
+  return comp_==o.comp_ ? pin_<o.pin_ : comp_<o.comp_;
 }
 
 bool Nodename::operator==(Nodename const &o) const {

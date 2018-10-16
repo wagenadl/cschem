@@ -44,8 +44,14 @@ bool EData::updateOnWhat(bool force) {
   NodeID ids = visibleNodeAt(hoverpt, mrg);
   bool isnew = ids != onnode;
   onnode = ids;
-  if (isnew || force)
-    onobject = currentGroup().humanName(ids);
+  if (isnew || force) {
+    Nodename nn(currentGroup().nodeName(ids));
+    Nodename alias(linkedschematic.pinAlias(nn));
+    if (alias.isValid())
+      onobject = alias.humanName();
+    else
+      onobject = nn.humanName();
+  }
   if (netsvisible && (isnew || force))
     updateNet(ids);
   return isnew;

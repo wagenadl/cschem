@@ -137,3 +137,8 @@ QList<Net> Net::allNets(Circuit const &circ) {
   }
   return nets;
 }
+
+QDebug operator<<(QDebug d, Net const &net) {
+  d << "net[pins: " << net.pins() << "cons" << net.connections() << "]";
+  return d;
+}

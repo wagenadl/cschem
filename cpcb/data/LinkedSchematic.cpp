@@ -19,6 +19,7 @@ public:
   QFileSystemWatcher *watcher;
   mutable QList<LinkedNet> nets;
   mutable bool havenets;
+  mutable QMap<Nodename, Nodename> aliases;
 };
 
 void LSData::invalidateNets() {
@@ -40,6 +41,23 @@ void LSData::validateNets() {
   }
   for (Net const &net: netmap)
     nets << LinkedNet(schem, net);
+
+  for (LinkedNet const &lnet: nets) {
+    for (Nodename const  &nn: lnet.nodes) {
+      if (nn.hasPinNumber() && nn.hasPinName()) {
+	QString num(QString::number(nn.pinNumber()));
+	QString name(nn.pinName());
+	int dotidx = name.indexOf('.');
+	QString comp = nn.component();
+	QString compa = comp;
+	if (dotidx>0) {
+	  compa += "." + name.left(dotidx);
+	  name = name.mid(dotidx+1);
+	}
+	aliases[Nodename(comp, num)] = Nodename(compa, name);
+      }
+    }
+  }
   havenets = true;
 }
 
@@ -91,4 +109,12 @@ Circuit LinkedSchematic::circuit() const {
 QList<LinkedNet> LinkedSchematic::nets() const {
   d->validateNets();
   return d->nets;
+}
+
+Nodename LinkedSchematic::pinAlias(Nodename const &nn) const {
+  d->validateNets();
+  if (d->aliases.contains(nn))
+    return d->aliases[nn];
+  else
+    return Nodename("", "");
 }
