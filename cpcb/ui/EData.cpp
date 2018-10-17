@@ -310,6 +310,7 @@ void EData::abortTracing() {
 }
 
 void EData::pressText(Point p) {
+  UndoCreator uc(this, true);
   if (props.text.isEmpty())
     props.text = QInputDialog::getText(ed, "Place text", "Text:");
   if (props.text.isEmpty())
@@ -324,17 +325,16 @@ void EData::pressText(Point p) {
   t.flip = props.flip;
   t.text = props.text;
   t.layer = props.layer;
-  UndoCreator uc(this, true);
   here.insert(Object(t));
 } 
 
 void EData::pressNPHole(Point p) {
   p = p.roundedTo(layout.board().grid);
+  UndoCreator uc(this, true);
   Group &here(currentGroup());
   NPHole t;
   t.p = p;
   t.d = props.id;
-  UndoCreator uc(this, true);
   here.insert(Object(t));
   ed->update();
 }
@@ -346,6 +346,7 @@ void EData::pressHole(Point p) {
 			 "Invalid ID/OD pairing",
 			 QMessageBox::Ok);
   } else {
+    UndoCreator uc(this, true);
     Group &here(currentGroup());
     Hole t;
     t.p = p;
@@ -353,7 +354,6 @@ void EData::pressHole(Point p) {
     t.id = props.id;
     t.square = props.square;
     t.ref = props.text;
-    UndoCreator uc(this, true);
     here.insert(Object(t));
     ed->insertedPadOrHole();
   }
@@ -361,6 +361,7 @@ void EData::pressHole(Point p) {
 
 
 void EData::pressPad(Point p) {
+  UndoCreator uc(this, true);
   p = p.roundedTo(layout.board().grid);
   Group &here(currentGroup());
   Pad t;
@@ -369,12 +370,12 @@ void EData::pressPad(Point p) {
   t.height = props.h;
   t.layer = props.layer;
   t.ref = props.text;
-  UndoCreator uc(this, true);
   here.insert(Object(t));
   ed->insertedPadOrHole();
 }
 
 void EData::pressArc(Point p) {
+  UndoCreator uc(this, true);
   p = p.roundedTo(layout.board().grid);
   Group &here(currentGroup());
   Arc t;
@@ -390,7 +391,6 @@ void EData::pressArc(Point p) {
     t.rota -= t.angle/2;
   }
   t.layer = props.layer;
-  UndoCreator uc(this, true);
   here.insert(Object(t));
 }
 
