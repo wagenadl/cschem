@@ -19,6 +19,7 @@ public:
   Dim slotlength;
   FreeRotation rota;
   bool square;
+  bool via;
   QString ref;
   Layer fpcon;
   bool noclear;

@@ -85,6 +85,7 @@ public:
   QSet<QString> immediateRefs() const;
   // names of holes, pads, and groups (not recursively)
   QSet<int> merge(Group const &g); // return is ids
+  bool adjustViasAroundTrace(int traceid, Layer newlayer); // true if chgs
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  

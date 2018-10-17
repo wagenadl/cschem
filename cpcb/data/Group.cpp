@@ -904,3 +904,97 @@ QSet<int> Group::merge(Group const &g) {
   return ids;
 }
 
+bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
+  bool acted = false;
+  Trace const &tr(object(traceid).asTrace());
+
+  if (tr.layer==newlayer || tr.layer==Layer::Silk)
+    return false;
+  
+  // first, see if there are already vias at p1 or p2
+  auto via_at = [this](Point const &p) {
+    for (int id: d->obj.keys()) {
+      Object const &obj(object(id));
+      if (obj.isHole() && obj.asHole().p==p && obj.asHole().via)
+	return id;
+    }
+    return -1;
+  };
+  int via_at_p1 = via_at(tr.p1);
+  int via_at_p2 = via_at(tr.p2);
+
+  // Also, see if there are already holes at p1 or p2 (incl. vias)
+  auto hole_at = [this](Point const &p) {
+    for (int id: d->obj.keys()) {
+      Object const &obj(object(id));
+      if (obj.isHole())
+	if (obj.asHole().p.distance(p) < obj.asHole().od/2)
+	  return id;
+    }
+    return -1;
+  };
+  int hole_at_p1 = hole_at(tr.p1);
+  int hole_at_p2 = hole_at(tr.p2);
+
+  // find other traces linked at those points
+  auto traces_at = [this, traceid](Point const &p, int excl) {
+    QList<int> res;
+    for (int id: d->obj.keys()) {
+      if (id==excl)
+	continue;
+      Object const &obj(object(id));
+      if (obj.isTrace() && (obj.asTrace().p1==p || obj.asTrace().p2==p))
+	res << id;
+    }
+    return res;
+  };
+  QList<int> trcs_at_p1 = traces_at(tr.p1, traceid);
+  QList<int> trcs_at_p2 = traces_at(tr.p2, traceid);
+
+  // find out which layers are involved
+  auto layers_for = [this](QList<int> const &trcids) {
+    QSet<Layer> res;
+    for (int id: trcids)
+      res |= object(id).asTrace().layer;
+    return res;
+  };
+  QSet<Layer> layers_at_p1 = layers_for(trcs_at_p1);
+  QSet<Layer> layers_at_p2 = layers_for(trcs_at_p2);
+  
+  // remove vias if they will serve no other purpose
+  if (via_at_p1>0
+      && (layers_at_p1.isEmpty()
+	  || (layers_at_p1.size()==1 && layers_at_p1.contains(newlayer)))) {
+    remove(via_at_p1);
+    acted = true;
+  }
+
+  if (via_at_p2>0
+      && (layers_at_p2.isEmpty()
+	  || (layers_at_p2.size()==1 && layers_at_p2.contains(newlayer)))) {
+    remove(via_at_p2);
+    acted = true;
+  }
+
+  if (newlayer==Layer::Silk)
+    return acted;
+  
+  // add vias if necessary
+  auto insert_via_at = [this](Point p) {
+    Hole h;
+    h.via = true;
+    h.p = p;
+    h.id = Dim::fromMils(25);
+    h.od = Dim::fromMils(35);
+    insert(Object(h));
+  };
+  if (hole_at_p1<0 && layers_at_p1.contains(tr.layer)) {
+    insert_via_at(tr.p1);
+    acted = true;
+  }
+  if (hole_at_p2<0 && layers_at_p2.contains(tr.layer)) {
+    insert_via_at(tr.p2);
+    acted = true;
+  }
+  return acted;
+}

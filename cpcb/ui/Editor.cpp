@@ -598,6 +598,7 @@ void Editor::setLayer(Layer l) {
     switch (obj.type()) {
     case Object::Type::Trace:
       uc.realize();
+      d->currentGroup().adjustViasAroundTrace(id, l);
       d->currentGroup().object(id).asTrace().layer = l;
       break;
     case Object::Type::Text:
