@@ -98,6 +98,10 @@ void Statusbar::setBoard(Board const &b) {
   noemit = true;
   resetGridChoices();
   setGrid(b.grid);
+  planesui->setChecked(b.planesvisible);
+  layerui[Layer::Silk]->setChecked(b.layervisible[Layer::Silk]);
+  layerui[Layer::Top]->setChecked(b.layervisible[Layer::Top]);
+  layerui[Layer::Bottom]->setChecked(b.layervisible[Layer::Bottom]);
   noemit = false;
 }
 

@@ -19,6 +19,7 @@ public:
   QSet<int> connections() const;
   QSet<PinID> pins() const;
   QString name() const;
+  QStringList ports() const;
   static QList<Net> allNets(class Circuit const &circ);
   void merge(Net const &);
 private:

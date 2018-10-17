@@ -15,7 +15,7 @@ LinkedNet::LinkedNet(Schem const &schem, Net const &net) {
       QString ename = elt.name;
       QString pname = pin.pin();
       if (elt.type == Element::Type::Component) {
-	qDebug() << "linked net" << ename << pname;
+	//qDebug() << "linked net" << ename << pname;
         int id1 = circ.containerOf(eid);
         if (id1>0) {
           // We wish to replace "A1.2:-" by "A1:6/2.-"
@@ -24,10 +24,10 @@ LinkedNet::LinkedNet(Schem const &schem, Net const &net) {
           int dotidx = ename.indexOf(".");
           if (dotidx>0)
             slotno = ename.mid(dotidx+1).toInt();
-	  qDebug() << " (contained in" << id1 << "; slotno" << slotno << ")";
+	  //qDebug() << " (contained in" << id1 << "; slotno" << slotno << ")";
           if (slotno>0) {
             auto map = sym.containedPins(slotno);
-	    qDebug() << " map" << map;
+	    //qDebug() << " map" << map;
 	    for (QString pn: pname.split("/")) {
 	      QString pinnum = map[pn];
 	      if (!pinnum.isEmpty()) {
@@ -35,7 +35,7 @@ LinkedNet::LinkedNet(Schem const &schem, Net const &net) {
 		  pn = QString::number(slotno) + "." + pn;
 		ename = ename.left(dotidx);
 		pname = pinnum + "/" + pn;
-		qDebug() << " => " << ename << pname;
+		//qDebug() << " => " << ename << pname;
 		break;
 	      }
 	    }

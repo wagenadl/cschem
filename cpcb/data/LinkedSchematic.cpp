@@ -27,18 +27,52 @@ void LSData::invalidateNets() {
   nets.clear();
 }
 
+static QString netalias(QString key, QMap<QString, QString> const &map) {
+  if (map.contains(key)) {
+    QString val = map[key];
+    if (val!=key)
+      return netalias(val, map);
+    else
+      return val;
+  } else {
+    return key;
+  }
+}
+
 void LSData::validateNets() {
   if (havenets)
     return;
   Circuit const &circ(schem.circuit());
   nets.clear();
   QMap<QString, Net> netmap;
+  QMap<QString, QString> netaliases;
+  auto addAlias = [&](QString key, QString val) {
+    if (key!=val)
+      netaliases[key] = val;
+  };
   for (Net const &net: Net::allNets(circ)) {
-    if (netmap.contains(net.name()))
-      netmap[net.name()].merge(net);
-    else
-      netmap[net.name()] = net;
+    QString name= net.name();
+    if (netmap.contains(name)) {
+      netmap[name].merge(net);
+      for (QString p: netmap[name].ports())
+	addAlias(p, name);
+    } else {
+      netmap[name] = net;
+      for (QString p: net.ports())
+	addAlias(p, name);
+    }
   }
+
+  // now, combine all aliases
+  qDebug() << netaliases;
+  for (QString a: netaliases.keys()) {
+    QString v = netalias(a, netaliases);
+    if (v!=a) {
+      netmap[v].merge(netmap[a]);
+      netmap.remove(a);
+    }
+  }
+  
   for (Net const &net: netmap)
     nets << LinkedNet(schem, net);
 
