@@ -56,6 +56,8 @@ public slots:
   void deselectPoint(Point);
   void deselect(int); // ditto
   void selectAll();
+  void selectTrace(bool wholetree);
+  // expand selection with rest of multisegment trace
   void clearSelection();
   void selectArea(Rect, bool add=false);
   void setLineWidth(Dim);

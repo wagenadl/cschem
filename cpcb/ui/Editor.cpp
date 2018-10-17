@@ -1331,3 +1331,49 @@ void Editor::setBoardSize(Dim w, Dim h, Board::Shape shp) {
 Point Editor::userOrigin() const {
   return d->userorigin;
 }
+
+void Editor::selectTrace(bool wholenet) {
+  QSet<int> newids;
+  Group const &here = d->currentGroup();
+
+  auto ids_at = [](Group const &here, Point p, int id, Layer l, bool wholenet) {
+    // this does not connect through pins in groups
+    QSet<int> atp;
+    bool hashole = false;
+    if (wholenet)
+      for (int id1: here.objectsAt(p))
+	if (here.object(id1).isHole())
+	  hashole = true;
+    for (int id1: here.objectsAt(p)) {
+      if (here.object(id1).isTrace()) {
+	if (id1!=id && (hashole || here.object(id1).asTrace().layer==l))
+	  atp << id1;
+      } else if (!wholenet && !here.object(id1).isPlane()) {
+	return QSet<int>();
+      }
+    }
+    if (wholenet || atp.size()==1)
+      return atp;
+    else
+      return QSet<int>();
+  };
+
+  QSet<int> ids = d->selection;
+  QSet<int> allids = ids;
+  while (!ids.isEmpty()) {
+    for (int id: ids) {
+      Object const &obj(here.object(id));
+      if (obj.isTrace()) {
+	Trace const &tr(obj.asTrace());
+	newids |= ids_at(here, tr.p1, id, tr.layer, wholenet);
+	newids |= ids_at(here, tr.p2, id, tr.layer, wholenet);
+      }
+    }
+    newids -= allids;
+    for (int id: newids) 
+      select(id, true);
+    allids |= newids;
+    ids = newids;
+    newids.clear();
+  }
+}
