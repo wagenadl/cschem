@@ -104,7 +104,6 @@ private:
 };
 
 void PBData::fillXY(QSet<Point> const &points) {
-  qDebug() << "fillxy" << ori;
   tentamovedelta = Point();
   if (points.isEmpty())
     return;
@@ -314,11 +313,9 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
   bool got = false;
   int arcangle = 0; // "invalid"
   // set angle if all are same
-  qDebug() << "fAA";
   for (int k: objects) {
     Object const &obj(here.object(k));
     if (obj.isArc()) {
-      qDebug() << "fAA arc" << arcangle << obj.asArc().angle << obj.asArc().rota;
       if (got) {
 	if (obj.asArc().angle != arcangle) {
 	  arcangle = 0;
@@ -330,7 +327,6 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
       }
     }
   }
-  qDebug() << "checking" << arcangle;
   arc360->setChecked(arcangle==360);
   arc300->setChecked(arcangle==300);  
   arc240->setChecked(arcangle==240);  
@@ -766,7 +762,6 @@ void PBData::setupUI() {
     s->setDefaultAction(a);
     a->setCheckable(chkb);
     if (ae) {
-      qDebug() << "ae" << s << exclusiveGroups[container].size();
       for (QToolButton *oth: exclusiveGroups[container]) {
 	QObject::connect(oth, &QToolButton::clicked,
 			 [s, oth]() {
@@ -791,7 +786,6 @@ void PBData::setupUI() {
       tip += " (" + seq.toString() + ")";
     }
     a->setToolTip(tip);
-    qDebug() << "Adding action" << a << "to" << parent->parentWidget();
     parent->parentWidget()->addAction(a);
     return a;
   };

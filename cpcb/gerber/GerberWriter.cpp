@@ -770,6 +770,8 @@ static void writeComponentPads(GerberFile &out,
     else
       out << padaps.select(Gerber::Circ(d));
     for (Hole const &hole: pads[od]) {
+      if (mask && hole.via)
+	continue;
       if (hole.rota && hole.square) {
 	writeRotatedRect(out, hole.p,
 			 hole.od + hole.slotlength, hole.od,

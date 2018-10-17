@@ -18,11 +18,19 @@ public:
   QSet<int> connections;
   QSet<PinID> pins;
   QString name;
+  QStringList ports;
 };
 
 void Net::merge(Net const &net) {
   d->connections |= net.d->connections;
   d->pins |= net.d->pins;
+  QSet<QString> ports = QSet<QString>::fromList(d->ports);
+  for (QString p: net.ports())
+    ports << p;
+  d->ports = ports.toList();
+  d->ports.sort();
+  if  (!d->ports.isEmpty())
+    d->name = d->ports.first();
 }
 
 void NetData::addCon(int c) {
@@ -49,7 +57,6 @@ void NetData::determineName() {
      In either case, we'll use the alphabetically first candidate if
      there are multiple possibilities.
   */
-  QStringList ports;
   QStringList alts;
   for (PinID const &id: pins) {
     if (circ.elements.contains(id.element())) {
@@ -116,6 +123,10 @@ QSet<PinID> Net::pins() const {
 
 QString Net::name() const {
   return d->name;
+}
+
+QStringList Net::ports() const  {
+  return d->ports;
 }
 
 QList<Net> Net::allNets(Circuit const &circ) {
