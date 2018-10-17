@@ -78,7 +78,6 @@ static void readLinks(QXmlStreamReader &s, Board &t) {
 
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Board &t) {
   t = Board();
-  bool ok;
   if (s.attributes().hasAttribute("w")) {
     // old style: all-in-one
     readOutline(s, t);
