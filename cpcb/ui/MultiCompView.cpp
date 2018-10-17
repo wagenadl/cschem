@@ -83,6 +83,14 @@ void MCVData::setMinWidth() {
   mcv->setMinimumWidth(mw);
 }
 
+static QString containerFor(QString ref) {
+  int dotidx = ref.indexOf(".");
+  if (dotidx>0)
+    return ref.left(dotidx);
+  else
+    return ref;
+}
+
 void MCVData::rebuild() {
   QMap<QString, Element> newelts;
   for (Element const &elt: schem.circuit().elements)
@@ -94,15 +102,17 @@ void MCVData::rebuild() {
     if (obj.isGroup())
       newused << obj.asGroup().ref;
   }
+  qDebug() << "newused" << newused;
   for (QString ref: evs.keys()) {
-    if (!newelts.contains(ref) || newused.contains(ref)) {
+    if (!newelts.contains(ref) || newused.contains(ref)
+	|| newused.contains(containerFor(ref))) {
       delete evs[ref];
       evs.remove(ref);
     }
   }
   newelts.remove("");
   for (QString ref: newelts.keys()) {
-    if (!newused.contains(ref)) {
+    if (!newused.contains(ref) && !newused.contains(containerFor(ref))) {
       bool trulynew = !evs.contains(ref);
       if (trulynew) {
 	evs[ref] = new ElementView;
