@@ -458,6 +458,20 @@ void MWData::makeMenus() {
   edit->addAction("&Paste", [this]() { editor->paste(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_V));
 
+  a = edit->addAction("Select attached &trace",
+		      [this]() { editor->selectTrace(false); },
+		      QKeySequence(Qt::CTRL + Qt::Key_T));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+
+  a = edit->addAction("Select attached &net",
+		      [this]() { editor->selectTrace(true); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+
   a = edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_R));
   QObject::connect(editor, &Editor::selectionChanged,
