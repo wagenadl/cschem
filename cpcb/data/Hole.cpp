@@ -6,6 +6,8 @@
 
 Hole::Hole() {
   fpcon = Layer::Invalid;
+  via = false;
+  square = false;
   noclear = false;
 }
 
@@ -31,7 +33,10 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
   s.writeAttribute("p", t.p.toString());
   s.writeAttribute("id", t.id.toString());
   s.writeAttribute("od", t.od.toString());
-  s.writeAttribute("sq", t.square ? "1" : "0");
+  if (t.square)
+    s.writeAttribute("sq", "1");
+  if (t.via)
+    s.writeAttribute("via", "1");
   s.writeAttribute("ref", t.ref);
   if (t.fpcon != Layer::Invalid)
     s.writeAttribute("fp", QString::number(int(t.fpcon)));
@@ -51,7 +56,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Hole &t) {
   auto a = s.attributes();
   t.ref = a.value("ref").toString();
   t.p = Point::fromString(a.value("p").toString(), &ok);
-  t.square = a.value("sq").toInt(&ok);
+  t.square = a.value("sq").toInt();
+  t.via = a.value("via").toInt();
   t.id = Dim::fromString(a.value("id").toString(), &ok);
   t.od = Dim::fromString(a.value("od").toString(), &ok);
   t.fpcon = Layer(a.value("fp").toInt());
@@ -68,7 +74,7 @@ QDebug operator<<(QDebug d, Hole const &t) {
     << t.p
     << t.id
     << t.od
-    << (t.square ? "square" : "circ")
+    << (t.square ? "square" : t.via ? "via" : "circ")
     << int(t.fpcon)
     << (t.noclear ? "noclear" : "")
     << t.slotlength

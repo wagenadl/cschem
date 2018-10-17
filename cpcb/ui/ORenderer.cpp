@@ -194,7 +194,10 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
       }
       p->drawLine(p0 - dxy, p0 + dxy);
     } else {
-      p->setBrush(brushColor(selected, innet));
+      QBrush b(brushColor(selected, innet));
+      if (t.via)
+	b.setStyle(layer==Layer::Top ? Qt::Dense5Pattern : Qt::Dense3Pattern);
+      p->setBrush(b);
       p->setPen(QPen(Qt::NoPen));
       p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
     }

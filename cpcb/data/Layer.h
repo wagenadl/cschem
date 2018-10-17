@@ -16,7 +16,7 @@ enum class Layer {
 
 QColor const &layerColor(Layer, bool selected=false);
 QList<Layer> const &layers();
-
+inline uint qHash(Layer l) { return qHash(int(l)); }
 QDebug operator<<(QDebug, Layer const &);
 
 

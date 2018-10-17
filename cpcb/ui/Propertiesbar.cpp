@@ -477,7 +477,7 @@ void PBData::hideAndShow() {
   rotatec->setVisible(false);
 
   switch (mode) {
-  case Mode::Invalid: case Mode::SetIncOrigin:
+  case Mode::Invalid: case Mode::SetIncOrigin: case Mode::BoardOutline:
     break;
   case Mode::Edit:
     hsEdit();
@@ -786,9 +786,13 @@ void PBData::setupUI() {
     container->layout()->addWidget(s);
     if (tip.isEmpty())
       tip = icon;
-    if (!seq.isEmpty())
+    if (!seq.isEmpty()) {
+      a->setShortcut(seq);
       tip += " (" + seq.toString() + ")";
+    }
     a->setToolTip(tip);
+    qDebug() << "Adding action" << a << "to" << parent->parentWidget();
+    parent->parentWidget()->addAction(a);
     return a;
   };
     
