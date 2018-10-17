@@ -429,6 +429,7 @@ bool EData::isMoveSignificant(Point p) {
 void EData::moveMoving(Point p) {
   if (isMoveSignificant(p)) {
     movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+    ed->tentativeMove(movingdelta);
     ed->update();
   }
 }
@@ -471,13 +472,15 @@ NodeID EData::visibleNodeAt(Group const &grp, Point p, Dim mrg) const {
 void EData::pressOrigin(Point p) {
   NodeID node = visibleNodeAt(p);
   Object const &obj(currentGroup().object(node));
-  if (obj.isPad()) {
+  if (obj.isPad()) 
     userorigin = obj.asPad().p;
-    ed->userOriginChanged(userorigin);
-  } else if (obj.isHole()) {
+  else if (obj.isHole()) 
     userorigin = obj.asHole().p;
-    ed->userOriginChanged(userorigin);
-  }
+  else if (obj.isArc()) 
+    userorigin = obj.asArc().center;
+  else
+    return;
+  ed->userOriginChanged(userorigin);
 }
 
 int EData::visibleObjectAt(Point p, Dim mrg) const {
@@ -496,7 +499,8 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
   int fave = -1;
   Prio prio = Prio::None;
   Board const &brd = layout.board();
-  auto better = [&prio](Prio p1) { return int(p1) >= int(prio); };
+  auto better = [&prio](Prio p1) { return p1!=Prio::None
+				   && int(p1) >= int(prio); };
   for (int id: ids) {
     Prio p1 = Prio::None;
     Object const &obj = here.object(id);
@@ -723,6 +727,7 @@ void EData::releaseMoving(Point p) {
   
   moving = false;
   ed->update();
+  emitSelectionStatus();
 }
 
 void EData::releaseBanding(Point p) {
@@ -730,7 +735,9 @@ void EData::releaseBanding(Point p) {
   rubberband = 0;
   switch (mode) {
   case Mode::Edit:
+    qDebug() << "selectarea" << selection;
     ed->selectArea(Rect(presspoint, p), true);
+    qDebug() << "selected" << selection;
     break;
   case Mode::PlacePlane: {
     p = p.roundedTo(layout.board().grid);
