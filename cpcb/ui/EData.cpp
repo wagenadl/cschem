@@ -735,9 +735,7 @@ void EData::releaseBanding(Point p) {
   rubberband = 0;
   switch (mode) {
   case Mode::Edit:
-    qDebug() << "selectarea" << selection;
     ed->selectArea(Rect(presspoint, p), true);
-    qDebug() << "selected" << selection;
     break;
   case Mode::PlacePlane: {
     p = p.roundedTo(layout.board().grid);
