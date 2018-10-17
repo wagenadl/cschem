@@ -56,6 +56,7 @@ bool Editor::load(QString fn) {
   update();
   d->linkedschematic.link(d->layout.board().linkedschematic);
   emit schematicLinked(!d->layout.board().linkedschematic.isEmpty());
+  emit boardChanged(d->layout.board());
   return !d->layout.root().isEmpty();
 }
 

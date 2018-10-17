@@ -88,7 +88,6 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Board &t) {
     while (!s.atEnd()) {
       s.readNext();
       if (s.isStartElement()) {
-	qDebug() << "got start" << s.name();
 	if (s.name()=="outline")
 	  readOutline(s, t);
 	else if (s.name()=="options")
