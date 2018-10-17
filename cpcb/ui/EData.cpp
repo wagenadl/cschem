@@ -311,8 +311,8 @@ void EData::abortTracing() {
 
 void EData::pressText(Point p) {
   UndoCreator uc(this, true);
-  if (props.text.isEmpty())
-    props.text = QInputDialog::getText(ed, "Place text", "Text:");
+  //  if (props.text.isEmpty())
+  props.text = QInputDialog::getText(ed, "Place text", "Text:");
   if (props.text.isEmpty())
     return;
 
