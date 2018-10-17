@@ -613,6 +613,8 @@ void MWData::makeConnections() {
 		   propbar, &Propertiesbar::reflectBoard);
   QObject::connect(editor, &Editor::insertedPadOrHole,
                    propbar, &Propertiesbar::stepPinNumber);
+  QObject::connect(editor, &Editor::tentativeMove,
+		   propbar, &Propertiesbar::reflectTentativeMove);
 
   // Mode bar to others
   QObject::connect(modebar, &Modebar::modeChanged,

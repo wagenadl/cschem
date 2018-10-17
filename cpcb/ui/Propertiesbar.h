@@ -15,6 +15,7 @@ public:
 public slots:
   void reflectMode(Mode);
   void reflectSelection();
+  void reflectTentativeMove(Point);
   void reflectBoard(class Board const &);
   void forwardAllProperties();
   void stepPinNumber();

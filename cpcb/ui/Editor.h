@@ -104,15 +104,17 @@ signals:
   void onObject(QString);
   void missingNodes(QStringList);
   void leaving();
-  void selectionChanged(bool); // true if selection not empty
+  void selectionChanged(bool); // true if any objects other than pure points
+                               // are selected
   void componentsChanged(); // emitted when a component has been placed,
-  // created, removed, or renamed
+                            // created, removed, or renamed
   void changedFromSaved(bool);
   void undoAvailable(bool);
   void redoAvailable(bool);
   void schematicLinked(bool);
   void selectionIsGroup(bool);
   void scaleChanged();
+  void tentativeMove(Point delta);
 protected:
   void mouseDoubleClickEvent(QMouseEvent *) override;
   void mousePressEvent(QMouseEvent *) override;

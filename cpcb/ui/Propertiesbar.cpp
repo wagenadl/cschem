@@ -79,6 +79,7 @@ public:
   
   Dim x0, y0;
   Point ori;
+  Point tentamovedelta;
   QMap<QWidget *, QSet<QToolButton *>> exclusiveGroups;
 public:
   void switchToMetric();
@@ -104,6 +105,7 @@ private:
 
 void PBData::fillXY(QSet<Point> const &points) {
   qDebug() << "fillxy" << ori;
+  tentamovedelta = Point();
   if (points.isEmpty())
     return;
 
@@ -117,6 +119,11 @@ void PBData::fillXY(QSet<Point> const &points) {
   }
   x->setValue(x0 - ori.x);
   y->setValue(y0 - ori.y);
+}
+
+void Propertiesbar::reflectTentativeMove(Point dp) {
+  d->x->setValue(d->x0 - d->ori.x + dp.x);
+  d->y->setValue(d->y0 - d->ori.y + dp.y);
 }
 
 void Propertiesbar::setUserOrigin(Point o) {
@@ -1018,8 +1025,6 @@ Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) 
   d->metric = false;
   d->mode = Mode::Edit;
   d->setupUI();
-  connect(editor, &Editor::selectionChanged,
-	  this, &Propertiesbar::reflectSelection);
 }
 
 void Propertiesbar::reflectMode(Mode m) {
