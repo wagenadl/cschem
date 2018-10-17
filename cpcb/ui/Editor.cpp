@@ -13,7 +13,7 @@
 
 Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   QPalette p(palette());
-  p.setColor(QPalette::Window, QColor(160, 160, 160));
+  p.setColor(QPalette::Window, QColor(80, 80, 80));
   setPalette(p);
   setAutoFillBackground(true);
   setMouseTracking(true);
@@ -112,7 +112,14 @@ void Editor::zoomOut() {
 }
 
 void Editor::wheelEvent(QWheelEvent *e) {
-  d->zoom(pow(2, e->angleDelta().y()/240.));
+  if (e->modifiers() & Qt::ControlModifier) {
+    d->zoom(pow(2, e->angleDelta().y()/240.));
+  } else {
+    QPoint delta = e->pixelDelta()*2;
+    d->mils2widget.translate(delta.x()/d->mils2px, delta.y()/d->mils2px);
+    d->widget2mils = d->mils2widget.inverted();
+    update();
+  }
 }
 
 void Editor::resizeEvent(QResizeEvent *) {
