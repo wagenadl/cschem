@@ -516,7 +516,7 @@ void PBData::hideAndShow() {
     break;
   case Mode::PlaceText:
     texta->setEnabled(true);
-    text->setEnabled(true);
+    text->setEnabled(false); // not used any more. Popup is more convenient
     fs->setEnabled(true);
     textl->setText("Text");
     layera->setEnabled(true);
