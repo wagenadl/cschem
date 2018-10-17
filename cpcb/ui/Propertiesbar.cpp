@@ -1059,7 +1059,6 @@ void Propertiesbar::reflectMode(Mode m) {
 }
 
 void Propertiesbar::reflectSelection() {
-  qDebug() << "reflectselection";
   d->getPropertiesFromSelection();
   d->hideAndShow();
 }
