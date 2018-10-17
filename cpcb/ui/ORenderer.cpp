@@ -174,10 +174,12 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   if (inv) {
     // draw cutout
     if (dx>0) {
-      p->setPen(QPen(QColor(0,0,0), id, Qt::SolidLine, Qt::RoundCap));
+      p->setPen(QPen(p->background().color(),
+		     //QColor(0,0,0),
+		     id, Qt::SolidLine, Qt::RoundCap));
       p->drawLine(p0 - dxy, p0 + dxy);
     } else {
-      p->setBrush(QColor(0,0,0));
+      p->setBrush(p->background().color()); // QColor(0,0,0));
       p->setPen(Qt::NoPen);
       p->drawEllipse(p0, id/2, id/2);
     }

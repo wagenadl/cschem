@@ -12,6 +12,10 @@
 #include <QTimer>
 
 Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
+  QPalette p(palette());
+  p.setColor(QPalette::Window, QColor(160, 160, 160));
+  setPalette(p);
+  setAutoFillBackground(true);
   setMouseTracking(true);
   setAcceptDrops(true);
   setFocusPolicy(Qt::StrongFocus);
