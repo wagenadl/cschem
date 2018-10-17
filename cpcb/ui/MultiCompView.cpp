@@ -88,7 +88,7 @@ static QString containerFor(QString ref) {
   if (dotidx>0)
     return ref.left(dotidx);
   else
-    return ref;
+    return "---";
 }
 
 void MCVData::rebuild() {
@@ -105,14 +105,14 @@ void MCVData::rebuild() {
   qDebug() << "newused" << newused;
   for (QString ref: evs.keys()) {
     if (!newelts.contains(ref) || newused.contains(ref)
-	|| newused.contains(containerFor(ref))) {
+	|| newelts.contains(containerFor(ref))) {
       delete evs[ref];
       evs.remove(ref);
     }
   }
   newelts.remove("");
   for (QString ref: newelts.keys()) {
-    if (!newused.contains(ref) && !newused.contains(containerFor(ref))) {
+    if (!newused.contains(ref) && !newelts.contains(containerFor(ref))) {
       bool trulynew = !evs.contains(ref);
       if (trulynew) {
 	evs[ref] = new ElementView;
