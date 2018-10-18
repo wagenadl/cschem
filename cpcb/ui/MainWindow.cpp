@@ -46,6 +46,7 @@ public:
   void fillBars();
   void boardSizeDialog();
   void openDialog();
+  void newWindow();
   void arbitraryRotation();
   bool exportAsDialog();
   bool exportPasteMaskDialog();
@@ -117,6 +118,12 @@ void MWData::showParts() {
   mw->addDockWidget(Qt::LeftDockWidgetArea, mcvdock);
   mcv->setSchem(editor->linkedSchematic().schematic());
   mcv->setRoot(editor->pcbLayout().root());
+}
+
+void MWData::newWindow() {
+  auto *w = new MainWindow();
+  w->resize(mw->size());
+  w->show();
 }
 
 void MWData::openDialog() {
@@ -420,6 +427,9 @@ void MWData::makeMenus() {
   QAction *a;
   
   auto *file = mb->addMenu("&File");
+  file->addAction("&New", [this]() { newWindow(); },
+		  QKeySequence(Qt::CTRL + Qt::Key_N));
+
   file->addAction("&Open…", [this]() { openDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_O));
 
