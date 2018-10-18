@@ -6,14 +6,17 @@
 #include <QKeyEvent>
 
 DimSpinner::DimSpinner(QWidget *parent): QLineEdit(parent) {
+  nvtext = "---";
   metric_ = false;
+  hidetrz_ = false;
+  mode_ = Expression::Mode::ForceInch;
   hasvalue_ = true;
-  suppress_signals = 0;
+  valid_ = true;
   minv = Dim::fromInch(-100.);
   maxv = Dim::fromInch(100.);
   step = Dim::fromInch(.005);
   setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-  setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+  //  setAlignment(Qt::AlignVCenter | Qt::AlignRight);
   QPalette p(palette());
   //p.setColor(QPalette::Text, QColor(0, 0, 0));
   setPalette(p);
@@ -25,7 +28,7 @@ DimSpinner::DimSpinner(QWidget *parent): QLineEdit(parent) {
   connect(this, &QLineEdit::textEdited,
           [this]() {
             Expression expr;
-            expr.setMetric(metric_);
+            expr.setMode(mode_);
             expr.parse(text());
             reflectValid(expr.isValid());
           });            
@@ -37,10 +40,10 @@ DimSpinner::~DimSpinner() {
 void DimSpinner::keyPressEvent(QKeyEvent *e) {
   if (e->key()==Qt::Key_Escape) {
     Expression expr;
-    expr.setMetric(metric_);
+    expr.setMode(mode_);
     expr.parse(text());
-    reflectValid(true);
     reflectValue();
+    reflectValid(true);
     if (expr.isValid())
       clearFocus();
   } else {
@@ -54,7 +57,7 @@ void DimSpinner::focusOutEvent(QFocusEvent *e) {
 }
 
 Dim DimSpinner::value() const {
-  return v;
+  return hasValue() ? v : Dim();
 }
 
 bool DimSpinner::isMetric() const {
@@ -67,6 +70,7 @@ bool DimSpinner::isInch() const {
 
 void DimSpinner::setNoValue() {
   hasvalue_ = false;
+  reflectValid(true);
   reflectValue();
 }
 
@@ -78,6 +82,7 @@ void DimSpinner::setValue(Dim d, bool doemit) {
   hasvalue_ = true;
   v = d;
   reflectValue();
+  reflectValid(true);
   if (doemit)
     emit valueEdited(v);
 }
@@ -96,8 +101,19 @@ void DimSpinner::setMaximumValue(Dim d) {
   parseValue();
 }
 
+void DimSpinner::setMode(Expression::Mode m) {
+  mode_ = m;
+  if (mode_==Expression::Mode::ForceMetric)
+    metric_ = true;
+  else if (mode_==Expression::Mode::ForceInch)
+    metric_ = false;
+  reflectValue();
+  updateGeometry();
+}
+
 void DimSpinner::setMetric(bool b) {
   metric_ = b;
+  mode_ = b ? Expression::Mode::ForceMetric : Expression::Mode::ForceInch;
   reflectValue();
   updateGeometry();
 }
@@ -109,21 +125,39 @@ void DimSpinner::setInch() {
 void DimSpinner::reflectValue() {
   // show value in our text box
   if (hasvalue_) {
-    if (metric_)
-      setText(QString("%1 mm").arg(v.toMM(), 0, 'f', 2, QChar('0')));
-    else
-      setText(QString("%1”").arg(v.toInch(), 0, 'f', 3, QChar('0')));
+    if (hidetrz_) {
+      if (metric_)
+	setText(QString("%1 mm").arg(v.toMM()));
+      else
+	setText(QString("%1”").arg(v.toInch()));
+    } else {
+      if (metric_)
+	setText(QString("%1 mm").arg(v.toMM(), 0, 'f', 2, QChar('0')));
+      else
+	setText(QString("%1”").arg(v.toInch(), 0, 'f', 3, QChar('0')));
+    }
   } else {
-    setText("---");
+    setText(nvtext);
   }
 }
 
+void DimSpinner::setNoValueText(QString s) {
+  nvtext = s;
+  reflectValue();
+}
+
 void DimSpinner::parseValue() {
+  if (text() == nvtext) {
+    hasvalue_ = false;
+    reflectValid(true);
+    return;
+  }
   Expression expr;
-  expr.setMetric(metric_);
+  expr.setMode(mode_);
   expr.parse(text());
   if (expr.isValid()) {
     reflectValid(true);
+    metric_ = expr.isMetric();
     Dim v1 = metric_ ? Dim::fromMM(expr.value())
       : Dim::fromInch(expr.value());
     if (v1<minv)
@@ -142,7 +176,12 @@ void DimSpinner::parseValue() {
   }
 }
 
+bool DimSpinner::isValid() const {
+  return valid_;
+}
+
 void DimSpinner::reflectValid(bool val) {
+  valid_ = val;
   QPalette p(palette());
   QColor col(val ? QColor(0, 0, 0) : QColor(255, 0, 0));
   p.setColor(QPalette::Normal, QPalette::Text, col);
@@ -162,4 +201,14 @@ QSize DimSpinner::minimumSizeHint() const {
   QString txt = metric_ ? "0.00 mm" : "0.000”";
   QSize s = fm.boundingRect(txt).size();
   return QSize(s.width(), 5*s.height()/4);
+}
+
+void DimSpinner::showTrailingZeros() {
+  hidetrz_ = false;
+  reflectValue();
+}
+
+void DimSpinner::hideTrailingZeros() {
+  hidetrz_ = true;
+  reflectValue();
 }

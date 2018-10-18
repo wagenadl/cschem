@@ -55,6 +55,7 @@ private:
   Point p;
   QString obj;
   Point ori;
+  class DimSpinner *gridsp;
 };
 
 #endif

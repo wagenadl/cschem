@@ -43,12 +43,21 @@
 
 class Expression {
 public:
+  enum class Mode {
+    AutoInch,
+    AutoMetric,
+    ForceInch,
+    ForceMetric,
+    Explicit, // require explicit units; invalid otherwise
+  };
+public:
   Expression();
   ~Expression();
-  void setMetric(bool);
+  void setMode(Mode);
   void parse(QString);
   bool isValid() const;
   double value() const;
+  bool isMetric() const;
 private:
   class ExprData *d;
   
