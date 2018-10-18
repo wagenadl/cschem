@@ -191,8 +191,8 @@ void MWData::openLibrary() {
 
 void MWData::insertComponentDialog() {
   if (compwd.isEmpty()) {
-     compwd = Paths::componentRoot();
-     QDir::home().mkpath(compwd);
+    compwd = Paths::componentRoot();
+    QDir::home().mkpath(compwd);
   }
   Point pt = editor->hoverPoint();
   QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
@@ -233,12 +233,12 @@ void MWData::linkSchematicDialog() {
      QDir::home().mkpath(pwd);
   }
   QString fn = QFileDialog::getOpenFileName(0, "Link schematic…",
-					    compwd,
+					    pwd,
 					    "Schematics (*.schem)");
   if (fn.isEmpty())
     return;
 
-  pwd = QFileInfo(fn).dir().absolutePath();
+  pwd = QFileInfo(fn).absolutePath();
 
   if (editor->linkSchematic(fn))
     showParts();
@@ -275,6 +275,7 @@ bool MWData::exportPasteMaskDialog() {
     return false;
   if (!fn.endsWith(".svg"))
     fn += ".svg";
+  pwd = QFileInfo(fn).absolutePath();
 
   bool metric = editor->pcbLayout().board().isEffectivelyMetric();
   QString unit = metric ? "mm" : "inch";
@@ -324,6 +325,8 @@ bool MWData::exportAsDialog() {
 					    "Zip files (*.zip)");
   if (fn.isEmpty())
     return false;
+
+  pwd = QFileInfo(fn).absolutePath();
   while (fn.endsWith(".zip"))
     fn=fn.left(fn.size()-4);
 
@@ -367,7 +370,7 @@ bool MWData::saveAsDialog() {
   if (!fn.endsWith(".cpcb"))
     fn += ".cpcb";
   filename = fn;
-  pwd = QFileInfo(fn).dir().absolutePath();
+  pwd = QFileInfo(fn).absolutePath();
   mw->setWindowTitle(fn);
 
   if (editor->save(fn))
