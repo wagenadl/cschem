@@ -99,10 +99,13 @@ LinkedSchematic::LinkedSchematic(QObject *parent):
   QObject(parent), d(new LSData(this)) {
   connect(d->watcher, &QFileSystemWatcher::fileChanged,
 	  [this](QString) {
-	    qDebug() << "Reloading linked schematic";
 	    d->invalidateNets();
-	    d->schem = FileIO::loadSchematic(d->fn);
-	    reloaded();
+            Schem s = FileIO::loadSchematic(d->fn);
+            if (!s.isEmpty()) {
+              d->schem = s;
+              qDebug() << "Reloaded linked schematic";
+              reloaded();
+            }
 	  });
 }
 
@@ -112,6 +115,7 @@ void LinkedSchematic::link(QString fn) {
   if (fn.isEmpty())
     return;
   d->fn = fn;
+  qDebug() << "adding to watched files" << d->fn;
   d->watcher->addPath(d->fn);
   d->schem = FileIO::loadSchematic(fn);
 }
