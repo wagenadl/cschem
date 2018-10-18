@@ -50,6 +50,7 @@ public:
   Unit defaultUnit;
   Value value;
   QString str;
+  Expression::Mode mode;
 };
 
 bool ExprData::atEnd() const {
@@ -213,14 +214,18 @@ Value ExprData::parseTerm() {
 
 Expression::Expression(): d(new ExprData) {
   d->defaultUnit = Unit::Inch;
+  d->mode = Mode::ForceInch;
 }
 
 Expression::~Expression() {
   delete d;
 }
 
-void Expression::setMetric(bool m) {
-  d->defaultUnit = m ? Unit::Mm : Unit::Inch;
+void Expression::setMode(Expression::Mode m) {
+  d->mode = m;
+  d->defaultUnit = (m==Mode::ForceMetric || m==Mode::AutoMetric) ? Unit::Mm
+    : (m==Mode::ForceInch || m==Mode::AutoInch) ? Unit::Inch
+    : Unit::None;
 }
 
 void Expression::parse(QString str) {
@@ -233,11 +238,18 @@ void Expression::parse(QString str) {
   if (d->value.anyunit && d->value.unit==Unit::None)
     d->value.valid = false;
   
-  if (d->defaultUnit==Unit::Inch && d->value.unit==Unit::Mm)
+  if (d->mode==Mode::ForceInch && d->value.unit==Unit::Mm) {
     d->value.number /= 25.4;
-  else if (d->defaultUnit==Unit::Mm && d->value.unit==Unit::Inch)
+    d->value.unit = Unit::Inch;
+  } else if (d->mode==Mode::ForceMetric && d->value.unit==Unit::Inch) {
     d->value.number *= 25.4;
-  d->value.unit = d->defaultUnit;
+    d->value.unit = Unit::Mm;
+  } else if (d->value.unit==Unit::None) {
+    if (d->defaultUnit==Unit::None)
+      d->value.valid = false;
+    else
+      d->value.unit = d->defaultUnit;
+  }
 }
 
 bool Expression::isValid() const {
@@ -246,4 +258,8 @@ bool Expression::isValid() const {
 
 double Expression::value() const {
   return d->value.number;
+}
+
+bool Expression::isMetric() const {
+  return d->value.unit == Unit::Mm;
 }

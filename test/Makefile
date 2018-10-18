@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_NO_DEBUG -DQT_SVG_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I. -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtSvg -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -isystem /usr/include/libdrm -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I. -I. -I../cpcb -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtSvg -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -I. -isystem /usr/include/libdrm -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -50,10 +50,13 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = unittest.cpp \
-		../cpcb/ui/Expression.cpp 
-OBJECTS       = unittest.o \
-		Expression.o
+SOURCES       = combotest.cpp \
+		../cpcb/ui/DimSpinner.cpp \
+		../cpcb/ui/Expression.cpp moc_DimSpinner.cpp
+OBJECTS       = combotest.o \
+		DimSpinner.o \
+		Expression.o \
+		moc_DimSpinner.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -108,6 +111,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_theme_support_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webview.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_x11extras.pri \
@@ -137,7 +141,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		test.pro  unittest.cpp \
+		test.pro ../cpcb/ui/DimSpinner.h combotest.cpp \
+		../cpcb/ui/DimSpinner.cpp \
 		../cpcb/ui/Expression.cpp
 QMAKE_TARGET  = test
 DESTDIR       = 
@@ -204,6 +209,7 @@ Makefile: test.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /u
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_theme_support_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri \
+		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webview.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets_private.pri \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_x11extras.pri \
@@ -293,6 +299,7 @@ Makefile: test.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /u
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_theme_support_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkit.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webkitwidgets.pri:
+/usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_webview.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_widgets_private.pri:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/modules/qt_lib_x11extras.pri:
@@ -342,7 +349,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents unittest.cpp ../cpcb/ui/Expression.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../cpcb/ui/DimSpinner.h $(DISTDIR)/
+	$(COPY_FILE) --parents combotest.cpp ../cpcb/ui/DimSpinner.cpp ../cpcb/ui/Expression.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -374,8 +382,16 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -W -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all:
+compiler_moc_header_make_all: moc_DimSpinner.cpp
 compiler_moc_header_clean:
+	-$(DEL_FILE) moc_DimSpinner.cpp
+moc_DimSpinner.cpp: ../cpcb/data/Dim.h \
+		../cpcb/ui/Expression.h \
+		../cpcb/ui/DimSpinner.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/wagenaar/progs/cschem/cschem/test -I/home/wagenaar/progs/cschem/cschem/test -I/home/wagenaar/progs/cschem/cschem/cpcb -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtSvg -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/home/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../cpcb/ui/DimSpinner.h -o moc_DimSpinner.cpp
+
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
 compiler_uic_make_all:
@@ -386,15 +402,25 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean 
+compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean 
 
 ####### Compile
 
-unittest.o: unittest.cpp ../cpcb/ui/Expression.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o unittest.o unittest.cpp
+combotest.o: combotest.cpp ../cpcb/ui/DimSpinner.h \
+		../cpcb/data/Dim.h \
+		../cpcb/ui/Expression.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o combotest.o combotest.cpp
+
+DimSpinner.o: ../cpcb/ui/DimSpinner.cpp ../cpcb/ui/DimSpinner.h \
+		../cpcb/data/Dim.h \
+		../cpcb/ui/Expression.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DimSpinner.o ../cpcb/ui/DimSpinner.cpp
 
 Expression.o: ../cpcb/ui/Expression.cpp ../cpcb/ui/Expression.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Expression.o ../cpcb/ui/Expression.cpp
+
+moc_DimSpinner.o: moc_DimSpinner.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_DimSpinner.o moc_DimSpinner.cpp
 
 ####### Install
 
