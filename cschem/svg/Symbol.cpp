@@ -233,6 +233,8 @@ void SymbolData::scanPins(XmlElement const &elt) {
       QStringList bits = label.split(":");
       if (bits.size()>=2) {
 	QString name = bits[1];
+        if (name=="ref")
+          name = "name";
 	double x = elt.attributes().value("x").toDouble();
 	double y = elt.attributes().value("y").toDouble();
 	double w = elt.attributes().value("width").toDouble();
