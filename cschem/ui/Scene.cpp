@@ -464,6 +464,10 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
+  qDebug() << "mouse press. now at elt" << d->hovermanager->element()
+           << d->hovermanager->pin()
+           << "con" << d->hovermanager->connection()
+           << d->hovermanager->segment();
 
   if (d->connbuilder) {
     d->connbuilder->mousePress(e);
@@ -534,6 +538,8 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
       d->elts[id]->setSelected(d->prebandselection.contains(id)
 			       || rect.contains(d->elts[id]->sceneBoundingRect()));
   } else {
+    qDebug() << "mousemove->gfxscene" << d->hovermanager->element()
+             << d->hovermanager->connection();
     QGraphicsScene::mouseMoveEvent(e);
   }
 }
