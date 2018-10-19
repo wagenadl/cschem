@@ -21,6 +21,7 @@ public:
     underling->setPen(QPen(QColor(255,255,255, 0), UNDERLINGWIDTH,
 			   Qt::SolidLine, Qt::FlatCap));
     underling->setFlag(ItemStacksBehindParent);
+    setZValue(100);
   }
   SCSegment(QPointF p0, SceneConnection *parent=0):
     SCSegment(parent) {
@@ -203,7 +204,7 @@ QPolygonF SceneConnectionData::path() const {
 SceneConnection::SceneConnection(class Scene *parent, Connection const &c):
   d(new SceneConnectionData(this, parent)) {
   d->id = c.id;
-
+  setZValue(100);
   rebuild();
   parent->addItem(this);
 }
@@ -312,7 +313,7 @@ void SceneConnection::hover(int seg) {
   d->hoverseg->setPen(QPen(Style::hoverColor(),
 			   Style::connectionHoverWidthFactor()*lib.lineWidth(),
                            Qt::SolidLine, Qt::RoundCap));
-  d->hoverseg->setZValue(-1);
+  d->hoverseg->setZValue(90);
 }
 
 void SceneConnection::unhover() {
@@ -320,7 +321,7 @@ void SceneConnection::unhover() {
     return;
   if (d->segments.contains(d->hoverseg)) {
     d->hoverseg->setPen(d->normalPen());
-    d->hoverseg->setZValue(0);
+    d->hoverseg->setZValue(100);
   }
   d->hoverseg = 0;
 }
@@ -343,6 +344,7 @@ void SceneConnection::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   d->reallymoving = false;
   d->havemagnet = false;
   e->accept();
+  qDebug() << "connection press" << seg << e->pos() << boundingRect();
 }
 
 void SceneConnectionData::startRealMove() {
