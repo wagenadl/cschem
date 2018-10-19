@@ -9,6 +9,9 @@
 \usepackage{amssymb}
 \usepackage{footnote}
 \usepackage{enumitem}
+\def\topfraction{.99}
+\def\textfraction{.01}
+\def\floatpagefraction{1}
 \makesavenoteenv{tabular}
 
 \def\Ohm{$\Omega$}
@@ -49,9 +52,9 @@ along with this program.  If not, see http://www.gnu.org/licenses.
 
 \chapter{Introduction}
 
-This document describes the installation and usage of ``CSchem'', a
+This document describes the installation and usage of ``CSchem,'' a
 (hopefully) easy-to-use program for drawing electronic circuit
-diagrams written by Daniel Wagenaar. A companion program, ``cpcb'',
+diagrams written by Daniel Wagenaar. A companion program, ``CPCB,''
 is provided for instantiating circuits on a PCB. This program is
 documented separately.
 
@@ -71,7 +74,16 @@ for you if:
     \item You either don't need more uncommon symbols or are willing
       to draw them in an SVG editor; or
       \item You like the companion program CPCB for laying out PCBs.
-\end{itemize}\pagebreak
+\end{itemize}
+
+\begin{figure}
+  \mbox{}\hfill
+       {\includegraphics[width=\textwidth]{ug-driver}}
+       \hfill\mbox{}
+       \caption{A simple design
+         for an Arduino-controlled triple linear LED driver as an
+         example of a circuit drawn with CSchem.}
+\end{figure}
 
 \noindent However, CSchem may not be for you if:
 \begin{itemize}
