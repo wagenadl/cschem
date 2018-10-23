@@ -253,17 +253,19 @@ void PlaneEditor::mouseMove(Point p,
     fp.perimeter[3].y = p.y;
     ed->ed->update();
   } else {
+    // not moving or creating a plane
     if (ed->onnode != d->hovernode) {
       d->hovernode = ed->onnode;
-      if (ed->onnode.size()==1) {
-        Object const &obj(ed->currentGroup().object(d->hovernode));
-        if (obj.isPlane()) 
-          ed->ed->select(ed->onnode[0]);
-        else
-          ed->ed->clearSelection();
-      } else {
-        ed->ed->clearSelection();
-      }
+      // FOLLOWING SEEMS SIMPLE INCORRECT. I DON'T KNOW ITS PURPOSE. DAW 10/22/18
+      //if (ed->onnode.size()==1) {
+      //  Object const &obj(ed->currentGroup().object(d->hovernode));
+      //  if (obj.isPlane()) 
+      //    ed->ed->select(ed->onnode[0]);
+      //  else
+      //    ed->ed->clearSelection();
+      //} else {
+      //  ed->ed->clearSelection();
+      //}
     }
     int oldptidx = d->hoverptidx;
     d->updateHoverPtIdx();

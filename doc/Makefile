@@ -1,4 +1,4 @@
-ALL: cschem-userguide.pdf
+ALL: cschem-userguide.pdf cpcb-userguide.pdf
 
 %.pdf: ../doc/%.tex images
 	pdflatex $<
@@ -15,4 +15,4 @@ ugx-%.png: ../doc/ug-%.png
 ug-%.pdf: ../doc/ug-%.svg
 	svg2pdf $< $@
 
-clean:; rm -f cschem-userguide.log cschem-userguide.aux cschem-userguide.pdf
+clean:; rm -f *.log *.aux cschem-userguide.pdf cpcb-userguide.pdf
