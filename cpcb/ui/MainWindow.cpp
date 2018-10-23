@@ -655,7 +655,13 @@ void MWData::makeConnections() {
 		     Point o = inc ? editor->userOrigin() : Point();
 		     statusbar->setUserOrigin(o);
 		     propbar->setUserOrigin(o);
-		   });		     
+		   });
+  QObject::connect(modebar, &Modebar::modeChanged,
+		   [this](Mode m) {
+                     if (m==Mode::PlacePlane)
+                       statusbar->showPlanes();
+                   });
+    
   
 
   // Editor to us
@@ -667,6 +673,7 @@ void MWData::fillBars() {
   statusbar->setBoard(editor->pcbLayout().board());
   propbar->reflectBoard(editor->pcbLayout().board());
   propbar->reflectMode(modebar->mode());
+  qDebug() << "mw:fillbars";
   propbar->reflectSelection();
   propbar->forwardAllProperties();
 }

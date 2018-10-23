@@ -134,6 +134,8 @@ void ComponentView::mouseMoveEvent(QMouseEvent *e) {
     return;
   if ((e->pos()-presspt).manhattanLength()<5)
     return;
+  if (group().isEmpty())
+    return;
   
   QDrag *drag = new QDrag(this);
   QMimeData *mimeData = new QMimeData;

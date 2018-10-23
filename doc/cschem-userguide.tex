@@ -15,6 +15,10 @@
 \makesavenoteenv{tabular}
 
 \def\Ohm{$\Omega$}
+\def\subfig#1#2{{\sf\small\bfseries#1}\raisebox{-.2in}{\raisebox{-.5\height}{\includegraphics[scale=.6]{#2}}}}
+\def\subfigh#1#2#3{{\sf\small\bfseries#1}\raisebox{.1in}{\raisebox{-\height}{\includegraphics[height=#3]{#2}}}}
+\def\sub#1{\textrm{\scriptsize#1}}
+
 
 \begin{document}
 \thispagestyle{empty}
@@ -22,7 +26,7 @@
   {\Huge CSchem}
   \vskip30pt
 
-  {\Large easy-to-use electronic circuit layout}
+  {\large Electronic circuit layout for scientists and other part-time electrical engineers}
   \vskip60pt
 
   {\large Daniel A. Wagenaar}
@@ -60,7 +64,7 @@ documented separately.
 
 \section{Why use CSchem?}
 
-There are any number of software packages available that allow you to
+There are any number of software packages and online options available that allow you to
 draw circuit diagrams. So why should you choose CSchem? CSchem is
 for you if:
 \begin{itemize}
@@ -72,20 +76,20 @@ for you if:
   \item You like to have quick access to the most commonly used
     symbols;
     \item You either don't need more uncommon symbols or are willing
-      to draw them in an SVG editor; or
+      to draw them in an SVG editor;
       \item You like the companion program CPCB for laying out PCBs.
 \end{itemize}
-
+%
 \begin{figure}
   \mbox{}\hfill
        {\includegraphics[width=\textwidth]{ug-driver}}
        \hfill\mbox{}
-       \caption{A simple design
+       \caption{A design
          for an Arduino-controlled triple linear LED driver as an
          example of a circuit drawn with CSchem.}
 \end{figure}
-
-\noindent However, CSchem may not be for you if:
+%
+On the other hand, CSchem may not be for you if:
 \begin{itemize}
   \item You need to draw very large circuits that span multiple
     sheets;
@@ -96,7 +100,8 @@ for you if:
   \item You need to have access to a large library of predrawn components.
   \item You need a help desk on call.
 \end{itemize}
-\noindent Lastly, a note on development. CSchem is being developed by an
+%
+Lastly, a note on development. CSchem is being developed by an
 active research scientist. Practically, that means two things: On the
 positive side, it means that I have a vested interest in fixing bugs
 and improving CSchem, because I use it regularly. On the negative side, that
@@ -174,7 +179,7 @@ expressing an interest.
 \section{Compiling the source}
 To compile the source,  start from the provided
 ``cschem.tar.gz'' archive or check out the git source at
-http://github.com/wagenadl/CSchem. Compilation requires
+http://github.com/wagenadl/cschem. Compilation requires
 ``Qt'' version 5.6 or later.
 
 \subsection{Compiling on Linux or Mac OS}
@@ -312,9 +317,6 @@ and simple parts are straightforward enough (Fig.~\ref{parteg}A
 and~B). Virtual parts (Fig.~\ref{parteg}C) and containers
 (Fig.~\ref{parteg}D) may need some explanation.
 
-\def\subfig#1#2{{\sf\small\bfseries#1}\raisebox{-.2in}{\raisebox{-.5\height}{\includegraphics[scale=.6]{#2}}}}
-\def\subfigh#1#2#3{{\sf\small\bfseries#1}\raisebox{.1in}{\raisebox{-\height}{\includegraphics[height=#3]{#2}}}}
-
 \begin{figure}[h]
   \mbox{}\hfill
   \subfig{A}{ug-ground}
@@ -339,7 +341,6 @@ Imagine the simple amplifier circuit for a photodiode in Fig.~\ref{pdamp}.
   \caption{A simple photodiode amplifier.}\label{pdamp}
 \end{figure}
 %
-\def\sub#1{\textrm{\scriptsize#1}}
 In this circuit, $V_\textrm{\scriptsize out}$ is related to the photocurrent
 $I_\sub{D}$ by $V_\sub{out} = R_1\;I_\sub{D}$. (To see this, consider that light
 hitting a photodiode induces a photocurrent to run from the cathode to

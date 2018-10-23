@@ -339,6 +339,7 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
+  qDebug() << "PB: fill layer";
   Layer l = Layer::Invalid;
   bool got = false;
   // set layer if all are same
@@ -1058,10 +1059,20 @@ void Propertiesbar::reflectMode(Mode m) {
       d->editor->properties().arcangle = 360;
     }
   }
+  if (m==Mode::PlacePlane) {
+    if (d->layer()==Layer::Invalid || d->layer()==Layer::Silk) {
+      qDebug() << "PlacePlane - selecting bottom layer";
+      d->silk->setChecked(false);
+      d->top->setChecked(false);
+      d->bottom->setChecked(true);
+      d->editor->properties().layer = Layer::Bottom;
+    }
+  }
   d->hideAndShow();
 }
 
 void Propertiesbar::reflectSelection() {
+  qDebug() << "pb:reflectsel";
   d->getPropertiesFromSelection();
   d->hideAndShow();
 }
