@@ -29,6 +29,17 @@ void Clipboard::store(Group const &root, QSet<int> selection) {
   QMap<int, int> idmap;
   for (int id: selection) 
     idmap[id] = g.insert(root.object(id));
+
+  for (int id: selection) {
+    if (root.object(id).isText()) {
+      Text &txt(g.object(idmap[id]).asText());
+      if (txt.groupAffiliation()>0
+          && !selection.contains(txt.groupAffiliation())) {
+        // orphaned ref text
+        txt.setGroupAffiliation(0);
+      }
+    }
+  }
   for (int id: selection) {
     if (root.object(id).isGroup()) {
       int gid = idmap[id];
