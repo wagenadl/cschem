@@ -339,7 +339,6 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
-  qDebug() << "PB: fill layer";
   Layer l = Layer::Invalid;
   bool got = false;
   // set layer if all are same
@@ -903,6 +902,8 @@ void PBData::setupUI() {
   text = makeEdit(c5);
   QObject::connect(text, &QLineEdit::textEdited,
 		   [this](QString txt) { editor->setRefText(txt); });
+  QObject::connect(text, &QLineEdit::returnPressed,
+		   [this]() { editor->setRefText(text->text()); });
 
   auto *c1 = makeContainer(textg);
   makeLabel(c1, "Fs", "Font size");
@@ -1072,7 +1073,6 @@ void Propertiesbar::reflectMode(Mode m) {
 }
 
 void Propertiesbar::reflectSelection() {
-  qDebug() << "pb:reflectsel";
   d->getPropertiesFromSelection();
   d->hideAndShow();
 }

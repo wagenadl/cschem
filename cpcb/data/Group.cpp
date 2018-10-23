@@ -53,6 +53,7 @@ void Group::setRefTextId(int id) {
 }
 
 int Group::ensureRefText(int gid) {
+  qDebug() << "ensurereftext" << gid;
   const Group *me = this;
   if (!me->contains(gid) || !me->object(gid).isGroup())
     return 0;
