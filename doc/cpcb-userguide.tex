@@ -1,0 +1,419 @@
+\documentclass[11pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptm}
+\usepackage{newcent}
+\usepackage[letterpaper]{geometry}
+\usepackage{graphicx}
+\usepackage[perpage]{footmisc}
+\usepackage{wasysym}
+\usepackage{amssymb}
+\usepackage{footnote}
+\usepackage{enumitem}
+\def\topfraction{.99}
+\def\textfraction{.01}
+\def\floatpagefraction{1}
+\makesavenoteenv{tabular}
+
+\def\Ohm{$\Omega$}
+\def\subfig#1#2{{\sf\small\bfseries#1}\raisebox{-.2in}{\raisebox{-.5\height}{\includegraphics[scale=.6]{#2}}}}
+\def\subfigh#1#2#3{{\sf\small\bfseries#1}\raisebox{.1in}{\raisebox{-\height}{\includegraphics[height=#3]{#2}}}}
+\def\sub#1{\textrm{\scriptsize#1}}
+
+\begin{document}
+\thispagestyle{empty}
+\begin{centering}
+  {\Huge CPCB}
+  \vskip30pt
+
+  {\large PCB design for scientists and other part-time electrical engineers}
+  \vskip60pt
+
+  {\large Daniel A. Wagenaar}
+  \vfill
+  
+  {Copyright (c) 2018}
+  
+\end{centering}
+\pagebreak
+~
+\vfill
+\noindent Copyright (C) 2018 Daniel A. Wagenaar\medskip
+
+``CPCB'' is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see http://www.gnu.org/licenses.
+\pagebreak
+
+\chapter{Introduction}
+
+This document describes the installation and usage of ``CPCB,'' a
+(hopefully) easy-to-use program for designing printed circuit board
+(PCBs) written by Daniel Wagenaar. A companion program, ``CSchem,'' is
+provided for designing circuits prior to instantiating them on a
+PCB. This program is documented separately.
+
+\section{Why use CPCB?}
+
+There are any number of software packages and online options available
+that allow you to design PCBs. So why should you choose CPCB? CPCB is
+for you if:
+\begin{itemize}
+\item You like a program that keeps simple tasks simple;
+\item You just want to make a few boards for a project and get on
+  with your life;
+\item You like a what-you-see-is-what-you-get approach;
+\item You like to switch between imperial and metric units fluidly;
+\item You use CSchem for drawing circuits.        
+\end{itemize}
+%
+On the other hand, CPCB might not be for you if:
+\begin{itemize}
+  \item You need to specify arcane properties on
+  your electronic parts for automated workflows;
+\item Your projects are so complex that you really need an
+  autorouter;
+\item You need boards with internal layers.
+\end{itemize}
+%
+Lastly, a note on development. CPCB is being developed by an
+active research scientist. Practically, that means two things: On the
+positive side, it means that I have a vested interest in fixing bugs
+and improving CPCB, because I use it regularly. On the negative side, that
+means that, by and large, new features are added only when I need them
+and bugs are fixed when I have time. I certainly do welcome feature
+requests, but I cannot guarantee that they will get implemented
+quickly or at all. (If you are in a hurry, I will consider (paid)
+consultancy related to CPCB.) Finally, I definitely welcome
+contributions to either the code or the documentation. I would be very
+happy if CPCB turned into a community-supported open source project.
+
+\section{Features}
+
+A document in CPCB consists of a single PCB that can be either
+rectangular or round.\footnote{More complex outline shapes are planned
+  for the future.} The PCB can be populated by traces, pads, holes,
+and text.\footnote{There are two more basic objects, arcs and filled
+  planes, which will be discussed in  Chapter~\ref{ch.using}.} These basic
+objects can be placed on any of three layers: a bottom copper layer, a
+top copper layer, and a top silkscreen layer. Most of the time, holes
+and pads on the copper layers will be grouped together with some text
+and line segments on the silkscreen layer to form a ``component,''
+such as a connector, a resistor, or an IC socket.
+
+Objects have various properties, such as line width, hole diameter, or
+pad size, and these can be edited by means of a toolbar on the right
+of the main window. Objects can be placed on the PCB, connected with
+traces, moved around, rotated, transferred to other layers, etc., all
+with straightforward mouse interactions.
+
+CPCB comes with a small library of predefined components, but creating
+your own custom components is very easy thanks to a flexible system of
+coordinates and grids and quick access to functions to label pins.
+
+CPCB can be used stand-alone for small projects, but is a particularly
+strong tool in combination with CSchem: If you ``link'' a CSchem
+schematic to a PCB layout, CPCB will show a toolbar with all the
+components that you have not yet placed, and will also highlight
+connections that are required to complete the circuit as designed.
+
+CPCB can export its designs in Gerber format, which is the
+\emph{lingua franca} that most online PCB fabrication services
+understand.
+
+\section{Contacting the author}
+
+If you like CPCB or find fault with it, if you discover a bug or have a
+suggestion for a new feature, if you are interested in improving this
+documentation or have a patch to contribute to the code, I want to
+hear from you. My contact information is at
+http://www.danielwagenaar.net. I very much look forward to hearing
+from you. I realize that this guide is extremely terse, and I
+really do welcome questions, particularly if they help me to improve
+CPCB or its documentation.\bigskip
+
+\noindent Pasadena, October 2018
+
+\chapter{Installation}\label{ch.install}
+
+The latest version of the software can always be downloaded from\break
+http://www.danielwagenaar.net/cschem.
+
+\section{Precompiled binaries}
+
+Binary packages for Linux, Windows and Mac OS X will be provided as time
+permits. You can help focus my attention on binaries simply by
+expressing an interest.
+
+% Installation on Windows should be easy using the provided ``CSchem.msi''
+% installation package. Installation on Mac OS X should be
+% straightforward by unpacking the ``CSchem-mac.tgz'' archive and placing
+% ``CSchem.app'' anywhere on your hard disk.  Installation on Debian,
+% Ubuntu, or Mint Linux should be equally easy using the provided
+% ``CSchem.deb'' installation package. At present, installation on other
+% flavors of Linux will require compiling the sources yourself, but this
+% should be straightforward (see below).
+
+% Please note that development occurs
+% primarily on Linux, so the Windows and Mac OS versions may lag
+% behind.
+
+\section{Compiling the source}
+To compile the source,  start from the provided
+``cschem.tar.gz'' archive or check out the git source at
+http://github.com/wagenadl/cschem. Compilation requires
+``Qt'' version 5.6 or later.
+
+\subsection{Compiling on Linux or Mac OS}
+
+You will need a C++ compiler and ``make''. On Ubuntu Linux, this is as simple
+as ``sudo apt-get install g++ make''. On Mac OS, you need the
+``Command Line tools for XCode'' from the Apple Developers' web
+site\footnote{https://developer.apple.com/xcode.}.
+
+Open a terminal and ``cd'' to the root of the unpacked source
+archive. Then type ``make'' and fetch a cup of tea. Then, either
+manually copy the file ``build/cpcb/cpcb to some location on your PATH, or type ``sudo make
+install'' to install into ``/usr/local/bin''.
+
+\subsection{Compiling on Windows}
+
+Details to follow. Again, feel free to ask!
+% You will need a C++ compiler. I have successfully used both MinGW and
+% Microsoft Visual Studio.
+% 
+% First, run ``updatesources.sh'' in the
+% ``tools'' subfolder in a Cygwin shell. Then open, one by one,
+% ``src/CSchem.pro''
+% and ``webgrab/webgrab.pro'' in Qt
+% Creator and follow the standard build steps.
+
+\chapter{Using CPCB}\label{ch.using}
+
+\section{The graphical user interface}
+
+CPCB has a relatively spare user interface with several toolbars
+around the PCB being edited. These toolbars are:
+\begin{description}
+  \item[Mode bar] CPCB makes heavy use of
+``editing modes.'' At any time, CPCB is in one of several modes, and a
+toolbar on the left of the main window is used to switch between modes
+and to indicate the current mode.
+\item[Properties bar]  A toolbar on the right shows the various
+  editable properties of
+  selected objects or objects to be placed.
+\item[Status bar] A small  bar at the bottom of the window shows cursor
+  position, grid settings, and which features are currently being shown.
+\item[Menu bar]Along the top of the window a standard menu bar is
+  shown.
+\end{description}
+One other toolbar is shown only  when CPCB is used to edit a PCB design that
+is linked to a CSchem schematic:
+\begin{description}
+  \item[Components pane] Here are shown all the not-yet-placed
+    components. You can drag component footprints from a Filer
+    window\footnote{\footnote{E.g., Gnome Files in Linux, the Finder
+        in Mac OS, or the File Explorer in Windows.} into this pane,
+      or from this pane onto the main PCB.
+\end{description}
+
+\subsection{Editing modes}
+Because changing modes is such a frequent task,
+keyboard shortcuts are available for each of the modes. The modes are
+(from top to bottom):
+\begin{description}
+\item[Selection mode (F1)]This is a highly multifunctional mode:
+  \begin{itemize}
+  \item Objects can be selected by
+    clicking on them or dragging a rectangle over them.
+  \item Selected objects can be modified using the Properties bar.
+  \item Objects can be moved by dragging with the mouse.
+  \item Objects can be deleted or placed on a clipboard using
+    standard cut-and-paste operations.
+  \item Selected objects can be grouped into a component
+    (``Control''+``G'') and existing components can be ungrouped
+    into separate objects (``Control''+``Shift''+``G'').
+  \end{itemize}
+  In addition, double-clicking on different types of objects has
+  specific effects in this mode:
+  \begin{itemize}
+    \item Double-clicking on a group ``enters'' the group so its
+      contents can be edited in-place. (Double-clicking on blank space
+      ``exits'' a group that was entered in this way.)
+    \item Double-clicking on a pad or hole allows the name or number
+      of that pad or hole to be changed.\footnote{When a pad or hole
+        is part of a component that is linked to an element on a
+        CSchem schematic, a combobox with predefined choices appears;
+        otherwise, a free-form name editor appears.}
+      \item Double-clicking on a piece of text allows the text to be
+        edited.
+  \end{itemize}
+  \item[Trace mode (F2)] In this mode, new traces are placed on the
+    PCB by clicking with the mouse. The Properties bar can be used to determine the width of the
+    traces as well as which layer they will be placed on. Traces can
+    be placed on copper and silkscreen layers alike.
+    \item[Plated hole mode (F3)] In this mode, mouse clicks place
+      plated holes on the board. Holes always connect the top and
+      bottom layers of the PCB. The Properties bar can be used to
+      determine the hole diameter and the diameter of the surrounding
+      pad. Holes can have either round or rectangular pads. Instead of
+      a simple drill hole, straight milled slots can be placed in this
+      mode as well; the slot length is determined on the Properties
+      bar. Usually, holes are part of components, in which case the
+      ``Pin'' box in the Properties bar shows the pin name or number
+      for the hole. This mode should \emph{not} be used to create
+      vias; see below.
+\item[Pad mode (F4)] In this mode, copper pads are placed on the
+  PCB. Pads are generally used as part of surface-mount components, in
+  which case the ``Pin'' box in the Properties bar shows the pin name
+  or number for the pad.  Pads are normally placed only on copper
+  layers, but CPCB doesn't stop you if you want to place a pad on the
+  silkscreen layer.
+\item[Text mode (F5)] In this mode, clicking on the board opens a
+  small dialog window in which you type the text to be placed. Text is
+  normally placed on the silkscreen layer, but may be placed on copper
+  layers as well.
+  \item[Arc mode (F6)] In this mode, circles or arcs are placed,
+    typically on the silkscreen mode as part of component outline
+    drawings.
+    \item[Filled plane mode (F7)] Filled planes are filled areas on
+      either copper layer. In filled plane mode, new planes can be
+      created, existing planes can be edited, and holes and pads can
+      be connected or disconnected from filled planes by double
+      clicking. Use the Layer selector in the Properties bar
+      (\emph{not} the Layer visibility toggles in the status bar) to
+      determine the layer for a filled plane or filled plane
+      connection.
+      \item[Pickup mode (F8)] In this mode, clicking on an existing
+        trace picks up that trace so that you can conveniently
+        reconnect it to another point on the PCB.
+      \item[Nonplated hole mode (F9)] Nonplated holes are holes
+        without copper plating. This mode can also be used to create
+        straight milled slots.
+      \item[Board outline mode (F10)] In future versions, this
+        mode will allow editing of the board outline in arbitrary
+        shapes, but at present this is not yet implemented.
+\end{description}
+The Mode bar contains two additional buttons that do not correspond to
+editing modes:
+\begin{description}
+      \item[Origin selection (F11)] When CPCB first starts, it uses
+        absolute coordinates with (0,0) at the top-left of the
+        board. Press F11 switches to incremental coordinates and
+        invites the user to click on a hole or pad to set the
+        origin for incremental coordinates. After an incremental
+        origin is selected, CPCB automatically reverts to
+        Selection mode. To return to absolute coordinates, press
+        F11 again. (When entering incremental coordinate mode,
+        you don't \emph{have} to pick a new origin; just press
+        F1 to return to Selection mode with the previous
+        incremental origin reinstated.)
+      \item[Angle constraint (F12)] Use this to toggle between placing
+        traces with arbitrary angles and placing traces that are
+        either horizontal, vertical, or at 45$^\circ$ to the canonical
+        axes.
+\end{description}
+
+\subsection{The Properties bar}
+Although most items in the Properties bar may speak for themselves,
+here is a list with a few notes. From top to bottom:
+\begin{description}
+\item[X] Shows the x-coordinate of the center of a hole, pad, or
+  arc, or the left edge of a piece of text. When multiple objects
+  are selected, the leftmost x-coordinate is shown.\footnote{At present, this
+    is true even when those objects are contained in a group. In a
+    future version, the x-coordinate of a group may be defined as the
+    x-coordinate of its lowest numbered pin.} You can type in the box
+  to move the selection to a new location.
+\item[Y] The y-coordinate equivalent of previous item. When
+  multiple objects are selected, the topmost
+  y-coordinate is shown.
+\item[Line width] This item is meaningful in relation to
+  traces and arcs.
+\item[Diameter] The diameter of (plated and nonplated) holes as well
+  as arcs.
+\item[Slot length] The extra length of a milled slot. (The full
+  length of a slot is the stated ``Slot length'' plus the diameter.)
+  Meaningful for plated and nonplated holes.
+\item[OD] Outer diameter of the round pad surrounding a plated hole, or
+  length of the square pad surrounding such a hole. If the hole is in
+  fact a slot, the pad is stretched along with the hole.
+\item[Shape] Selects whether the pad surrounding a hole is round or
+  rectangular.\footnote{``Rectangular'' really means ``square''
+    except if the hole has nonzero slot length.}
+\item[W] The width of an SMT pad (along the x-axis).
+\item[H] The height of an SMT pad (along the y-axis).
+\item[Ref. {\normalfont\itshape or}~Pin {\normalfont\itshape
+    or}~Text] Multifunctional item that shows the ``Reference'' ID for
+  a component; the ``Pin number'' for a hole or pad; or the wording of
+  a text object.
+\item[Fs] Font size for textual annotations
+\item[Arc style] Selector for different kinds of arcs
+\end{description}
+%
+Wherever dimensions appear in the Properties bar, simple arithmetic is
+accepted. Thus you can type things like ``0.3 in + 2*0.7 cm''. CPCB
+understands ``mm'' and ``cm'' as metric units. It also understands
+``in,'' ``inch'', and ``"'' to mean inches. If you leave out a unit,
+the units of the current grid determine how your input is interpreted.
+
+At the very bottom of the Properties bar, there are two more rows of
+buttons: The first allows rotating and flipping of selected objects in
+Select mode. It doubles to determine the orientation of newly created
+objects in Text and Arc modes. The second row determines on what layer
+newly created objects appear and can also be used to move objects
+between layers.
+
+\subsection{The Status bar}
+The status bar displays the coordinates of the cursor and shows the
+identity of holes, pads, and components that you hover over. It is
+also home to a popup menu for selecting grid spacing. (Several common
+choices prepopulate the menu, but you can also define your own custom
+grid spacing in either inches or millimeters.) Lastly, a group of
+icons on the right of the Status bar serves as indicators and toggles
+for visibility of (from left to right): The silkscreen layer; the top
+copper layer; the bottom copper layer; filled planes; and nets.
+The
+last two deserve further explanation:
+\begin{itemize}
+  \item Filled planes may be placed on
+either top or bottom copper layers. They are only visible when both
+the layer on which they occur is visible, and the ``filled planes
+visibility'' toggle is on.
+\item ``Nets'' are collections of traces, holes, and pads that are
+  electrically connected. When nets are visible, these collections are
+  highlighted when the mouse hovers over any of their
+  members. Additionally, if your PCB design is linked to a CSchem
+  schematic, holes or pads that should be part of a net (but
+  aren't yet) are highlighted in blue, and holes or pads that should
+  not be part of a net (but are) are highlighted in pink. The message
+  area on the left of the status bar may also show pertinent
+  information about nets.
+\end{itemize}
+
+\subsection{Parts pane}
+
+When a PCB layout is linked to a CSchem schematic, one additional user
+interface component is shown alongside the PCB: A list of all the
+components of the schematic that have not yet been placed on the
+PCB. The function of this pane is explained in the next section.
+
+\section{Working with components}
+CPCB ships with a small library of predefined components. Press
+``Control''+``Shift''+``O'' to show the library (or select ``Open
+library'' from the Tools menu). CPCB components are saved as SVG
+files, so in some operating systems the Filer window will show
+previews. Components may be placed on the PCB simply by dragging them
+in from a Filer window. Please note that CPCB cannot handle arbitrary
+SVG files, only the special SVG files that it creates itself.
+
+Components may also be dragged onto the ``Parts'' pane
+\end{document}

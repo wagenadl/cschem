@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8.9573179"
-     inkscape:cx="62.386087"
-     inkscape:cy="35.534384"
+     inkscape:zoom="2.2393295"
+     inkscape:cx="50.63148"
+     inkscape:cy="40.000006"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -36,9 +36,9 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1948"
-     inkscape:window-height="1120"
-     inkscape:window-x="1177"
+     inkscape:window-width="1142"
+     inkscape:window-height="496"
+     inkscape:window-x="1983"
      inkscape:window-y="657"
      inkscape:window-maximized="0">
     <inkscape:grid
@@ -149,7 +149,10 @@
        cx="1146.8571"
        cy="484.94818"
        r="7"
-       inkscape:label="pin:A" />
+       inkscape:label="">
+      <title
+         id="title5210">pin:ac1</title>
+    </circle>
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.446;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="path3052-3"
@@ -157,7 +160,10 @@
        cy="540.94824"
        r="7"
        inkscape:transform-center-x="-1.9801657"
-       inkscape:label="pin:B" />
+       inkscape:label="">
+      <title
+         id="title5212">pin:ac2</title>
+    </circle>
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.446;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="path3052-3-6"
@@ -165,13 +171,19 @@
        cy="540.94824"
        r="7"
        inkscape:transform-center-x="-1.9801657"
-       inkscape:label="pin:C" />
+       inkscape:label="">
+      <title
+         id="title5214">pin:dc-</title>
+    </circle>
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.446;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="path3052-7"
        cx="1258.8571"
        cy="484.94818"
-       inkscape:label="pin:D"
-       r="7" />
+       inkscape:label=""
+       r="7">
+      <title
+         id="title5208">pin:dc+</title>
+    </circle>
   </g>
 </svg>
