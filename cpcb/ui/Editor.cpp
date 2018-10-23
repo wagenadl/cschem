@@ -428,7 +428,8 @@ bool Editor::leaveGroup() {
   clearSelection();
   if (d->crumbs.isEmpty())
     return false;
-  d->crumbs.takeLast();
+  int gid = d->crumbs.takeLast();
+  d->currentGroup().ensureRefText(gid);
   d->updateOnWhat(true);
   update();
   return true;
@@ -1023,7 +1024,9 @@ void Editor::deleteSelected() {
       here.remove(id);
     } else if (here.object(id).isText()
                && here.object(id).asText().groupAffiliation()>0) {
-      // refuse to delete ref text object
+      int gid = here.object(id).asText().groupAffiliation();
+      here.object(gid).asGroup().setRefTextId(0);
+      here.remove(id);
     } else {
       here.remove(id);
     }
