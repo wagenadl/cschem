@@ -538,8 +538,6 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
       d->elts[id]->setSelected(d->prebandselection.contains(id)
 			       || rect.contains(d->elts[id]->sceneBoundingRect()));
   } else {
-    qDebug() << "mousemove->gfxscene" << d->hovermanager->element()
-             << d->hovermanager->connection();
     QGraphicsScene::mouseMoveEvent(e);
   }
 }

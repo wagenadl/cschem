@@ -32,6 +32,7 @@ SceneAnnotation::SceneAnnotation(double movestep, QGraphicsItem *parent):
   setFont(Style::annotationFont());
   setTextInteractionFlags(Qt::TextEditorInteraction);
   setFlags(ItemIsFocusable);
+  setFlag(ItemAcceptsInputMethod);
   setAcceptHoverEvents(true);
   connect(document(), &QTextDocument::contentsChange,
 	  this, &SceneAnnotation::updateCenter, Qt::QueuedConnection);
