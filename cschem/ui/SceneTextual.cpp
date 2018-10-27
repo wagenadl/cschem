@@ -153,6 +153,7 @@ SceneTextual::SceneTextual(class Scene *parent, class Textual const &txt):
   setFont(Style::annotationFont());
   setTextInteractionFlags(Qt::TextEditorInteraction);
   setFlags(ItemIsFocusable);
+  setFlag(ItemAcceptsInputMethod);
   setAcceptHoverEvents(true);
   d->rebuild();
   d->scene->addItem(this);
