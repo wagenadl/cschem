@@ -25,6 +25,7 @@ public:
     mcv->setWidgetResizable(true);
     mcv->widget()->setLayout(lay);
     mcv->setMinimumWidth(100);
+    ppm = 0.2;
   }
   void rebuild();
   void perhapsSaveDefault(QString);
@@ -35,6 +36,7 @@ public:
   Group root;
   QMap<QString, ElementView *> evs; // maps ref to EV
   QBoxLayout *lay;
+  double ppm;
 };
 
 static QString simplifiedSymbol(QString pv) {
@@ -116,6 +118,7 @@ void MCVData::rebuild() {
       bool trulynew = !evs.contains(ref);
       if (trulynew) {
 	evs[ref] = new ElementView;
+        evs[ref]->setScale(ppm);
 	int idx = evs.keys().indexOf(ref);
 	lay->insertWidget(idx, evs[ref]);
 	QObject::connect(evs[ref], &ElementView::changed,
@@ -181,5 +184,10 @@ void MultiCompView::setRoot(Group const &g) {
 void MultiCompView::setScale(double pxPerMil) {
   for (auto ev: d->evs)
     ev->setScale(pxPerMil);
+  d->ppm = pxPerMil;
   d->setMinWidth();
+}
+
+double MultiCompView::pixPerMil() const {
+  return d->ppm;
 }
