@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2018-10-27T13:57:49",
-  "mod": "2018-10-27T14:03:46",
+  "mod": "2018-10-27T14:37:49",
   "cui": "0fa788598f31f249",
   "stampTime": 0,
   "startPage": 39,
@@ -14,17 +14,87 @@
     },
     { "typ": "title",
       "cre": "2018-10-27T13:57:49",
-      "mod": "2018-10-27T13:57:54",
+      "mod": "2018-10-27T14:32:34",
       "uuid": "5a8df1c6",
       "cc": [
         { "typ": "text",
           "cre": "2018-10-27T13:57:49",
-          "mod": "2018-10-27T13:57:54",
+          "mod": "2018-10-27T14:32:34",
           "lines": [
             0
           ],
           "text": "Part libraries",
-          "uuid": "430c62a5"
+          "uuid": "430c62a5",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2018-10-27T14:32:00",
+              "mod": "2018-10-27T14:32:01",
+              "dx": 57.733,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "ae5a6915",
+              "x": 254.563,
+              "y": 441.357,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-10-27T14:32:00",
+                  "mod": "2018-10-27T14:32:01",
+                  "lines": [
+                    0
+                  ],
+                  "text": "done",
+                  "uuid": "490002b8"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-10-27T14:32:07",
+              "mod": "2018-10-27T14:32:08",
+              "dx": 28.1448,
+              "dy": 2.16499,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "75a9278d",
+              "x": 360.647,
+              "y": 486.1,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-10-27T14:32:07",
+                  "mod": "2018-10-27T14:32:08",
+                  "lines": [
+                    0
+                  ],
+                  "text": "done",
+                  "uuid": "5a1f11bc"
+                }
+              ]
+            },
+            { "typ": "gfxnote",
+              "cre": "2018-10-27T14:32:31",
+              "mod": "2018-10-27T14:32:34",
+              "dx": 12.9899,
+              "dy": -15.8766,
+              "sheet": 0,
+              "textWidth": 36.2796,
+              "uuid": "ea9cf15f",
+              "x": 396.73,
+              "y": 289.086,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2018-10-27T14:32:31",
+                  "mod": "2018-10-27T14:32:34",
+                  "lines": [
+                    0,
+                    10,
+                    15
+                  ],
+                  "text": "actually, this works",
+                  "uuid": "440dfd54"
+                }
+              ]
+            }
+          ]
         }
       ]
     },
@@ -144,8 +214,8 @@
     },
     { "typ": "textblock",
       "cre": "2018-10-27T14:02:07",
-      "mod": "2018-10-27T14:03:46",
-      "h": 119.83,
+      "mod": "2018-10-27T14:31:55",
+      "h": 73.498,
       "ind": 1,
       "sheet": 0,
       "split": [ ],
@@ -154,16 +224,61 @@
       "cc": [
         { "typ": "text",
           "cre": "2018-10-27T14:02:07",
-          "mod": "2018-10-27T14:03:46",
+          "mod": "2018-10-27T14:31:55",
+          "lines": [
+            0,
+            60,
+            126
+          ],
+          "text": "More urgent is the situation with copy and paste in CPCB. I don’t like the addition of “a”, “b”, etc. to refs. Much better to find the next lowest unused number. ",
+          "uuid": "f1237624"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-10-27T14:02:07",
+      "mod": "2018-10-27T14:31:55",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7fc8f62f",
+      "y0": 485.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-10-27T14:02:07",
+          "mod": "2018-10-27T14:31:55",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "Also, in terms of placement, Ctrl-V should place at mouse cursor rather than at original location, subject to grid.",
+          "uuid": "f1237624"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-10-27T14:32:22",
+      "mod": "2018-10-27T14:37:49",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "183ca2e8",
+      "y0": 536.154,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-10-27T14:32:22",
+          "mod": "2018-10-27T14:37:49",
           "lines": [
             0,
             60,
             126,
-            180,
-            242
+            192,
+            257
           ],
-          "text": "More urgent is the situation with copy and paste in CPCB. I don’t like the addition of “a”, “b”, etc. to refs. Much better to find the next lowest unused number. Also, in terms of placement, Ctrl-V should place at mouse cursor rather than at original location, subject to grid.",
-          "uuid": "f1237624"
+          "text": "Rotation in cpcb side bar doesn’t work so well. You have to click on an outline to select it, but there is no visual evidence of selection. Perhaps it is not important. Once I drag an outline onto the board, it is easy enough to rotate it. Particularly now that I have made dragged in objects be selected.",
+          "uuid": "f0a9be21"
         }
       ]
     }

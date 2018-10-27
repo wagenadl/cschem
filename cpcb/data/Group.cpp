@@ -6,6 +6,7 @@
 #include "ui/ORenderer.h"
 #include <QBuffer>
 #include <QFileInfo>
+#include <QRegularExpression>
 
 class GData: public QSharedData {
 public:
@@ -849,18 +850,27 @@ QSet<QString> Group::immediateRefs() const {
   return refs;
 }  
   
-static QString altRef(QString ref) {
+static QString altRef(QString ref, QSet<QString> const &set) {
   if (ref.isEmpty())
-    return "a";
-  else if (ref[ref.size()-1]>='a' && ref[ref.size()-1]<'z')
-    return ref.left(ref.size()-1) + QChar(ref[ref.size()-1].unicode()+1);
-  else
-    return ref + "a";
+    return "X?";
+  static QRegularExpression re("^([^0-9?]+)([0-9?]*)([^0-9?]*)$");
+  auto mtch = re.match(ref);
+  if (!mtch.hasMatch())
+    return ref; // !???
+  QString pfx = mtch.captured(1);
+  int num = mtch.captured(2).toInt() + 1;
+  QString sfx = mtch.captured(3);
+  auto inject = [pfx, sfx](int num) {
+    return QString("%1%2%3").arg(pfx).arg(num).arg(sfx);
+  };
+  while (set.contains(inject(num)))
+    ++num;
+  return inject(num);
 }
 
 QSet<int> Group::merge(Group const &g) {
   QSet<QString> refs = immediateRefs();
-  qDebug() << "merge" << g;
+
   QSet<int> ids;
   QMap<int, int> idmap; // g's id to our id
   for (int id: g.keys()) {
@@ -875,20 +885,20 @@ QSet<int> Group::merge(Group const &g) {
     switch (obj.type()) {
     case Object::Type::Pad: {
       Pad &pad(object(idmap[id]).asPad());
-      while (refs.contains(pad.ref))
-	pad.ref = ::altRef(pad.ref);
+      if (refs.contains(pad.ref))
+        pad.ref = ::altRef(pad.ref, refs);
       refs << pad.ref;
     } break;
     case Object::Type::Hole: {
       Hole &hole(object(idmap[id]).asHole());
-      while (refs.contains(hole.ref))
-	hole.ref = ::altRef(hole.ref);
+      if (refs.contains(hole.ref))
+	hole.ref = ::altRef(hole.ref, refs);
       refs << hole.ref;
     } break;
     case Object::Type::Group: {
       Group &group(object(idmap[id]).asGroup());
-      while (refs.contains(group.ref))
-	group.ref = ::altRef(group.ref);
+      if (refs.contains(group.ref))
+	group.ref = ::altRef(group.ref, refs);
       refs << group.ref;
       if (group.refTextId()>0) {
 	int txtid = idmap[group.refTextId()];
