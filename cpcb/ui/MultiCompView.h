@@ -15,6 +15,7 @@ public:
   ~MultiCompView();
   Schem const &schem() const;
   Group const &root() const;
+  double pixPerMil() const;
 public slots:
   void setSchem(Schem const &);
   void setRoot(Group const &);
