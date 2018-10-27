@@ -1,6 +1,6 @@
 { "typ": "toc",
   "cre": "2018-10-03T14:56:38",
-  "mod": "2018-10-05T12:40:32",
+  "mod": "2018-10-27T13:57:54",
   "uuid": "ecae0820",
   "cc": [
     { "typ": "entry",
@@ -290,6 +290,15 @@
       "startPage": 33,
       "title": "Slots and holes",
       "uuid": "dba9a2d3"
+    },
+    { "typ": "entry",
+      "cre": "2018-10-27T13:57:49",
+      "mod": "2018-10-27T13:57:54",
+      "seen": "2018-10-27T13:57:49",
+      "sheetCount": 1,
+      "startPage": 39,
+      "title": "Part libraries",
+      "uuid": "51612e5f"
     }
   ]
 }
