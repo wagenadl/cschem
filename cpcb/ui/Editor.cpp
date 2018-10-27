@@ -10,6 +10,7 @@
 #include <QInputDialog>
 #include <QResizeEvent>
 #include <QTimer>
+#include <algorithm>
 
 Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   QPalette p(palette());
@@ -1295,10 +1296,28 @@ void Editor::paste() {
   Clipboard &clp(Clipboard::instance());
   if (!clp.isValid())
     return;
+  Group pst(clp.retrieve());
+  if (pst.isEmpty())
+    return;
+  
   clearSelection();
   UndoCreator uc(d, true);
+  QSet<Point> pp0 = pst.allPoints();
+  Point p1 = d->hoverpt.roundedTo(d->layout.board().grid);
+  /* Which point of the selection should be placed on p1? Top-left? Median?
+   */
+  QVector<Dim> xx, yy;
+  for (Point const &p: pp0) {
+    xx << p.x;
+    yy << p.y;
+  }
+  int n =(xx.size()-1)/2;
+  std::nth_element(xx.begin(), xx.begin()+n, xx.end());
+  std::nth_element(yy.begin(), yy.begin()+n, yy.end());
+  Point p0(xx[n], yy[n]);
+  pst.translate(p1 - p0);  
   Group &here(d->currentGroup());
-  QSet<int> ids = here.merge(clp.retrieve());
+  QSet<int> ids = here.merge(pst);
   for (int id: ids)
     select(id, true);
   d->updateOnWhat(true);

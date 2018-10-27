@@ -1,0 +1,171 @@
+{ "typ": "page",
+  "cre": "2018-10-27T13:57:49",
+  "mod": "2018-10-27T14:03:46",
+  "cui": "0fa788598f31f249",
+  "stampTime": 0,
+  "startPage": 39,
+  "unlocked": false,
+  "uuid": "51612e5f",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2018-10-27T13:57:49",
+      "mod": "2018-10-27T13:57:49",
+      "uuid": "b6194154"
+    },
+    { "typ": "title",
+      "cre": "2018-10-27T13:57:49",
+      "mod": "2018-10-27T13:57:54",
+      "uuid": "5a8df1c6",
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-10-27T13:57:49",
+          "mod": "2018-10-27T13:57:54",
+          "lines": [
+            0
+          ],
+          "text": "Part libraries",
+          "uuid": "430c62a5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-10-27T13:57:55",
+      "mod": "2018-10-27T13:59:29",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7b430a0f",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-10-27T13:57:55",
+          "mod": "2018-10-27T13:59:29",
+          "lines": [
+            0,
+            64,
+            119,
+            181,
+            244,
+            299
+          ],
+          "text": "I’d like to have a symbol library for CSchem that can be opened with a keyboard shortcut. Organized much like the CPCB library. Ability to drag into the side bar. Symbols should be pinnable to the side bar, and unpinnable, so that symbols from the symbols.svg file are merely a default. Perhaps the symbols.svg file should even be abolished.",
+          "uuid": "422c339c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-10-27T13:59:29",
+      "mod": "2018-10-27T13:59:55",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "45cc29ff",
+      "y0": 214.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-10-27T13:59:29",
+          "mod": "2018-10-27T13:59:55",
+          "lines": [
+            0,
+            53
+          ],
+          "text": "Should there be a separate “user library” vs “system library”? For my personal use, that is not attractive.",
+          "uuid": "74ad3da3",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-10-27T13:59:51",
+              "mod": "2018-10-27T13:59:51",
+              "end": 78,
+              "start": 70,
+              "style": 1,
+              "uuid": "4526571d"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-10-27T14:00:12",
+      "mod": "2018-10-27T14:01:23",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "69cbca1f",
+      "y0": 265.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-10-27T14:00:12",
+          "mod": "2018-10-27T14:01:23",
+          "lines": [
+            0,
+            63,
+            126
+          ],
+          "text": "In CPCB, I keep a list of “recent” outlines. But I don’t think they are used. It should be the case that a default outline is loaded for recently used parts and placed into the sidebar.",
+          "uuid": "1fcab463",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2018-10-27T14:00:35",
+              "mod": "2018-10-27T14:00:35",
+              "end": 87,
+              "start": 81,
+              "style": 1,
+              "uuid": "fd7a28ff"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-10-27T14:01:24",
+      "mod": "2018-10-27T14:02:03",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "6e7db847",
+      "y0": 338.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-10-27T14:01:24",
+          "mod": "2018-10-27T14:02:03",
+          "lines": [
+            0,
+            59,
+            116
+          ],
+          "text": "I also want to be able to copy an outline into the sidebar from the PCB. That would be a convenient way to apply an outline to multiple parts.",
+          "uuid": "f526007c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2018-10-27T14:02:07",
+      "mod": "2018-10-27T14:03:46",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7fc8f62f",
+      "y0": 412.324,
+      "cc": [
+        { "typ": "text",
+          "cre": "2018-10-27T14:02:07",
+          "mod": "2018-10-27T14:03:46",
+          "lines": [
+            0,
+            60,
+            126,
+            180,
+            242
+          ],
+          "text": "More urgent is the situation with copy and paste in CPCB. I don’t like the addition of “a”, “b”, etc. to refs. Much better to find the next lowest unused number. Also, in terms of placement, Ctrl-V should place at mouse cursor rather than at original location, subject to grid.",
+          "uuid": "f1237624"
+        }
+      ]
+    }
+  ]
+}
