@@ -1162,7 +1162,10 @@ void Editor::dropEvent(QDropEvent *e) {
     Object obj(grp);
     obj.translate(droppos - anch);
     int gid = here.insert(obj);
-    here.ensureRefText(gid);
+    int tid = here.ensureRefText(gid);
+    select(gid);
+    if (tid>0)
+      select(tid, true);
     emit componentsChanged();
     update();
     e->accept();
@@ -1302,9 +1305,12 @@ void Editor::paste() {
   
   clearSelection();
   UndoCreator uc(d, true);
+
+  // Translate items to be pasted to mouse position
   QSet<Point> pp0 = pst.allPoints();
   Point p1 = d->hoverpt.roundedTo(d->layout.board().grid);
   /* Which point of the selection should be placed on p1? Top-left? Median?
+     Let's use median.
    */
   QVector<Dim> xx, yy;
   for (Point const &p: pp0) {
@@ -1315,9 +1321,11 @@ void Editor::paste() {
   std::nth_element(xx.begin(), xx.begin()+n, xx.end());
   std::nth_element(yy.begin(), yy.begin()+n, yy.end());
   Point p0(xx[n], yy[n]);
-  pst.translate(p1 - p0);  
+  pst.translate(p1 - p0);
+
   Group &here(d->currentGroup());
   QSet<int> ids = here.merge(pst);
+
   for (int id: ids)
     select(id, true);
   d->updateOnWhat(true);
