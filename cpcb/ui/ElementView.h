@@ -18,8 +18,11 @@ public:
 public slots:
   void setRefText(QString);
   void setPVText(QString);
+  void linkEditor(class Editor *);
+  void pasteOutlineFromEditor();
 protected:
   void paintEvent(QPaintEvent *) override;
+  void mousePressEvent(QMouseEvent *) override;
 private:
   void relabel();
 private:
@@ -28,6 +31,7 @@ private:
   static QMap<int, ElementView *> &cvmap();
   QString reflbl;
   QString pvlbl;
+  class Editor *ed;
 };
 
 #endif

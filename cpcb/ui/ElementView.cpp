@@ -1,12 +1,16 @@
 // ElementView.cpp
 
 #include "ElementView.h"
+#include "Editor.h"
+#include "data/Object.h"
+
 #include <QRegExp>
 #include <QPainter>
 #include <QTextDocument>
 
 ElementView::ElementView(QWidget *parent): ComponentView(parent) {
   cvmap()[id()] = this;
+  ed = 0;
 }
 
 ElementView::~ElementView() {
@@ -71,3 +75,39 @@ void ElementView::paintEvent(QPaintEvent *e) {
   p.translate(width() - doc.size().width(), height() - doc.size().height());
   doc.drawContents(&p);
 }
+
+void ElementView::linkEditor(Editor *ed1) {
+  ed = ed1;
+}
+
+void ElementView::mousePressEvent(QMouseEvent *e) {
+  if ((e->button()==Qt::LeftButton && e->modifiers() & Qt::ControlModifier)
+      || e->button()==Qt::MiddleButton) {
+    pasteOutlineFromEditor();
+    e->accept();
+  } else {
+    ComponentView::mousePressEvent(e);
+  }
+}
+
+void ElementView::pasteOutlineFromEditor() {
+  setGroup(Group());
+  if (!ed) {
+    return;
+  }
+
+  QSet<int> sel(ed->selectedObjects());
+  Group const &cg(ed->currentGroup());
+  int gid = -1;
+  for (int id: sel) {
+    if (cg.object(id).isGroup()) {
+      if (gid>0) 
+        return;
+      else 
+        gid = id;
+    }
+  }
+  if (gid>0)
+    setGroup(cg.object(gid).asGroup());
+}
+
