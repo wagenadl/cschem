@@ -57,7 +57,7 @@ public:
   void moveTracing(Point);
   void abortTracing();
   void moveBanding(Point);
-  void moveMoving(Point);
+  void moveMoving(Point, QPoint);
   void releaseBanding(Point);
   void releaseMoving(Point);
   void pressPanning(QPoint);
