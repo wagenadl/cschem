@@ -14,6 +14,7 @@
 #include <QDebug>
 #include "Style.h"
 #include <QMessageBox>
+#include <QDesktopServices>
 #include "LibView.h"
 #include "PartListView.h"
 #include "PartList.h"
@@ -26,6 +27,7 @@
 #include "HoverManager.h"
 #include "circuit/NumberConflicts.h"
 #include "circuit/ContainerConflicts.h"
+#include "svg/Paths.h"
 
 class MWData {
 public:
@@ -86,6 +88,10 @@ void MainWindow::createDocks() {
   d->partlistviewdock->hide();
 }
 
+void MainWindow::openSymbolLibraryFolder() {
+  QDesktopServices::openUrl(QUrl(Paths::symbolRoot()));
+}
+ 
 void MainWindow::showLibrary() {
   bool vis = d->libviewdock->isVisible();
   if (vis) {
@@ -219,6 +225,13 @@ void MainWindow::createActions() {
   menu->addAction(act);
 
   menu = menuBar()->addMenu(tr("&Tools"));
+
+  
+  act = new QAction(tr("&Open external symbol library"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+  act->setStatusTip(tr("Open folder view onto external symbol library"));
+  connect(act, &QAction::triggered, this, &MainWindow::openSymbolLibraryFolder);
+  menu->addAction(act);
   
   act = new QAction(tr("Remove &dangling connections"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
@@ -299,7 +312,7 @@ void MainWindow::newAction() {
 
 void MainWindow::openAction() {
   if (d->lastdir.isEmpty())
-    d->lastdir = QDir::home().absoluteFilePath("Desktop");
+    d->lastdir = Paths::defaultLocation();
   QString fn = QFileDialog::getOpenFileName(0,
 					    "Open schematic file",
 					    d->lastdir,
@@ -320,7 +333,7 @@ bool MainWindow::saveAction() {
 
 bool MainWindow::saveAsAction() {
   if (d->lastdir.isEmpty())
-    d->lastdir = QDir::home().absoluteFilePath("Desktop");
+    d->lastdir = Paths::defaultLocation();
   QFileDialog dlg;
   dlg.setWindowTitle(tr("Save schematic as…"));
   dlg.setAcceptMode(QFileDialog::AcceptSave);
@@ -521,7 +534,7 @@ void MainWindow::rotateCWAction() {
 
 void MainWindow::exportCircuitAction() {
   if (d->lastdir.isEmpty())
-    d->lastdir = QDir::home().absoluteFilePath("Desktop");
+    d->lastdir = Paths::defaultLocation();
   
   QFileDialog dlg;
   dlg.setWindowTitle(tr("Export schematic as svg…"));
@@ -552,7 +565,7 @@ void MainWindow::exportCircuitAction() {
 
 void MainWindow::exportPartListAction() {
   if (d->lastdir.isEmpty())
-    d->lastdir = QDir::home().absoluteFilePath("Desktop");
+    d->lastdir = Paths::defaultLocation();
   
   QFileDialog dlg;
   dlg.setWindowTitle(tr("Export parts list as csv…"));
@@ -672,3 +685,5 @@ void MainWindow::resolveConflictsAction() {
     d->scene->renumber(nc.newNames());
   }
 }
+
+ 

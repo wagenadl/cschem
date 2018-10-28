@@ -12,8 +12,8 @@ MAKEFILE = Makefile-cschem
 # Input
 HEADERS += ui/Scene.h   ui/SceneElement.h   ui/SceneConnection.h
 SOURCES += ui/Scene.cpp ui/SceneElement.cpp ui/SceneConnection.cpp
-HEADERS += ui/HoverManager.h   ui/ConnBuilder.h  
-SOURCES += ui/HoverManager.cpp ui/ConnBuilder.cpp
+HEADERS += ui/HoverManager.h   ui/ConnBuilder.h   svg/Paths.h
+SOURCES += ui/HoverManager.cpp ui/ConnBuilder.cpp svg/Paths.cpp
 HEADERS += circuit/Router.h   circuit/CircuitMod.h   circuit/NumberConflicts.h
 SOURCES += circuit/Router.cpp circuit/CircuitMod.cpp circuit/NumberConflicts.cpp
 HEADERS += ui/Style.h   circuit/Textual.h   ui/SceneTextual.h
