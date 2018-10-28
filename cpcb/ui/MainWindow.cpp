@@ -403,10 +403,11 @@ void MWData::about() {
 }
 
 void MWData::makeParts() {
+  Q_ASSERT(editor);
   mcvdock = new QDockWidget("Parts", mw);
   mcv = new MultiCompView;
   mcv->setScale(editor->pixelsPerMil());
-  Q_ASSERT(editor);
+  mcv->linkEditor(editor);
   QObject::connect(editor, &Editor::componentsChanged,
 		   [this]() { mcv->setRoot(editor->pcbLayout().root()); });
   QObject::connect(editor, &Editor::scaleChanged,

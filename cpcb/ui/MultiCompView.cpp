@@ -26,6 +26,7 @@ public:
     mcv->widget()->setLayout(lay);
     mcv->setMinimumWidth(100);
     ppm = 0.2;
+    ed = 0;
   }
   void rebuild();
   void perhapsSaveDefault(QString);
@@ -37,6 +38,7 @@ public:
   QMap<QString, ElementView *> evs; // maps ref to EV
   QBoxLayout *lay;
   double ppm;
+  class Editor *ed;
 };
 
 static QString simplifiedSymbol(QString pv) {
@@ -119,6 +121,7 @@ void MCVData::rebuild() {
       if (trulynew) {
 	evs[ref] = new ElementView;
         evs[ref]->setScale(ppm);
+        evs[ref]->linkEditor(ed);
 	int idx = evs.keys().indexOf(ref);
 	lay->insertWidget(idx, evs[ref]);
 	QObject::connect(evs[ref], &ElementView::changed,
@@ -191,3 +194,10 @@ void MultiCompView::setScale(double pxPerMil) {
 double MultiCompView::pixPerMil() const {
   return d->ppm;
 }
+
+void MultiCompView::linkEditor(class Editor *ed) {
+  for (auto ev: d->evs)
+    ev->linkEditor(ed);
+  d->ed = ed;
+}
+  
