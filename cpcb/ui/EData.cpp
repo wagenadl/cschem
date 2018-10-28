@@ -426,7 +426,7 @@ bool EData::isMoveSignificant(Point p) {
   return significantmove;
 }
 
-void EData::moveMoving(Point p) {
+void EData::moveMoving(Point p, QPoint widgetp) {
   if (isMoveSignificant(p)) {
     movingdelta = p.roundedTo(layout.board().grid) - movingstart;
     ed->tentativeMove(movingdelta);
