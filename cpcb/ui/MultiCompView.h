@@ -23,6 +23,7 @@ public slots:
      This determines which of the Elements of the circuit are shown in
      the list. */
   void setScale(double pxPerMil);
+  void linkEditor(class Editor *); // for pasting selection only (ugly mech)
 private:
   class MCVData *d;
 };
