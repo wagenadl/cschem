@@ -33,6 +33,7 @@ public slots:
   void removeDanglingAction();
   void showLibrary();
   void showPartsList();
+  void openSymbolLibraryFolder();
   void rotateCCWAction();
   void rotateCWAction();
   void flipAction();
