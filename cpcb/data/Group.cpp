@@ -1009,3 +1009,35 @@ bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
   }
   return acted;
 }
+
+Group Group::subset(QSet<int> selection) const {
+  Group g;
+  QMap<int, int> idmap;
+  for (int id: selection) 
+    idmap[id] = g.insert(object(id));
+
+  for (int id: selection) {
+    if (object(id).isText()) {
+      Text &txt(g.object(idmap[id]).asText());
+      if (txt.groupAffiliation()>0
+          && !selection.contains(txt.groupAffiliation())) {
+        // orphaned ref text
+        txt.setGroupAffiliation(0);
+      }
+    }
+  }
+  for (int id: selection) {
+    if (object(id).isGroup()) {
+      int gid = idmap[id];
+      Group &grp(g.object(gid).asGroup());
+      if (grp.refTextId()>0) {
+	int tid = idmap[grp.refTextId()];
+	Text &txt(g.object(tid).asText());
+	grp.setRefTextId(tid);
+	txt.setGroupAffiliation(gid);
+      }
+    }
+  }
+  return g;
+}
+  

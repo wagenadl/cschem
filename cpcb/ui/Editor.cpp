@@ -214,7 +214,7 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
   else if (d->rubberband)
     d->moveBanding(p);
   else if (d->moving)
-    d->moveMoving(p);
+    d->moveMoving(p, e->pos());
 
   d->hoverpt = p;
   emit hovering(p);

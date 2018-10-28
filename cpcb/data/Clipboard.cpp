@@ -23,36 +23,7 @@ bool Clipboard::isValid() const {
   return md->hasFormat(dndformat);
 }
 
-void Clipboard::store(Group const &root, QSet<int> selection) {
-  qDebug() << "Storing" << selection.size() << "objects";
-  Group g;
-  QMap<int, int> idmap;
-  for (int id: selection) 
-    idmap[id] = g.insert(root.object(id));
-
-  for (int id: selection) {
-    if (root.object(id).isText()) {
-      Text &txt(g.object(idmap[id]).asText());
-      if (txt.groupAffiliation()>0
-          && !selection.contains(txt.groupAffiliation())) {
-        // orphaned ref text
-        txt.setGroupAffiliation(0);
-      }
-    }
-  }
-  for (int id: selection) {
-    if (root.object(id).isGroup()) {
-      int gid = idmap[id];
-      Group &grp(g.object(gid).asGroup());
-      if (grp.refTextId()>0) {
-	int tid = idmap[grp.refTextId()];
-	Text &txt(g.object(tid).asText());
-	grp.setRefTextId(tid);
-	txt.setGroupAffiliation(gid);
-      }
-    }
-  }
-  
+QMimeData *Clipboard::createMimeData(Group const &g) {
   QBuffer buf;
   buf.open(QBuffer::WriteOnly);
   { QXmlStreamWriter s(&buf);
@@ -64,18 +35,19 @@ void Clipboard::store(Group const &root, QSet<int> selection) {
     s.writeEndDocument();
   }
   buf.close();
-  QClipboard *cb = QApplication::clipboard();
   QMimeData *md = new QMimeData;
   md->setData(dndformat, buf.buffer());
-  qDebug() << "Storing" << QString(buf.buffer());
+  return md;
+}
+
+void Clipboard::store(Group const &root, QSet<int> selection) {
+  Group g(root.subset(selection));
+  QMimeData *md = createMimeData(g);
+  QClipboard *cb = QApplication::clipboard();
   cb->setMimeData(md);
 }
 
-Group Clipboard::retrieve() const {
-  if (!isValid())
-    return Group();
-  QClipboard *cb = QApplication::clipboard();
-  QMimeData const *md = cb->mimeData();
+Group Clipboard::parseMimeData(QMimeData const *md) {
   QByteArray ba(md->data(dndformat));
   QBuffer buf(&ba);
   qDebug() << "Retrieving" << QString(buf.buffer());
@@ -88,21 +60,21 @@ Group Clipboard::retrieve() const {
     s.readNext();
     if (s.isStartElement() && s.name()=="cpcbsel") {
       while (!s.atEnd()) {
-	s.readNext();
-	if (s.isStartElement()) {
-	  qDebug() << "in cpcbsel" << s.name();
-	  Object o;
-	  s >> o;
-	  qDebug() << "Retrieved" << o;
-	  if (o.isGroup())
-	    return o.asGroup();
-	  else
-	    return Group(); // this is an error
-	} else if (s.isEndElement()) {
-	  break;
-	} else {
-	  qDebug() << "Unexpected entity in clipboard" << s.tokenType();
-	}
+        s.readNext();
+        if (s.isStartElement()) {
+          qDebug() << "in cpcbsel" << s.name();
+          Object o;
+          s >> o;
+          qDebug() << "Retrieved" << o;
+          if (o.isGroup())
+            return o.asGroup();
+          else
+            return Group(); // this is an error
+        } else if (s.isEndElement()) {
+          break;
+        } else {
+          qDebug() << "Unexpected entity in clipboard" << s.tokenType();
+        }
       }
     } else if (s.isEndElement()) {
       break;
@@ -111,6 +83,14 @@ Group Clipboard::retrieve() const {
     }
   }
   return Group();
+}
+
+Group Clipboard::retrieve() const {
+  if (!isValid())
+    return Group();
+  QClipboard *cb = QApplication::clipboard();
+  QMimeData const *md = cb->mimeData();
+  return parseMimeData(md);
 }
 
   
