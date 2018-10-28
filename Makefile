@@ -40,6 +40,8 @@ all: release man
 
 clean:
 	+rm -rf build/
+	rm -f test/*.o
+	rm -f test/test
 
 cpcb: release-cpcb
 cschem: release-cschem
