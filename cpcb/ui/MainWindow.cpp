@@ -533,9 +533,9 @@ void MWData::makeMenus() {
   a = edit->addAction("&Delete selected",
 		      [this]() { editor->deleteSelected(); },
 		      QKeySequence(Qt::Key_Delete));
-  QObject::connect(editor, &Editor::selectionChanged,
-		   a, &QAction::setEnabled);
-  a->setEnabled(false);
+  //QObject::connect(editor, &Editor::selectionChanged,
+  //a, &QAction::setEnabled);
+  //a->setEnabled(false);
   
   a = edit->addAction("&Undo", [this]() { editor->undo(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_Z));
