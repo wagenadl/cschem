@@ -1,5 +1,6 @@
 \documentclass[11pt]{report}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{mathptm}
 \usepackage{newcent}
 \usepackage[letterpaper]{geometry}
@@ -215,7 +216,7 @@ and to indicate the current mode.
 \item[Menu bar]Along the top of the window a standard menu bar is
   shown.
 \end{description}
-One other toolbar is shown only  when CPCB is used to edit a PCB design that
+One other panel is shown only  when CPCB is used to edit a PCB design that
 is linked to a CSchem schematic:
 \begin{description}
   \item[Components pane] Here are shown all the not-yet-placed
@@ -226,9 +227,10 @@ is linked to a CSchem schematic:
 \end{description}
 
 \subsection{Editing modes}
-Because changing modes is such a frequent task,
+CPCB uses different ``modes'' for placing, moving, and modifying holes, traces,
+and other objects. Because changing modes is such a frequent task,
 keyboard shortcuts are available for each of the modes. The modes are
-(from top to bottom):
+(from top to bottom in the ``mode bar''):
 \begin{description}
 \item[Selection mode (F1)]This is a highly multifunctional mode:
   \begin{itemize}
@@ -323,6 +325,14 @@ editing modes:
 \end{description}
 
 \subsection{The Properties bar}
+The properties bar is used to specify properties for new items to be
+placed on the board. In ``Edit mode,'' the properties bar reflects the
+properties of currently selected items,
+and can be used to modify those properties.\footnote{When multiple items
+  are selected and they have conflicting property values, the
+  properties bar will show “--{}--{}--'' instead of an actual
+  value. Even in that case, typing in a new value overrides the
+  properties of all applicable selected objects.}
 Although most items in the Properties bar may speak for themselves,
 here is a list with a few notes. From top to bottom:
 \begin{description}
@@ -336,8 +346,8 @@ here is a list with a few notes. From top to bottom:
 \item[Y] The y-coordinate equivalent of previous item. When
   multiple objects are selected, the topmost
   y-coordinate is shown.
-\item[Line width] This item is meaningful in relation to
-  traces and arcs.
+\item[Line width] This item represents the width of traces and
+  arcs.
 \item[Diameter] The diameter of (plated and nonplated) holes as well
   as arcs.
 \item[Slot length] The extra length of a milled slot. (The full
@@ -345,7 +355,7 @@ here is a list with a few notes. From top to bottom:
   Meaningful for plated and nonplated holes.
 \item[OD] Outer diameter of the round pad surrounding a plated hole, or
   length of the square pad surrounding such a hole. If the hole is in
-  fact a slot, the pad is stretched along with the hole.
+  fact a slot, the pad is expanded along with the hole.
 \item[Shape] Selects whether the pad surrounding a hole is round or
   rectangular.\footnote{``Rectangular'' really means ``square''
     except if the hole has nonzero slot length.}
@@ -353,17 +363,18 @@ here is a list with a few notes. From top to bottom:
 \item[H] The height of an SMT pad (along the y-axis).
 \item[Ref. {\normalfont\itshape or}~Pin {\normalfont\itshape
     or}~Text] Multifunctional item that shows the ``Reference'' ID for
-  a component; the ``Pin number'' for a hole or pad; or the wording of
+  a component; the ``Pin number'' for a hole or pad; or the contents of
   a text object.
-\item[Fs] Font size for textual annotations
-\item[Arc style] Selector for different kinds of arcs
+\item[Fs] Font size for text objects.
+\item[Arc style] Selector for different kinds of arcs.
 \end{description}
 %
 Wherever dimensions appear in the Properties bar, simple arithmetic is
 accepted. Thus you can type things like ``0.3 in + 2*0.7 cm''. CPCB
 understands ``mm'' and ``cm'' as metric units. It also understands
-``in,'' ``inch'', and ``"'' to mean inches. If you leave out a unit,
-the units of the current grid determine how your input is interpreted.
+``in,'' ``inch'', and ``{\tt "}'' (double quote) to mean inches. If
+you leave out a unit, the units of the current grid determine how your
+input is interpreted.
 
 At the very bottom of the Properties bar, there are two more rows of
 buttons: The first allows rotating and flipping of selected objects in
@@ -376,13 +387,13 @@ between layers.
 The status bar displays the coordinates of the cursor and shows the
 identity of holes, pads, and components that you hover over. It is
 also home to a popup menu for selecting grid spacing. (Several common
-choices prepopulate the menu, but you can also define your own custom
-grid spacing in either inches or millimeters.) Lastly, a group of
-icons on the right of the Status bar serves as indicators and toggles
-for visibility of (from left to right): The silkscreen layer; the top
-copper layer; the bottom copper layer; filled planes; and nets.
-The
-last two deserve further explanation:
+choices prepopulate the menu, and you can define your own custom grid
+spacing in either inches or millimeters simply by typing in any line.)
+
+A group of icons on the right of the Status bar serves as indicators
+and toggles for visibility of (from left to right): the silkscreen
+layer; the top copper layer; the bottom copper layer; filled planes;
+and nets.  The last two deserve further explanation:
 \begin{itemize}
   \item Filled planes may be placed on
 either top or bottom copper layers. They are only visible when both
@@ -399,21 +410,142 @@ visibility'' toggle is on.
   information about nets.
 \end{itemize}
 
-\subsection{Parts pane}
+\subsection{Components pane}
 
 When a PCB layout is linked to a CSchem schematic, one additional user
 interface component is shown alongside the PCB: A list of all the
 components of the schematic that have not yet been placed on the
-PCB. The function of this pane is explained in the next section.
+PCB. The function of this pane is explained in section~\ref{sec.comp.pane}.
 
-\section{Working with components}
-CPCB ships with a small library of predefined components. Press
+\section{Working with components}\label{sec.comp}
+
+CPCB ships with a small library of predefined components and it is
+very easy to add your own to the library.
+
+\subsection{Placing library components onto a PCB}
+
+Press
 ``Control''+``Shift''+``O'' to show the library (or select ``Open
 library'' from the Tools menu). CPCB components are saved as SVG
 files, so in some operating systems the Filer window will show
 previews. Components may be placed on the PCB simply by dragging them
 in from a Filer window. Please note that CPCB cannot handle arbitrary
-SVG files, only the special SVG files that it creates itself.
+SVG files, only the special SVG files that it creates itself, so do
+not draw components in an external SVG editor and expect CPCB to
+import them into your layout.
 
-Components may also be dragged onto the ``Parts'' pane ...
+\subsection{Creating new components}
+
+To create a new component from scratch, simply place holes, pads, and
+outlines onto a PCB. It may be helpful to use ``incremental''
+coordinates to place features of the component relative to each
+other. Be sure to assign pin numbers to all holes and pads. When done,
+use ``Control''+``G'' or the menu to group the features together. A
+default ``reference'' text will appear, which you could edit. For
+instance, if you drew a new symbol for a diode, you might want to
+replace the ``X?'' with ``D?''. To save a copy of the component for
+use in future layouts, press ``Control''+``Shift''+``I'' or select
+``Save component…'' from the ``Tools'' menu.
+
+\subsection{Editing components}
+
+To edit a component, the easiest thing to do is to double click on its
+outline on the board. This will ``enter the group'' of the component,
+hiding all PCB elements that are not part of the component. You can
+now add, remove, or modify elements of the component at will. Double
+click on the background to ``leave'' the group. At this point you may
+want to  press ``Control''+``Shift''+``I'' (or select
+``Save component…'' from the ``Tools'' menu) to save the component,
+either replacing the old version if you are simply fixing a mistake,
+or as a copy if you are creating a new component based on an older
+one.
+
+If all you need to do is renumber some pins of a component, it is even
+easier to just double click on those pins and type the new numbers in
+the popup box.
+
+\subsection{Using the components pane}\label{sec.comp.pane}
+
+The components pane serves  as a placeholder for components that are
+part of a linked schematic but that have not yet been placed on the
+PCB. On first use, it simply shows a list of those components,
+identified by their ``Reference'' text, their ``part/value'' text (if
+defined) and their number of pins. If you have used a similar
+component before, CPCB may display a default outline package
+instead. The following actions are available in the components pane:
+\begin{itemize}
+\item You can drag a component outline from the pane to the PCB.
+\item You can drag a component outline from a Filer window to the pane.
+\item You can drag a component outline from one tile in the pane to
+  another to conveniently apply the same outline to multiple
+  components.
+\item You can rotate or flip an outline by pressing ``R'',
+  ``Shift''+``R'', or ``F'' after clicking it.
+\item You can copy a component outline from the PCB into the pane by
+  selecting (only) that component on the PCB and clicking on the
+  target tile with the middle mouse button or with ``Control'' and
+  the left mouse button.
+\end{itemize}
+Instead of dragging component outlines directly onto the PCB from  a
+Filer window, it is sometimes
+convenient to first drag them onto the ``components pane,'' copy them
+to all like items, and then drag those onto the PCB.
+
+\section{Working with filled planes}
+
+Filled planes are a convenient way to distribute ground or power
+connections to different parts of a PCB. A ground plane can also serve
+an important role in protecting your circuit from electromagnetic
+interference.
+
+\subsection{Placing a filled plane}
+
+Filled planes are placed in ``Filled plane mode'' simply by dragging
+out a rectangle starting from an empty location on the PCB.
+
+\subsection{Editing a filled plane}
+In ``Filled plane mode,'' you can move the corner points of a filled
+plane around by dragging with the mouse. You can insert corners along
+any edge simply by dragging the marker that automatically appears when
+you hover near an edge. You can remove a corner by pressing ``Delete''
+when it is highlighted. If you press and hold ``Shift'' and then hover the
+mouse over an edge, an edge marker rather than a corner marker
+appears. This is a convenient way to move the edge as a whole. A
+potentially nonintuitive (but very helpful) behavior is that perfectly
+horizontal edges can only be dragged in the vertical direction and
+vice versa, whereas edges that are not parallel to a principal axis
+can be dragged in any direction.
+
+\subsection{Deleting a filled plane}
+
+In ``Filled plane mode,'' you can delete a filled plane simply by
+pressing ``Delete'' while hovering over its interior. In ``Edit mode''
+you can delete a filled plane by first selecting it and then pressing
+``Delete.''
+
+\subsection{Moving a filled plane}
+
+Move a filled plane in its entirety is done in ``Edit mode'' rather
+than in ``Filled plane mode,'' simply by selecting it and dragging it
+to a new location.
+
+\subsection{Making and breaking connections to a filled plane}
+
+In ``Filled plane mode,'' connections between pads and filled
+planes can be created and removed by double clicking on the
+pad. Likewise, connections can be made between plated holes and filled
+planes. Use the ``Layer'' buttons at the bottom of the ``Properties
+bar'' to choose whether a connection is made in the top or bottom
+copper layer. Note that plated holes can only connect to one filled
+plane. This is to prevent a mistake I have made too many times in
+other PCB layout programs, where I meant to move a filled plane
+connection from the bottom layer to the top layer but accidentally
+preserved the connection in the bottom layer as well. (Because these
+connections lie perfectly on top of one another, the bottom layer
+connection is easily overlooked.) If you absolutely must connect two
+filled planes using a single hole, you can create two separate holes
+first and drag them on top of each other. (But don't tell anyone I
+said that.)
+
 \end{document}
+ 
