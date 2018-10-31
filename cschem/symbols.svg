@@ -32,12 +32,12 @@
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:zoom="3.4997074"
-     inkscape:cx="1058.9539"
-     inkscape:cy="684.88373"
+     inkscape:cx="1318.8328"
+     inkscape:cy="1107.2048"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g1958"
+     inkscape:current-layer="g2832"
      inkscape:snap-intersection-paths="true"
      inkscape:object-paths="true">
     <inkscape:grid
@@ -5184,11 +5184,11 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        inkscape:label=""
        r="7"
        cy="338"
-       cx="1701"
+       cx="1603"
        id="pin:K-6-6-7-7-3"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate">
       <title
-         id="title1509-9-6">pin:11/Vdd</title>
+         id="title1509-9-6">pin:4/Vdd</title>
     </circle>
     <g
        transform="translate(273.00007,133.00002)"
@@ -5209,13 +5209,13 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          transform="scale(1.0006613,0.99933913)"
          id="text1087-2-3-92-6"
          y="211.59186"
-         x="1391.8632"
+         x="1347.8922"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.33333302px;line-height:125%;font-family:Lato;-inkscape-font-specification:'Lato, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            dx="0"
            style="font-size:15.99999905px;stroke-width:1px"
            y="211.59186"
-           x="1391.8632"
+           x="1347.8922"
            id="tspan1085-7-6-2-2"
            sodipodi:role="line">V+</tspan></text>
       <g
@@ -5274,13 +5274,13 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          transform="scale(1.0006613,0.99933913)"
          id="text1087-0-7-3-7"
          y="210.23256"
-         x="1346.1404"
+         x="1390.1116"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.33333302px;line-height:125%;font-family:Lato;-inkscape-font-specification:'Lato, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
          xml:space="preserve"><tspan
            dx="0 -1.5314136"
            style="font-size:15.99999905px;stroke-width:1px"
            y="210.23256"
-           x="1346.1404"
+           x="1390.1116"
            id="tspan1085-9-5-0-9"
            sodipodi:role="line">V–</tspan></text>
       <text
@@ -5626,11 +5626,11 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        inkscape:label=""
        r="7"
        cy="338"
-       cx="1603"
+       cx="1701"
        id="pin:K-6-7-2-1-7-1"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate">
       <title
-         id="title1507-8-4-5">pin:4/Vss</title>
+         id="title1507-8-4-5">pin:11/Vss</title>
     </circle>
     <circle
        inkscape:transform-center-y="2.3834746"
@@ -5766,7 +5766,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          height="126"
          x="1176"
          y="800" /></flowRegion><flowPara
-       id="flowPara1930"></flowPara></flowRoot>  <g
+       id="flowPara1930" /></flowRoot>  <g
      id="g1958"
      inkscape:label="">
     <title
