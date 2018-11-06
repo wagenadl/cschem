@@ -140,17 +140,17 @@ void EData::selectPointsOf(int id) {
 }
 
 void EData::drawBoard(QPainter &p) const {
-  p.setBrush(QBrush(QColor(0,0,0)));
+  p.setBrush(QBrush(ORenderer::boardColor()));
   double lw = layout.board().width.toMils();
   double lh = layout.board().height.toMils();
   if (layout.board().shape == Board::Shape::Round) {
     if (lw==lh) {
       p.drawEllipse(QPointF(lw/2, lh/2), lw/2, lh/2);
     } else if (lw<lh) {
-      p.setPen(QPen(QColor(0,0,0), lw, Qt::SolidLine, Qt::RoundCap));
+      p.setPen(QPen(ORenderer::boardColor(), lw, Qt::SolidLine, Qt::RoundCap));
       p.drawLine(QPointF(lw/2, lw/2), QPointF(lw/2, lh - lw/2));
     } else {
-      p.setPen(QPen(QColor(0,0,0), lh, Qt::SolidLine, Qt::RoundCap));
+      p.setPen(QPen(ORenderer::boardColor(), lh, Qt::SolidLine, Qt::RoundCap));
       p.drawLine(QPointF(lh/2, lh/2), QPointF(lw - lh/2, lh/2));
     }
   } else {

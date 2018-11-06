@@ -83,7 +83,7 @@ void ORenderer::drawPlane(FilledPlane const &t, bool selected, bool innet) {
   if (subl != Sublayer::Plane)
     return;
   p->setPen(Qt::NoPen);
-  p->setBrush(brushColor(selected, innet).darker());
+  p->setBrush(brushColor(selected, innet).darker(175));
   Polyline pp = t.perimeter;
   if (selected && toplevel) 
     pp.translate(movingdelta);
@@ -139,7 +139,7 @@ double ORenderer::extraMils(bool innet, Dim w, Dim h) const {
 
 QColor ORenderer::brushColor(bool selected, bool innet) const {
   if (subl==Sublayer::Clearance)
-    return QColor(0, 0, 0, 0);
+    return boardColor();
   else if (innet) 
     return overrideColor(layerColor(layer, selected));
   else
@@ -473,3 +473,14 @@ void ORenderer::render(Group const &grp, QPainter *ptr) {
   rndr.setLayer(Layer::Silk);
   rndr.drawGroup(grp);
 }
+
+QColor ORenderer::boardColor() {
+  static QColor c(80, 0, 0);
+  return c;
+}
+
+QColor ORenderer::backgroundColor() {
+  static QColor c(0, 0, 0);
+  return c;
+}
+
