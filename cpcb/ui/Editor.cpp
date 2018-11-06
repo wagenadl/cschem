@@ -6,15 +6,18 @@
 #include "Tracer.h"
 #include "PlaneEditor.h"
 #include "data/TraceRepair.h"
+#include "ORenderer.h"
 
 #include <QInputDialog>
 #include <QResizeEvent>
 #include <QTimer>
 #include <algorithm>
 
+
 Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   QPalette p(palette());
-  p.setColor(QPalette::Window, QColor(80, 80, 80));
+  //  p.setColor(QPalette::Window, QColor(80, 80, 80));
+  p.setColor(QPalette::Window, ORenderer::backgroundColor());
   setPalette(p);
   setAutoFillBackground(true);
   setMouseTracking(true);

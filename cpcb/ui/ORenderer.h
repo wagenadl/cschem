@@ -22,6 +22,8 @@ public:
     Clearance,
     Plane
   };
+  static QColor boardColor();
+  static QColor backgroundColor();
 public:
   ORenderer(QPainter *painter, Point const &origin=Point());
   ~ORenderer();
