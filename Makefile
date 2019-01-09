@@ -64,10 +64,12 @@ debug-cpcb: prep-cpcb
 
 prep-cschem:
 	mkdir -p build/cschem
+	rm -f build/cschem/*/BuildDate.o
 	( cd build/cschem; $(SELECTQT) $(QMAKE) ../../cschem/cschem.pro )
 
 prep-cpcb:
 	mkdir -p build/cpcb
+	rm -f build/cpcb/*/BuildDate.o
 	( cd build/cpcb; $(SELECTQT) $(QMAKE) ../../cpcb/cpcb.pro )
 
 install: all

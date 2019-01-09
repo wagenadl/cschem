@@ -1,6 +1,7 @@
 // Style.cpp
 
 #include "Style.h"
+#include "Version.h"
 
 QColor Style::faintColor() {
   return QColor(180, 180, 180);
@@ -57,7 +58,7 @@ QString Style::programName() {
 }
 
 QString Style::versionName() {
-  return "1.0.0";
+  return Version::toString();
 }
 
 QFont Style::annotationFont() {

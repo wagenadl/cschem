@@ -221,6 +221,9 @@ sub updateversion {
   open OUT, ">cschem/version";
   print OUT "$newvsn\n";
   close OUT;
+  open OUT, ">cpcb/version";
+  print OUT "$newvsn\n";
+  close OUT;
 }
 
 sub updateinno {
