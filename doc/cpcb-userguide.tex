@@ -320,8 +320,8 @@ editing modes:
         incremental origin reinstated.)
       \item[Angle constraint (F12)] Use this to toggle between placing
         traces with arbitrary angles and placing traces that are
-        either horizontal, vertical, or at 45$^\circ$ to the canonical
-        axes.
+        constrained to be either horizontal, vertical, or at
+        45$^\circ$ to the canonical axes.
 \end{description}
 
 \subsection{The Properties bar}
@@ -546,6 +546,91 @@ connection is easily overlooked.) If you absolutely must connect two
 filled planes using a single hole, you can create two separate holes
 first and drag them on top of each other. (But don't tell anyone I
 said that.)
+
+\section{Exporting for fabrication}
+
+The purpose of a PCB layout program is to allow you to make PCBs. CPCB
+can therefore export your design to the industry-standard ``Gerber''
+file format.\footnote{For those new to this business, it may be worth
+  knowing that a ``Gerber file'' is actually a whole set of files,
+  typically packaged together in a ``zip'' archive.
+ Each layer of the PCB layout is represented as a distinct file in the
+ archive. Additional files represent the locations of through holes.}
+To export a Gerber file, press ``Control''+``E'' or choose ``Export
+Gerber'' from the ``File'' menu.
+
+Gerber files can be uploaded to a variety of fabricators on the
+internet. A useful website to compare offers from many sources is
+https://pcbshopper.com. Pro tip: Be sure to select lead-free surface
+finish as well as lead-free solder. Don't poison youself.
+
+Most fabricators have a way to verify that their interpretation of the
+file you uploaded matches your intentions. Please use those
+tools, and note that by using CPCB, you accept the terms of the GNU
+General Public License. That means, among other things, that {\bf the
+author cannot accept any liability for incorrect fabrication}, even if
+CPCB exported patently incorrect Gerber files.
+
+\subsection{Exporting solder paste masks}
+
+If your layout involves any surface-mount components, you may wish to
+produce a solder paste mask. To export a paste mask,
+press ``Control''+``Shift''+``E'' or choose ``Export paste mask'' from
+the File menu. After specifying a file name, you will be asked to
+specify the desired ``shrinkage for cutouts.'' This number can be used
+to make the holes slightly smaller than the solderable area, to
+compensate for the kerf of a laser cutter.
+
+\subsection{My procedure for SMT soldering}
+
+It turns out that it is quite easy to
+make solder masks on a laser cutter, and low-temperature lead-free
+solder paste practically eliminates the risk of overheating
+components. Here is what I do:
+\begin{enumerate}
+\item Design your layout and have your board manufactured.
+\item Export the paste mask as an svg file with 0.005'' (0.125 mm)
+  shrinkage. This file can be loaded into Corel Draw for laser cutting.
+  \item  Cut the paste mask out of overhead transparency. I use Apollo
+    Laser Printer Transparency Film (\#VCG7060E) placed on top of a
+    sheet of aluminum. The film is 0.002'' (0.050 mm) thick; the
+    thickness of the aluminum is not important. Cut the \emph{outlines} of
+    the pads in vector mode. On my 75-W ULS laser cutter, I use 25\%
+    power, 100\% speed for the pads, cutting three
+    times. Then I cut the board outline with 65\% power, 100\% speed,
+    once. This gives a nice flat surface on the back with slight
+    ridges on the front. Check for hanging chads.
+    \item Tape the mask to the board. I used packing tape, but it is
+      not critical. Use a stereomicroscope or a magnifier to ensure
+      precise alignment. (A pair of +2.00 to +2.50 reading glasses
+      makes for a remarkably effective head-mounted magnifier.)
+\item Squeeze solder paste into the pads. The paste I have been using
+  is Sn 42\%/Bi 57\%/Ag 1\%, melting point 137 $^\circ$C. It is
+  described as ``No-clean flux, 87\% metal (20--38 microns).''
+      
+      . Standard old-fashioned overhead projector sheets can be cut
+      with most laser cutters, and if you experiment with the energy
+      and speed settings, you should be able to produce clean
+      holes. (On my laser cutter, I find that the cleanest holes are
+      made by going over the outlines of pads several times rapidly at
+      low power. The final result is a slight ridge on the top side of
+      the sheet, and a perfectly flat bottom side.) Many sources now
+      sell lead-free solder paste that melts at temperatures as low as
+      140 $^\circ$C, which practically obviates the risk of
+      overheating components. I use painter's tape to temporarily
+      attach the solder mask to the PCB, apply a little solder paste
+      over all SMT components, and use a plastic or metal spatula to
+      push the paste into the holes in the mask. A stereoscope is
+      useful to check the quality of your work, but if you have good
+      eye sight, a simple magnifying glass might be good enough. (A
+      pair of +2.00 to +2.50 reading glasses makes for a remarkably
+      effective head-mounted magnifier.)}
+
+\footnote{The default value,
+  0.005 inch (0.125 mm), works well for my laser cutter. I typically
+  use 0.002-inch-thick (0.050 mm) transparency sheets. My 75-W ULS
+  laser cutter creates clean holes if I cut the outlines of the pads three times
+  at 25\% power and 100\% speed.}
 
 \end{document}
  
