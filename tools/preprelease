@@ -242,6 +242,7 @@ sub gitadd {
   my $package = $info->{package};
   system("git add CHANGELOG") and die "Could not add CHANGELOG\n";
   system("git add cschem/version") and die "Could not add cschem/version\n";
+  system("git add cpcb/version") and die "Could not add cpcb/version\n";
   system("git add tools/$package-x86.iss") and
     die "Could not add tools/$package-x86.iss\n";
   system("git commit -m'Prepared for new version $newvsn'") and
