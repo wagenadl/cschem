@@ -1,3 +1,9 @@
+cschem 0.1.0
+
+  This is the first public release.
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Wed, 09 Jan 2019 09:43:13 -0800
+
 cschem 0.0.2
 
   Trying to build a deb package
