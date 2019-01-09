@@ -52,6 +52,8 @@ HEADERS += data/TraceRepair.h   ui/PlaneEditor.h   ui/Find.h
 SOURCES += data/TraceRepair.cpp ui/PlaneEditor.cpp ui/Find.cpp
 HEADERS += ui/BoardSizeDialog.h   ui/Expression.h
 SOURCES += ui/BoardSizeDialog.cpp ui/Expression.cpp
+HEADERS += ui/Version.h   ui/BuildDate.h
+SOURCES += ui/Version.cpp ui/BuildDate.cpp
 FORMS += ui/BoardSizeDialog.ui
 
 # From CSCHEM
