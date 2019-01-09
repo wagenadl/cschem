@@ -97,8 +97,9 @@ bool PMWData::writeGroup(Group const &g) {
 bool PMWData::writePad(Pad const &pad) {
   if (pad.layer != Layer::Top)
     return true; // don't do anything
-  Dim x0 = pad.p.x - pad.width/2 + shrinkage;
-  Dim y0 = pad.p.y - pad.height/2 + shrinkage;
+  Point p0 = pad.p.rotatedFreely(-pad.rota);
+  Dim x0 = p0.x - pad.width/2 + shrinkage;
+  Dim y0 = p0.y - pad.height/2 + shrinkage;
   Dim w = pad.width - 2*shrinkage;
   Dim h = pad.height - 2*shrinkage;
   out << "    <rect"
@@ -106,6 +107,7 @@ bool PMWData::writePad(Pad const &pad) {
       << prop("y", y0)
       << prop("width", w)
       << prop("height", h)
+      << QString(" transform=\"rotate(%1)\"").arg(pad.rota)
       << " style=\"opacity:1;fill:#000000;stroke:none\""
       << " />\n";
   return true;
