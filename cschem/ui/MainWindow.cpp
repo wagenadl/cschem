@@ -89,7 +89,7 @@ void MainWindow::createDocks() {
 }
 
 void MainWindow::openSymbolLibraryFolder() {
-  QDesktopServices::openUrl(QUrl(Paths::symbolRoot()));
+  QDesktopServices::openUrl(QUrl(Paths::userSymbolRoot()));
 }
  
 void MainWindow::showLibrary() {
