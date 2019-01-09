@@ -6,9 +6,31 @@
 #include <QApplication>
 #include <QFile>
 #include <QScreen>
+#include <QDir>
+#include "data/Paths.h"
+
+void ensureOutlineLibrary() {
+  QDir recentdir(Paths::recentSymbolsLocation());
+  if (!recentdir.exists())
+    recentdir.mkpath(".");
+  
+  QDir userlib(Paths::userComponentRoot());
+  if (!userlib.exists())
+    userlib.mkpath(".");
+
+  if (!userlib.exists("System")) {
+    QString sysloc(Paths::systemComponentRoot());
+    if (!sysloc.isEmpty())
+      QFile(sysloc).link(userlib.absoluteFilePath("System"));
+  }
+}
+  
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
+
+  ensureOutlineLibrary();
+  
   QStringList args = app.arguments();
   
   MainWindow mw;

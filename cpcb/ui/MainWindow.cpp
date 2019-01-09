@@ -176,7 +176,7 @@ void MWData::saveComponentDialog() {
   }
 
   if (compwd.isEmpty()) {
-     compwd = Paths::componentRoot();
+     compwd = Paths::userComponentRoot();
      QDir::home().mkpath(compwd);
   }
   QString fn = QFileDialog::getSaveFileName(0, "Save component…",
@@ -194,12 +194,12 @@ void MWData::saveComponentDialog() {
 }
 
 void MWData::openLibrary() {
-  QDesktopServices::openUrl(QUrl(Paths::componentRoot()));
+  QDesktopServices::openUrl(QUrl(Paths::userComponentRoot()));
 }
 
 void MWData::insertComponentDialog() {
   if (compwd.isEmpty()) {
-    compwd = Paths::componentRoot();
+    compwd = Paths::userComponentRoot();
     QDir::home().mkpath(compwd);
   }
   Point pt = editor->hoverPoint();
