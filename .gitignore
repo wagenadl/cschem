@@ -6,3 +6,7 @@ test/Makefile
 BROWSE
 TAGS
 cschem-doxy
+debian/cschem
+debian/files
+debian/.*
+debian/cschem.*
