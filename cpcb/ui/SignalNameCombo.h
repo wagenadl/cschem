@@ -9,6 +9,7 @@
 class SignalNameCombo: public QComboBox {
 public:
   SignalNameCombo(class Symbol const &sym, QWidget *parent=0);
+  void setCurrent(QString);
   ~SignalNameCombo();
 };
 

@@ -231,6 +231,7 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
 void Editor::pretendOnNet(NodeID ids) {
   Nodename nn(d->currentGroup().nodeName(ids));
   Nodename alias(d->linkedschematic.pinAlias(nn));
+  qDebug () << "pretendonnet" << nn << alias;
   if (alias.isValid())
     d->onobject += alias.humanName();
   else

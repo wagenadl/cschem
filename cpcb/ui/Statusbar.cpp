@@ -243,6 +243,7 @@ void Statusbar::updateCursor() {
 	.arg(p1.y.toInch(),0,'f',3);
     if (!obj.isEmpty())
       txt += " on " + obj;
+    txt.replace("-", "−");
     cursorui->setText(txt);
   } else {
     hideCursorXY();

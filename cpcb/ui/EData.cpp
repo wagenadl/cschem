@@ -47,6 +47,7 @@ bool EData::updateOnWhat(bool force) {
   if (isnew || force) {
     Nodename nn(currentGroup().nodeName(ids));
     Nodename alias(linkedschematic.pinAlias(nn));
+    qDebug () << "updateonwhat" << ids << nn.toString() << alias.toString();
     if (alias.isValid())
       onobject = alias.humanName();
     else
@@ -828,6 +829,7 @@ void EData::editPinName(int groupid, int hole_pad_id) {
   bool ok = false;
   Symbol const &sym(linkedschematic.schematic()
 		    .symbolForNamedElement(group_ref));
+  qDebug() << "editpinname" << pin_ref;
   if (sym.isValid()) {
     PinNameEditor pne(group_ref, pin_ref, sym);
     ok = pne.exec();
@@ -839,6 +841,7 @@ void EData::editPinName(int groupid, int hole_pad_id) {
 				    QLineEdit::Normal,
 				    pin_ref, &ok);
   }
+  qDebug() << "editpinname ->" << pin_ref;
   if (ok) {
     UndoCreator uc(this, true);
     Group &group(currentGroup().object(groupid).asGroup());
