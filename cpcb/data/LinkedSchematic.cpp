@@ -153,6 +153,13 @@ Nodename LinkedSchematic::pinAlias(Nodename const &nn) const {
   d->validateNets();
   if (d->aliases.contains(nn))
     return d->aliases[nn];
+  int sidx = nn.pin().indexOf("/");
+  if (sidx<0)
+    return Nodename();
+  int didx = nn.pin().indexOf(".", sidx);
+  if (didx<0)
+    return Nodename(nn.component(), nn.pin().mid(sidx+1));
   else
-    return Nodename("", "");
+    return Nodename(nn.component() + "." + nn.pin().mid(sidx+1, didx-sidx-1),
+		    nn.pin().mid(didx+1));
 }
