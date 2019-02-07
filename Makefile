@@ -64,10 +64,12 @@ debug-cpcb: prep-cpcb
 
 prep-cschem:
 	mkdir -p build/cschem
+	rm -f build/cschem/*/BuildDate.o
 	( cd build/cschem; $(SELECTQT) $(QMAKE) ../../cschem/cschem.pro )
 
 prep-cpcb:
 	mkdir -p build/cpcb
+	rm -f build/cpcb/*/BuildDate.o
 	( cd build/cpcb; $(SELECTQT) $(QMAKE) ../../cpcb/cpcb.pro )
 
 install: all
@@ -77,6 +79,7 @@ install: all
 	install -d $(SHAREPATH)/applications
 	install -d $(SHAREPATH)/icons/gnome/128x128/mimetypes
 	install -d $(SHAREPATH)/mime/packages
+	install -d $(SHAREPATH)/cschem
 	install -d $(DOCPATH)
 	install build/cschem/cschem $(INSTALLPATH)/bin/cschem
 	install build/cpcb/cpcb $(INSTALLPATH)/bin/cpcb
@@ -90,6 +93,12 @@ install: all
 	cp cpcb/cpcb.xml $(SHAREPATH)/mime/packages/cpcb.xml
 	install cschem/cschem.desktop $(SHAREPATH)/applications/cschem.desktop
 	install cpcb/cpcb.desktop $(SHAREPATH)/applications/cpcb.desktop
+	cp README.md $(DOCPATH)/readme
+	gzip -9 $(DOCPATH)/readme
+	cp CHANGELOG $(DOCPATH)/changelog
+	gzip -9 $(DOCPATH)/changelog
+	cp -r symbols $(SHAREPATH)/cschem/symbols
+	cp -r outline-library $(SHAREPATH)/cschem/outlines
 
 man: build/cpcb.1 build/cschem.1
 

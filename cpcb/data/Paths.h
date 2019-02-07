@@ -7,7 +7,8 @@
 #include <QString>
 
 namespace Paths {
-  QString componentRoot();
+  QString userComponentRoot();
+  QString systemComponentRoot();
   QString recentSymbolsLocation();
   QString defaultLocation();
 };

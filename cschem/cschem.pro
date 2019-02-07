@@ -50,4 +50,6 @@ HEADERS += ui/SvgItem.h   ui/PartList.h   ui/HtmlDelegate.h
 SOURCES += ui/SvgItem.cpp ui/PartList.cpp ui/HtmlDelegate.cpp
 HEADERS += circuit/SafeMap.h
 SOURCES += circuit/SafeMap.cpp
+HEADERS += ui/Version.h   ui/BuildDate.h
+SOURCES += ui/Version.cpp ui/BuildDate.cpp
 RESOURCES += cschem.qrc

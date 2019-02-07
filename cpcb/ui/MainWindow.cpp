@@ -13,6 +13,7 @@
 #include "Settings.h"
 #include "BoardSizeDialog.h"
 #include "data/NetMismatch.h"
+#include "Version.h"
 
 #include <QTemporaryDir>
 #include <QDesktopServices>
@@ -175,7 +176,7 @@ void MWData::saveComponentDialog() {
   }
 
   if (compwd.isEmpty()) {
-     compwd = Paths::componentRoot();
+     compwd = Paths::userComponentRoot();
      QDir::home().mkpath(compwd);
   }
   QString fn = QFileDialog::getSaveFileName(0, "Save component…",
@@ -193,12 +194,12 @@ void MWData::saveComponentDialog() {
 }
 
 void MWData::openLibrary() {
-  QDesktopServices::openUrl(QUrl(Paths::componentRoot()));
+  QDesktopServices::openUrl(QUrl(Paths::userComponentRoot()));
 }
 
 void MWData::insertComponentDialog() {
   if (compwd.isEmpty()) {
-    compwd = Paths::componentRoot();
+    compwd = Paths::userComponentRoot();
     QDir::home().mkpath(compwd);
   }
   Point pt = editor->hoverPoint();
@@ -392,10 +393,10 @@ bool MWData::saveAsDialog() {
 
 void MWData::about() {
   QString me = "<b>cpcb</b>";
-  QString vsn = "0.01";
+  QString vsn = Version::toString();
   QMessageBox::about(0, "About " + me,
 		     me + " " + vsn
-		     + "<p>" + "(C) 2018 Daniel A. Wagenaar\n"
+		     + "<p>" + "(C) 2018–2019 Daniel A. Wagenaar\n"
 		     + "<p>" + me + " is a program for printed circuit board  layout. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
 		     + "<p>" + me + " is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
 		     + "<p>" + me + " is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"
