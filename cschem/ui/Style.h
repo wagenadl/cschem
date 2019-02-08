@@ -6,18 +6,17 @@
 
 #include <QColor>
 #include <QFont>
-#include "circuit/Layer.h"
 
 class Style {
 public:
   static QColor danglingColor();
-  static QColor hoverColor(Layer l=Layer::Schematic);
-  static QColor selectedElementHoverColor(Layer l=Layer::Schematic);
+  static QColor hoverColor();
+  static QColor selectedElementHoverColor();
   static QColor pinHighlightColor();
   static QColor selectionBackgroundColor();
   static QColor faintColor();
-  static QColor textColor(Layer l=Layer::Schematic);
-  static QColor layerColor(Layer l=Layer::Schematic);
+  static QColor textColor();
+  static QColor layerColor();
   static double connectionHoverWidthFactor();
   static double connectionDraftWidthFactor();
   static double selectionRectRadius();

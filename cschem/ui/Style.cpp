@@ -7,11 +7,11 @@ QColor Style::faintColor() {
   return QColor(180, 180, 180);
 }
 
-QColor Style::layerColor(Layer) {
+QColor Style::layerColor() {
   return QColor(0, 0, 0);
 }
 
-QColor Style::textColor(Layer) {
+QColor Style::textColor() {
   return QColor(0, 0, 0);
 }
 
@@ -19,11 +19,11 @@ QColor Style::danglingColor() {
   return QColor(255, 0, 0);
 }
 
-QColor Style::hoverColor(Layer) {
+QColor Style::hoverColor() {
   return QColor(64, 192, 255);
 }
 
-QColor Style::selectedElementHoverColor(Layer) {
+QColor Style::selectedElementHoverColor() {
   return QColor(0, 64, 255);
 }
 
