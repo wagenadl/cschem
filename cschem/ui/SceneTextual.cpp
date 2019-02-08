@@ -74,6 +74,7 @@ static QString rebuildLine(QString str) {
       if (voltcurrent.match(bit).hasMatch())
 	return true;
     }
+    return false;
   };
 
   auto markup = [=](QString str) {
