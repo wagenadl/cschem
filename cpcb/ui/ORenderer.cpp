@@ -475,7 +475,8 @@ void ORenderer::render(Group const &grp, QPainter *ptr) {
 }
 
 QColor ORenderer::boardColor() {
-  static QColor c(80, 0, 0);
+  static QColor c(70, 30, 30);
+  //  static QColor c(80, 0, 0);
   return c;
 }
 
