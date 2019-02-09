@@ -16,7 +16,7 @@ QColor const &layerColor(Layer l, bool sel) {
   static QColor selsilk = makesel(makesel(silk));
   static QColor seltop = makesel(top);
   static QColor selbottom = makesel(makesel(bottom));
-  static QColor panel(200, 0, 255);
+  static QColor panel(150, 100, 255);
   static QColor selpanel = makesel(panel);
   switch (l) {
   case Layer::Invalid: return invalid;
