@@ -16,17 +16,20 @@ QColor const &layerColor(Layer l, bool sel) {
   static QColor selsilk = makesel(makesel(silk));
   static QColor seltop = makesel(top);
   static QColor selbottom = makesel(makesel(bottom));
+  static QColor panel(200, 0, 255);
+  static QColor selpanel = makesel(panel);
   switch (l) {
   case Layer::Invalid: return invalid;
   case Layer::Silk: return sel ? selsilk : silk;
   case Layer::Top: return sel ? seltop : top;
   case Layer::Bottom: return sel ? selbottom: bottom;
+  case Layer::Panel: return sel ? selpanel: panel;
   }
   return invalid;
 }
 
 QList<Layer> const &layers() {
-  static QList<Layer> lays{Layer::Silk, Layer::Top, Layer::Bottom};
+  static QList<Layer> lays{Layer::Panel, Layer::Silk, Layer::Top, Layer::Bottom};
   return lays;
 }
 
@@ -35,6 +38,7 @@ QDebug operator<<(QDebug d, Layer const &l) {
   case Layer::Silk: d << "Silk"; break;
   case Layer::Top: d << "Top"; break;
   case Layer::Bottom: d << "Bottom"; break;
+  case Layer::Panel: d << "Panel"; break;
   default: d << "Invalid"; break;
   }
   return d;

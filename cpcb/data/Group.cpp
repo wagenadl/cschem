@@ -589,7 +589,8 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace) const {
       case Object::Type::Trace:
         if (!notrace && ids.isEmpty()
 	    && (lay==obj.asTrace().layer
-		|| (lay==Layer::Invalid && obj.asTrace().layer!=Layer::Silk))) {
+		|| (lay==Layer::Invalid
+		    && layerIsCopper(obj.asTrace().layer)))) {
           ids.clear();
 	  ids << id; // this could still be overwritten!
         }
@@ -919,7 +920,7 @@ bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
   bool acted = false;
   Trace const &tr(object(traceid).asTrace());
 
-  if (tr.layer==newlayer || tr.layer==Layer::Silk)
+  if (tr.layer==newlayer || !layerIsCopper(tr.layer))
     return false;
   
   // first, see if there are already vias at p1 or p2
@@ -987,7 +988,7 @@ bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
     acted = true;
   }
 
-  if (newlayer==Layer::Silk)
+  if (!layerIsCopper(newlayer))
     return acted;
   
   // add vias if necessary

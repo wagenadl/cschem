@@ -64,7 +64,7 @@ public:
   
   QWidget *layerg;
   QAction *layera;
-  QAction *silk, *top, *bottom;
+  QAction *panel, *silk, *top, *bottom;
 
   QWidget *orientg;
   QAction *orienta;
@@ -382,6 +382,7 @@ void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
       break;
     }
   }
+  panel->setChecked(l==Layer::Panel);
   silk->setChecked(l==Layer::Silk);
   top->setChecked(l==Layer::Top);
   bottom->setChecked(l==Layer::Bottom);
@@ -441,7 +442,9 @@ int PBData::arcAngle() const {
 }
 
 Layer PBData::layer() const {
-  if (silk->isChecked())
+  if (panel->isChecked())
+    return Layer::Panel;
+  else if (silk->isChecked())
     return Layer::Silk;
   else if (top->isChecked())
     return Layer::Top;
@@ -509,7 +512,8 @@ void PBData::hideAndShow() {
     texta->setEnabled(true);
     text->setEnabled(true);
     textl->setText("Pin");
-    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
+    if (!panel->isChecked() && !silk->isChecked()
+	&& !top->isChecked() && !bottom->isChecked()) {
       top->setChecked(true);
       editor->properties().layer = Layer::Top;
     }
@@ -527,7 +531,8 @@ void PBData::hideAndShow() {
       up->setChecked(true);
       editor->properties().rota = FreeRotation();
     }
-    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
+    if (!panel->isChecked() && !silk->isChecked()
+	&& !top->isChecked() && !bottom->isChecked()) {
       silk->setChecked(true);
       editor->properties().layer = Layer::Silk;
     }
@@ -550,7 +555,8 @@ void PBData::hideAndShow() {
       editor->properties().rota = FreeRotation(0);
     }
     layera->setEnabled(true);
-    if (!silk->isChecked() && !top->isChecked() && !bottom->isChecked()) {
+    if (!panel->isChecked() && !silk->isChecked()
+	&& !top->isChecked() && !bottom->isChecked()) {
       silk->setChecked(true);
       editor->properties().layer = Layer::Silk;
     }
@@ -989,11 +995,23 @@ void PBData::setupUI() {
   auto *lc = makeContainer(layerg);
   makeLabel(lc, "Layer");
 
+  panel = makeIconTool(lc, "Panel", true, false, "",
+		      QKeySequence(Qt::CTRL + Qt::Key_4));
+  QObject::connect(panel, &QAction::triggered,
+		   [this]() {
+		     panel->setChecked(true);
+		     silk->setChecked(false);
+		     top->setChecked(false);
+		     bottom->setChecked(false);
+		     editor->setLayer(Layer::Silk);
+		     });
+
   silk = makeIconTool(lc, "Silk", true, false, "",
 		      QKeySequence(Qt::CTRL + Qt::Key_1));
   QObject::connect(silk, &QAction::triggered,
 		   [this]() {
 		     silk->setChecked(true);
+		     panel->setChecked(false);
 		     top->setChecked(false);
 		     bottom->setChecked(false);
 		     editor->setLayer(Layer::Silk);
@@ -1004,6 +1022,7 @@ void PBData::setupUI() {
   QObject::connect(top, &QAction::triggered,
 		   [this]() {
 		     silk->setChecked(false);
+		     panel->setChecked(false);
 		     top->setChecked(true);
 		     bottom->setChecked(false);
 		     editor->setLayer(Layer::Top);
@@ -1014,6 +1033,7 @@ void PBData::setupUI() {
   QObject::connect(bottom, &QAction::triggered,
 		   [this]() {
 		     bottom->setChecked(true);
+		     panel->setChecked(false);
 		     silk->setChecked(false);
 		     top->setChecked(false);
 		     editor->setLayer(Layer::Bottom);
@@ -1061,8 +1081,9 @@ void Propertiesbar::reflectMode(Mode m) {
     }
   }
   if (m==Mode::PlacePlane) {
-    if (d->layer()==Layer::Invalid || d->layer()==Layer::Silk) {
+    if (!layerIsCopper(d->layer())) {
       qDebug() << "PlacePlane - selecting bottom layer";
+      d->panel->setChecked(false);
       d->silk->setChecked(false);
       d->top->setChecked(false);
       d->bottom->setChecked(true);
