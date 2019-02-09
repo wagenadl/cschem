@@ -995,17 +995,6 @@ void PBData::setupUI() {
   auto *lc = makeContainer(layerg);
   makeLabel(lc, "Layer");
 
-  panel = makeIconTool(lc, "Panel", true, false, "",
-		      QKeySequence(Qt::CTRL + Qt::Key_4));
-  QObject::connect(panel, &QAction::triggered,
-		   [this]() {
-		     panel->setChecked(true);
-		     silk->setChecked(false);
-		     top->setChecked(false);
-		     bottom->setChecked(false);
-		     editor->setLayer(Layer::Silk);
-		     });
-
   silk = makeIconTool(lc, "Silk", true, false, "",
 		      QKeySequence(Qt::CTRL + Qt::Key_1));
   QObject::connect(silk, &QAction::triggered,
@@ -1038,6 +1027,18 @@ void PBData::setupUI() {
 		     top->setChecked(false);
 		     editor->setLayer(Layer::Bottom);
 		   });
+
+  panel = makeIconTool(lc, "Panel", true, false, "",
+		      QKeySequence(Qt::CTRL + Qt::Key_4));
+  QObject::connect(panel, &QAction::triggered,
+		   [this]() {
+		     panel->setChecked(true);
+		     silk->setChecked(false);
+		     top->setChecked(false);
+		     bottom->setChecked(false);
+		     editor->setLayer(Layer::Panel);
+		     });
+
   top->setChecked(true);
 }  
 
