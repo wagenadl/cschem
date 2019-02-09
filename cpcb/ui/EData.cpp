@@ -264,6 +264,9 @@ void EData::drawObjects(QPainter &p) const {
   if (brd.layervisible[Layer::Silk])
     onelayer(Layer::Silk);
 
+  if (brd.layervisible[Layer::Panel])
+    onelayer(Layer::Panel);
+
   if (netsvisible && crumbs.isEmpty())
     drawNetMismatch(rndr);
 
@@ -450,7 +453,8 @@ enum class Prio {
   BottomObject,
   TopTrace,
   TopObject,
-  Silk
+  Silk,
+  Panel,
 };
 
 NodeID EData::visibleNodeAt(Point p, Dim mrg) const {
@@ -511,13 +515,15 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
       if (brd.layervisible[l])
 	p1 = l==Layer::Bottom ? Prio::BottomTrace
 	  : l==Layer::Top ? Prio::TopTrace
-	  : Prio::Silk;
+	  : l==Layer::Silk ? Prio::Silk
+	  : Prio::Panel;
       break;
     case Object::Type::Text: case Object::Type::Pad: case Object::Type::Arc:
       if (brd.layervisible[l])
 	p1 = l==Layer::Bottom ? Prio::BottomObject
 	  : l==Layer::Top ? Prio::TopObject
-	  : Prio::Silk;
+	  : l==Layer::Silk ? Prio::Silk
+	  : Prio::Panel;
       break;
     case Object::Type::Hole:
       if (brd.layervisible[Layer::Top])

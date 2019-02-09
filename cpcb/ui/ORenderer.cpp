@@ -452,26 +452,20 @@ QByteArray ORenderer::objectToSvg(Object const &obj,
 
 void ORenderer::render(Object const &obj, QPainter *ptr) {
   ORenderer rndr(ptr);
-  rndr.setLayer(Layer::Bottom);
-  rndr.drawObject(obj);
-  rndr.setLayer(Layer::Top);
-  rndr.drawObject(obj);
-  rndr.setLayer(Layer::Invalid);
-  rndr.drawObject(obj);
-  rndr.setLayer(Layer::Silk);
-  rndr.drawObject(obj);
+  for (auto l: QList<Layer>{Layer::Bottom, Layer::Top, Layer::Invalid,
+	Layer::Silk, Layer::Panel}) {
+    rndr.setLayer(l);
+    rndr.drawObject(obj);
+  }
 }
 
 void ORenderer::render(Group const &grp, QPainter *ptr) {
   ORenderer rndr(ptr);
-  rndr.setLayer(Layer::Bottom);
-  rndr.drawGroup(grp);
-  rndr.setLayer(Layer::Top);
-  rndr.drawGroup(grp);
-  rndr.setLayer(Layer::Invalid);
-  rndr.drawGroup(grp);
-  rndr.setLayer(Layer::Silk);
-  rndr.drawGroup(grp);
+  for (auto l: QList<Layer>{Layer::Bottom, Layer::Top, Layer::Invalid,
+	Layer::Silk, Layer::Panel}) {
+    rndr.setLayer(l);
+    rndr.drawGroup(grp);
+  }
 }
 
 QColor ORenderer::boardColor() {

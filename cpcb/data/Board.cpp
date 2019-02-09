@@ -8,6 +8,7 @@ Board::Board() {
   width = Dim::fromInch(4);
   height = Dim::fromInch(3);
   grid = Dim::fromInch(0.050);
+  layervisible[Layer::Panel] = true;
   layervisible[Layer::Silk] = true;
   layervisible[Layer::Top] = true;
   layervisible[Layer::Bottom] = true;

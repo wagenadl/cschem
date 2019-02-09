@@ -70,6 +70,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   addlui(Layer::Silk, "Silk");
   addlui(Layer::Top, "Top");
   addlui(Layer::Bottom, "Bottom");
+  addlui(Layer::Panel, "Panel");
 
   auto *w = new QToolButton;
   planesui = w;
@@ -120,6 +121,7 @@ void Statusbar::setBoard(Board const &b) {
   resetGridChoices();
   setGrid(b.grid);
   planesui->setChecked(b.planesvisible);
+  layerui[Layer::Panel]->setChecked(b.layervisible[Layer::Panel]);
   layerui[Layer::Silk]->setChecked(b.layervisible[Layer::Silk]);
   layerui[Layer::Top]->setChecked(b.layervisible[Layer::Top]);
   layerui[Layer::Bottom]->setChecked(b.layervisible[Layer::Bottom]);
