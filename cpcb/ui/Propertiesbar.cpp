@@ -90,8 +90,11 @@ public:
   void getPropertiesFromSelection(); // from editor
   void hideAndShow(); // hide and show as appropriate
   void hsEdit();
-  Layer layer() const;
+  Layer checkedLayer() const;
   int arcAngle() const;
+  void checkLayer(Layer);
+  bool anyLayerChecked() const;
+  bool anyDirectionChecked() const;
 private:
   void fillXY(QSet<Point> const &points);
   void fillLinewidth(QSet<int> const &objects, Group const &here);
@@ -102,6 +105,23 @@ private:
   void fillLayer(QSet<int> const &objects, Group const &here);
   void fillFontSize(QSet<int> const &objects, Group const &here);    
 };
+
+void PBData::checkLayer(Layer l) {
+  panel->setChecked(l==Layer::Panel);
+  silk->setChecked(l==Layer::Silk);
+  top->setChecked(l==Layer::Top);
+  bottom->setChecked(l==Layer::Bottom);
+}
+
+bool PBData::anyDirectionChecked() const {
+  return up->isChecked() || down->isChecked()
+    || right->isChecked() || left->isChecked();
+}
+
+bool PBData::anyLayerChecked() const {
+  return panel->isChecked() || silk->isChecked()
+    || top->isChecked() || bottom->isChecked();
+}
 
 void PBData::fillXY(QSet<Point> const &points) {
   tentamovedelta = Point();
@@ -382,10 +402,8 @@ void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
       break;
     }
   }
-  panel->setChecked(l==Layer::Panel);
-  silk->setChecked(l==Layer::Silk);
-  top->setChecked(l==Layer::Top);
-  bottom->setChecked(l==Layer::Bottom);
+  if (got)
+    checkLayer(l);
   if (l!=Layer::Invalid)
     editor->properties().layer = l;
 }
@@ -441,7 +459,7 @@ int PBData::arcAngle() const {
    return 0; // invalid;
 }
 
-Layer PBData::layer() const {
+Layer PBData::checkedLayer() const {
   if (panel->isChecked())
     return Layer::Panel;
   else if (silk->isChecked())
@@ -512,8 +530,7 @@ void PBData::hideAndShow() {
     texta->setEnabled(true);
     text->setEnabled(true);
     textl->setText("Pin");
-    if (!panel->isChecked() && !silk->isChecked()
-	&& !top->isChecked() && !bottom->isChecked()) {
+    if (!anyLayerChecked()) {
       top->setChecked(true);
       editor->properties().layer = Layer::Top;
     }
@@ -526,13 +543,11 @@ void PBData::hideAndShow() {
     layera->setEnabled(true);
     orienta->setEnabled(true);
     flipped->setEnabled(true);
-    if (!up->isChecked() && !right->isChecked()
-	&& !down->isChecked() && !left->isChecked()) {
+    if (!anyDirectionChecked()) {
       up->setChecked(true);
       editor->properties().rota = FreeRotation();
     }
-    if (!panel->isChecked() && !silk->isChecked()
-	&& !top->isChecked() && !bottom->isChecked()) {
+    if (!anyLayerChecked()) {
       silk->setChecked(true);
       editor->properties().layer = Layer::Silk;
     }
@@ -549,14 +564,12 @@ void PBData::hideAndShow() {
     arca->setEnabled(true);
     orienta->setEnabled(true);
     flipped->setEnabled(false);
-    if (!up->isChecked() && !right->isChecked()
-	&& !down->isChecked() && !left->isChecked()) {
+    if (!anyDirectionChecked()) {
       up->setChecked(true);
       editor->properties().rota = FreeRotation(0);
     }
     layera->setEnabled(true);
-    if (!panel->isChecked() && !silk->isChecked()
-	&& !top->isChecked() && !bottom->isChecked()) {
+    if (!anyLayerChecked()) {
       silk->setChecked(true);
       editor->properties().layer = Layer::Silk;
     }
@@ -999,10 +1012,7 @@ void PBData::setupUI() {
 		      QKeySequence(Qt::CTRL + Qt::Key_1));
   QObject::connect(silk, &QAction::triggered,
 		   [this]() {
-		     silk->setChecked(true);
-		     panel->setChecked(false);
-		     top->setChecked(false);
-		     bottom->setChecked(false);
+                     checkLayer(Layer::Silk);
 		     editor->setLayer(Layer::Silk);
 		     });
 
@@ -1010,10 +1020,7 @@ void PBData::setupUI() {
 		     QKeySequence(Qt::CTRL + Qt::Key_2));
   QObject::connect(top, &QAction::triggered,
 		   [this]() {
-		     silk->setChecked(false);
-		     panel->setChecked(false);
-		     top->setChecked(true);
-		     bottom->setChecked(false);
+		     checkLayer(Layer::Top);
 		     editor->setLayer(Layer::Top);
 		     });
 
@@ -1021,10 +1028,7 @@ void PBData::setupUI() {
 			QKeySequence(Qt::CTRL + Qt::Key_3));
   QObject::connect(bottom, &QAction::triggered,
 		   [this]() {
-		     bottom->setChecked(true);
-		     panel->setChecked(false);
-		     silk->setChecked(false);
-		     top->setChecked(false);
+                     checkLayer(Layer::Bottom);
 		     editor->setLayer(Layer::Bottom);
 		   });
 
@@ -1032,10 +1036,7 @@ void PBData::setupUI() {
 		      QKeySequence(Qt::CTRL + Qt::Key_4));
   QObject::connect(panel, &QAction::triggered,
 		   [this]() {
-		     panel->setChecked(true);
-		     silk->setChecked(false);
-		     top->setChecked(false);
-		     bottom->setChecked(false);
+		     checkLayer(Layer::Panel);
 		     editor->setLayer(Layer::Panel);
 		     });
 
@@ -1064,13 +1065,14 @@ void Propertiesbar::reflectMode(Mode m) {
       d->od->setValue(d->id->value() + minRingWidth);
   }
   if (m==Mode::PlaceArc || m==Mode::PlaceText) {
-    if (d->layer()==Layer::Invalid) {
+    if (!d->anyLayerChecked()) {
       d->silk->setChecked(true);
       d->editor->properties().layer = Layer::Silk;
     }
   }
   if (m==Mode::PlaceTrace || m==Mode::PlacePad) {
-    if (d->layer()==Layer::Invalid) {
+    if (!d->anyLayerChecked()) {
+      qDebug() << "setting layer top";
       d->top->setChecked(true);
       d->editor->properties().layer = Layer::Top;
     }
@@ -1082,12 +1084,9 @@ void Propertiesbar::reflectMode(Mode m) {
     }
   }
   if (m==Mode::PlacePlane) {
-    if (!layerIsCopper(d->layer())) {
+    if (!layerIsCopper(d->checkedLayer())) {
       qDebug() << "PlacePlane - selecting bottom layer";
-      d->panel->setChecked(false);
-      d->silk->setChecked(false);
-      d->top->setChecked(false);
-      d->bottom->setChecked(true);
+      d->checkLayer(Layer::Bottom);
       d->editor->properties().layer = Layer::Bottom;
     }
   }
@@ -1118,7 +1117,7 @@ void Propertiesbar::forwardAllProperties() {
   if (!d->editor)
     return;
   d->editor->setLineWidth(d->linewidth->value());
-  d->editor->setLayer(d->layer());
+  d->editor->setLayer(d->checkedLayer());
   d->editor->setID(d->id->value());
   d->editor->setOD(d->od->value());
   d->editor->setSquare(d->square->isChecked());
