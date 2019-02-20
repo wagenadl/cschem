@@ -13,7 +13,7 @@ public:
   void writeArc(Arc const &, Point const &offset);
   void writeTrace(Trace const &, Point const &offset);
   void writeText(Text const &, Point const &offset);
-  void writeGroup(Group const &, Point const &offset);
+  void writeGroup(Group const &, Point offset, Point const &masteroff);
   void writeSvgFooter();
   Point inferredOffset(Group const &) const;
   Rect inferredBBox(Group const &) const;
@@ -86,7 +86,7 @@ Rect FPWData::writeSvgHeader() {
   out << "   id=\"svg8\"\n";
   out << "   version=\"1.1\"\n";
 
-  Rect bbox = inferredBbox(layout.root());
+  Rect bbox = inferredBBox(layout.root());
   bbox.grow(Dim::fromInch(.25));
   out << "   viewBox=\"0 0 "
       << coord(bbox.width)
@@ -113,7 +113,7 @@ Rect FPWData::writeSvgHeader() {
   out << "  <g\n";
   out << "     id=\"layer1\">\n";
   
-  return rect;
+  return bbox;
 }
 
 void FPWData::writeSvgFooter() {
@@ -121,20 +121,28 @@ void FPWData::writeSvgFooter() {
   out << "</svg>\n";
 }
 
-void FPWData::writeGroup(Group const &g, Point offset) {
+void FPWData::writeGroup(Group const &g, Point offset, Point const &masteroff) {
   // the offset is subtracted from all objects
-  offset += inferredOffset(g);
+  Point off = masteroff - inferredOffset(g).flippedLeftRight();
+  qDebug() << "  off = " << off;
   for (int id: g.keys()) {
     Object const &obj(g.object(id));
-    switch (obj.type) {
-    case Object::Group:
-      writeGroup(obj.asGroup(), offset);
+    switch (obj.type()) {
+    case Object::Type::Group:
+      qDebug() << "subgroup";
+      writeGroup(obj.asGroup(), off, masteroff);
+      qDebug() << "]subgroup";
       break;
-    case Object::Trace:
-      writeTrace(obj.asTrace(), offset);
+    case Object::Type::Trace:
+      if (obj.asTrace().layer==Layer::Panel)
+	qDebug() << "  trace" << obj.asTrace();
+      writeTrace(obj.asTrace(), off);
       break;
-    case Object::Text:
-      writeText(obj.asText(), offset);
+    case Object::Type::Text:
+      writeText(obj.asText(), off);
+      break;
+    case Object::Type::Arc:
+      writeArc(obj.asArc(), off);
       break;
     default:
       break;
@@ -142,30 +150,33 @@ void FPWData::writeGroup(Group const &g, Point offset) {
   }
 }
 
-void FPWData::writeText(Text const &text, Point offset) {
+void FPWData::writeText(Text const &text, Point const &offset) {
   if (text.layer != Layer::Panel)
     return;
-  Point p1 = offset - text.p;
+  Point p1 = offset + text.p.flippedLeftRight();
   out << "<g transform=\"translate(" << coord(p1.x)
       << "," << coord(p1.y) << ")\">";
   if (text.flip)
-    out << "<g transform=\"scale(-1,1)\">";
-  else
     out << "<g transform=\"scale(1,1)\">";
-  out << "<g transform=\"rotate(" << QString::number(int(text.rota)) << ")\">";
+  else
+    out << "<g transform=\"scale(-1,1)\">";
+  int rot = (text.flip ? -1 : 1) * int(text.rota);
+  out << "<g transform=\"rotate(" << QString::number(rot) << ")\">";
   out << "<text style=\"font-family:Lato;font-size:10px\" x=\"0\" y=\"0\">";
   out << "<tspan x=\"0\" y=\"0\">";
   out << text.text; // this should be smarter
   out << "</tspan></text></g></g></g>\n";
 }
 
-void FPWData::writeTrace(Trace const &trace, Point offset) {
+void FPWData::writeTrace(Trace const &trace, Point const &offset) {
   if (trace.layer != Layer::Panel)
     return;
-  Point p1 = offset - trace.p1;
-  Point p2 = offset - trace.p2;
+  Point p1 = offset + trace.p1.flippedLeftRight();
+  Point p2 = offset + trace.p2.flippedLeftRight();
   out << "    <path"
-      << QString(" p=\"M %1,%2 %3,%4\"")
+      << QString(" style=\"stroke:#0000ff;stroke-opacity:1;stroke-width:%1\"")
+    .arg(trace.width.toInch()*96)
+      << QString(" d=\"M %1,%2 %3,%4\"")
     .arg(coord(p1.x)).arg(coord(p1.y))
     .arg(coord(p2.x)).arg(coord(p2.y))
       << " />\n";
@@ -175,9 +186,10 @@ void FPWData::writeTrace(Trace const &trace, Point offset) {
 void FPWData::writeArc(Arc const &arc, Point const &offset) {
   if (arc.layer!=Layer::Panel)
     return;
-  Point p = offset - arc.center;
+  Point p = offset + arc.center.flippedLeftRight();
   Dim r = arc.radius;
   out << "<circle"
+      << " style=\"fill:none;stroke:#ff0000;stroke-opacity:1;stroke-width:.25;\""
       << prop("cx", p.x)
       << prop("cy", p.y)
       << prop("r", r)
@@ -192,10 +204,6 @@ FrontPanelWriter::~FrontPanelWriter() {
   delete d;
 }
 
-void FrontPanelWriter::setShrinkage(Dim s) {
-  d->shrinkage = s;
-}
-
 bool FrontPanelWriter::write(Layout const &layout, QString filename) {
   d->layout = layout;
   QFile file(filename);
@@ -206,14 +214,9 @@ bool FrontPanelWriter::write(Layout const &layout, QString filename) {
 
   d->out.setDevice(&file);
   
-  if (!d->writeSvgHeader())
-    return false;
-  if (!d->writeSvgOutline())
-    return false;
-  if (!d->writeSvgPads())
-    return false;
-  if (!d->writeSvgFooter())
-    return false;
+  Rect bb = d->writeSvgHeader();
+  d->writeGroup(d->layout.root(), Point(), bb.bottomRight());
+  d->writeSvgFooter();
 
   d->out.setDevice(0);
   file.close();
