@@ -14,6 +14,7 @@
 #include "BoardSizeDialog.h"
 #include "data/NetMismatch.h"
 #include "Version.h"
+#include "gerber/FrontPanelWriter.h"
 
 #include <QTemporaryDir>
 #include <QDesktopServices>
@@ -51,6 +52,7 @@ public:
   void arbitraryRotation();
   bool exportAsDialog();
   bool exportPasteMaskDialog();
+  bool exportFrontPanelDialog();
   bool saveAsDialog();
   bool saveImmediately();
   void linkSchematicDialog();
@@ -315,7 +317,39 @@ bool MWData::exportPasteMaskDialog() {
 		       QMessageBox::Ok);
   return false;
 }
+
+bool MWData::exportFrontPanelDialog() {
+  if (pwd.isEmpty())
+    pwd = Paths::defaultLocation();
+
+  QString path = pwd;
+  if (!filename.isEmpty()) {
+    if (!path.endsWith("/"))
+      path += "/";
+    path += QFileInfo(filename).baseName();
+    path += ".svg";
+  }
   
+  QString fn = QFileDialog::getSaveFileName(0, "Export front panel as…",
+					    path,
+					    "SVG files (*.svg)");
+  if (fn.isEmpty())
+    return false;
+  if (!fn.endsWith(".svg"))
+    fn += ".svg";
+  pwd = QFileInfo(fn).absolutePath();
+
+  FrontPanelWriter pmw;
+  if (pmw.write(editor->pcbLayout(), fn))
+    return true;
+
+  QMessageBox::warning(mw, "cpcb",
+		       "Could not export front panel as “"
+		       + fn + "”",
+		       QMessageBox::Ok);
+  return false;
+}
+
 
 bool MWData::exportAsDialog() {
   if (pwd.isEmpty())
@@ -451,6 +485,9 @@ void MWData::makeMenus() {
 
   file->addAction("Export &paste mask…", [this]() { exportPasteMaskDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
+
+  file->addAction("Export &front panel…", [this]() { exportFrontPanelDialog();},
+		  QKeySequence(Qt::ALT + Qt::CTRL + Qt::Key_E));
 
   
   
