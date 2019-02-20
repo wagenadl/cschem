@@ -142,9 +142,21 @@ void FPWData::writeGroup(Group const &g, Point offset) {
   }
 }
 
-void FPWData::writeText(Text const &text, offset) {
+void FPWData::writeText(Text const &text, Point offset) {
   if (text.layer != Layer::Panel)
     return;
+  Point p1 = offset - text.p;
+  out << "<g transform=\"translate(" << coord(p1.x)
+      << "," << coord(p1.y) << ")\">";
+  if (text.flip)
+    out << "<g transform=\"scale(-1,1)\">";
+  else
+    out << "<g transform=\"scale(1,1)\">";
+  out << "<g transform=\"rotate(" << QString::number(int(text.rota)) << ")\">";
+  out << "<text style=\"font-family:Lato;font-size:10px\" x=\"0\" y=\"0\">";
+  out << "<tspan x=\"0\" y=\"0\">";
+  out << text.text; // this should be smarter
+  out << "</tspan></text></g></g></g>\n";
 }
 
 void FPWData::writeTrace(Trace const &trace, Point offset) {
