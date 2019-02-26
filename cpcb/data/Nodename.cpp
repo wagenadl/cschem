@@ -42,16 +42,50 @@ bool Nodename::operator==(Nodename const &o) const {
 }
 
 bool Nodename::matches(Nodename const &o) const {
-  if (comp_ != o.comp_)
-    return false;
-  else if (pin_ == o.pin_)
-    return true;
-  if (hasPinName() && o.hasPinName()) 
-    return pinName() == o.pinName();
-  else if (hasPinNumber() && o.hasPinNumber())
-    return pinNumber() == o.pinNumber();
-  else
-   return false;
+  if (comp_==o.comp_) {
+    if (pin_ == o.pin_)
+      return true;
+    if (hasPinName() && o.hasPinName()) 
+      return pinName() == o.pinName();
+    else if (hasPinNumber() && o.hasPinNumber())
+      return pinNumber() == o.pinNumber();
+    else
+      return false;
+  } else {
+    QString contcomp = comp_;
+    QString subcomp = "";
+    QString pinname = pinName();
+    int idx = contcomp.indexOf(".");
+    if (idx>=0) {
+      subcomp = contcomp.mid(idx+1);
+      contcomp = contcomp.left(idx);
+    } else if (hasPinName()) {
+      idx = pinname.indexOf(".");
+      if (idx>=0) {
+        subcomp = pinname.left(idx);
+        pinname = pinname.mid(idx+1);
+      } else {
+        subcomp = "";
+      }
+    }
+    QString ocontcomp = o.comp_;
+    QString osubcomp = "";
+    QString opinname = o.pinName();
+    idx = ocontcomp.indexOf(".");
+    if (idx>=0) {
+      osubcomp = ocontcomp.mid(idx+1);
+      ocontcomp = ocontcomp.left(idx);
+    } else if (o.hasPinName()) {
+      idx = opinname.indexOf(".");
+      if (idx>=0) {
+        osubcomp = opinname.left(idx);
+        opinname = opinname.mid(idx+1);
+      } else {
+        osubcomp = "";
+      }
+    }
+    return contcomp==ocontcomp && subcomp==osubcomp && pinname==opinname;
+  }
 }
 
 bool Nodename::hasPinName() const {
