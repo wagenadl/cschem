@@ -98,7 +98,8 @@ void LSData::validateNets() {
 LinkedSchematic::LinkedSchematic(QObject *parent):
   QObject(parent), d(new LSData(this)) {
   connect(d->watcher, &QFileSystemWatcher::fileChanged,
-	  [this](QString) {
+	  [this]() {
+            qDebug() << "filechanged";
 	    d->invalidateNets();
             Schem s = FileIO::loadSchematic(d->fn);
             if (!s.isEmpty()) {
