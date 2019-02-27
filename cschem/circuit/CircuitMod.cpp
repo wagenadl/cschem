@@ -530,11 +530,13 @@ bool CircuitModData::removeOverlappingJunctions(int id) {
   for (int c: circ.connectionsOn(id, "")) {
     Connection con(circ.connections[c]);
     int id1 = con.fromId==id ? con.toId : con.fromId;
-    Element junc1(circ.elements[id1]);
-    if (junc1.type == Element::Type::Junction
-	&& id1 != id
-	&& junc1.position == junc.position)
-      jj << id1;
+    if (id1>0) {
+      Element junc1(circ.elements[id1]);
+      if (junc1.type == Element::Type::Junction
+	  && id1 != id
+	  && junc1.position == junc.position)
+	jj << id1;
+    }
   }
   if (jj.isEmpty())
     return false;
