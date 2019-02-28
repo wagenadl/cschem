@@ -5,6 +5,7 @@
 #include "GerberFile.h"
 #include "Apertures.h"
 #include "Collector.h"
+#include "data/pi.h"
 
 #include <QUuid>
 #include <QDir>
@@ -674,7 +675,6 @@ static void writeTraces(GerberFile &out, Gerber::Apertures const &aps,
 
 static void writeArcs(GerberFile &out, Gerber::Apertures const &aps,
                         QMap<Dim, QList<Arc>> const &arcs) {
-  constexpr double PI = 4*atan(1);
   out << "%LPD*%\n"; // positive
   out << "G75*\n"; // multiquadrant
   for (Dim lw: arcs.keys()) {

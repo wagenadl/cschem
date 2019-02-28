@@ -3,6 +3,7 @@
 #include "Hole.h"
 #include "Trace.h"
 #include "FilledPlane.h"
+#include "pi.h"
 
 Hole::Hole() {
   fpcon = Layer::Invalid;
@@ -103,7 +104,6 @@ bool Hole::touches(Trace const &t) const {
       || t1.orthogonallyDisplaced(t.width/2).intersects(r0);
   } else {
     if (slotlength.isPositive()) {
-      constexpr double PI = 4*atan(1.0);
       Trace me;
       me.layer = t.layer;
       me.width = od;
@@ -153,7 +153,6 @@ bool Hole::isSlot() const {
 }
 
 Segment Hole::slotEnds() const {
-  constexpr double PI = 4*atan(1);
   double phi = rota*PI/180;
   Point dp = Point(slotlength/2*cos(phi), slotlength/2*sin(phi));
   return Segment(p-dp, p+dp);

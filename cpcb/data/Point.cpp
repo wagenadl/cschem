@@ -2,6 +2,7 @@
 
 #include "Point.h"
 #include <QStringList>
+#include "pi.h"
 
 Point Point::fromString(QString s, bool *ok) {
   Point p;
@@ -32,7 +33,6 @@ Point Point::rotatedFreely(int deg, Point const &p0) const {
 }
 
 Point &Point::freeRotate(int deg, Point const &p0) {
-  constexpr double PI = 4*atan(1);
   double phi = deg*PI/180;
   double cs = cos(phi);
   double sn = sin(phi);
