@@ -9,6 +9,7 @@
 #include <QKeyEvent>
 #include "svg/Geometry.h"
 #include "circuit/CircuitMod.h"
+#include "math.h"
 
 static QPen tentativePen() {
   static QPen p(QColor(150, 180, 255), 1.5, Qt::DashDotLine, Qt::FlatCap);
@@ -304,7 +305,7 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
   if (N==2 || L<2) {
     if (!d->verstart && !d->horstart) {
       if (dp.manhattanLength() > 15) {
-        if (abs(dp.x()) > abs(dp.y()))
+        if (fabs(dp.x()) > fabs(dp.y()))
           d->horstart = true;
         else
           d->verstart = true;
@@ -315,7 +316,7 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
   } else {
     QPointF dp0 = p0 - d->points[L-2];
     // enforce a corner
-    p1 = (abs(dp0.x()) < abs(dp0.y()))
+    p1 = (fabs(dp0.x()) < fabs(dp0.y()))
       ? QPoint(p.x(), p0.y())
       : QPoint(p0.x(), p.y());
   }

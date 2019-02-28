@@ -1,6 +1,7 @@
 // Arc.cpp
 
 #include "Arc.h"
+#include "pi.h"
 
 Arc::Arc() {
   layer = Layer::Silk;
@@ -65,7 +66,6 @@ Rect Arc::boundingRect() const {
   Rect rect(center, center);
   int a0 = rota - 90;
   int a1 = a0 + angle;
-  constexpr double PI = 4*atan(1);
   for (int a=a0; a<=a1; a+=15) {
     double phi = a*PI/180;
     rect |= center + Point(radius*cos(phi), radius*sin(phi));
