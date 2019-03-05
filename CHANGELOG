@@ -1,3 +1,11 @@
+cschem 0.1.4
+
+  First mac release
+  Can now output front panel image as svg
+  Many bug fixes
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Mon, 04 Mar 2019 16:48:45 -0800
+
 cschem 0.1.2
 
   Initial public release
