@@ -9,6 +9,13 @@ CONFIG += debug_and_release
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 MAKEFILE = Makefile-cschem
 
+mac {
+  ICON = cschem.icns
+  QMAKE_MAC_SDK = macosx
+  QMAKE_INFO_PLIST = Info.plist
+  OTHER_FILE += Info.plist
+}
+
 # Input
 HEADERS += ui/Scene.h   ui/SceneElement.h   ui/SceneConnection.h
 SOURCES += ui/Scene.cpp ui/SceneElement.cpp ui/SceneConnection.cpp

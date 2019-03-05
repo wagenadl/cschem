@@ -7,6 +7,13 @@ CONFIG += debug_and_release
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 MAKEFILE = Makefile-cpcb
 
+mac {
+  ICON = cpcb.icns
+  QMAKE_MAC_SDK = macosx
+  QMAKE_INFO_PLIST = Info.plist
+  OTHER_FILE += Info.plist
+}
+
 DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += ui/MainWindow.h ui/Mode.h ui/Modebar.h  ui/Statusbar.h
