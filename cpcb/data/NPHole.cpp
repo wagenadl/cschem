@@ -1,6 +1,7 @@
 // NPHole.cpp
 
 #include "NPHole.h"
+#include "pi.h"
 
 NPHole::NPHole() {
 }
@@ -15,7 +16,6 @@ bool NPHole::contains(Point const &p1) const {
 Rect NPHole::boundingRect() const {
   Dim r = d/2;
   if (slotlength.isPositive()) {
-    constexpr double PI = 4*atan(1);
     Point dxy(cos(rota*PI/180)*slotlength/2, sin(rota*PI/180)*slotlength/2);
     return Rect(p - dxy, p + dxy).grow(d);
   } else {
@@ -82,7 +82,6 @@ bool NPHole::isSlot() const {
 }
 
 Segment NPHole::slotEnds() const {
-  constexpr double PI = 4*atan(1);
   double phi = rota*PI/180;
   Point dp = Point(slotlength/2*cos(phi), slotlength/2*sin(phi));
   return Segment(p-dp, p+dp);

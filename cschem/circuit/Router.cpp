@@ -30,11 +30,16 @@ Connection Router::reroute(int conid,
     if (delta.x() && delta.y()) {
       QPoint center = (QPointF(newEnd + newStart)/2).toPoint();
       QPoint odelta = origEnd - origStart;
-      if (abs(odelta.x()) < abs(odelta.y())) {
+      if (odelta.isNull()) {
+	// originally no length at all
+        con.via << QPoint(newStart.x(), newEnd.y());
+	// this could be smarter; we could choose which delta goes first
+      } else if (abs(odelta.x()) < abs(odelta.y())) {
         // it was *originally* a (more-or-less) vertical line
         con.via << QPoint(newStart.x(), center.y());
         con.via << QPoint(newEnd.x(), center.y());
       } else {
+	// more like a horizontal line
         con.via << QPoint(center.x(), newStart.y());
         con.via << QPoint(center.x(), newEnd.y());
       }

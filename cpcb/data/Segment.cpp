@@ -1,6 +1,7 @@
 // Segment.cpp
 
 #include "Segment.h"
+#include "pi.h"
 
 Rect Segment::boundingRect() const {
   Rect r = Rect(p1, p2);
@@ -147,7 +148,6 @@ Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
 }
 
 double Segment::angle(Segment const &t) const {
-  constexpr double PI = 4*atan(1.0);
   double us = atan2(p2.y.toMils() - p1.y.toMils(),
 		    p2.x.toMils() - p1.x.toMils());
   double them = atan2(t.p2.y.toMils() - t.p1.y.toMils(),

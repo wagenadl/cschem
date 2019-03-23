@@ -4,6 +4,7 @@
 #include "data/SimpleFont.h"
 #include "data/PCBNet.h"
 #include "data/FilledPlane.h"
+#include "data/pi.h"
 
 #include <QSvgGenerator>
 #include <QBuffer>
@@ -169,7 +170,6 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   QPointF p0 = p1.toMils();
   double id = t.id.toMils();
   double dx = t.slotlength.toMils()/2;
-  constexpr double PI = 4*atan(1);
   QPoint dxy(dx*cos(PI*t.rota/180), dx*sin(PI*t.rota/180));
   if (inv) {
     // draw cutout
@@ -231,7 +231,6 @@ void ORenderer::drawNPHole(NPHole const &h, bool selected, bool /*innet*/) {
   QColor col(selected ? QColor(255, 255, 255) : p->background().color());
   if (h.slotlength.isPositive()) {
     double dx = h.slotlength.toMils()/2;
-    constexpr double PI = 4*atan(1);
     QPoint dxy(dx*cos(PI*h.rota/180), dx*sin(PI*h.rota/180));
     p->setPen(QPen(col, id, Qt::SolidLine, Qt::RoundCap));
     p->drawLine(p0 - dxy, p0 + dxy);
@@ -243,7 +242,6 @@ void ORenderer::drawNPHole(NPHole const &h, bool selected, bool /*innet*/) {
   p->setPen(QPen(selected ? QColor(180, 180, 180) : QColor(120,120,120),
 		 8, Qt::SolidLine, Qt::FlatCap)); // arbitrary thickness
   for (int phi=1; phi<8; phi+=2) {
-    constexpr double PI = 4*atan(1);
     double dx = cos(phi*PI/4);
     double dy = sin(phi*PI/4);
     p->drawLine(p0 + id*QPointF(dx, dy)*.05, p0 + id*QPointF(dx, dy)*.45);
