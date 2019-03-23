@@ -2,6 +2,7 @@
 
 #include "FreeRotation.h"
 #include <math.h>
+#include "pi.h"
 
 FreeRotation::FreeRotation() {
   r = 0;
@@ -42,12 +43,10 @@ void FreeRotation::normalize() {
 
 
 double FreeRotation::sin() const {
-  constexpr double PI = 4*atan(1);
   return ::sin(r*PI/180);
 }
 
 double FreeRotation::cos() const {
-  constexpr double PI = 4*atan(1);
   return ::cos(r*PI/180);
 }
 

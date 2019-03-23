@@ -26,6 +26,7 @@ else
   ifeq ($(UNAME),Darwin)
     # Mac OS
     QROOT=/Users/wagenaar/Qt-5.7/5.7
+    QROOT=/Users/wagenaar/Qt-5.12/5.12.1
     QBINPATH=$(QROOT)/clang_64/bin
     QMAKE=$(QBINPATH)/qmake
   else
@@ -112,6 +113,16 @@ userguide:;
 tar: all
 	git archive -o ../cschem.tar.gz --prefix=cschem/ HEAD
 
+macdmg: cpcb-dmg cschem-dmg 
+	echo Your dmgs are build/cpcb/cpcb.dmg and build/cschem/cschem.dmg
+
+cpcb-dmg: cpcb
+	$(QBINPATH)/macdeployqt build/cpcb/cpcb.app -dmg -executable=build/cpcb/cpcb.app/Contents/MacOS/cpcb
+
+cschem-dmg: cschem
+	$(QBINPATH)/macdeployqt build/cschem/cschem.app -dmg -executable=build/cschem/cschem.app/Contents/MacOS/cschem
+
+
 .PHONY: all clean tar man install prep debug prep-cschem prep-cpcb \
 	debug-cpcb debug-cschem release-cpcb debug-cschem cschem cpcb \
-	userguide
+	userguide cpcb-dmg cschem-dmg
