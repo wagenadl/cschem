@@ -126,6 +126,11 @@ void SymbolData::ensureBBox() {
     pins[pin]
       = renderer.matrixForElement(id)
       .map(renderer.boundsOnElement(pinIds[pin]).center());
+  for (QString ann: annotationBBox.keys())
+    annotationBBox[ann]
+      = renderer.matrixForElement(id)
+      .mapRect(annotationBBox[ann]);
+      
   newshift();
 }
 
@@ -183,6 +188,10 @@ Symbol Symbol::load(QString svgfn) {
       }
     }
   }
+  if (sym.totalPinCount()<=0) {
+    qDebug() << "No pins found in svg";
+    return Symbol();
+  }
   if (groupcount>1)
     qDebug() << "Only the first group was read";
   
@@ -199,6 +208,13 @@ Symbol &Symbol::operator=(Symbol const &o) {
 }
 
 void SymbolData::scanPins(XmlElement const &elt) {
+  /* Scans for circles with name matching {pin:NAME},
+     If NAME matches {cp.NUM/SUB} it is considered a contained pin with number
+     num and subname SUB. If SUB is "nc", that is considered a not-connected
+     pin. Otherwise, SUB should be of the form {SLOT/NAME}.
+     Also scans for rectangles with name matching {annotation:WHAT} where
+     WHAT must be "ref" (or "name") or "value".
+   */
   if (elt.qualifiedName()=="circle") {
     QString label = elt.title();
     if (label.isEmpty())
