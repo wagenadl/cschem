@@ -220,6 +220,11 @@ void Statusbar::setMissing(QStringList mis1) {
   if (mis1.isEmpty()) {
     missingui->hide();
   } else {
+    if (mis1.size() > 5) {
+      while (mis1.size()>5)
+	mis1.removeLast();
+      mis1 << "…";
+    }
     missingui->setText("Missing " + mis1.join(", "));
     missingui->show();
   }
