@@ -107,16 +107,18 @@ void MCVData::rebuild() {
       newused << obj.asGroup().ref;
   }
   qDebug() << "newused" << newused;
+  qDebug() << "newelts" << newelts.keys();
   for (QString ref: evs.keys()) {
-    if (!newelts.contains(ref) || newused.contains(ref)
-	|| newelts.contains(containerFor(ref))) {
+    if (!newelts.contains(ref)
+	|| newused.contains(ref)
+	|| newused.contains(containerFor(ref))) {
       delete evs[ref];
       evs.remove(ref);
     }
   }
   newelts.remove("");
   for (QString ref: newelts.keys()) {
-    if (!newused.contains(ref) && !newelts.contains(containerFor(ref))) {
+    if (!newused.contains(ref) && !newused.contains(containerFor(ref))) {
       bool trulynew = !evs.contains(ref);
       if (trulynew) {
 	evs[ref] = new ElementView;
