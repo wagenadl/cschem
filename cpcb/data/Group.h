@@ -86,7 +86,11 @@ public:
   // names of holes, pads, and groups (not recursively)
   QSet<int> merge(Group const &g); // return is ids
   bool adjustViasAroundTrace(int traceid, Layer newlayer); // true if chgs
-  Group subset(QSet<int> ids) const; // construct a subset group 
+  Group subset(QSet<int> ids) const; // construct a subset group
+  QSet<QString> duplicatedGroupRefs() const; // refs that occur more than once
+  QSet<QString> badlyNamedGroupRefs() const; // names that end in "?"
+  QSet<QString> duplicatedPinRefs() const; // refs that occur more than once
+  QMap<QString, QSet<QString>> groupsWithDuplicatedPins() const;
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  
