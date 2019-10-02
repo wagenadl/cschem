@@ -316,7 +316,7 @@ void MainWindow::openAction() {
   QString fn = QFileDialog::getOpenFileName(0,
 					    "Open schematic file",
 					    d->lastdir,
-					    tr("Schematics (*.schem)"));
+					    tr("Schematics (*.schem, *.cschem)"));
   if (!fn.isEmpty()) {
     auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
     mw->load(fn);
@@ -337,12 +337,12 @@ bool MainWindow::saveAsAction() {
   QFileDialog dlg;
   dlg.setWindowTitle(tr("Save schematic as…"));
   dlg.setAcceptMode(QFileDialog::AcceptSave);
-  dlg.setDefaultSuffix("schem");
+  dlg.setDefaultSuffix("cschem");
   dlg.setDirectory(d->lastdir);
-  dlg.setNameFilter(tr("Schematics (*.schem)"));
+  dlg.setNameFilter(tr("Schematics (*.cschem)"));
   if (!d->filename.isEmpty()) {
     QFileInfo fi(d->filename);
-    dlg.selectFile(fi.baseName() + ".schem");
+    dlg.selectFile(fi.baseName() + ".cschem");
   }
   if (!dlg.exec())
     return false;
