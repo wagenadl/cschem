@@ -412,9 +412,29 @@ void EData::pressPickingUp(Point p) {
     abortTracing();
 }
 
-void EData::pressTracing(Point p) {
-  if (!tracer)
+void EData::pressTracing(Point p, Qt::KeyboardModifiers m) {
+  if (!tracer) {
+    if (m & Qt::ShiftModifier) {
+      // try to move a point instead
+      Dim mrg = pressMargin();
+      int fave = visibleObjectAt(p, mrg);
+      if (fave>0) {
+        Group const &here(currentGroup());
+        Object const &obj(here.object(fave));
+        if (obj.isTrace()) {
+          Trace const &t(obj.asTrace());
+          if (t.onP1(p, mrg) || t.onP2(p, mrg)) {
+            newSelectionUnless(fave, p, mrg, false);
+            startMoveSelection(fave);
+          } else {
+            ed->clearSelection();
+          }
+        }
+      }
+      return;
+    }
     tracer = new Tracer(this);
+  }
   tracer->click(p);
   if (!tracer->isTracing())
     abortTracing();
