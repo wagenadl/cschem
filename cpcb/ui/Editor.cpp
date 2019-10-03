@@ -190,7 +190,7 @@ void Editor::mousePressEvent(QMouseEvent *e) {
 	d->pressArc(p);
 	break;
       case Mode::PickupTrace:
-	d->pressPickingUp(p);
+	d->pressPickingUp(p, e->modifiers());
 	break;
       case Mode::PlacePlane:
         Q_ASSERT(d->planeeditor);
