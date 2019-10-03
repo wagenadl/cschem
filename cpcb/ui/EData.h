@@ -52,7 +52,7 @@ public:
   void pressHole(Point);
   void pressNPHole(Point);
   void pressText(Point);
-  void pressTracing(Point);
+  void pressTracing(Point, Qt::KeyboardModifiers m=Qt::NoModifier);
   void pressPickingUp(Point);
   void moveTracing(Point);
   void abortTracing();
