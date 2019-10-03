@@ -56,26 +56,28 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   resetGridChoices();
   addPermanentWidget(gridui);
 
-  auto addlui = [this](Layer l, QString name) {
+  auto addlui = [this](Layer l, QString name, QKeySequence seq) {
     auto *w = new QToolButton;
     layerui[l] = w;
     w->setIcon(QIcon(":icons/" + name + ".svg"));
-    w->setToolTip(name + " layer visible");
+    w->setToolTip(name + " layer visible (" + seq.toString() + ")");
     w->setCheckable(true);
     w->setChecked(true);
+    w->setShortcut(seq);
     connect(w, &QToolButton::toggled,
 	    [this, l]() { layerVisibilityEdited(l, layerui[l]->isChecked()); });
     addPermanentWidget(w);
   };
-  addlui(Layer::Silk, "Silk");
-  addlui(Layer::Top, "Top");
-  addlui(Layer::Bottom, "Bottom");
-  addlui(Layer::Panel, "Panel");
+  addlui(Layer::Silk, "Silk", QKeySequence(Qt::Key_1));
+  addlui(Layer::Top, "Top", QKeySequence(Qt::Key_2));
+  addlui(Layer::Bottom, "Bottom", QKeySequence(Qt::Key_3));
+  addlui(Layer::Panel, "Panel", QKeySequence(Qt::Key_4));
 
   auto *w = new QToolButton;
   planesui = w;
   w->setIcon(QIcon(":icons/Planes.svg"));
-  w->setToolTip("Planes visible");
+  w->setToolTip("Planes visible (5)");
+  w->setShortcut(QKeySequence(Qt::Key_5));
   w->setCheckable(true);
   w->setChecked(true);
   connect(w, &QToolButton::toggled,
@@ -85,7 +87,8 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   w = new QToolButton;
   netsui = w;
   w->setIcon(QIcon(":icons/Nets.svg"));
-  w->setToolTip("Nets visible");
+  w->setToolTip("Nets visible (6)");
+  w->setShortcut(QKeySequence(Qt::Key_6));
   w->setCheckable(true);
   w->setChecked(true);
   connect(w, &QToolButton::toggled,
