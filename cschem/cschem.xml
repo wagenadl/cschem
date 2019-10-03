@@ -3,6 +3,6 @@
    <mime-type type="application/cschem-cschem">
       <sub-class-of type="application/xml"/>
       <comment>CSchem circuit designer</comment>
-      <glob pattern="*.schem"/>
+      <glob pattern="*.cschem"/>
    </mime-type>
 </mime-info>

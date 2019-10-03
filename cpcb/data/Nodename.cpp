@@ -30,7 +30,7 @@ QString Nodename::humanName() const {
 }
 
 bool Nodename::isValid() const {
-  return !comp_.isEmpty();
+  return !comp_.isEmpty() && !comp_.endsWith("?");
 }
 
 bool Nodename::operator<(Nodename const &o) const {

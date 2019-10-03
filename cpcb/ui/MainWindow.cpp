@@ -220,9 +220,28 @@ void MWData::insertComponentDialog() {
 }
 
 void MWData::verifyNets() {
+  Group const &grp = editor->pcbLayout().root();
+  QSet<QString> dupgroups = grp.duplicatedGroupRefs();
+  if (!dupgroups.isEmpty()) {
+    QString msg = "The following part refs. are duplicated: ";
+    for (QString n: dupgroups) 
+      msg += "\n  " + n;
+    QMessageBox::warning(0, "cpcb", msg);
+    return;
+  }
+  QMap<QString, QSet<QString>> duppins = grp.groupsWithDuplicatedPins();
+  if (!duppins.isEmpty()) {
+    auto it = duppins.begin();
+    QString msg = "Part " + it.key() + " has duplicated pin names:";
+    for (QString n: it.value())
+      msg += "\n  " + n;
+    QMessageBox::warning(0, "cpcb", msg);
+    return;
+  }
+    
   NetMismatch nm;
-  nm.recalculateAll(editor->linkedSchematic(), editor->pcbLayout().root());
-  nm.report(editor->pcbLayout().root());
+  nm.recalculateAll(editor->linkedSchematic(), grp);
+  nm.report(grp);
   if (!nm.wronglyInNet.isEmpty()) {
     editor->pretendOnNet(*nm.wronglyInNet.begin());
   } else if (!nm.missingFromNet.isEmpty()) {

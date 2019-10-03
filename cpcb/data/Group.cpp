@@ -850,7 +850,68 @@ QSet<QString> Group::immediateRefs() const {
   refs.remove("");
   return refs;
 }  
-  
+
+QSet<QString> Group::duplicatedGroupRefs() const {
+  QSet<QString> seen;
+  QSet<QString> dups;
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    if (obj.type()==Object::Type::Group) {
+      QString ref = obj.asGroup().ref;
+      if (seen.contains(ref))
+        dups.insert(ref);
+      seen.insert(ref);
+    }
+  }
+  dups.remove("");
+  return dups;
+}  
+
+QSet<QString> Group::badlyNamedGroupRefs() const {
+  QSet<QString> refs;
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    if (obj.type()==Object::Type::Group) {
+      QString ref = obj.asGroup().ref;
+      if (ref.endsWith("?"))
+        refs.insert(ref);
+    }
+  }
+  return refs;
+}  
+
+QSet<QString> Group::duplicatedPinRefs() const {
+  QSet<QString> seen;
+  QSet<QString> dups;
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    QString ref = "";
+    if (obj.type()==Object::Type::Hole)
+      ref = obj.asHole().ref;
+    else if (obj.type()==Object::Type::Pad)
+      ref =  obj.asPad().ref;
+    if (seen.contains(ref))
+      dups.insert(ref);
+    seen.insert(ref);
+  }
+  dups.remove("");
+  return dups;
+}
+
+QMap<QString, QSet<QString>> Group::groupsWithDuplicatedPins() const {
+  QMap<QString, QSet<QString>> grps;
+  for (int id: keys()) {
+    Object const &obj = object(id);
+    if (obj.type()==Object::Type::Group) {
+      QString ref = obj.asGroup().ref;
+      QSet<QString> dups = obj.asGroup().duplicatedPinRefs();
+      if (!dups.isEmpty())
+        grps[ref] = dups;
+    }
+  }
+  return grps;
+}
+
 static QString altRef(QString ref, QSet<QString> const &set) {
   if (ref.isEmpty())
     return "X?";
