@@ -41,6 +41,7 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   isconstr = true; // force actual change
   setConstraint(false);
   setAbsInc(false);
+  setStyleSheet("QToolButton:checked { background-color: #ffffcc;}");
 }
 
 Modebar::~Modebar() {
