@@ -18,7 +18,7 @@ void NetMismatch::reset() {
 
 void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
 			      Group const &root) {
-  /* Any of net.nodes that are not in linkednet.nodes should be colored ORANGE.
+  /* Any of net.nodes that are not in linkednet.nodes should be colored PINK.
      Any nodes in linkednet.nodes that are not in net.nodes should be colored
      BLUE. We need to find them first. If they are not to be found, a MESSAGE
      should be shown in status bar.     
@@ -30,13 +30,14 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
     Nodename name = root.nodeName(pcbnode);
     if (name.isValid()) {
       pcbnames << name;
-      if (!linkednet.containsMatch(name))
+      if (!linkednet.containsMatch(name)) {
 	wronglyInNet << pcbnode;
+      }
     }
   }
   wronglyInNet.remove(net.seed());
 
-  //  qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
+  // qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
 
   for (Nodename const &name: linkednet.nodes) {
     if (pcbnames.contains(name))
@@ -84,7 +85,6 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
   // Collect all PCB nets
   QMap<NodeID, PCBNet> seed2net;
   QSet<NodeID> allids;
-  QSet<NodeID> donenets;
   for (NodeID id: root.allPins()) {
     if (!allids.contains(id)) {
       PCBNet net = PCBNet(root, id);
@@ -92,14 +92,17 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
       seed2net[id] = net;
     }
   }
+
+  // For each linked schematic net, find corresponding pcb net
+  QSet<NodeID> donenets;
   for (LinkedNet const &lnet: ls.nets()) {
     bool got = false;
     for (NodeID const &node: seed2net.keys()) {
       Nodename seed = seed2net[node].someNode();
       if (lnet.containsMatch(seed)) {
-	// this is a match
+	// schematic net "lnet" matches pcb net for "seed"
 	if (donenets.contains(node)) {
-	  // double match!?
+	  // we've already studied this pcb net!?
 	  qDebug() << "Double match";
 	} else {
 	  NetMismatch nm1;
@@ -112,7 +115,12 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
 	  if (!nm1.wronglyInNet.isEmpty()
 	      || !nm1.missingFromNet.isEmpty()
 	      || !nm1.missingEntirely.isEmpty()) {
-	    qDebug() << "lnet" << lnet;
+	    qDebug() << "linked net" << lnet;
+            qDebug() << "  node" << node ;
+            qDebug() << "  seed" << seed ;
+            qDebug() << "=== pcbnet report:";
+            seed2net[node].report();
+            qDebug() << "=== netmismatch report:";
 	    nm1.report(root);
 	  }
 	}

@@ -28,6 +28,8 @@ void ensureOutlineLibrary() {
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
+  app.setStyleSheet("QToolButton:!checked { border: none; }\n"
+                    "QToolButton:checked { border: 1px solid black; border-radius: 2; background-color: white;}");
 
   ensureOutlineLibrary();
   
