@@ -10,6 +10,7 @@
 Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   noemit = true;
   cursorui = new QLabel();
+  cursorui->setStyleSheet("QLabel { margin-left: 4px; }");
   missingui = new QToolButton();
   missingui->setIcon(style()->standardIcon(QStyle::SP_MessageBoxWarning));
   missingui->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -17,6 +18,8 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   missingui->hide();
   addWidget(cursorui);
   addWidget(missingui);
+  setStyleSheet("QToolButton:checked { padding: 2px; margin: 2px; background-color: #ffffcc;}");
+  setSizeGripEnabled(false);
 
   auto *w1 = new QLabel;
   w1->setPixmap(QIcon(":icons/Grid.svg").pixmap(cursorui->height()));
@@ -26,6 +29,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   gridsp->setMode(Expression::Mode::Explicit);
   gridsp->hideTrailingZeros();
   gridui = new QComboBox;
+  gridui->setStyleSheet("QComboBox { margin-right: 8px; }");
   gridui->setEditable(true);
   gridui->setInsertPolicy(QComboBox::InsertAtBottom);
   gridui->setLineEdit(gridsp);
@@ -93,6 +97,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   w->setChecked(true);
   connect(w, &QToolButton::toggled,
 	  [this]() { netsVisibilityEdited(netsui->isChecked()); });
+  w->setStyleSheet("QToolButton { margin-right: 8px; }");
   addPermanentWidget(w);
 
   
