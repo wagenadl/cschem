@@ -30,6 +30,27 @@ public:
       return p.roundedTo(grid);
     }
   }
+  void maybeSplit(bool createUndo) {
+    if (!onsomething)
+      return;
+    if (onnode.size() != 1)
+      return; // do not enter groups
+    Object const &obj(ed->currentGroup().object(onnode));
+    if (obj.isTrace()) {
+      Trace const &t(obj.asTrace());
+      if (!t.onP1(tracecurrent, ed->pressMargin())
+          && !t.onP2(tracecurrent, ed->pressMargin())) {
+        if (createUndo) 
+          UndoCreator uc(ed, true);
+        Group &here(ed->currentGroup());
+        Trace &t0(ed->currentGroup().object(onnode).asTrace());
+        Trace t1 = t0;
+        t0.p2 = onlp.point;
+        t1.p1 = onlp.point;
+        here.insert(Object(t1));
+      }
+    }
+  }    
 public:
   EData *ed;
   Point tracestart;
@@ -39,6 +60,8 @@ public:
   Layer layer;
   bool constr45;
   bool onsomething;
+  NodeID onnode; // only valid if onsomething
+  LayerPoint onlp; // only valid if onsomething
 };
 
 void Tracer::setLayer(Layer const &l) {
@@ -59,6 +82,9 @@ Tracer::~Tracer() {
 void Tracer::start(class Point const &p) {
   d->tracestart = p;
   move(p);
+  if (!d->tracing && d->onsomething) {
+    d->maybeSplit(true);
+  }
   d->tracing = true;
 }
 
@@ -85,10 +111,12 @@ void Tracer::confirm() {
   t.width = d->ed->props.linewidth;
   t.layer = d->ed->props.layer;
   here.insert(Object(t));
-  if (d->onsomething)
+  if (d->onsomething) {
+    d->maybeSplit(false);
     end();
-  else
+  } else {
     start(d->tracecurrent);
+  }
 }
 
 void Tracer::end() {
@@ -133,13 +161,13 @@ void Tracer::pickup(Point const &p) {
 }
 
 void Tracer::move(Point const &p) {
-  NodeID n = d->ed->currentGroup().nodeAt(p, d->ed->pressMargin(),
+  d->onnode = d->ed->currentGroup().nodeAt(p, d->ed->pressMargin(),
 					  d->layer);
-  LayerPoint lp = n.location(d->ed->currentGroup(),
-			     p.roundedTo(d->ed->layout.board().grid));
-  d->onsomething = lp.layer != Layer::Invalid;
+  d->onlp = d->onnode.location(d->ed->currentGroup(),
+                              p.roundedTo(d->ed->layout.board().grid));
+  d->onsomething = d->onlp.layer != Layer::Invalid;
   if (d->onsomething) 
-    d->tracecurrent = lp.point;
+    d->tracecurrent = d->onlp.point;
   else
     d->tracecurrent = d->constrain(p);
 }
