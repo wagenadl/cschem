@@ -128,23 +128,23 @@ Dim Board::fpConOverlap() {
   return Dim::fromMils(2);
 }
 
-Dim Board::traceClearance(Dim) const {
+Dim Board::traceClearance(Dim) {
   return Dim::fromMils(15);
 }
 
-Dim Board::padClearance(Dim, Dim) const {
+Dim Board::padClearance(Dim, Dim) {
   return Dim::fromMils(15);
 }
 
-Dim Board::fpConWidth(Dim, Dim) const {
+Dim Board::fpConWidth(Dim, Dim) {
   return Dim::fromMils(12);
 }
 
-Dim Board::maskMargin(Dim) const {
+Dim Board::maskMargin(Dim) {
   return Dim::fromMils(10);
 }  
 
-Dim Board::maskMargin(Dim, Dim) const {
+Dim Board::maskMargin(Dim, Dim) {
   return Dim::fromMils(10);
 }  
 

@@ -20,12 +20,12 @@ public:
   Board();
   bool isEffectivelyMetric() const;
   static Dim fpConOverlap();
-  Dim traceClearance(Dim lw) const; // clearance for a trace with given size
-  Dim padClearance(Dim w, Dim h) const; // clearance for a pad with given size
+  static Dim traceClearance(Dim lw); // clearance for a trace with given size
+  static Dim padClearance(Dim w, Dim h); // clearance for a pad with given size
   // (used for round and rectangular pads)
-  Dim maskMargin(Dim od) const; // margin for solder mask around object
-  Dim maskMargin(Dim w, Dim h) const; // margin for solder mask around object
-  Dim fpConWidth(Dim w, Dim h) const; // width for filled-plane connection
+  static Dim maskMargin(Dim od); // margin for solder mask around object
+  static Dim maskMargin(Dim w, Dim h); // margin for solder mask around object
+  static Dim fpConWidth(Dim w, Dim h); // width for filled-plane connection
   QString shapeName() const;
 public:
   Shape shape;

@@ -4,6 +4,7 @@
 #include "Trace.h"
 #include "FilledPlane.h"
 #include "pi.h"
+#include "Board.h"
 
 Hole::Hole() {
   fpcon = Layer::Invalid;
@@ -14,6 +15,8 @@ Hole::Hole() {
 
 Rect Hole::boundingRect() const {
   Dim r = od/2;
+  if (fpcon!=Layer::Invalid)
+    r += Board::padClearance(od,od), Board::fpConOverlap();
   Rect rct(p - Point(r, r), p + Point(r, r));
   if (rota%90!=0 || slotlength.isPositive()) {
     Dim dx = slotlength/2;
@@ -93,6 +96,32 @@ bool Hole::touches(Trace const &t) const {
     return true;
   if (t.onSegment(p, od/2))
     return true;
+  if (fpcon==t.layer) {
+    Segment t1;
+    t1.p1 = p;
+    t1.p2 = (p + Point(slotlength/2 + od/2
+		       + Board::padClearance(od,od) + Board::fpConOverlap(),
+		       Dim()))
+      .rotatedFreely(rota, p);
+    if (t.touches(t1))
+      return true;
+    t1.p2 = (p - Point(slotlength/2 + od/2
+		       + Board::padClearance(od,od) + Board::fpConOverlap(),
+		       Dim()))
+      .rotatedFreely(rota, p);
+    if (t.touches(t1))
+      return true;
+    t1.p2 = (p + Point(Dim(), od/2
+		       + Board::padClearance(od,od) + Board::fpConOverlap()))
+      .rotatedFreely(rota, p);
+    if (t.touches(t1))
+      return true;
+    t1.p2 = (p - Point(Dim(), od/2
+		       + Board::padClearance(od,od) + Board::fpConOverlap()))
+      .rotatedFreely(rota, p);
+    if (t.touches(t1))
+      return true;
+  }
   if (square) {
     Segment t1;
     t1.p1 = t.p1.rotatedFreely(-rota, p);
