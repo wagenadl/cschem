@@ -37,7 +37,8 @@ void Editor::setAngleConstraint(bool c) {
 void Editor::setMode(Mode m) {
   d->mode = m;
   d->abortTracing();
-  clearSelection();
+  if (m!=Mode::Edit)
+    clearSelection();
   if (m==Mode::PlacePlane) {
     if (!d->planeeditor)
       d->planeeditor = new PlaneEditor(d);
@@ -171,7 +172,7 @@ void Editor::mousePressEvent(QMouseEvent *e) {
 	d->pressEdit(p, e->modifiers());
 	break;
       case Mode::PlaceTrace:
-	d->pressTracing(p);
+	d->pressTracing(p, e->modifiers());
 	break;
       case Mode::PlaceHole:
 	d->pressHole(p);
@@ -189,7 +190,7 @@ void Editor::mousePressEvent(QMouseEvent *e) {
 	d->pressArc(p);
 	break;
       case Mode::PickupTrace:
-	d->pressPickingUp(p);
+	d->pressPickingUp(p, e->modifiers());
 	break;
       case Mode::PlacePlane:
         Q_ASSERT(d->planeeditor);
