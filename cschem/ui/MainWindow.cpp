@@ -316,7 +316,7 @@ void MainWindow::openAction() {
   QString fn = QFileDialog::getOpenFileName(0,
 					    "Open schematic file",
 					    d->lastdir,
-					    tr("Schematics (*.schem, *.cschem)"));
+                        tr("Schematics (*.schem *.cschem)"));
   if (!fn.isEmpty()) {
     auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
     mw->load(fn);
