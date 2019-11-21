@@ -808,6 +808,9 @@ void Scene::modifyElementAnnotations(Element const &elt) {
 }
 
 void SceneData::modifyContainerAndSiblings(Element const &elt, QString oldname) {
+  for (Element const &e: circ().elements) 
+    if (e.name==oldname)
+      return; // don't do it if double containee names
   // we are going to change our container, iff there is only one
   int containerid = -1;
   qDebug() << "modifycontainerandsiblings" << elt << oldname;
