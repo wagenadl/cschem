@@ -263,7 +263,7 @@ void MWData::linkSchematicDialog() {
   }
   QString fn = QFileDialog::getOpenFileName(0, "Link schematic…",
 					    pwd,
-					    "Schematics (*.schem)");
+					    "Schematics (*.schem *.cschem)");
   if (fn.isEmpty())
     return;
 
