@@ -26,18 +26,18 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="6.2653338"
-     inkscape:cx="38.875644"
-     inkscape:cy="74.077539"
+     inkscape:cx="-1.5850893"
+     inkscape:cy="99.295669"
      inkscape:document-units="px"
-     inkscape:current-layer="g981"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      fit-margin-top="2"
      fit-margin-left="2"
      fit-margin-right="2"
      fit-margin-bottom="2"
-     inkscape:window-width="3840"
-     inkscape:window-height="2116"
+     inkscape:window-width="3200"
+     inkscape:window-height="1756"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -61,7 +61,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -452,7 +452,7 @@
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#e497e4;fill-opacity:0.47096773;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="path3052-7-7-8-45"
        cx="-1279.8572"
-       cy="-589.94824"
+       cy="-561.94824"
        inkscape:label=""
        r="7">
       <title
@@ -551,7 +551,7 @@
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#e497e4;fill-opacity:0.47096773;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="path3052-7-7-8-45-4-45"
        cx="-1279.8572"
-       cy="-561.94824"
+       cy="-589.94824"
        inkscape:label=""
        r="7">
       <title
