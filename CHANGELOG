@@ -1,3 +1,28 @@
+cschem 0.1.6
+
+  Features:
+
+  - Now builds on Windows and Mac. Windows "iss" script naive about versions:
+    hardcoded.
+  - In cpcb PickupTrace mode, can now move existing points with Shift
+  - In cpcb PlaceTrace mode, can now move existing points with Shift
+  - Added several symbols and outlines
+  - Improved styling of selected/deselected tools
+  - Now uses ".cschem" as file extension for cschem
+  - New python script test/circalyse.py to help analyze circuits in cschem
+  - Better net mismatch testing in cpcb: now tests for duplicated part refs
+    and duplicated pin names within named parts
+  - Some trivial GUI improvements
+
+  Bugfixes:
+
+  - Hole with FP connection now correctly calculates touches with Trace. This
+    required making the "default dimension" functions in Board static. This
+    is not ideal, but acceptable for now.
+  - MainWindow now uses getOpenFileName correctly.
+
+  -- Daniel Wagenaar <daw@caltech.edu>  Tue, 04 Feb 2020 08:48:09 -0800
+
 cschem 0.1.5
 
   Bugfix to cpcb’s component view panel: now correctly hides virtual
