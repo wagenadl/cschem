@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{84AF32E8-9487-421E-9A8B-73712049EBBD}
 AppName=CSCHEM
-AppVersion=0.1.5
+AppVersion=0.1.6
 AppPublisher=Daniel Wagenaar
 AppPublisherURL=http://www.danielwagenaar.net
 AppSupportURL=http://www.danielwagenaar.net
@@ -16,7 +16,7 @@ DefaultDirName={pf}\CSCHEM
 DisableProgramGroupPage=yes
 LicenseFile=C:\Users\Daniel Wagenaar\Documents\Progs\cschem\GPL-3.0.txt
 OutputDir=..\..\releases
-OutputBaseFilename=cschem-0.1.5-x86-setup
+OutputBaseFilename=cschem-0.1.6-x86-setup
 SetupIconFile=C:\Users\Daniel Wagenaar\Documents\Progs\cschem\src\App\cschem.ico
 Compression=lzma
 SolidCompression=yes
