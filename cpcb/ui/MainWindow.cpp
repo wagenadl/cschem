@@ -15,7 +15,9 @@
 #include "data/NetMismatch.h"
 #include "Version.h"
 #include "gerber/FrontPanelWriter.h"
+#include "ORenderer.h"
 
+#include <QClipboard>
 #include <QTemporaryDir>
 #include <QDesktopServices>
 #include <QInputDialog>
@@ -26,6 +28,8 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QDockWidget>
+#include <QBitmap>
+#include <QPainter>
 
 class MWData {
 public:
@@ -55,6 +59,7 @@ public:
   bool exportFrontPanelDialog();
   bool saveAsDialog();
   bool saveImmediately();
+  void copyPCBImage(bool forprinting=true);
   void linkSchematicDialog();
   void insertComponentDialog();
   void openLibrary();
@@ -285,6 +290,26 @@ void MWData::arbitraryRotation() {
     editor->arbitraryRotation(angle);
 }
 
+void MWData::copyPCBImage(bool forprinting) {
+  QPixmap img(editor->size());
+  editor->render(&img);
+  if (forprinting) {
+    QPainter p(&img);
+    QBitmap msk = img.createMaskFromColor(ORenderer::backgroundColor(),
+					  Qt::MaskOutColor);
+    p.setPen(QColor(255, 255, 255));
+    p.drawPixmap(img.rect(), msk, msk.rect());
+    msk = img.createMaskFromColor(ORenderer::boardColor(), Qt::MaskOutColor);
+    p.setPen(QColor(255, 255, 255));
+    p.drawPixmap(img.rect(), msk, msk.rect());
+    msk = img.createMaskFromColor(layerColor(Layer::Silk), Qt::MaskOutColor);
+    p.setPen(QColor(0, 0, 0));
+    p.drawPixmap(img.rect(), msk, msk.rect());
+    p.end();
+  }
+  QApplication::clipboard()->setPixmap(img);
+}
+
 bool MWData::exportPasteMaskDialog() {
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
@@ -505,9 +530,12 @@ void MWData::makeMenus() {
   file->addAction("Export &paste mask…", [this]() { exportPasteMaskDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
 
-  file->addAction("Export &front panel…", [this]() { exportFrontPanelDialog();},
+  file->addAction("Export &front panel…", [this]() { exportFrontPanelDialog(); },
 		  QKeySequence(Qt::ALT + Qt::CTRL + Qt::Key_E));
 
+  file->addAction("Copy PCB &image to clipboard", [this]() { copyPCBImage(); },
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+		  
   
   
   file->addAction("&Quit", []() { QApplication::quit(); });
