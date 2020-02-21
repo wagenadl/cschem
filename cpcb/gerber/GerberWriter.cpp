@@ -116,7 +116,7 @@ bool GWData::writeBoardOutline() {
     qDebug() << "Could not create gerberfile for outline";
     return false;
   }
-  out << "%TA.AperFunction,Profile*%\n";
+  //  out << "%TA.AperFunction,Profile*%\n";
   out << "%ADD10C,0.10000*%\n"; // create 0.1 mm thick line
   out << "G01*\n"; // linear
   out << "G75*\n"; // multisegment arcs
