@@ -62,11 +62,12 @@ void EData::updateNet(NodeID seed) {
   net = PCBNet(layout.root().subgroup(crumbs), seed);
 
   linkednet = LinkedNet();
-  if (linkedschematic.isValid() && !net.nodes().isEmpty() && crumbs.isEmpty()) {
+  if (linkedschematic.isValid() && !net.nodes().isEmpty()
+      && crumbs.isEmpty()) {
     Nodename seed = net.someNode();
-    // qDebug() << "updatenet" << seed;
+    qDebug() << "updatenet" << seed;
     for (LinkedNet const &lnet: linkedschematic.nets()) {
-      // qDebug() << "  comparing against" << lnet;
+      qDebug() << "  comparing against" << lnet;
       if (lnet.containsMatch(seed)) {
 	linkednet = lnet;
 	break;
