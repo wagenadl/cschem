@@ -746,7 +746,7 @@ void MWData::makeConnections() {
 		   [this](Mode m) {
                      if (m==Mode::PlacePlane) {
                        qDebug() << "I might make the planes visible now";
-                       statusbar->showPlanes();
+                       // statusbar->showPlanes();
                      }
                    });
     
