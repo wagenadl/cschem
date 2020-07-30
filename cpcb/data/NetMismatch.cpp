@@ -26,23 +26,21 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
   reset();
   
   QSet<Nodename> pcbnames;
-  QSet<NodeID> maybewrong;
   for (NodeID const &pcbnode: net.nodes()) {
     Nodename name = root.nodeName(pcbnode);
     if (name.isValid() && name.pin()!="") {
       pcbnames << name;
       if (!linkednet.containsMatch(name)) {
-        maybewrong << pcbnode;
+        wronglyInNet << pcbnode;
       }
     }
   }
-  maybewrong.remove(net.seed());
+  wronglyInNet.remove(net.seed());
   if (pcbnames.size()==1) {
     NodeID id = root.findNodeByName(*pcbnames.begin());
-    maybewrong.remove(id);
+    wronglyInNet.remove(id);
     // a net with one named node is not bad. By definition.
   }
-  wronglyInNet |= maybewrong;
 
   // qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
 
@@ -89,14 +87,19 @@ void NetMismatch::report(Group const &root) {
 
 void NetMismatch::recalculateAll(LinkedSchematic const &ls,
 				 Group const &root) {
+  reset();
+
   // Collect all PCB nets
   QMap<NodeID, PCBNet> seed2net;
   QSet<NodeID> allids;
   for (NodeID id: root.allPins()) {
     if (!allids.contains(id)) {
-      PCBNet net = PCBNet(root, id);
-      allids |= net.nodes();
-      seed2net[id] = net;
+      Nodename n = root.nodeName(id);
+      if (n.pin()!="") { // only use pins with a name or number as seed
+        PCBNet net = PCBNet(root, id);
+        allids |= net.nodes();
+        seed2net[id] = net;
+      }
     }
   }
 
@@ -137,15 +140,12 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
       qDebug() << "No match for " << lnet;
     }
   }
-  qDebug() << "prefinal" << wronglyInNet.size();
   for (NodeID const &node: seed2net.keys()) {
     if (!donenets.contains(node)) {
-      qDebug() << "checking" << root.nodeName(node);
       QSet<NodeID> const &nodes = seed2net[node].nodes();
       bool havename = false;
       for (NodeID const &n: nodes) {
         Nodename name = root.nodeName(n);
-        qDebug() << "  considering" << name;
         if (name.pin()!="") {
           if (havename) {
             wronglyInNet |= nodes;

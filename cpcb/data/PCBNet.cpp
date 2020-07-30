@@ -190,10 +190,10 @@ Nodename PCBNet::someNode() const {
     return somenode;
 
   somenode = root_.nodeName(seed_);
-  if (!somenode.isValid()) {
+  if (!somenode.isValid() || somenode.pin()=="") {
     for (NodeID const &n: nodes_) {
       somenode = root_.nodeName(n);
-      if (somenode.isValid())
+      if (somenode.isValid() && somenode.pin()!="")
 	break;
     }
   }
