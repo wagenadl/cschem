@@ -90,10 +90,16 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
       if (h.touches(obj.asTrace()))
         insertRecursively(nid);
       break;
-    case Object::Type::Plane:
-      if (h.touches(obj.asPlane())) {
+    case Object::Type::Pad:
+      if (h.touches(obj.asPad()))
         insertRecursively(nid);
-      }
+      break;
+    case Object::Type::Plane:
+      if (h.touches(obj.asPlane()))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Group:
+      insertFriendsOfHole(h, nid);
       break;
     default:
       break;
@@ -109,6 +115,14 @@ void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
       continue;
     Object const &obj(univ.object(id));
     switch (obj.type()) {
+    case Object::Type::Hole:
+      if (obj.asHole().touches(pad))
+        insertRecursively(nid);
+      break;
+    case Object::Type::Pad:
+      if (obj.asPad().touches(pad))
+        insertRecursively(nid);
+      break;
     case Object::Type::Trace:
       if (pad.touches(obj.asTrace()))
         insertRecursively(nid);
@@ -116,6 +130,9 @@ void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
     case Object::Type::Plane:
       if (pad.touches(obj.asPlane()))
         insertRecursively(nid);
+      break;
+    case Object::Type::Group:
+      insertFriendsOfPad(pad, nid);
       break;
     default:
       break;

@@ -107,6 +107,16 @@ Rect Pad::boundingRect() const {
   }
 }
 
+
+bool Pad::touches(class Pad const &pad) const {
+  if (pad.layer != layer)
+    return false;
+  Point dp = p - pad.p;
+  Dim dx = dp.x.abs();
+  Dim dy = dp.y.abs();
+  return dx <= width/2 + pad.width/2 && dy <= height/2 + pad.height/2;
+}
+
 bool Pad::touches(class Trace const &t) const {
   if (t.layer != layer)
     return false;

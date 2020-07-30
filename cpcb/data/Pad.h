@@ -26,6 +26,7 @@ public:
   bool isValid() const { return layer!=Layer::Invalid; }
   Rect boundingRect() const;
   void rotateCW(); // around our center
+  bool touches(class Pad const &t) const;
   bool touches(class Trace const &t) const;
   bool touches(class FilledPlane const &fp) const;
   void rotateCW(Point const &p0);
