@@ -189,6 +189,7 @@ Symbol Symbol::load(QString svgfn) {
       }
     }
   }
+  qDebug() << "Loaded symbol" << name << "with pins" << sym.pinNames();
   if (sym.totalPinCount()<=0) {
     qDebug() << "No pins found in svg";
     return Symbol();

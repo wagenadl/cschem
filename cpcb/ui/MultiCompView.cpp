@@ -106,8 +106,8 @@ void MCVData::rebuild() {
     if (obj.isGroup())
       newused << obj.asGroup().ref;
   }
-  qDebug() << "newused" << newused;
-  qDebug() << "newelts" << newelts.keys();
+  //qDebug() << "newused" << newused;
+  //qDebug() << "newelts" << newelts.keys();
   for (QString ref: evs.keys()) {
     if (!newelts.contains(ref)
 	|| newused.contains(ref)

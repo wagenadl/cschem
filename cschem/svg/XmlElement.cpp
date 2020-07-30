@@ -21,7 +21,6 @@ bool XmlElement::removeAttribute(QString name) {
       return true;
     }
   }
-  qDebug() << "Attribute not found";
   return false;
 }
 
