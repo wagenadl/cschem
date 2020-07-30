@@ -140,6 +140,7 @@ Symbol::Symbol() {
 
 Symbol::Symbol(XmlElement const &elt, QString name): Symbol() {
   d->elt = elt;
+  d->elt.removeAttribute("transform");
   if (name.isEmpty()) {
     d->name = elt.label();
   } else {

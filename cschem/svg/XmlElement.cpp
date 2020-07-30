@@ -14,6 +14,17 @@ public:
   QList<XmlNode> children;
 };
 
+bool XmlElement::removeAttribute(QString name) {
+  for (int k=0; k<d->attributes.size(); k++) {
+    if (d->attributes[k].name() == name) {
+      d->attributes.remove(k);
+      return true;
+    }
+  }
+  qDebug() << "Attribute not found";
+  return false;
+}
+
 XmlElement::XmlElement() {
   d = new XmlElementData();
 }
