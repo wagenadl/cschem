@@ -1009,7 +1009,7 @@ void PBData::setupUI() {
   makeLabel(lc, "Layer");
 
   silk = makeIconTool(lc, "Silk", true, false, "",
-		      QKeySequence(Qt::CTRL + Qt::Key_1));
+		      QKeySequence(Qt::Key_1));
   QObject::connect(silk, &QAction::triggered,
 		   [this]() {
                      checkLayer(Layer::Silk);
@@ -1017,7 +1017,7 @@ void PBData::setupUI() {
 		     });
 
   top = makeIconTool(lc, "Top", true, false, "",
-		     QKeySequence(Qt::CTRL + Qt::Key_2));
+		     QKeySequence(Qt::Key_2));
   QObject::connect(top, &QAction::triggered,
 		   [this]() {
 		     checkLayer(Layer::Top);
@@ -1025,7 +1025,7 @@ void PBData::setupUI() {
 		     });
 
   bottom = makeIconTool(lc, "Bottom", true, false, "",
-			QKeySequence(Qt::CTRL + Qt::Key_3));
+			QKeySequence(Qt::Key_3));
   QObject::connect(bottom, &QAction::triggered,
 		   [this]() {
                      checkLayer(Layer::Bottom);
@@ -1033,7 +1033,7 @@ void PBData::setupUI() {
 		   });
 
   panel = makeIconTool(lc, "Panel", true, false, "",
-		      QKeySequence(Qt::CTRL + Qt::Key_4));
+		      QKeySequence(Qt::Key_4));
   QObject::connect(panel, &QAction::triggered,
 		   [this]() {
 		     checkLayer(Layer::Panel);
