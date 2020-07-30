@@ -28,10 +28,10 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
   QSet<Nodename> pcbnames;
   for (NodeID const &pcbnode: net.nodes()) {
     Nodename name = root.nodeName(pcbnode);
-    if (name.isValid()) {
+    if (name.isValid() && name.pin()!="") {
       pcbnames << name;
       if (!linkednet.containsMatch(name)) {
-	wronglyInNet << pcbnode;
+        wronglyInNet << pcbnode;
       }
     }
   }

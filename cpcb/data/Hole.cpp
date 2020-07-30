@@ -94,9 +94,8 @@ bool Hole::touches(class Pad const &pad) const {
   Point dp = p - pad.p;
   Dim dx = dp.x.abs();
   Dim dy = dp.y.abs();
-  bool crit = false;
   if (square) {
-    crit = dx <= od/2 + pad.width/2 && dy <= od/2 + pad.height/2;
+    return dx <= od/2 + pad.width/2 && dy <= od/2 + pad.height/2;
   } else {
     dx -= pad.width/2;
     dy -= pad.height/2;
@@ -104,11 +103,8 @@ bool Hole::touches(class Pad const &pad) const {
       dx = Dim();
     if (dy.isNegative())
       dy = Dim();
-    // dx,dy is distance to nearest point on pad
-    crit = Dim::quadrature(dx, dy) <= od/2;
+    return Dim::quadrature(dx, dy) <= od/2;
   }
-  qDebug() << "hole touches pad?" << p << pad.p << crit;
-  return crit;
 }
    
 bool Hole::touches(Trace const &t) const {
