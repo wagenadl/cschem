@@ -52,6 +52,7 @@ public:
     else
       return Dim(((2*(d%o.d) >= o.d) ? (d/o.d+1) : (d/o.d)) * o.d);
   }
+  Dim abs() const { return isNegative() ? Dim(-d) : Dim(d); }
   qint64 raw() const { return d; }
 public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }

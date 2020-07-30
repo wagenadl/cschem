@@ -29,6 +29,7 @@ public:
   Rect boundingRect() const;
   bool touches(class Trace const &t) const;
   bool touches(class FilledPlane const &fp) const;
+  bool touches(class Pad const &p) const;
   void rotateCW(Point const &p0);
   void freeRotate(int degcw, Point const &p0);
   void flipLeftRight(Dim const &x0);

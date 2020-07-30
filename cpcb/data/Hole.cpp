@@ -5,6 +5,7 @@
 #include "FilledPlane.h"
 #include "pi.h"
 #include "Board.h"
+#include "Pad.h"
 
 Hole::Hole() {
   fpcon = Layer::Invalid;
@@ -87,6 +88,29 @@ QDebug operator<<(QDebug d, Hole const &t) {
   return d;
 }
 
+bool Hole::touches(class Pad const &pad) const {
+  if (!(pad.layer==Layer::Top || pad.layer==Layer::Bottom))
+    return false;
+  Point dp = p - pad.p;
+  Dim dx = dp.x.abs();
+  Dim dy = dp.y.abs();
+  bool crit = false;
+  if (square) {
+    crit = dx <= od/2 + pad.width/2 && dy <= od/2 + pad.height/2;
+  } else {
+    dx -= pad.width/2;
+    dy -= pad.height/2;
+    if (dx.isNegative())
+      dx = Dim();
+    if (dy.isNegative())
+      dy = Dim();
+    // dx,dy is distance to nearest point on pad
+    crit = Dim::quadrature(dx, dy) <= od/2;
+  }
+  qDebug() << "hole touches pad?" << p << pad.p << crit;
+  return crit;
+}
+   
 bool Hole::touches(Trace const &t) const {
   if (!(t.layer==Layer::Top || t.layer==Layer::Bottom))
     return false;
