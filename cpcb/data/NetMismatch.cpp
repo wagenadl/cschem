@@ -26,16 +26,23 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
   reset();
   
   QSet<Nodename> pcbnames;
+  QSet<NodeID> maybewrong;
   for (NodeID const &pcbnode: net.nodes()) {
     Nodename name = root.nodeName(pcbnode);
     if (name.isValid() && name.pin()!="") {
       pcbnames << name;
       if (!linkednet.containsMatch(name)) {
-        wronglyInNet << pcbnode;
+        maybewrong << pcbnode;
       }
     }
   }
-  wronglyInNet.remove(net.seed());
+  maybewrong.remove(net.seed());
+  if (pcbnames.size()==1) {
+    NodeID id = root.findNodeByName(*pcbnames.begin());
+    maybewrong.remove(id);
+    // a net with one named node is not bad. By definition.
+  }
+  wronglyInNet |= maybewrong;
 
   // qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
 
@@ -130,11 +137,24 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
       qDebug() << "No match for " << lnet;
     }
   }
+  qDebug() << "prefinal" << wronglyInNet.size();
   for (NodeID const &node: seed2net.keys()) {
     if (!donenets.contains(node)) {
+      qDebug() << "checking" << root.nodeName(node);
       QSet<NodeID> const &nodes = seed2net[node].nodes();
-      if (nodes.size()>1)
-	wronglyInNet |= nodes;
+      bool havename = false;
+      for (NodeID const &n: nodes) {
+        Nodename name = root.nodeName(n);
+        qDebug() << "  considering" << name;
+        if (name.pin()!="") {
+          if (havename) {
+            wronglyInNet |= nodes;
+            break;
+          } else {
+            havename = true;
+          }
+        }
+      }
     }
   }
 }
