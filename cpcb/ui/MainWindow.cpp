@@ -744,8 +744,10 @@ void MWData::makeConnections() {
 		   });
   QObject::connect(modebar, &Modebar::modeChanged,
 		   [this](Mode m) {
-                     if (m==Mode::PlacePlane)
+                     if (m==Mode::PlacePlane) {
+                       qDebug() << "I might make the planes visible now";
                        statusbar->showPlanes();
+                     }
                    });
     
   
