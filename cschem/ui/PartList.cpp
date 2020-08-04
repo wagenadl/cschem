@@ -67,7 +67,7 @@ bool PartList::setData(QModelIndex const &index, QVariant const &value,
     return false;
 
   Element &elt(d->elements[r]);
-  QString txt = value.toString();
+  QString txt = value.toString().trimmed();
   switch (Column(c)) {
   case Column::Name:
     elt.name = txt;
