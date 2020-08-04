@@ -212,15 +212,15 @@ void PartList::rebuild() {
 }
 
 QList<QStringList> PartList::asTable() const {
-  QMap<QString, QStringList> map;
-  QStringList hdr;
-  hdr << "Ref." << "Value" << "Notes";
-  map[""] = hdr;
-  for (Element const &elt: d->elements) {
-    QStringList line;
-    line << elt.name << elt.value << elt.notes;
-    map[elt.name] = line;
-  }
-  return map.values();
+  QList<QStringList> table;
+  
+
+  for (Element const &elt: d->elements) 
+    table << QStringList{elt.name, elt.value, elt.notes};
+  std::sort(table.begin(), table.end(),
+            [](QStringList a, QStringList b) {
+              return PartNumbering::lessThan(a[0], b[0]); });
+  table.insert(0, QStringList{"Ref.", "Value", "Notes"});
+  return table;
 }
 
