@@ -8,11 +8,57 @@
 #include <QDebug>
 #include <QSortFilterProxyModel>
 
+class SortProxy: public QSortFilterProxyModel {
+public:
+  SortProxy(QObject *parent): QSortFilterProxyModel(parent) {}
+  virtual ~SortProxy() {}
+  bool lessThan(QModelIndex const &a, QModelIndex const &b) const override;
+};
+
+bool SortProxy::lessThan(QModelIndex const &a, QModelIndex const &b) const {
+  auto unpack = [](QVariant v) {
+                  QList<QVariant> l;
+                  if (v.canConvert(QMetaType::QString)) {
+                    QString s = v.toString();
+                    bool isnum = false;
+                    bool skip;
+                    int num = 0;
+                    for (QChar c: s) {
+                      if (skip) {
+                        if (c=='>')
+                          skip = false;
+                      } else if (c=='<') {
+                        skip = true;
+                      } else if (c.isDigit()) {
+                        isnum = true;
+                        num = 10*num + (c.unicode()-'0');
+                      } else {
+                        if (isnum)
+                          l << num;
+                        isnum = false;
+                        num = 0;
+                        l << c;
+                      }
+                    }
+                    if (isnum)
+                      l << num;
+                  } else {
+                    l << v;
+                  }
+                  return l; };
+  QList<QVariant> va = unpack(a.data());
+  QList<QVariant> vb = unpack(b.data());
+  qDebug() << va << " vs " << vb;
+  //  return QSortFilterProxyModel::lessThan(a, b);
+  return va < vb;
+}
+
+
 PartListView::PartListView(QWidget *parent): QTableView(parent) {
   HtmlDelegate *delegate = new HtmlDelegate(this);
   setItemDelegateForColumn(int(PartList::Column::Name), delegate);
   setSelectionBehavior(SelectRows);
-  sortProxy = new QSortFilterProxyModel(this);
+  sortProxy = new SortProxy(this);
   pl = 0;
 }
 
