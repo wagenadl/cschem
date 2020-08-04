@@ -43,7 +43,7 @@ bool PartNumbering::initiallyShowName(QString symbol) {
 
 
 QString PartNumbering::nameToHtml(QString name) {
-  if (name.left(1)=="V")
+  if (name.left(1)=="V" || name.left(1)=="I")
     return "<i>V</i><sub>" + name.mid(1) + "</sub>";
   else if (isNameWellFormed(name))
     return "<i>" + prefix(name) + "</i>"
@@ -59,6 +59,10 @@ QString PartNumbering::prettyValue(QString value, QString name) {
   if (isNameWellFormed(name) && prefix(name)=="R")
     if (value.endsWith("."))
       value = value.left(value.size()-1) + "Ω";
+  if (value.startsWith('"'))
+    value = QString("“") + value.mid(1);
+  if (value.endsWith('"'))
+    value = value.left(value.size()-1) + QString("”");
   return value;
 }
 

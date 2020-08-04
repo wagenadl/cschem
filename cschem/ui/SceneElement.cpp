@@ -98,7 +98,17 @@ void SceneElementData::valueTextToWidget() {
     value->setHtml("<i>P/V</i>");
     value->setDefaultTextColor(Style::faintColor());
   } else {
-    value->setPlainText(txt);
+    if (txt.startsWith("“") && txt.endsWith("”")) {
+      QString mid = txt.mid(1, txt.size() - 2);
+      if (mid.startsWith("V") || mid.startsWith("I"))
+        mid = "<i>" + mid.left(1) + "</i>"
+          + "<sub>" + mid.mid(1) + "</sub>";
+      else
+        mid = "<i>" + mid + "</i>";
+      value->setHtml("“" + mid + "”");
+    } else {
+      value->setPlainText(txt);
+    }
     value->setDefaultTextColor(Style::textColor());
   }
   if (value->hasFocus())
