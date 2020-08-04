@@ -6,6 +6,8 @@
 
 #include <QGraphicsTextItem>
 
+// This is an annotation for a scene element
+
 class SceneAnnotation: public QGraphicsTextItem {
   Q_OBJECT;
 public:
