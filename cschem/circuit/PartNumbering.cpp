@@ -107,3 +107,34 @@ QString PartNumbering::cname(QString name) {
 QString PartNumbering::csuffix(QString name) { // the ".2" part
   return wfn.match(name).captured(4);
 }
+
+bool PartNumbering::lessThan(QString a, QString b) {
+  auto unpack = [](QString s) {
+                  QList<QVariant> l;
+                  bool isnum = false;
+                  bool skip = false;
+                  int num = 0;
+                  for (QChar c: s) {
+                    if (skip) {
+                      if (c=='>')
+                        skip = false;
+                    } else if (c=='<') {
+                      skip = true;
+                    } else if (c.isDigit()) {
+                      isnum = true;
+                      num = 10*num + (c.unicode()-'0');
+                    } else {
+                      if (isnum)
+                        l << num;
+                      isnum = false;
+                      num = 0;
+                      l << c;
+                    }
+                  }
+                  if (isnum)
+                    l << num;
+                  return l; };
+  return unpack(a) < unpack(b);
+}
+
+  

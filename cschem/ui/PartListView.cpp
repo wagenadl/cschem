@@ -7,6 +7,7 @@
 #include <QSet>
 #include <QDebug>
 #include <QSortFilterProxyModel>
+#include "circuit/PartNumbering.h"
 
 class SortProxy: public QSortFilterProxyModel {
 public:
@@ -16,41 +17,7 @@ public:
 };
 
 bool SortProxy::lessThan(QModelIndex const &a, QModelIndex const &b) const {
-  auto unpack = [](QVariant v) {
-                  QList<QVariant> l;
-                  if (v.canConvert(QMetaType::QString)) {
-                    QString s = v.toString();
-                    bool isnum = false;
-                    bool skip;
-                    int num = 0;
-                    for (QChar c: s) {
-                      if (skip) {
-                        if (c=='>')
-                          skip = false;
-                      } else if (c=='<') {
-                        skip = true;
-                      } else if (c.isDigit()) {
-                        isnum = true;
-                        num = 10*num + (c.unicode()-'0');
-                      } else {
-                        if (isnum)
-                          l << num;
-                        isnum = false;
-                        num = 0;
-                        l << c;
-                      }
-                    }
-                    if (isnum)
-                      l << num;
-                  } else {
-                    l << v;
-                  }
-                  return l; };
-  QList<QVariant> va = unpack(a.data());
-  QList<QVariant> vb = unpack(b.data());
-  qDebug() << va << " vs " << vb;
-  //  return QSortFilterProxyModel::lessThan(a, b);
-  return va < vb;
+  return PartNumbering::lessThan(a.data().toString(), b.data().toString());
 }
 
 

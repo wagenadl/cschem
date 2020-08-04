@@ -147,12 +147,12 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::saveAsAction);
   menu->addAction(act);
 
-  act = new QAction(tr("&Export circuit as svg…"), this);
+  act = new QAction(tr("&Export circuit as SVG…"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
   connect(act, &QAction::triggered, this, &MainWindow::exportCircuitAction);
   menu->addAction(act);
 
-  act = new QAction(tr("Export &parts list as csv…"), this);
+  act = new QAction(tr("Export &parts list as CSV…"), this);
   connect(act, &QAction::triggered, this, &MainWindow::exportPartListAction);
   menu->addAction(act);
 
@@ -568,7 +568,7 @@ void MainWindow::exportPartListAction() {
     d->lastdir = Paths::defaultLocation();
   
   QFileDialog dlg;
-  dlg.setWindowTitle(tr("Export parts list as csv…"));
+  dlg.setWindowTitle(tr("Export parts list as CSV…"));
   dlg.setAcceptMode(QFileDialog::AcceptSave);
   dlg.setDefaultSuffix("schem");
   dlg.setDirectory(d->lastdir);
