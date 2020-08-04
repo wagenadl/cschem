@@ -103,8 +103,8 @@ void SceneElementData::valueTextToWidget() {
       if (mid.startsWith("V") || mid.startsWith("I"))
         mid = "<i>" + mid.left(1) + "</i>"
           + "<sub>" + mid.mid(1) + "</sub>";
-      else
-        mid = "<i>" + mid + "</i>";
+//      else
+//        mid = "<i>" + mid + "</i>";
       value->setHtml("“" + mid + "”");
     } else {
       value->setPlainText(txt);
