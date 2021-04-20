@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="147.00012"
-   height="273.00003"
-   viewBox="0 0 147.00012 273.00004"
+   width="85"
+   height="70"
+   viewBox="0 0 84.999999 70.000002"
    version="1.1"
    id="svg852"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
    sodipodi:docname="KA431.svg">
   <defs
      id="defs846" />
@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="7.8100724"
-     inkscape:cx="-125.98657"
-     inkscape:cy="93.300528"
+     inkscape:cx="-6.7306902"
+     inkscape:cy="23.043962"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -36,12 +36,12 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="3200"
-     inkscape:window-height="1756"
+     inkscape:window-width="3840"
+     inkscape:window-height="2117"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     showborder="false"
+     showborder="true"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true">
     <inkscape:grid
@@ -49,8 +49,8 @@
        id="grid1508"
        spacingx="7.0000001"
        spacingy="7.0000001"
-       originx="0.00017319622"
-       originy="161.00004"
+       originx="118.99997"
+       originy="90.999556"
        empspacing="4" />
   </sodipodi:namedview>
   <metadata
@@ -69,7 +69,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-1139.8571,-442.94821)">
+     transform="translate(-1020.8573,-575.94775)">
     <flowRoot
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.66666698px;line-height:125%;font-family:Lato;-inkscape-font-specification:'Lato, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        id="flowRoot1193"
@@ -108,7 +108,7 @@
          inkscape:connector-curvature="0" />
       <path
          id="path1528-3"
-         d="m 1008.9998,225.89957 0,36.51707"
+         d="m 1008.9998,225.89957 v 36.51707"
          style="display:inline;fill:none;stroke:#000000;stroke-width:1.94236434;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="cc" />
