@@ -60,7 +60,7 @@ SOURCES += ui/Version.cpp ui/BuildDate.cpp gerber/FrontPanelWriter.cpp
 FORMS += ui/BoardSizeDialog.ui
 
 # From CSCHEM
-INCLUDE += ../cschem
+INCLUDEPATH += ../cschem
 HEADERS += ../cschem/circuit/IDFactory.h
 HEADERS += ../cschem/circuit/Schem.h
 HEADERS += ../cschem/circuit/Circuit.h

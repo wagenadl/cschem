@@ -6,6 +6,7 @@
 #include "EData.h"
 #include "data/Object.h"
 #include "data/Point.h"
+#include <QPainterPath>
 #include "data/FilledPlane.h"
 
 class PEData {

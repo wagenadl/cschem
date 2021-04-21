@@ -7,6 +7,7 @@
 #include <QRegExp>
 #include <QPainter>
 #include <QTextDocument>
+#include <QMouseEvent>
 
 ElementView::ElementView(QWidget *parent): ComponentView(parent) {
   cvmap()[id()] = this;

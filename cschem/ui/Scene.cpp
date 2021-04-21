@@ -11,6 +11,8 @@
 #include "svg/Geometry.h"
 #include "Clipboard.h"
 #include <QMimeData>
+#include <QUrl>
+#include <QKeyEvent>
 #include "SceneAnnotation.h"
 #include "FloatingSymbol.h"
 #include "PartList.h"

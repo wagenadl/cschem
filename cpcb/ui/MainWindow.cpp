@@ -6,6 +6,7 @@
 #include "Statusbar.h"
 #include "Editor.h"
 #include "MultiCompView.h"
+#include <QCloseEvent>
 #include "data/Paths.h"
 #include "gerber/GerberWriter.h"
 #include "gerber/PasteMaskWriter.h"

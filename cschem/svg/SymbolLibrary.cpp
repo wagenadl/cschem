@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QSvgRenderer>
 #include <math.h>
+#include <QFile>
 
 SymbolLibrary::SymbolLibrary() {
 }
