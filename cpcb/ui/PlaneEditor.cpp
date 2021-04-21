@@ -1,5 +1,6 @@
 // PlaneEditor.cpp
 
+#include <QPainterPath>
 #include "PlaneEditor.h"
 #include "Editor.h"
 #include "UndoCreator.h"

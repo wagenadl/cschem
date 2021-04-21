@@ -4,7 +4,9 @@
 #include <QSvgRenderer>
 #include <QDebug>
 #include <QFileInfo>
+#include <QTransform>
 #include <iostream>
+#include "extra/iterate.h"
 
 static QMap<QString, QSharedPointer<QSvgRenderer> > &symbolRenderers() {
   static QMap<QString, QSharedPointer<QSvgRenderer> > rnd;
@@ -120,16 +122,12 @@ void SymbolData::ensureBBox() {
   QByteArray svg = toSvg(false, true);
   QSvgRenderer renderer(svg);
   QString id = groupId;
-  bbox = renderer.matrixForElement(id).mapRect(renderer.boundsOnElement(id))
+  bbox = renderer.transformForElement(id).mapRect(renderer.boundsOnElement(id))
     .toAlignedRect();
-  for (QString pin: pins.keys())
-    pins[pin]
-      = renderer.matrixForElement(id)
-      .map(renderer.boundsOnElement(pinIds[pin]).center());
-  for (QString ann: annotationBBox.keys())
-    annotationBBox[ann]
-      = renderer.matrixForElement(id)
-      .mapRect(annotationBBox[ann]);
+  for (auto [k, v]: asKeyValueRange(pins))
+    v = renderer.transformForElement(id).map(renderer.boundsOnElement(pinIds[k]).center());
+  for (auto [k, v]: asKeyValueRange(annotationBBox))
+    v = renderer.transformForElement(id).mapRect(v);
       
   newshift();
 }
