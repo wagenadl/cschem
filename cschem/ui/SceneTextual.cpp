@@ -42,7 +42,7 @@ void STData::rebuild() {
 }
 
 static QString rebuildLine(QString str) {
-  QStringList bits = str.split(" ", Qt::KeepEmptyParts);
+  QStringList bits = str.split(" ", QString::KeepEmptyParts);
 
   QRegularExpression vari("^([A-Z]+)([.0-9]*[0-9])([.,?!:;]?)$");
   QRegularExpression oper("^(=|\\+|\\-|\\<|\\>|≤|≥|≠|±|≈)$");

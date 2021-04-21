@@ -32,7 +32,7 @@ NumberConflicts::NumberConflicts(Circuit const &circ): circ(circ) {
     }
   }
 
-  conflicts = conflicted.values();
+  conflicts = conflicted.toList();
 }
 
 bool NumberConflicts::canResolve() const {

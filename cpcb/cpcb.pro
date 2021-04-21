@@ -1,13 +1,11 @@
 TEMPLATE = app
 TARGET = cpcb
 INCLUDEPATH += .
-INCLUDEPATH += ../cschem
 QT += widgets svg
 
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 MAKEFILE = Makefile-cpcb
-QMAKE_CXXFLAGS += -std=c++17
 
 mac {
   ICON = cpcb.icns
@@ -76,19 +74,19 @@ HEADERS += svg/XmlElement.h
 HEADERS += svg/XmlNode.h
 HEADERS += svg/Symbol.h
 HEADERS += svg/SymbolLibrary.h
-SOURCES += ../cschem/circuit/IDFactory.cpp
-SOURCES += ../cschem/circuit/Schem.cpp
-SOURCES += ../cschem/circuit/Circuit.cpp
-SOURCES += ../cschem/circuit/Element.cpp
-SOURCES += ../cschem/circuit/Connection.cpp
-SOURCES += ../cschem/circuit/PartNumbering.cpp
-SOURCES += ../cschem/file/FileIO.cpp
-SOURCES += ../cschem/svg/XmlElement.cpp
-SOURCES += ../cschem/svg/XmlNode.cpp
-SOURCES += ../cschem/svg/Symbol.cpp
-SOURCES += ../cschem/svg/SymbolLibrary.cpp
-SOURCES += ../cschem/circuit/SafeMap.cpp
-SOURCES += ../cschem/circuit/Net.cpp
-SOURCES += ../cschem/circuit/Textual.cpp
+SOURCES += circuit/IDFactory.cpp
+SOURCES += circuit/Schem.cpp
+SOURCES += circuit/Circuit.cpp
+SOURCES += circuit/Element.cpp
+SOURCES += circuit/Connection.cpp
+SOURCES += circuit/PartNumbering.cpp
+SOURCES += file/FileIO.cpp
+SOURCES += svg/XmlElement.cpp
+SOURCES += svg/XmlNode.cpp
+SOURCES += svg/Symbol.cpp
+SOURCES += svg/SymbolLibrary.cpp
+SOURCES += circuit/SafeMap.cpp
+SOURCES += circuit/Net.cpp
+SOURCES += circuit/Textual.cpp
 
 RESOURCES += ui/ui.qrc cpcb.qrc

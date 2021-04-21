@@ -11,7 +11,6 @@
 #include "XmlElement.h"
 #include <QXmlStreamWriter>
 #include <QDebug>
-#include <QFile>
 #include "ui/Style.h"
 #include <QTransform>
 #include "circuit/Schem.h"

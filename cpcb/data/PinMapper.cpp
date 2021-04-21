@@ -48,13 +48,13 @@ PMData::PMData(QString ref, QStringList cc, QStringList pp):
   // Construct sets of as yes unmapped names
   QSet<QString> circav;
   QSet<QString> pcbav;
-  for (QString const &s: circuitnames)
+  for (QString s: circuitnames)
     circav << s;
-  for (QString const &s: pcbnames)
+  for (QString s: pcbnames)
     pcbav << s;
 
   // First, grab exact mappings.
-  for (QString s: circav.values()) { /* The slightly odd "toList()" call
+  for (QString s: circav.toList()) { /* The slightly odd "toList()" call
 					ensures that we are iterating over
 					a copy of the set so that removing
 					items is not a problem. */
