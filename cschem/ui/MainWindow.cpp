@@ -7,7 +7,6 @@
 #include "svg/SymbolLibrary.h"
 #include "file/FileIO.h"
 #include <QMenuBar>
-#include <QCloseEvent>
 #include <QApplication>
 #include <QStatusBar>
 #include <QDir>

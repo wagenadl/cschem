@@ -1,5 +1,5 @@
 // MainWindow.cpp
-#include <QCloseEvent>
+
 #include "MainWindow.h"
 #include "Modebar.h"
 #include "Propertiesbar.h"

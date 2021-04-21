@@ -5,7 +5,6 @@
 #define SYMBOLLIBRARY_H
 
 #include "Symbol.h"
-#include <QMap>
 
 class SymbolLibrary {
 public:

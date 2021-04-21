@@ -2,7 +2,6 @@
 
 #include "Scene.h"
 #include <QDebug>
-#include <QUrl>
 #include "SceneElement.h"
 #include "SceneConnection.h"
 #include <QGraphicsSceneMouseEvent>
@@ -12,7 +11,6 @@
 #include "svg/Geometry.h"
 #include "Clipboard.h"
 #include <QMimeData>
-#include <QKeyEvent>
 #include "SceneAnnotation.h"
 #include "FloatingSymbol.h"
 #include "PartList.h"
@@ -954,8 +952,8 @@ void Scene::pasteFromClipboard() {
 	d->lib().insert(altlib.symbol(elt.symbol()));
 	  
   d->circ().merge(pp);
-  d->rebuildAsNeeded(QSet<int>(pp.elements.keyBegin(), pp.elements.keyEnd()),
-                     QSet<int>(pp.connections.keyBegin(), pp.connections.keyEnd()));
+  d->rebuildAsNeeded(QSet<int>::fromList(pp.elements.keys()),
+                     QSet<int>::fromList(pp.connections.keys()));
   clearSelection();
   for (int id: pp.elements.keys()) 
     if (d->elts.contains(id))
