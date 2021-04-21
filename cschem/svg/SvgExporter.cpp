@@ -12,6 +12,7 @@
 #include <QXmlStreamWriter>
 #include <QDebug>
 #include "ui/Style.h"
+#include <QFile>
 #include <QTransform>
 #include "circuit/Schem.h"
 

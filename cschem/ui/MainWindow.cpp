@@ -10,6 +10,7 @@
 #include <QApplication>
 #include <QStatusBar>
 #include <QDir>
+#include <QCloseEvent>
 #include <QFileDialog>
 #include <QDebug>
 #include "Style.h"
