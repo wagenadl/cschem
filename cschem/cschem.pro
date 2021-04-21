@@ -8,6 +8,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 MAKEFILE = Makefile-cschem
+QMAKE_CXXFLAGS += -std=c++17
 
 mac {
   ICON = cschem.icns
@@ -17,6 +18,7 @@ mac {
 }
 
 # Input
+HEADERS += extra/iterate.h
 HEADERS += ui/Scene.h   ui/SceneElement.h   ui/SceneConnection.h
 SOURCES += ui/Scene.cpp ui/SceneElement.cpp ui/SceneConnection.cpp
 HEADERS += ui/HoverManager.h   ui/ConnBuilder.h   svg/Paths.h

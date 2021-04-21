@@ -24,11 +24,9 @@ public:
 void Net::merge(Net const &net) {
   d->connections |= net.d->connections;
   d->pins |= net.d->pins;
-  QSet<QString> ports = QSet<QString>::fromList(d->ports);
-  for (QString p: net.ports())
-    ports << p;
-  d->ports = ports.toList();
+  d->ports += net.ports();
   d->ports.sort();
+  d->ports.removeDuplicates();
   if  (!d->ports.isEmpty())
     d->name = d->ports.first();
 }

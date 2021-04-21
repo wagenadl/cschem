@@ -21,7 +21,7 @@ QString PartNumbering::abbreviation(QString symbol) {
   };
   
   QStringList bits = symbol.split(":");
-  QSet<QString> set = QSet<QString>::fromList(bits);
+  QSet<QString> set(bits.begin(), bits.end());
   for (int k=0; k<map.size(); k+=2)
     if (set.contains(map[k]))
       return map[k+1];
