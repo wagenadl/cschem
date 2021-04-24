@@ -1081,9 +1081,12 @@ void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
     QList<QUrl> urls = md->urls();
     QString fn;
     for (QUrl url: urls) {
-      if (url.isLocalFile() && url.path().endsWith(".svg")) {
-	fn = url.path();
+      if (url.isLocalFile()) {
+          QString fn1 = url.toLocalFile();
+          if (fn1.toLower().endsWith(".svg")) {
+    fn = fn1;
 	break;
+      }
       }
     }
     if (!fn.isEmpty()) {
@@ -1132,9 +1135,13 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
     bool take = false;
     d->preact();
     clearSelection();
-    for (QUrl url: urls)
-      if (url.isLocalFile() && url.path().endsWith(".svg"))
-        take = d->importAndPlonk(url.path(), e->scenePos(), true);
+    for (QUrl url: urls) {
+      if (url.isLocalFile()) {
+          QString fn1 = url.toLocalFile();
+          if (fn1.toLower().endsWith(".svg"))
+        take = d->importAndPlonk(fn1, e->scenePos(), true);
+      }
+    }
     if (take) {
         emit libraryChanged();
 	e->accept();

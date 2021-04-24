@@ -2,23 +2,41 @@
 
 #include "Paths.h"
 #include <QDir>
+#include <QStandardPaths>
+#include <QFileInfo>
+#include <QDebug>
 
 namespace Paths {
+  static QDir installPath;
+
+  void setExecutablePath(QString s) {
+    QFileInfo exe(s);
+    installPath = exe.dir();
+    installPath.cdUp();
+    qDebug() << "installpath" << installPath.absolutePath();
+  }
+
   QString userSymbolRoot() {
-    return QDir::home().absolutePath() + "/.local/cschem/symbols";
+    QString root = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    return QDir(root).absoluteFilePath("symbols");
   }
+
   QString systemSymbolRoot() {
-    // this should be changed for windows and perhaps even mac
-    QDir lcl("/usr/local/share/cschem/symbols");
-    QDir usr("/usr/share/cschem/symbols");
-    if (lcl.exists())
-      return lcl.absolutePath();
-    else if (usr.exists())
-      return usr.absolutePath();
+    QString userroot = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QStringList allroots = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    for (QString const &root: allroots) {
+      if (root==userroot)
+        continue;
+      if (QDir(root).exists("symbols"))
+        return QDir(root).absoluteFilePath("/symbols");
+    }
+    if (QDir(installPath).exists("symbols"))
+      return installPath.absoluteFilePath("symbols");
     else
-      return "";
+      return QString();
   }
+
   QString defaultLocation() {
-    return QDir::home().absoluteFilePath("Desktop");
+    return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
   }
 };

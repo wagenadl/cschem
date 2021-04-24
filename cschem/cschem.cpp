@@ -11,21 +11,29 @@
 #include <QDebug>
 #include "svg/Paths.h"
 #include <QDir>
+#include <QSysInfo>
 
 void ensureSymbolLibrary() {
   QDir userlib(Paths::userSymbolRoot());
+  qDebug() << "userlib" << userlib.absolutePath();
   if (!userlib.exists())
     userlib.mkpath(".");
 
   if (!userlib.exists("System")) {
     QString sysloc(Paths::systemSymbolRoot());
-    if (!sysloc.isEmpty())
-      QFile(sysloc).link(userlib.absoluteFilePath("System"));
+    qDebug() << "syslib" << sysloc;
+    if (!sysloc.isEmpty()) {
+      QString linkname = userlib.absoluteFilePath("System");
+      if (QSysInfo::productType() == "windows")
+          linkname += ".lnk";
+      QFile(sysloc).link(linkname);
+    }
   }
 }
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
+  Paths::setExecutablePath(argv[0]);
 
   ensureSymbolLibrary();
   
