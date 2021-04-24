@@ -10,6 +10,7 @@ namespace Paths {
   QString userSymbolRoot();
   QString systemSymbolRoot();
   QString defaultLocation();
+  void setExecutablePath(QString);
 };
 
 #endif

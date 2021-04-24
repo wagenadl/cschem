@@ -12,7 +12,7 @@ AppPublisher=Daniel Wagenaar
 AppPublisherURL=http://www.danielwagenaar.net
 AppSupportURL=http://www.danielwagenaar.net
 AppUpdatesURL=http://www.danielwagenaar.net
-DefaultDirName={pf}\CSCHEM
+DefaultDirName={pf}\CSchem
 DisableProgramGroupPage=yes
 LicenseFile=C:\Users\Wagenaar\Documents\Progs\cschem\GPL-3.0.txt
 OutputDir=..\releases
@@ -37,6 +37,6 @@ Name: "{commonprograms}\CPCB"; Filename: "{app}\cpcb.exe"
 Name: "{commondesktop}\CPCB"; Filename: "{app}\cpcb.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\cpcb.exe"; Description: "{cm:LaunchProgram,CPCB}"; Flags: nowait postinstall skipifsilent
-Filename: "{app}\cschem.exe"; Description: "{cm:LaunchProgram,CSchem}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\bin\cpcb.exe"; Description: "{cm:LaunchProgram,CPCB}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\bin\cschem.exe"; Description: "{cm:LaunchProgram,CSchem}"; Flags: nowait postinstall skipifsilent
 

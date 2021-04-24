@@ -167,10 +167,13 @@ Symbol Symbol::load(QString svgfn) {
   if (!name.startsWith("port:")
       && !name.startsWith("part-"))
     name = "part:" + name;
-  
+  qDebug() << "symbol load" << svgfn << " named " << name << " exists " << file.exists();
+  if (svgfn.startsWith("/")) {
+      qDebug() << "starts with slash";
+  }
   if (!file.open(QFile::ReadOnly)) 
     return sym;
-
+  qDebug() << "symbol load opened";
   QXmlStreamReader sr(&file);
   int groupcount = 0;
   while (!sr.atEnd()) {
