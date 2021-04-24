@@ -31,10 +31,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "C:\Users\Wagenaar\Documents\Progs\cschem\release-x64\*"; DestDir: "{app}"; Flags: ignoreversion  recursesubdirs createallsubdirs
 
 [Icons]  
-Name: "{commonprograms}\CSchem"; Filename: "{app}\cschem.exe"
-Name: "{commondesktop}\CSchem"; Filename: "{app}\cschem.exe"; Tasks: desktopicon
-Name: "{commonprograms}\CPCB"; Filename: "{app}\cpcb.exe"
-Name: "{commondesktop}\CPCB"; Filename: "{app}\cpcb.exe"; Tasks: desktopicon
+Name: "{commonprograms}\CSchem"; Filename: "{app}\bin\cschem.exe"
+Name: "{commondesktop}\CSchem"; Filename: "{app}\bin\cschem.exe"; Tasks: desktopicon
+Name: "{commonprograms}\CPCB"; Filename: "{app}\bin\cpcb.exe"
+Name: "{commondesktop}\CPCB"; Filename: "{app}\bin\cpcb.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\bin\cpcb.exe"; Description: "{cm:LaunchProgram,CPCB}"; Flags: nowait postinstall skipifsilent
