@@ -99,7 +99,7 @@ install: all
 	cp CHANGELOG $(DOCPATH)/changelog
 	gzip -9 $(DOCPATH)/changelog
 	cp -r symbols $(SHAREPATH)/cschem/symbols
-	cp -r outline-library $(SHAREPATH)/cschem/outlines
+	cp -r pcb-outlines $(SHAREPATH)/cschem/pcb-outlines
 
 man: build/cpcb.1 build/cschem.1
 

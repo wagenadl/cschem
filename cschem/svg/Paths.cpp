@@ -11,8 +11,15 @@ namespace Paths {
 
   void setExecutablePath(QString s) {
     QFileInfo exe(s);
-    installPath = exe.dir();
-    installPath.cdUp();
+    qDebug() << "exe" << exe;
+    QDir dir = exe.dir();
+    dir.makeAbsolute();
+    qDebug() << "dir" << dir;
+    dir.cdUp();
+    if (dir.path().endsWith("build"))
+      dir.cdUp();
+    installPath = dir;
+    qDebug() << "dir" << installPath;
   }
 
   QString userSymbolRoot() {

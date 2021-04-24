@@ -8,6 +8,7 @@
 #include <QScreen>
 #include <QDir>
 #include "data/Paths.h"
+#include <QSysInfo>
 
 void ensureOutlineLibrary() {
   QDir recentdir(Paths::recentSymbolsLocation());
@@ -20,14 +21,22 @@ void ensureOutlineLibrary() {
 
   if (!userlib.exists("System")) {
     QString sysloc(Paths::systemComponentRoot());
-    if (!sysloc.isEmpty())
-      QFile(sysloc).link(userlib.absoluteFilePath("System"));
+    if (!sysloc.isEmpty()) {
+      QString linkname = userlib.absoluteFilePath("System");
+      if (QSysInfo::productType() == "windows")
+          linkname += ".lnk";
+      QFile(sysloc).link(linkname);
+    }
   }
 }
   
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
+  app.setApplicationName("cschem");
+  app.setApplicationDisplayName("CPCB");
+  Paths::setExecutablePath(argv[0]);
+  
   app.setStyleSheet("QToolButton:!checked { border: none; }\n"
                     "QToolButton:checked { border: 3px inset #666666; border-radius: 2; background-color: white;}\n");
 
