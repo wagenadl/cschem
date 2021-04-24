@@ -1127,9 +1127,12 @@ void Editor::dragEnterEvent(QDragEnterEvent *e) {
     QList<QUrl> urls = md->urls();
     QString fn;
     for (QUrl url: urls) {
-      if (url.isLocalFile() && url.path().endsWith(".svg")) {
-	fn = url.path();
-	break;
+      if (url.isLocalFile()) {
+        QString fn1 = url.toLocalFile();
+        if (fn1.toLower().endsWith(".svg")) {
+          fn = fn1;
+          break;
+        }
       }
     }
     if (!fn.isEmpty()) {
@@ -1178,10 +1181,14 @@ void Editor::dropEvent(QDropEvent *e) {
     QList<QUrl> urls = md->urls();
     bool take = false;
     clearSelection();
-    for (QUrl url: urls)
-      if (url.isLocalFile() && url.path().endsWith(".svg"))
-        take = insertComponent(url.path(),
+    for (QUrl url: urls) {
+      if (url.isLocalFile()) {
+        QString fn1 = url.toLocalFile();
+        if (fn1.toLower().endsWith(".svg"))
+          take = insertComponent(fn1,
 			       Point::fromMils(d->widget2mils.map(e->pos())));
+      }
+    }
     if (take) {
       update();
       e->accept();

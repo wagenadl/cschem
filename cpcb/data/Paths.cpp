@@ -2,26 +2,49 @@
 
 #include "Paths.h"
 #include <QDir>
+#include <QFileInfo>
+#include <QStandardPaths>
 
 namespace Paths {
+  static QDir installPath;
+
+  void setExecutablePath(QString s) {
+    QFileInfo exe(s);
+    installPath = exe.dir();
+    installPath.cdUp();
+  }
+
   QString userComponentRoot() {
-    return QDir::home().absolutePath() + "/.local/cschem/outlines";
+    QString root
+      = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    return QDir(root).absoluteFilePath("pcb-outlines");
   }
+  
   QString recentSymbolsLocation() {
-    return QDir::home().absolutePath() + "/.local/cschem/cpcb-recent";
+  QString root
+    = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+  return QDir(root).absoluteFilePath("cpcb-recent");
   }
+  
   QString defaultLocation() {
-    return QDir::home().absoluteFilePath("Desktop");
+    return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
   }
+
   QString systemComponentRoot() {
-    // of course, this will have to change for windows and perhaps mac
-    QDir lcl("/usr/local/share/cschem/outlines");
-    QDir usr("/usr/share/cschem/outlines");
-    if (lcl.exists())
-      return lcl.absolutePath();
-    else if (usr.exists())
-      return usr.absolutePath();
+    QString userroot
+      = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QStringList allroots
+      = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    for (QString const &root: allroots) {
+      if (root==userroot)
+        continue;
+      if (QDir(root).exists("pcb-outlines"))
+        return QDir(root).absoluteFilePath("pcb-outlines");
+    }
+    if (QDir(installPath).exists("pcb-outlines"))
+      return installPath.absoluteFilePath("pcb-outlines");
     else
-      return "";
+      return QString();
   }
 };
+  
