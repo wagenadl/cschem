@@ -11,6 +11,7 @@ namespace Paths {
   QString systemComponentRoot();
   QString recentSymbolsLocation();
   QString defaultLocation();
+  void setExecutablePath(QString);
 };
 
 #endif

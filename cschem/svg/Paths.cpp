@@ -13,22 +13,24 @@ namespace Paths {
     QFileInfo exe(s);
     installPath = exe.dir();
     installPath.cdUp();
-    qDebug() << "installpath" << installPath.absolutePath();
   }
 
   QString userSymbolRoot() {
-    QString root = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QString root
+      = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     return QDir(root).absoluteFilePath("symbols");
   }
 
   QString systemSymbolRoot() {
-    QString userroot = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    QStringList allroots = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    QString userroot
+      = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QStringList allroots
+      = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
     for (QString const &root: allroots) {
       if (root==userroot)
         continue;
       if (QDir(root).exists("symbols"))
-        return QDir(root).absoluteFilePath("/symbols");
+        return QDir(root).absoluteFilePath("symbols");
     }
     if (QDir(installPath).exists("symbols"))
       return installPath.absoluteFilePath("symbols");

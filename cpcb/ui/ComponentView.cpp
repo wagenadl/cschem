@@ -165,9 +165,12 @@ void ComponentView::dragEnterEvent(QDragEnterEvent *e) {
     QList<QUrl> urls = md->urls();
     QString fn;
     for (QUrl url: urls) {
-      if (url.isLocalFile() && url.path().endsWith(".svg")) {
-	fn = url.path();
-	break;
+      if (url.isLocalFile()) {
+        QString fn1 = url.toLocalFile();
+        if (fn1.toLower().endsWith(".svg")) {
+          fn = fn1;
+          break;
+        }
       }
     }
     if (!fn.isEmpty()) {
@@ -196,9 +199,12 @@ void ComponentView::dropEvent(QDropEvent *e) {
     QList<QUrl> urls = md->urls();
     QString fn;
     for (QUrl url: urls) {
-      if (url.isLocalFile() && url.path().endsWith(".svg")) {
-	fn = url.path();
-	break;
+      if (url.isLocalFile()) {
+        QString fn1 = url.toLocalFile();
+        if (fn1.toLower().endsWith(".svg")) {
+          fn = fn1;
+          break;
+        }
       }
     }
     Group g0;
