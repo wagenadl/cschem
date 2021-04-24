@@ -33,6 +33,8 @@ void ensureSymbolLibrary() {
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
+  app.setApplicationName("cschem");
+  app.setApplicationDisplayName("CSchem");
   Paths::setExecutablePath(argv[0]);
 
   ensureSymbolLibrary();
