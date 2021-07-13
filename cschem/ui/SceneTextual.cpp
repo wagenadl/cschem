@@ -4,6 +4,7 @@
 #include "circuit/Textual.h"
 #include "Style.h"
 #include "Scene.h"
+#include "circuit/PartNumbering.h"
 
 #include <QPainter>
 #include <QTextDocument>
@@ -115,18 +116,114 @@ static QString rebuildLine(QString str) {
 
   return bits.join("&nbsp;");
 }
-  
+
+static QString subscript(QString ifx) {
+  ifx.replace("0", "₀");
+  ifx.replace("1", "₁");
+  ifx.replace("2", "₂");
+  ifx.replace("3", "₃");
+  ifx.replace("4", "₄");
+  ifx.replace("5", "₅");
+  ifx.replace("6", "₆");
+  ifx.replace("7", "₇");
+  ifx.replace("8", "₈");
+  ifx.replace("9", "₉");
+  ifx.replace(".", "܂");
+  return ifx;
+}
+
+static QString dehtml(QString ifx) {
+  ifx.replace("₀", "0");
+  ifx.replace("₁", "1");
+  ifx.replace("₂", "2");
+  ifx.replace("₃", "3");
+  ifx.replace("₄", "4");
+  ifx.replace("₅", "5");
+  ifx.replace("₆", "6");
+  ifx.replace("₇", "7");
+  ifx.replace("₈", "8");
+  ifx.replace("₉", "9");
+  ifx.replace("܂", ".");
+  ifx.replace("&lt;", "<");
+  ifx.replace("&gt;", ">");
+  ifx.replace("&amp;", "&");
+  ifx.replace("&#10;", "\n");
+  ifx.replace("−", "-");
+  return ifx;
+}  
+
+static QString lineToHtml(QString line, QSet<QString> const &allnames) {
+  QRegularExpression minus("(^|(?<=\\s))-($|(?=[\\s.0-9]))");
+  QStringList bits;
+  QString bit;
+  bool inword = false;
+  int len = line.length();
+  for (int pos=0; pos<len; pos++) {
+    QChar c = line[pos];
+    if (bit=="") {
+      bit = c;
+      inword = c.isLetterOrNumber();
+    } else if ((inword==c.isLetterOrNumber())
+               || (inword && c==QChar('.')
+                   && pos<len-1 && line[pos+1].isNumber())) {
+        bit += c;
+    } else {
+      bits += bit;
+      bit = c;
+      inword = c.isLetterOrNumber();      
+    }
+  }
+  if (bit != "")
+    bits += bit;
+
+  QString html;
+  for (QString bit: bits) {
+    bit.replace("&", "&amp;");
+    bit.replace("<", "&lt;");
+    bit.replace(">", "&gt;");
+    bit.replace(minus, "−");
+    if (allnames.contains(bit)) {
+      QString pfx = PartNumbering::prefix(bit);
+      QString sfx = bit.mid(pfx.size());
+      html += "<i>" + pfx + "</i>" + "<sub>" + sfx + "</sub>";
+    } else if ((bit.startsWith("V") || bit.startsWith("I"))
+               && allnames.contains(bit.mid(1))) {
+      QString wht = bit.left(1);
+      QString name = bit.mid(1);
+      QString pfx = PartNumbering::prefix(name);
+      QString sfx = name.mid(pfx.size());
+      html += "<i>" + wht + "</i>"
+        + "<sub>"
+        + "<i>" + pfx + "</i>"
+        + subscript(sfx)
+        + "</sub>";
+    } else {
+      html += bit;
+    }
+  }
+  return html;
+}
 
 void STData::rebuildText() {
-  txt.text.replace("<=", "≤");
+  QSet<QString> allnames;
+  if (scene)
+    allnames = scene->circuit().allNames();
+  txt.text.replace("<=", "≤"); 
   txt.text.replace(">=", "≥");
+  txt.text.replace("<<", "≪");
+  txt.text.replace(">>", "≫");
   txt.text.replace("!=", "≠");
   txt.text.replace("+-", "±");
   txt.text.replace("~~", "≈");
   txt.text.replace("Ohm", "Ω");
+  txt.text.replace("uF", "μF");
+  txt.text.replace("uH", "μH");
+  txt.text.replace("uA", "μA");
+  txt.text.replace("uV", "μV");
+  // cannot do the same for "us".
   QStringList lines = txt.text.split("\n");
   for (int n=0; n<lines.size(); n++)
-    lines[n] = rebuildLine(lines[n]);
+    lines[n] = lineToHtml(lines[n], allnames);
   
   QTextCursor c(st->textCursor());
   int pos = c.position();
@@ -160,7 +257,7 @@ SceneTextual::SceneTextual(class Scene *parent, class Textual const &txt):
   d->scene->addItem(this);
   connect(document(), &QTextDocument::contentsChanged,
 	  [this]() {
-	    QString t = document()->toPlainText();
+	    QString t = dehtml(document()->toPlainText());
 	    if (t==d->txt.text)
 	      return;
 	    d->txt.text = t;

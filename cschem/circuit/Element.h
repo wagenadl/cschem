@@ -40,11 +40,11 @@ public:
   Element translated(QPoint delta) const;
   /* Following are convenience interfaces to the corresponding functions
      in PartNumbering. */
-  QString prefix() const;
-  int number() const; 
-  int subNumber() const;
-  QString cname() const;
-  QString csuffix() const;
+  QString prefix() const; // "R" part of "R3"
+  int number() const;  ; // 3 part of "A3.2"; 0 if none
+  int subNumber() const; // 2 part of "A3.2"; 0 if none
+  QString cname() const; // "A3" part of "A3.2"
+  QString csuffix() const; // ".2" part of "A3.2"
   bool isNameWellFormed() const;
 public:
   void translate(QPoint delta);

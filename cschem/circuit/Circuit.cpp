@@ -176,20 +176,20 @@ int Circuit::renumber(int start, QMap<int, int> *mapout) {
   QList<Element> elts = elements.values();
   elements.clear();
 
+  int newid = start;
   for (Element elt: elts) {
     int oldid = elt.id;
-    elt.id = start;
-    elements.remove(oldid);
-    elements.insert(start, elt);
-    eltmap[oldid] = start;
-    start ++;
+    elt.id = newid;
+    elements.insert(newid, elt);
+    eltmap[oldid] = newid;
+    newid++;
   }
 
   QList<Connection> cons = connections.values();
   connections.clear();
   
   for (Connection con: cons) {
-    con.id = start;
+    con.id = newid;
     if (eltmap.contains(con.fromId))
       con.fromId = eltmap[con.fromId];
     else if (con.fromId>0) {
@@ -203,24 +203,24 @@ int Circuit::renumber(int start, QMap<int, int> *mapout) {
       qDebug() << "Circuit::renumber: Disconnecting from nonexistent element";
     }
     if (con.isValid()) {
-      connections.insert(start, con);
-      start++;
+      connections.insert(newid, con);
+      newid++;
     }
   }
 
   QList<Textual> txts = textuals.values();
+  textuals.clear();
+  
   for (Textual txt: txts) {
-    int oldid = txt.id;
-    txt.id = start;
-    textuals.remove(oldid);
-    textuals.insert(start, txt);
-    start ++;
+    txt.id = newid;
+    textuals.insert(newid, txt);
+    newid ++;
   }
   
   if (mapout)
     *mapout = eltmap;
   
-  return start - 1;
+  return newid - 1;
 }
 
 Circuit Circuit::subset(QSet<int> elts) const {
@@ -344,3 +344,11 @@ int Circuit::containerOf(int id) const {
   }
   return -1;
 } 
+
+QSet<QString> Circuit::allNames() const {
+  QSet<QString> names;
+  for (Element const &e: elements)
+    if (e.name != "")
+      names.insert(e.name);
+  return names;
+}
