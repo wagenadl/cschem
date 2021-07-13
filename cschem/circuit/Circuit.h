@@ -71,6 +71,7 @@ public:
   /* Returns ID for named element or -1. Prefers to return container. */
   QSet<int> containedElements(int containerId) const;
   int containerOf(int elt) const; // or -1
+  QSet<QString> allNames() const;
 public:
   SafeMap<int, Element> elements;
   SafeMap<int, Connection> connections;

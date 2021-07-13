@@ -159,7 +159,8 @@ void MainWindow::createActions() {
 
   act = new QAction(tr("Copy circuit &image to clipboard"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
-  connect(act, &QAction::triggered, this, &MainWindow::circuitToClipboardAction);
+  connect(act, &QAction::triggered, this,
+          &MainWindow::circuitImageToClipboardAction);
   menu->addAction(act);
 
   act = new QAction(tr("Copy parts lis&t to clipboard"), this);
@@ -606,7 +607,7 @@ void MainWindow::exportPartListAction() {
   }
 }
 
-void MainWindow::circuitToClipboardAction() {
+void MainWindow::circuitImageToClipboardAction() {
   QRectF rr = d->scene->itemsBoundingRect().adjusted(-2, -2, 2, 2);
   QSizeF ss = rr.size();
   QSizeF sdest = 2*ss;

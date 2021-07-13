@@ -39,7 +39,7 @@ public slots:
   void flipAction();
   void exportCircuitAction();
   void exportPartListAction();
-  void circuitToClipboardAction();
+  void circuitImageToClipboardAction();
   void partListToClipboardAction();
   void resolveConflictsAction();
 public:
