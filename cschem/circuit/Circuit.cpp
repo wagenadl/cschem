@@ -352,3 +352,4 @@ QSet<QString> Circuit::allNames() const {
       names.insert(e.name);
   return names;
 }
+

@@ -34,10 +34,13 @@ public:
   void ensureConnectionDB();
   QPoint pinPosition(int elt, QString pin) const;
   QPoint pinPosition(Element const &elt, QString pin) const;
+  QPoint preferredRoutingDirection(int elt, QString pin) const;
+  QPoint preferredRoutingDirection(Element const &elt, QString pin) const;
   QPolygon connectionPath(Connection const &con) const;
   QTransform symbolToCircuitTransformation(Element const &elt) const;
   QTransform symbolToSceneElementTransformation(Element const &elt) const;
   QTransform symbolToSceneTransformation(Element const &elt) const;
+  QRectF elementBBox(Element const &elt) const;
 public:
   Circuit circ;
   SymbolLibrary lib;
@@ -466,4 +469,86 @@ QPolygon Geometry::viaFromPath(int con, QPolygon path) const {
     return viaFromPath(d->circ.connections[con], path);
   else
     return QPolygon();
+}
+
+QPoint Geometry::preferredRoutingDirection(class PinID const &pid) const {
+  if (d)
+    return d->preferredRoutingDirection(pid.element(), pid.pin());
+  else
+    return QPoint();
+}
+
+QPoint Geometry::preferredRoutingDirection(int eltid, QString pin) const {
+  if (d)
+    return d->preferredRoutingDirection(d->circ.elements[eltid], pin);
+  else
+    return QPoint();
+}
+
+QPoint Geometry::preferredRoutingDirection(Element const &elt, QString pin) const {
+  if (d)
+    return d->preferredRoutingDirection(elt, pin);
+  else
+    return QPoint();
+}
+
+QPoint GeometryData::preferredRoutingDirection(int eltid, QString pin) const {
+  return preferredRoutingDirection(circ.elements[eltid], pin);
+}
+
+QPoint GeometryData::preferredRoutingDirection(Element const &elt,
+                                               QString pin) const {
+  Symbol const &prt(lib.symbol(elt.symbol()));
+  QRectF bbox = elementBBox(elt);
+  QPoint cm = bbox.center().toPoint();
+  QPoint pinpos = pinPosition(elt, pin);
+  QList<QPoint> otherpinpos;
+  for (QString p: prt.pinNames())
+    if (p!=pin)
+      otherpinpos << pinPosition(elt, p);
+  int leftmerit = 0;
+  int rightmerit = 0;
+  int upmerit = 0;
+  int downmerit = 0;
+  for (QPoint p: otherpinpos) {
+    if (p.x()==pinpos.x()) {
+      // avoid crashing through other pin
+      if (p.y() > pinpos.y())
+        downmerit -= 1000;
+      else
+        upmerit -= 1000;
+    }
+    if (p.y()==pinpos.y()) {
+      // avoid crashing through other pin
+      if (p.x() > pinpos.x())
+        rightmerit -= 1000;
+      else
+        leftmerit -= 1000;
+    }
+  }
+  int dx = cm.x() - pinpos.x();
+  int dy = cm.y() - pinpos.y();
+  rightmerit -= dx; // prefer to move away from cm
+  leftmerit += dx;
+  upmerit += dy;
+  downmerit -= dy;
+  QList<QPoint> dirs{QPoint(-1, 0), QPoint(1, 0), QPoint(0, -1), QPoint(0, 1)};
+  QList<int> merits{leftmerit, rightmerit, upmerit, downmerit};
+  QPoint bestdir;
+  int merit = -1000000;
+  for (int k=0; k<4; k++) {
+    if (merits[k] > merit) {
+      bestdir = dirs[k];
+      merit = merits[k];
+    }
+  }
+  return bestdir;
+}
+
+QRectF GeometryData::elementBBox(Element const &elt) const {
+  Symbol const &prt(lib.symbol(elt.symbol()));
+  QTransform xf(symbolToCircuitTransformation(elt));
+  QRectF bb0(prt.shiftedBBox());
+  QRectF bb = xf.mapRect(bb0);
+  return bb;
 }
