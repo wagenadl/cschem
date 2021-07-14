@@ -604,16 +604,22 @@ void SceneData::key_delete() {
     connbuilder = 0;
   } else {
     if (hovermanager->onElement()) {
+      QSet<int> sel = scene->selectedElements();
       preact();
+      scene->clearSelection();
       CircuitMod cm(circ(), lib());
       cm.deleteElement(hovermanager->element());
       rebuildAsNeeded(cm);
+      scene->selectElements(sel);
     } else if (hovermanager->onConnection()) {
+      QSet<int> sel = scene->selectedElements();
       preact();
+      scene->clearSelection();
       CircuitMod cm(circ(), lib());
       cm.deleteConnectionSegment(hovermanager->connection(),
                                  hovermanager->segment());
       rebuildAsNeeded(cm);
+      scene->selectElements(sel);
     } else {
       QSet<int> ee = selectedElements();
       if (!ee.isEmpty()) {
@@ -622,6 +628,7 @@ void SceneData::key_delete() {
         cm.deleteElements(ee);
         rebuildAsNeeded(cm);
       }
+      scene->clearSelection();
     }
   }
 }
