@@ -21,6 +21,15 @@ public:
   QPoint pinPosition(class PinID const &) const;
   QPoint pinPosition(int elt, QString pin) const;
   QPoint pinPosition(class Element const &elt, QString pin) const;
+  QPoint preferredRoutingDirection(class PinID const &) const;
+  QPoint preferredRoutingDirection(int elt, QString pin) const;
+  QPoint preferredRoutingDirection(Element const &elt, QString pin) const;
+  /* PREFERREDROUTINGDIRECTION - Which we to route from pin given choice
+     (1,0) means to the right
+     (-1,0) means to the left
+     (0,1) means down
+     (0,-1) means up
+  */
   QPoint centerOfPinMass(int elt) const;
   QPoint centerOfPinMass(class Element const &elt) const;
   QPoint centerOfPinMass() const; // for whole circuit

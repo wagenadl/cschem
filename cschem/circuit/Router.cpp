@@ -23,25 +23,33 @@ Connection Router::reroute(int conid,
   QPoint origEnd = origgeom.pinPosition(con.to());
   QPoint newStart = newgeom.pinPosition(con.from());
   QPoint newEnd = newgeom.pinPosition(con.to());
+  QPoint prefStartDir = newgeom.preferredRoutingDirection(con.from());
+  QPoint prefEndDir = newgeom.preferredRoutingDirection(con.to());
 
   if (con.via.isEmpty()) {
     // might have to create elbow
     QPoint delta = newEnd - newStart;
     if (delta.x() && delta.y()) {
       QPoint center = (QPointF(newEnd + newStart)/2).toPoint();
-      QPoint odelta = origEnd - origStart;
-      if (odelta.isNull()) {
-	// originally no length at all
-        con.via << QPoint(newStart.x(), newEnd.y());
-	// this could be smarter; we could choose which delta goes first
-      } else if (abs(odelta.x()) < abs(odelta.y())) {
-        // it was *originally* a (more-or-less) vertical line
-        con.via << QPoint(newStart.x(), center.y());
-        con.via << QPoint(newEnd.x(), center.y());
+      // we are not smart enough to avoid routing through element
+      if (prefStartDir.x()) {
+        if (prefEndDir.x()) {
+          // route hor/vert/hor
+          con.via << QPoint(center.x(), newStart.y());
+          con.via << QPoint(center.x(), newEnd.y());
+        } else {
+          // route hor/vert
+          con.via << QPoint(newEnd.x(), newStart.y());
+        }
       } else {
-	// more like a horizontal line
-        con.via << QPoint(center.x(), newStart.y());
-        con.via << QPoint(center.x(), newEnd.y());
+        if (prefEndDir.y()) {
+          // route vert/hor/vert
+          con.via << QPoint(newStart.x(), center.y());
+          con.via << QPoint(newEnd.x(), center.y());
+        } else {
+          // route vert/hor
+          con.via << QPoint(newStart.x(), newEnd.y());
+        }
       }
     }
   } else {
