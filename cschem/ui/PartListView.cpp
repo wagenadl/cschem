@@ -67,7 +67,8 @@ void PartListView::selectElements(QSet<int> const &set) {
   QMap<int, int> id2row;
   for (int row=0; row<model()->rowCount(); row++) {
     int id
-      = model()->data(model()->index(row, int(PartList::Column::Id))).toInt();
+      = sortProxy->data(sortProxy
+                        ->index(row, int(PartList::Column::Id))).toInt();
     id2row[id] = row;
   }
   QSet<int> old = selectedElements();
@@ -76,17 +77,17 @@ void PartListView::selectElements(QSet<int> const &set) {
     if (set.contains(id))
       nw << id;
 
-  int C = model()->columnCount();
+  int C = sortProxy->columnCount();
   for (int id: nw-old) {
     int row = id2row[id];
-    QItemSelection sel(model()->index(row, 0),
-		       model()->index(row, C-1));
+    QItemSelection sel(sortProxy->index(row, 0),
+		       sortProxy->index(row, C-1));
     selectionModel()->select(sel, QItemSelectionModel::Select);
   }
   for (int id: old-nw) {
     int row = id2row[id];
-    QItemSelection sel(model()->index(row, 0),
-		       model()->index(row, C-1));
+    QItemSelection sel(sortProxy->index(row, 0),
+		       sortProxy->index(row, C-1));
     selectionModel()->select(sel, QItemSelectionModel::Deselect);
   }
 }
