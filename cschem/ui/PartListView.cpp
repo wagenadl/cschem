@@ -47,8 +47,7 @@ PartList *PartListView::model() const {
 void PartListView::showEvent(QShowEvent *e) {
   QTableView::showEvent(e);
   hideColumn(int(PartList::Column::Id));
-  resizeColumnToContents(int(PartList::Column::Name));
-  resizeColumnToContents(int(PartList::Column::Value));
+  resizeEvent(0);
 }
 
 void PartListView::resetWidth() {
@@ -92,3 +91,14 @@ void PartListView::selectElements(QSet<int> const &set) {
   }
 }
 
+void PartListView::resizeEvent(QResizeEvent *e) {
+  if (e)
+    QTableView::resizeEvent(e);
+  resizeColumnToContents(int(PartList::Column::Name));
+  resizeColumnToContents(int(PartList::Column::Value));
+  setColumnWidth(int(PartList::Column::Notes),
+                 viewport()->width()
+                 - columnWidth(int(PartList::Column::Name))
+                 - columnWidth(int(PartList::Column::Value)));
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+}
