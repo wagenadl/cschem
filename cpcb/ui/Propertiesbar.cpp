@@ -11,6 +11,7 @@
 #include <QRadioButton>
 #include <QToolButton>
 #include <QLineEdit>
+#include <QTextEdit>
 #include "data/Object.h"
 
 const Dim minRingWidth(Dim::fromInch(0.015));
@@ -74,6 +75,12 @@ public:
   QAction *left, *up, *right, *down;
   QAction *flipped;
   QAction *fliph, *flipv;
+
+  QWidget *grouppropg;
+  QAction *grouppropa;
+  QLineEdit *pkg;
+  QLineEdit *partno;
+  QTextEdit *notes;
   
   bool metric;
   
@@ -104,6 +111,7 @@ private:
   void fillArcAngle(QSet<int> const &objects, Group const &here);
   void fillLayer(QSet<int> const &objects, Group const &here);
   void fillFontSize(QSet<int> const &objects, Group const &here);    
+  void fillGroupProps(QSet<int> const &objects, Group const &here);
 };
 
 void PBData::checkLayer(Layer l) {
@@ -288,8 +296,8 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
-  bool got = false;
   // set ref if we have precisely one hole or group, otherwise clear it
+  bool got = false;
   text->setText("");
   int kignore = -1;
   for (int k: objects) {
@@ -429,6 +437,13 @@ void PBData::fillFontSize(QSet<int> const &objects, Group const &here) {
     editor->properties().fs = fs->value();  
 }
 
+void PBData::fillGroupProps(QSet<int> const &/*objects*/, Group const &here) {
+  qDebug() << "fillgroupprops";
+  pkg->setText(here.pkg);
+  partno->setText(here.partno);
+  notes->document()->setPlainText(here.notes);
+}
+
 void PBData::getPropertiesFromSelection() {
   QSet<int> objects(editor->selectedObjects());
   QSet<Point> points(editor->selectedPoints());
@@ -441,7 +456,8 @@ void PBData::getPropertiesFromSelection() {
   fillRefText(objects, here);
   fillArcAngle(objects, here);  
   fillLayer(objects, here);  
-  fillFontSize(objects, here);    
+  fillFontSize(objects, here);
+  fillGroupProps(objects, here);
 }
 
 int PBData::arcAngle() const {
@@ -580,6 +596,11 @@ void PBData::hideAndShow() {
   case Mode::PickupTrace:
     break;
   }
+
+  qDebug() << "crumbs" << (editor->breadcrumbs().size()>0);
+  grouppropa->setVisible(editor->breadcrumbs().size()>0);
+  qDebug() << "vis" << grouppropg->isVisible() << partno->isVisible();
+  
 }
 
 void PBData::hsEdit() {
@@ -739,6 +760,14 @@ void PBData::setupUI() {
     return s;
   };
 
+  auto makeTEdit = [](QWidget *container) {
+    Q_ASSERT(container);
+    Q_ASSERT(container->layout());
+    auto *s = new QTextEdit;
+    container->layout()->addWidget(s);
+    return s;
+  };
+
   auto makeLabel = [](QWidget *container, QString txt, QString tip="") {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
@@ -808,7 +837,34 @@ void PBData::setupUI() {
     parent->parentWidget()->addAction(a);
     return a;
   };
-    
+
+
+  grouppropg = makeGroup(&grouppropa);
+  auto *cnt = makeContainer(grouppropg);
+  makeLabel(cnt, "Pkg.", "Package");
+  pkg = makeEdit(cnt);
+  QObject::connect(pkg, &QLineEdit::textEdited,
+		   [this](QString txt) { editor->setGroupPackage(txt); });
+  QObject::connect(pkg, &QLineEdit::returnPressed,
+		   [this]() { editor->setGroupPackage(pkg->text()); });
+  cnt = makeContainer(grouppropg);
+  makeLabel(cnt, "Part", "Part number");
+  partno = makeEdit(cnt);
+  QObject::connect(partno, &QLineEdit::textEdited,
+		   [this](QString txt) { editor->setGroupPartno(txt); });
+  QObject::connect(partno, &QLineEdit::returnPressed,
+		   [this]() { editor->setGroupPartno(partno->text()); });
+  cnt = makeContainer(grouppropg);
+  makeLabel(cnt, "Notes", "Part notes");
+  notes = makeTEdit(cnt);
+  QFrame* line = new QFrame();
+  line->setFrameShape(QFrame::HLine);
+  line->setFrameShadow(QFrame::Sunken);
+  grouppropg->layout()->addWidget(line);
+  QObject::connect(notes, &QTextEdit::textChanged,
+		   [this]() { editor->setGroupNotes(notes->document()
+                                                    ->toPlainText()); });
+  
   xyg = makeGroup(&xya);
   xc = makeContainer(xyg);
   makeLabel(xc, "X", "Distance from left");
@@ -951,6 +1007,8 @@ void PBData::setupUI() {
 		   [this]() { editor->setArcAngle(180); });
   QObject::connect(arc_90, &QAction::triggered,
 		   [this]() { editor->setArcAngle(-90); });
+
+
   QWidget *x = new QWidget;
   x->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
   parent->addWidget(x);

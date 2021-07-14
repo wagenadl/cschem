@@ -20,6 +20,7 @@ public:
   QString ref;
   QString notes;
   QString pkg;
+  QString partno;
 public:
   Group();
   ~Group();

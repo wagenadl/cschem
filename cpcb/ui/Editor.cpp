@@ -366,8 +366,8 @@ void Editor::doubleClickOn(Point p, int id) {
       d->editPinName(id, fave);
     } else {
       enterGroup(id);
-      if (fave>=0)
-	select(fave);
+      //if (fave>=0)
+      //select(fave);
     }
   } break;
   case Object::Type::Hole: {
@@ -423,6 +423,7 @@ bool Editor::enterGroup(int sub) {
   if (here.contains(sub) && here.object(sub).isGroup()) {
     d->crumbs << sub;
     d->updateOnWhat(true);
+    selectionChanged(false);  
     update();
     return true;
   } else {
@@ -436,6 +437,7 @@ bool Editor::leaveGroup() {
     return false;
   int gid = d->crumbs.takeLast();
   d->currentGroup().ensureRefText(gid);
+  selectionChanged(false);
   d->updateOnWhat(true);
   update();
   return true;
@@ -1430,5 +1432,29 @@ void Editor::selectTrace(bool wholenet) {
     allids |= newids;
     ids = newids;
     newids.clear();
+  }
+}
+
+void Editor::setGroupPackage(QString t) {
+  qDebug() << "setgrouppkg" << t << currentGroup().pkg;
+  if (t != currentGroup().pkg) {
+    UndoCreator uc(d, true);
+    d->currentGroup().pkg = t;
+  }
+}
+
+void Editor::setGroupPartno(QString t) {
+  qDebug() << "setgrouppart" << t << currentGroup().partno;
+  if (t != currentGroup().partno) {
+    UndoCreator uc(d, true);
+    d->currentGroup().partno = t;
+  }
+}
+
+void Editor::setGroupNotes(QString t) {
+  qDebug() << "setgroupnotes" << t << currentGroup().notes;
+  if (t != currentGroup().notes) {
+    UndoCreator uc(d, true);
+    d->currentGroup().notes = t;
   }
 }

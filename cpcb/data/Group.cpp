@@ -30,6 +30,9 @@ Group::~Group() {
 Group::Group(Group const &o) {
   d = o.d;
   ref = o.ref;
+  notes = o.notes;
+  pkg = o.pkg;
+  partno = o.partno;
 }
 
 Group &Group::operator=(Group const &o) {
@@ -37,6 +40,9 @@ Group &Group::operator=(Group const &o) {
     return *this;
   d = o.d;
   ref = o.ref;
+  notes = o.notes;
+  pkg = o.pkg;
+  partno = o.partno;
   return *this;
 }
 
@@ -623,6 +629,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
     s.writeAttribute("notes", t.notes);
   if (!t.pkg.isEmpty())
     s.writeAttribute("pkg", t.pkg);
+  if (!t.partno.isEmpty())
+    s.writeAttribute("partno", t.partno);
   for (Object const &o: t.d->obj) {
     if (o.isGroup()) {
       s.writeStartElement("gr");
@@ -676,7 +684,14 @@ bool Group::saveComponent(int id, QString fn) {
 
       sw.writeNamespace("http://www.danielwagenaar.net/cpcb-ns.html", "cpcb");
       sw.writeStartElement("cpcb:part");
-      sw.writeAttribute("pkg", QFileInfo(fn).baseName());
+      if (pkg=="")
+        sw.writeAttribute("pkg", QFileInfo(fn).baseName());
+      else
+        sw.writeAttribute("pkg", pkg);
+      if (partno!="")
+        sw.writeAttribute("partno", partno);
+      if (notes!="")
+        sw.writeAttribute("notes", notes);
       sw.writeDefaultNamespace("http://www.danielwagenaar.net/cpcb-ns.html");
   
       Group const &grp(obj.asGroup());
@@ -762,6 +777,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   t.ref = a.value("ref").toString();
   t.notes = a.value("notes").toString();
   t.pkg = a.value("pkg").toString();
+  t.partno = a.value("partno").toString();
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
@@ -790,7 +806,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 }
 
 QDebug operator<<(QDebug d, Group const &t) {
-  d << "Group(" << t.ref;
+  d << "Group(" << t.ref << t.pkg << t.partno << t.notes;
   for (Object const &o: t.d->obj)
     d << "    " << o << "\n";
   d << ")";

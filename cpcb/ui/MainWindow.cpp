@@ -484,7 +484,7 @@ void MWData::about() {
 
 void MWData::makeParts() {
   Q_ASSERT(editor);
-  mcvdock = new QDockWidget("Parts", mw);
+  mcvdock = new QDockWidget("Parts to be placed", mw);
   mcv = new MultiCompView;
   mcv->setScale(editor->pixelsPerMil());
   mcv->linkEditor(editor);
@@ -681,6 +681,7 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::Key_Equal));
   view->addAction("Zoom &out", [this]() { editor->zoomOut(); },
 		  QKeySequence(Qt::Key_Minus));
+  view->addAction("Show &parts to be placed", [this]() { showParts(); });
   
   auto *help = mb->addMenu("&Help");
   help->addAction("&About", [this]() { about(); });
