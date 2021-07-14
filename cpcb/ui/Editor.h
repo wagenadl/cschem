@@ -79,6 +79,9 @@ public slots:
   void setRotation(int); // this is not the way to rotate or flip things
   void setFlipped(bool); // this is not the way to rotate or flip things
   void setMode(Mode);
+  void setGroupPackage(QString);
+  void setGroupPartno(QString);
+  void setGroupNotes(QString);
   void formGroup();
   void dissolveGroup();
   void deleteSelected();

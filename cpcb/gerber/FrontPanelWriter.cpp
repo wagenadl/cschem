@@ -121,7 +121,7 @@ void FPWData::writeSvgFooter() {
   out << "</svg>\n";
 }
 
-void FPWData::writeGroup(Group const &g, Point offset, Point const &masteroff) {
+void FPWData::writeGroup(Group const &g, Point /*offset*/, Point const &masteroff) {
   // the offset is subtracted from all objects
   Point off = masteroff - inferredOffset(g).flippedLeftRight();
   qDebug() << "  off = " << off;

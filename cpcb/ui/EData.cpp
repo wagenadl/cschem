@@ -883,3 +883,4 @@ void EData::editPinName(int groupid, int hole_pad_id) {
     group.setPinRef(hole_pad_id, pin_ref);
   }
 }
+
