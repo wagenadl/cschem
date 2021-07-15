@@ -127,6 +127,7 @@ public:
   class Tracer *tracer;
   class PlaneEditor *planeeditor;
   Point userorigin;
+  class BOM *bom;
 };
 
 

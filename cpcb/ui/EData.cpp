@@ -25,6 +25,7 @@ EData::EData(Editor *ed): ed(ed) {
   resizeTimer = 0;
   tracer = 0;
   planeeditor = 0;
+  bom = 0;
 }
 
 Dim EData::pressMargin() const {

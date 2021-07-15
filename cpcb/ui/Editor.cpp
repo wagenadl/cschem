@@ -13,6 +13,7 @@
 #include <QTimer>
 #include <algorithm>
 
+#include "ui/BOM.h"
 
 Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   QPalette p(palette());
@@ -24,6 +25,7 @@ Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   setAcceptDrops(true);
   setFocusPolicy(Qt::StrongFocus);
   scaleToFit();
+  d->bom = new BOM(this);
 }
 
 Editor::~Editor() {
@@ -66,6 +68,7 @@ bool Editor::load(QString fn) {
   d->linkedschematic.link(d->layout.board().linkedschematic);
   emit schematicLinked(!d->layout.board().linkedschematic.isEmpty());
   emit boardChanged(d->layout.board());
+  d->bom->rebuild();
   return !d->layout.root().isEmpty();
 }
 
@@ -1436,25 +1439,79 @@ void Editor::selectTrace(bool wholenet) {
 }
 
 void Editor::setGroupPackage(QString t) {
-  qDebug() << "setgrouppkg" << t << currentGroup().pkg;
-  if (t != currentGroup().pkg) {
+  NodeID nodeid = breadcrumbs();
+  if (nodeid.size()==1)
+    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
+                                  int(BOM::Column::Package)), t);
+  setGroupPackage(breadcrumbs(), t);
+}
+
+void Editor::setGroupPackage(NodeID path, QString t) {
+  if (t != d->layout.root().subgroup(path).pkg) {
     UndoCreator uc(d, true);
-    d->currentGroup().pkg = t;
+    d->layout.root().subgroup(path).pkg = t;
   }
 }
 
 void Editor::setGroupPartno(QString t) {
-  qDebug() << "setgrouppart" << t << currentGroup().partno;
-  if (t != currentGroup().partno) {
+  NodeID nodeid = breadcrumbs();
+  if (nodeid.size()==1)
+    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
+                                  int(BOM::Column::PartNo)), t);
+  setGroupPartno(breadcrumbs(), t);
+}
+
+void Editor::setGroupPartno(NodeID path, QString t) {
+  if (t != d->layout.root().subgroup(path).partno) {
     UndoCreator uc(d, true);
-    d->currentGroup().partno = t;
+    d->layout.root().subgroup(path).partno = t;
   }
 }
 
 void Editor::setGroupNotes(QString t) {
-  qDebug() << "setgroupnotes" << t << currentGroup().notes;
-  if (t != currentGroup().notes) {
+  NodeID nodeid = breadcrumbs();
+  if (nodeid.size()==1)
+    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
+                                  int(BOM::Column::Notes)), t);
+  setGroupNotes(breadcrumbs(), t);
+}
+
+void Editor::setGroupNotes(NodeID path, QString t) {
+  if (t != d->layout.root().subgroup(path).notes) {
     UndoCreator uc(d, true);
-    d->currentGroup().notes = t;
+    d->layout.root().subgroup(path).notes = t;
   }
+}
+
+BOM *Editor::bom() const {
+  return d->bom;
+}
+
+bool Editor::loadBOM(QString fn) {
+  leaveAllGroups();
+  
+  QList<BOMRow> rows(bom()->readAndVerifyCSV(fn));
+  if (rows.isEmpty())
+    return false;
+
+  UndoCreator uc(d, true);
+
+  QMap<QString, BOMRow> byref;
+  for (BOMRow const &row: rows)
+    byref[row.ref] = row;
+  Group &root(d->layout.root());
+  for (int k: root.keys()) {
+    Object &obj(root.object(k));
+    if (obj.isGroup()) {
+      Group &grp(obj.asGroup());
+      if (byref.contains(grp.ref)) {
+        BOMRow row = byref[grp.ref];
+        grp.notes = row.notes;
+        grp.pkg = row.pkg;
+        grp.partno = row.partno;
+      }
+    }
+  }
+  bom()->rebuild();
+  return true;    
 }
