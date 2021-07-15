@@ -57,6 +57,8 @@ HEADERS += ui/BoardSizeDialog.h   ui/Expression.h
 SOURCES += ui/BoardSizeDialog.cpp ui/Expression.cpp
 HEADERS += ui/Version.h   ui/BuildDate.h   gerber/FrontPanelWriter.h
 SOURCES += ui/Version.cpp ui/BuildDate.cpp gerber/FrontPanelWriter.cpp
+HEADERS += ui/BOM.h   ui/BOMView.h   data/CSV.h
+SOURCES += ui/BOM.cpp ui/BOMView.cpp data/CSV.cpp
 FORMS += ui/BoardSizeDialog.ui
 
 # From CSCHEM
@@ -89,5 +91,7 @@ SOURCES += ../cschem/svg/SymbolLibrary.cpp
 SOURCES += ../cschem/circuit/SafeMap.cpp
 SOURCES += ../cschem/circuit/Net.cpp
 SOURCES += ../cschem/circuit/Textual.cpp
+HEADERS += ../cschem/ui/HtmlDelegate.h
+SOURCES += ../cschem/ui/HtmlDelegate.cpp
 
 RESOURCES += ui/ui.qrc cpcb.qrc

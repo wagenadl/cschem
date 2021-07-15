@@ -17,6 +17,8 @@
 #include "Version.h"
 #include "gerber/FrontPanelWriter.h"
 #include "ORenderer.h"
+#include "BOM.h"
+#include "BOMView.h"
 
 #include <QClipboard>
 #include <QTemporaryDir>
@@ -32,12 +34,16 @@
 #include <QBitmap>
 #include <QPainter>
 
+ 
+
 class MWData {
 public:
   MWData(MainWindow *mw): mw(mw) {
     editor = 0;
     mcv = 0;
     mcvdock = 0;
+    bomv = 0;
+    bomvdock = 0;
   }
   void setWindowTitle();
   void resetFilename();
@@ -45,11 +51,13 @@ public:
   void makeToolbars();
   void makeMenus();
   void makeParts();
+  void makeBOM();
   void makeEditor();
   void makeConnections();
   void showHideParts();
   void showParts();
   void hideParts();
+  void showBOM();
   void fillBars();
   void boardSizeDialog();
   void openDialog();
@@ -58,6 +66,8 @@ public:
   bool exportAsDialog();
   bool exportPasteMaskDialog();
   bool exportFrontPanelDialog();
+  bool exportBOMDialog();
+  bool importBOMDialog();
   bool saveAsDialog();
   bool saveImmediately();
   void copyPCBImage(bool forprinting=true);
@@ -66,6 +76,9 @@ public:
   void openLibrary();
   void saveComponentDialog();
   void verifyNets();
+  QString getSaveFilename(QString ext, QString caption); // updates pwd
+  QString getOpenFilename(QString ext, QString caption, QString desc="");
+  // updates pwd
 public:
   MainWindow *mw;
   Modebar *modebar;
@@ -73,11 +86,54 @@ public:
   Statusbar *statusbar;
   MultiCompView *mcv;
   QDockWidget *mcvdock;
+  BOMView *bomv;
+  QDockWidget *bomvdock;
   Editor *editor;
   QString pwd;
   QString compwd;
   QString filename;
 };
+
+QString MWData::getOpenFilename(QString ext, QString caption, QString desc) {
+  if (pwd.isEmpty())
+    pwd = Paths::defaultLocation();
+
+  if (desc=="")
+    desc = ext.toUpper() + " files (*." + ext + ")";
+
+  QString fn = QFileDialog::getOpenFileName(0, caption, pwd, desc);
+  if (fn.isEmpty())
+    return "";
+
+  pwd = QFileInfo(fn).absolutePath();
+  return QFileInfo(fn).absoluteFilePath();
+}
+
+
+QString MWData::getSaveFilename(QString ext, QString caption) {
+  if (pwd.isEmpty())
+    pwd = Paths::defaultLocation();
+
+  QString path = pwd;
+  if (!filename.isEmpty()) {
+    if (!path.endsWith("/"))
+      path += "/";
+    path += QFileInfo(filename).baseName();
+    path += "." + ext;
+  }
+  
+  QString fn = QFileDialog::getSaveFileName(0, caption,
+					    path,
+					    ext.toUpper() + " files (*."
+                                            + ext + ")");
+  if (fn.isEmpty())
+    return "";
+
+  if (!fn.endsWith("." + ext))
+    fn += "." + ext;
+  pwd = QFileInfo(fn).absolutePath();
+  return QFileInfo(fn).absoluteFilePath();
+}
 
 void MWData::resetFilename() {
   filename = "";
@@ -129,6 +185,13 @@ void MWData::showParts() {
   mcv->setRoot(editor->pcbLayout().root());
 }
 
+void MWData::showBOM() {
+  if (!bomv)
+    makeBOM();
+  bomvdock->show();
+  mw->addDockWidget(Qt::RightDockWidgetArea, bomvdock);
+}
+
 void MWData::newWindow() {
   auto *w = new MainWindow();
   w->resize(mw->size());
@@ -136,12 +199,8 @@ void MWData::newWindow() {
 }
 
 void MWData::openDialog() {
-  if (pwd.isEmpty())
-    pwd = Paths::defaultLocation();
-  
-  QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
-					    pwd,
-					    "PCB layouts (*.cpcb)");
+  QString fn = getOpenFilename("cpcb", "Select file to open…",
+                               "PCB layouts (*.cpcb)");
   if (!fn.isEmpty()) {
     auto *w = editor->pcbLayout().root().isEmpty() ? mw : new MainWindow();
     w->open(fn);
@@ -263,17 +322,10 @@ void MWData::verifyNets() {
 }
 
 void MWData::linkSchematicDialog() {
-  if (pwd.isEmpty()) {
-     pwd = Paths::defaultLocation();
-     QDir::home().mkpath(pwd);
-  }
-  QString fn = QFileDialog::getOpenFileName(0, "Link schematic…",
-					    pwd,
-					    "Schematics (*.schem *.cschem)");
+  QString fn = getOpenFilename("cschem", "Link schematic…",
+                               "Schematics (*.schem *.cschem)");
   if (fn.isEmpty())
     return;
-
-  pwd = QFileInfo(fn).absolutePath();
 
   if (editor->linkSchematic(fn))
     showParts();
@@ -312,25 +364,9 @@ void MWData::copyPCBImage(bool forprinting) {
 }
 
 bool MWData::exportPasteMaskDialog() {
-  if (pwd.isEmpty())
-    pwd = Paths::defaultLocation();
-
-  QString path = pwd;
-  if (!filename.isEmpty()) {
-    if (!path.endsWith("/"))
-      path += "/";
-    path += QFileInfo(filename).baseName();
-    path += ".svg";
-  }
-  
-  QString fn = QFileDialog::getSaveFileName(0, "Export paste mask as…",
-					    path,
-					    "SVG files (*.svg)");
+  QString fn = getSaveFilename("svg", "Export paste mask as…");
   if (fn.isEmpty())
     return false;
-  if (!fn.endsWith(".svg"))
-    fn += ".svg";
-  pwd = QFileInfo(fn).absolutePath();
 
   bool metric = editor->pcbLayout().board().isEffectivelyMetric();
   QString unit = metric ? "mm" : "inch";
@@ -363,26 +399,25 @@ bool MWData::exportPasteMaskDialog() {
   return false;
 }
 
-bool MWData::exportFrontPanelDialog() {
-  if (pwd.isEmpty())
-    pwd = Paths::defaultLocation();
-
-  QString path = pwd;
-  if (!filename.isEmpty()) {
-    if (!path.endsWith("/"))
-      path += "/";
-    path += QFileInfo(filename).baseName();
-    path += ".svg";
-  }
-  
-  QString fn = QFileDialog::getSaveFileName(0, "Export front panel as…",
-					    path,
-					    "SVG files (*.svg)");
+bool MWData::exportBOMDialog() {
+  QString fn = getSaveFilename("csv", "Export BOM as…");
   if (fn.isEmpty())
     return false;
-  if (!fn.endsWith(".svg"))
-    fn += ".svg";
-  pwd = QFileInfo(fn).absolutePath();
+  return editor->bom()->saveAsCSV(fn);
+}
+
+bool MWData::importBOMDialog() {
+  QString fn = getOpenFilename("csv", "Import BOM…");
+  if (fn.isEmpty())
+    return false;
+  return editor->loadBOM(fn);
+}
+  
+
+bool MWData::exportFrontPanelDialog() {
+  QString fn = getSaveFilename("svg", "Export front panel as…");
+  if (fn.isEmpty())
+    return false;
 
   FrontPanelWriter pmw;
   if (pmw.write(editor->pcbLayout(), fn))
@@ -397,45 +432,25 @@ bool MWData::exportFrontPanelDialog() {
 
 
 bool MWData::exportAsDialog() {
-  if (pwd.isEmpty())
-    pwd = Paths::defaultLocation();
-
-  QString path = pwd;
-  if (!filename.isEmpty()) {
-    if (!path.endsWith("/"))
-      path += "/";
-    path += QFileInfo(filename).baseName();
-    path += ".zip";
-  }
-  QString fn = QFileDialog::getSaveFileName(0, "Export as…",
-					    path,
-					    "Zip files (*.zip)");
+  QString fn = getSaveFilename("zip", "Export as Gerber…");
   if (fn.isEmpty())
     return false;
-
-  pwd = QFileInfo(fn).absolutePath();
-  while (fn.endsWith(".zip"))
-    fn=fn.left(fn.size()-4);
-
-  QDir cwd = QDir::current();
   
-  if (!fn.startsWith("/"))
-    fn = cwd.absoluteFilePath(fn);
-  QString base = QFileInfo(fn).fileName();
+  QString base = QFileInfo(fn).baseName();
   QTemporaryDir td;
   bool ok = false;
   if (td.isValid()) {
     if (GerberWriter::write(editor->pcbLayout(), td.filePath(base))) {
+      QDir cwd = QDir::current();
       QDir::setCurrent(td.path());
-      QString zipfn = fn + ".zip";
       QStringList args;
-      args << "-r" << zipfn << base;
-      QDir::root().remove(zipfn);
+      args << "-r" << fn << base;
+      QDir::root().remove(fn);
       ok = QProcess::execute("zip", args)==0;
+      QDir::setCurrent(cwd.absolutePath());
     }
   }
   QDir(td.filePath(base)).removeRecursively();
-  QDir::setCurrent(cwd.absolutePath());
   if (!ok)
     QMessageBox::warning(mw, "cpcb",
                          "Could not export pcb as “"
@@ -496,6 +511,15 @@ void MWData::makeParts() {
   showParts();
 }
 
+void MWData::makeBOM() {
+  Q_ASSERT(editor);
+  bomvdock = new QDockWidget("BOM", mw);
+  bomv = new BOMView;
+  bomvdock->setWidget(bomv);
+  bomv->setModel(editor->bom());
+  showBOM();
+}  
+
 void MWData::makeToolbars() {
   mw->addToolBar(Qt::LeftToolBarArea,
 		 modebar = new Modebar(mw));
@@ -537,7 +561,8 @@ void MWData::makeMenus() {
   file->addAction("Copy PCB &image to clipboard", [this]() { copyPCBImage(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
 		  
-  
+  file->addAction("Export &BOM as CSV…",  [this]() { exportBOMDialog(); });
+  file->addAction("&Import BOM from CSV…",  [this]() { importBOMDialog(); });
   
   file->addAction("&Quit", []() { QApplication::quit(); });
 
@@ -682,6 +707,7 @@ void MWData::makeMenus() {
   view->addAction("Zoom &out", [this]() { editor->zoomOut(); },
 		  QKeySequence(Qt::Key_Minus));
   view->addAction("Show &parts to be placed", [this]() { showParts(); });
+  view->addAction("Show &BOM", [this]() { showBOM(); });
   
   auto *help = mb->addMenu("&Help");
   help->addAction("&About", [this]() { about(); });

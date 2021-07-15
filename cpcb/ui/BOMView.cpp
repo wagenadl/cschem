@@ -1,8 +1,8 @@
-// PartListView.cpp
+// BOMView.cpp
 
-#include "PartListView.h"
-#include "PartList.h"
-#include "HtmlDelegate.h"
+#include "BOMView.h"
+#include "BOM.h"
+#include "../cschem/ui/HtmlDelegate.h"
 #include <QItemSelectionModel>
 #include <QSet>
 #include <QDebug>
@@ -21,60 +21,63 @@ bool SortProxy::lessThan(QModelIndex const &a, QModelIndex const &b) const {
 }
 
 
-PartListView::PartListView(QWidget *parent): QTableView(parent) {
+BOMView::BOMView(QWidget *parent): QTableView(parent) {
   HtmlDelegate *delegate = new HtmlDelegate(this);
-  setItemDelegateForColumn(int(PartList::Column::Name), delegate);
+  setItemDelegateForColumn(int(BOM::Column::Ref), delegate);
   setSelectionBehavior(SelectRows);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   sortProxy = new SortProxy(this);
   pl = 0;
 }
 
-PartListView::~PartListView() {
+BOMView::~BOMView() {
 }
 
-void PartListView::setModel(PartList *pl0) {
+void BOMView::setModel(BOM *pl0) {
   pl = pl0;
   sortProxy->setSourceModel(pl);
   QTableView::setModel(sortProxy);
-  sortByColumn(int(PartList::Column::Name), Qt::AscendingOrder);
-  // setSortingEnabled(true); // this enables user choice in sorting behavior
+  sortByColumn(int(BOM::Column::Ref), Qt::AscendingOrder);
 }
 
-PartList *PartListView::model() const {
+BOM *BOMView::model() const {
   return pl;
 }
 
-void PartListView::showEvent(QShowEvent *e) {
+void BOMView::showEvent(QShowEvent *e) {
   QTableView::showEvent(e);
-  hideColumn(int(PartList::Column::Id));
+  hideColumn(int(BOM::Column::Id));
   resetWidth();
 }
 
-void PartListView::resetWidth() {
-  resizeColumnToContents(int(PartList::Column::Name));
-  resizeColumnToContents(int(PartList::Column::Value));
-  setColumnWidth(int(PartList::Column::Notes),
+void BOMView::resetWidth() {
+  resizeColumnToContents(int(BOM::Column::Ref));
+  resizeColumnToContents(int(BOM::Column::Value));
+  resizeColumnToContents(int(BOM::Column::Package));
+  resizeColumnToContents(int(BOM::Column::PartNo));
+  setColumnWidth(int(BOM::Column::Notes),
                  viewport()->width()
-                 - columnWidth(int(PartList::Column::Name))
-                 - columnWidth(int(PartList::Column::Value)));
+                 - columnWidth(int(BOM::Column::Ref))
+                 - columnWidth(int(BOM::Column::Package))
+                 - columnWidth(int(BOM::Column::PartNo))
+                 - columnWidth(int(BOM::Column::Value)));
 }
 
-QSet<int> PartListView::selectedElements() const {
+QSet<int> BOMView::selectedElements() const {
   QModelIndexList rows
-    = selectionModel()->selectedRows(int(PartList::Column::Id));
+    = selectionModel()->selectedRows(int(BOM::Column::Id));
   QSet<int> res;
   for (auto const &idx: rows)
     res << idx.data().toInt();
   return res;
 }
 
-void PartListView::selectElements(QSet<int> const &set) {
+void BOMView::selectElements(QSet<int> const &set) {
   QMap<int, int> id2row;
   for (int row=0; row<model()->rowCount(); row++) {
     int id
       = sortProxy->data(sortProxy
-                        ->index(row, int(PartList::Column::Id))).toInt();
+                        ->index(row, int(BOM::Column::Id))).toInt();
     id2row[id] = row;
   }
   QSet<int> old = selectedElements();
@@ -98,7 +101,7 @@ void PartListView::selectElements(QSet<int> const &set) {
   }
 }
 
-void PartListView::resizeEvent(QResizeEvent *e) {
+void BOMView::resizeEvent(QResizeEvent *e) {
   QTableView::resizeEvent(e);
   resetWidth();
 }

@@ -38,6 +38,8 @@ public:
   double pixelsPerMil() const;
   class PlaneEditor *planeEditor() const;
   Point userOrigin() const;
+  class BOM *bom() const;
+  bool loadBOM(QString fn);
 public slots:
   void setAngleConstraint(bool);
   void setGrid(Dim);
@@ -82,6 +84,9 @@ public slots:
   void setGroupPackage(QString);
   void setGroupPartno(QString);
   void setGroupNotes(QString);
+  void setGroupPackage(NodeID, QString);
+  void setGroupPartno(NodeID, QString);
+  void setGroupNotes(NodeID, QString);
   void formGroup();
   void dissolveGroup();
   void deleteSelected();
