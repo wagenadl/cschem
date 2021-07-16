@@ -54,6 +54,7 @@ public slots:
   bool leaveGroup(); // returns true unless already at top
   bool leaveAllGroups();
   void select(int, bool add=false); // emits signal if selection changed
+  void select(QSet<int>);
   void selectPoint(Point, bool add=false);
   void deselectPoint(Point);
   void deselect(int); // ditto

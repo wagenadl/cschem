@@ -76,6 +76,8 @@ public:
   void openLibrary();
   void saveComponentDialog();
   void verifyNets();
+  void selectionToBOM();
+  void selectionFromBOM();
   QString getSaveFilename(QString ext, QString caption); // updates pwd
   QString getOpenFilename(QString ext, QString caption, QString desc="");
   // updates pwd
@@ -517,7 +519,7 @@ void MWData::makeBOM() {
   bomv = new BOMView;
   bomvdock->setWidget(bomv);
   bomv->setModel(editor->bom());
-  showBOM();
+  //  showBOM();
 }  
 
 void MWData::makeToolbars() {
@@ -777,12 +779,18 @@ void MWData::makeConnections() {
                        // statusbar->showPlanes();
                      }
                    });
-    
   
 
   // Editor to us
   QObject::connect(editor, &Editor::changedFromSaved,
 		   [this]() { setWindowTitle(); });
+
+  // Selection between editor and BOM
+  QObject::connect(editor, &Editor::selectionChanged,
+                   [this]() { selectionToBOM(); });
+  QObject::connect(bomv->selectionModel(),
+                   &QItemSelectionModel::selectionChanged,
+                   [this]() { selectionFromBOM(); });
 }
 
 void MWData::fillBars() {
@@ -798,6 +806,7 @@ MainWindow::MainWindow(): QMainWindow() {
   d = new MWData(this);
   d->makeEditor();
   d->makeToolbars();
+  d->makeBOM();
   d->makeMenus();
   d->makeConnections();
   d->fillBars();
@@ -837,4 +846,20 @@ void MainWindow::closeEvent(QCloseEvent *e) {
       break;
     }
   }
+}
+
+void MWData::selectionToBOM() {
+  qDebug() << "selection to bom";
+  if (editor->breadcrumbs().size())
+    return; // we only care at top level
+  QSet<int> sel = editor->selectedObjects();
+  bomv->selectElements(sel);
+}
+
+void MWData::selectionFromBOM() {
+  qDebug() <<"selection from bom";
+  if (editor->breadcrumbs().size())
+    return; // we only care at top level
+  QSet<int> sel = bomv->selectedElements();
+  editor->select(sel);
 }

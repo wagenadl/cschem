@@ -471,6 +471,24 @@ void Editor::select(int id, bool add) {
   d->emitSelectionStatus();
 }
 
+void Editor::select(QSet<int> ids) {
+  d->invalidateStuckPoints();
+  Group &here(d->currentGroup());
+
+  d->selection.clear();
+  d->selpts.clear();
+  d->purepts.clear();
+
+  for (int id: ids) {
+    if (here.contains(id)) {
+      d->selection.insert(id);
+      d->selectPointsOf(id);
+    }
+  }
+  update();
+  d->emitSelectionStatus();
+}
+
 void Editor::selectPoint(Point p, bool add) {
   d->invalidateStuckPoints();
   if (!add) {
