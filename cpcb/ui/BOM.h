@@ -42,6 +42,7 @@ public:
   void rebuild(); // regrab circuit from editor, update rows as needed.
   QList<QStringList> asTable() const;
   bool saveAsCSV(QString fn) const;
+  bool saveShoppingListAsCSV(QString fn) const;
   QList<BOMRow> readAndVerifyCSV(QString fn) const; // does not store data,
   // ... merely returns it
 private:
