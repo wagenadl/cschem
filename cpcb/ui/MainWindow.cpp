@@ -54,9 +54,7 @@ public:
   void makeBOM();
   void makeEditor();
   void makeConnections();
-  void showHideParts();
   void showParts();
-  void hideParts();
   void showBOM();
   void fillBars();
   void boardSizeDialog();
@@ -66,6 +64,7 @@ public:
   bool exportAsDialog();
   bool exportPasteMaskDialog();
   bool exportFrontPanelDialog();
+  bool exportShoppingListDialog();
   bool exportBOMDialog();
   bool importBOMDialog();
   bool saveAsDialog();
@@ -164,34 +163,28 @@ void MWData::boardSizeDialog() {
   }
 }
 
-void MWData::showHideParts() {
-  if (!mcv)
-    makeParts();
-  if (mcvdock->isVisible())
-    hideParts();
-  else
-    showParts();
-}
-
-void MWData::hideParts() {
-  if (mcvdock)
-    mcvdock->hide();
-}
-
 void MWData::showParts() {
   if (!mcv)
     makeParts();
-  mcvdock->show();
-  mw->addDockWidget(Qt::LeftDockWidgetArea, mcvdock);
-  mcv->setSchem(editor->linkedSchematic().schematic());
-  mcv->setRoot(editor->pcbLayout().root());
+  if (mcvdock->isVisible()) { 
+      mcvdock->hide();
+  } else {
+    mcvdock->show();
+    mw->addDockWidget(Qt::LeftDockWidgetArea, mcvdock);
+    mcv->setSchem(editor->linkedSchematic().schematic());
+    mcv->setRoot(editor->pcbLayout().root());
+  }
 }
 
 void MWData::showBOM() {
   if (!bomv)
     makeBOM();
-  bomvdock->show();
-  mw->addDockWidget(Qt::RightDockWidgetArea, bomvdock);
+  if (bomvdock->isVisible()) {
+    bomvdock->hide();
+  } else {
+    bomvdock->show();
+    mw->addDockWidget(Qt::RightDockWidgetArea, bomvdock);
+  }
 }
 
 void MWData::newWindow() {
@@ -401,6 +394,13 @@ bool MWData::exportPasteMaskDialog() {
   return false;
 }
 
+bool MWData::exportShoppingListDialog() {
+  QString fn = getSaveFilename("csv", "Export shopping list as…");
+  if (fn.isEmpty())
+    return false;
+  return editor->bom()->saveShoppingListAsCSV(fn);
+}
+
 bool MWData::exportBOMDialog() {
   QString fn = getSaveFilename("csv", "Export BOM as…");
   if (fn.isEmpty())
@@ -519,6 +519,7 @@ void MWData::makeBOM() {
   bomv = new BOMView;
   bomvdock->setWidget(bomv);
   bomv->setModel(editor->bom());
+  bomvdock->hide();
   //  showBOM();
 }  
 
@@ -564,6 +565,9 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
 		  
   file->addAction("Export &BOM as CSV…",  [this]() { exportBOMDialog(); });
+  file->addAction("Export shopping &list as CSV…",  [this]() {
+                           exportShoppingListDialog();
+                                                    });
   file->addAction("&Import BOM from CSV…",  [this]() { importBOMDialog(); });
   
   file->addAction("&Quit", []() { QApplication::quit(); });
@@ -708,8 +712,10 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::Key_Equal));
   view->addAction("Zoom &out", [this]() { editor->zoomOut(); },
 		  QKeySequence(Qt::Key_Minus));
-  view->addAction("Show &parts to be placed", [this]() { showParts(); });
-  view->addAction("Show &BOM", [this]() { showBOM(); });
+  view->addAction("Show &parts to be placed", [this]() { showParts(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
+  view->addAction("Show &BOM", [this]() { showBOM(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_B));
   
   auto *help = mb->addMenu("&Help");
   help->addAction("&About", [this]() { about(); });

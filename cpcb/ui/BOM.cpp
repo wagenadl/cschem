@@ -39,6 +39,8 @@ void BOMData::reloadData() {
       int elt = circuit.elementByName(g.ref);
       if (elt>0) {
         row.value = circuit.elements[elt].value;
+        if (row.value=="")
+          row.value = circuit.elements[elt].subtype;
         if (row.notes=="")
           row.notes = circuit.elements[elt].notes;
       }
@@ -213,6 +215,32 @@ bool BOM::saveAsCSV(QString fn) const {
   }
 }
 
+bool BOM::saveShoppingListAsCSV(QString fn) const {
+  QMap<QString, QStringList> partno2refs;
+  for (BOMRow const &elt: d->elements) 
+    partno2refs[elt.partno] << elt.ref;
+  partno2refs.remove("");
+  
+  QFile f(fn);
+  if (f.open(QFile::WriteOnly)) {
+    QTextStream ts(&f);
+    ts << "\"Qty\",\"Part no\",\"Refs\"\n";
+    for (QString partno: partno2refs.keys()) {
+      QStringList refs = partno2refs[partno];
+      int n = refs.size();
+      ts << n;
+      ts << ",";
+      ts << CSV::quote(partno);
+      ts << ",";
+      ts << CSV::quote(refs.join(", "));
+      ts << "\n";
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
+  
 QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
   QFile f(fn);
   if (!f.open(QFile::ReadOnly))
