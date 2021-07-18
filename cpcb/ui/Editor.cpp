@@ -1112,10 +1112,17 @@ int Editor::selectedComponent(QString *msg) const {
 }
 
 bool Editor::saveComponent(int id, QString fn) {
+  Object const &obj(d->layout.root().subgroup(d->crumbs).object(id));
+  if (!obj.isGroup())
+    return false;
+  Group const &grp(obj.asGroup());
+  int oldrot = grp.nominalRotation();
+  QString oldpkg = grp.pkg;
+  UndoCreator uc(d);
+  if (oldrot || oldpkg=="")
+    uc.realize(); // the rotation and/or pkg name is about to change
+  
   bool ok = d->layout.root().subgroup(d->crumbs).saveComponent(id, fn);
-  if (ok)
-    d->layout.root().subgroup(d->crumbs).object(id).asGroup().pkg
-      = QFileInfo(fn).baseName();
   return ok;
 }
 
