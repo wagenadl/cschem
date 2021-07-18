@@ -241,8 +241,12 @@ void MWData::saveComponentDialog() {
      compwd = Paths::userComponentRoot();
      QDir::home().mkpath(compwd);
   }
+  QString gname = editor->selectedComponentGroup().pkg;
+  QString sug = compwd;
+  if (gname!="")
+    sug += "/" + gname + ".svg";
   QString fn = QFileDialog::getSaveFileName(0, "Save component…",
-					    compwd,
+					    sug,
 					    "PCB components (*.svg)");
   if (fn.isEmpty())
     return;

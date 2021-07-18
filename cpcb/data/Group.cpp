@@ -671,6 +671,11 @@ bool Group::saveComponent(int id, QString fn) {
     qDebug() << "Failed to open" << fn;
     return false;
   }
+
+
+  object(id).asGroup().d->nominalrotation = 0;
+  object(id).asGroup().pkg = QFileInfo(fn).baseName();
+
   QXmlStreamWriter sw(&file);
   sw.setAutoFormatting(true);
   sw.setAutoFormattingIndent(2);
@@ -694,10 +699,7 @@ bool Group::saveComponent(int id, QString fn) {
 
       Group const &grp(obj.asGroup());
       
-      if (grp.pkg=="")
-        sw.writeAttribute("pkg", QFileInfo(fn).baseName());
-      else
-        sw.writeAttribute("pkg", grp.pkg);
+      sw.writeAttribute("pkg", grp.pkg);
       if (grp.partno!="")
         sw.writeAttribute("partno", grp.partno);
       if (grp.notes!="")
@@ -720,10 +722,6 @@ bool Group::saveComponent(int id, QString fn) {
       sw.writeCurrentToken(sr);
     }
   }
-
-  object(id).asGroup().d->nominalrotation = 0;
-  if (object(id).asGroup().pkg=="")
-    object(id).asGroup().pkg = QFileInfo(fn).baseName();
   
   return true;
 }

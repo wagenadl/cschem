@@ -1111,8 +1111,18 @@ int Editor::selectedComponent(QString *msg) const {
   return gid;
 }
 
+Group const &Editor::selectedComponentGroup() const {
+  static Group g0;
+  int id = selectedComponent();
+  Object const &obj(currentGroup().object(id));
+  if (obj.isGroup())
+    return obj.asGroup();
+  else
+    return g0;
+}
+
 bool Editor::saveComponent(int id, QString fn) {
-  Object const &obj(d->layout.root().subgroup(d->crumbs).object(id));
+  Object const &obj(currentGroup().object(id));
   if (!obj.isGroup())
     return false;
   Group const &grp(obj.asGroup());
