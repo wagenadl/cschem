@@ -15,8 +15,10 @@ public:
   GData() {
     lastid = 0;
     reftextid = 0;
+    nominalrotation = 0;
   }
   int reftextid;
+  int nominalrotation;
   mutable bool hasbbox;
   mutable Rect bbox;
 };
@@ -152,6 +154,7 @@ void Group::translate(Point p) {
 void Group::freeRotate(int degcw, Point const &p) {
   d.detach();
   d->hasbbox = false;
+  d->nominalrotation -= degcw;
   for (Object &o: d->obj)
     o.freeRotate(degcw, p);
 }  
@@ -159,6 +162,7 @@ void Group::freeRotate(int degcw, Point const &p) {
 void Group::rotateCCW(Point p) {
   d.detach();
   d->hasbbox = false;
+  d->nominalrotation += 90;
   for (Object &o: d->obj)
     o.rotateCCW(p);
 }
@@ -166,6 +170,7 @@ void Group::rotateCCW(Point p) {
 void Group::rotateCW(Point p) {
   d.detach();
   d->hasbbox = false;
+  d->nominalrotation -= 90;  
   for (Object &o: d->obj)
     o.rotateCW(p);
 }
@@ -631,6 +636,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
     s.writeAttribute("pkg", t.pkg);
   if (!t.partno.isEmpty())
     s.writeAttribute("partno", t.partno);
+  if (t.d->nominalrotation!=0)
+    s.writeAttribute("nomrot", QString::number(t.d->nominalrotation));
   for (Object const &o: t.d->obj) {
     if (o.isGroup()) {
       s.writeStartElement("gr");
@@ -690,7 +697,7 @@ bool Group::saveComponent(int id, QString fn) {
       if (grp.pkg=="")
         sw.writeAttribute("pkg", QFileInfo(fn).baseName());
       else
-        sw.writeAttribute("pkg", pkg);
+        sw.writeAttribute("pkg", grp.pkg);
       if (grp.partno!="")
         sw.writeAttribute("partno", grp.partno);
       if (grp.notes!="")
@@ -713,6 +720,11 @@ bool Group::saveComponent(int id, QString fn) {
       sw.writeCurrentToken(sr);
     }
   }
+
+  object(id).asGroup().d->nominalrotation = 0;
+  if (object(id).asGroup().pkg=="")
+    object(id).asGroup().pkg = QFileInfo(fn).baseName();
+  
   return true;
 }
 
@@ -780,6 +792,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   t.notes = a.value("notes").toString();
   t.pkg = a.value("pkg").toString();
   t.partno = a.value("partno").toString();
+  t.d->nominalrotation = a.value("nomrot").toInt();
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
@@ -808,7 +821,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 }
 
 QDebug operator<<(QDebug d, Group const &t) {
-  d << "Group(" << t.ref << t.pkg << t.partno << t.notes;
+  d << "Group(" << t.ref << t.pkg << t.partno << t.notes
+    << t.d->nominalrotation;
   for (Object const &o: t.d->obj)
     d << "    " << o << "\n";
   d << ")";
@@ -1121,3 +1135,6 @@ Group Group::subset(QSet<int> selection) const {
   return g;
 }
   
+int Group::nominalRotation() const {
+  return d->nominalrotation;
+}

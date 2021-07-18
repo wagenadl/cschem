@@ -59,6 +59,7 @@ public:
   void rotateCCW(Point p);
   void rotateCW(Point p);
   void freeRotate(int degcw, Point const &p);
+  int nominalRotation() const;
   void flipLeftRight(Dim x);
   void flipUpDown(Dim y);
   void translate(Point p);
@@ -67,6 +68,10 @@ public:
   // that represents our Ref., or 0 if none.
   void setRefTextId(int);
   bool saveComponent(int id, QString fn); // id must be a subgroup
+  /* saveComponent is not const, because
+     (a) it resets the subgroup's nominal rotation
+     (b) it sets the subgroup's pkg name if previously empty.
+  */
   int insertComponent(QString fn);
   QSet<Point> pinPoints() const; // hole and pad centers of immediate children
   QSet<Point> pinPoints(Layer) const; // same, limited to given layer
