@@ -28,6 +28,7 @@ public:
   EProps &properties(); // for Propertiesbar to directly affect
   int selectedComponent(QString *msg=0) const;
   // returns ID if one group, or 0 if none, in which case msg says why
+  Group const &selectedComponentGroup() const;
   bool linkSchematic(QString fn);
   void unlinkSchematic();
   LinkedSchematic const &linkedSchematic() const;
