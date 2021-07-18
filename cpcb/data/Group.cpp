@@ -684,17 +684,19 @@ bool Group::saveComponent(int id, QString fn) {
 
       sw.writeNamespace("http://www.danielwagenaar.net/cpcb-ns.html", "cpcb");
       sw.writeStartElement("cpcb:part");
-      if (pkg=="")
+
+      Group const &grp(obj.asGroup());
+      
+      if (grp.pkg=="")
         sw.writeAttribute("pkg", QFileInfo(fn).baseName());
       else
         sw.writeAttribute("pkg", pkg);
-      if (partno!="")
-        sw.writeAttribute("partno", partno);
-      if (notes!="")
-        sw.writeAttribute("notes", notes);
+      if (grp.partno!="")
+        sw.writeAttribute("partno", grp.partno);
+      if (grp.notes!="")
+        sw.writeAttribute("notes", grp.notes);
       sw.writeDefaultNamespace("http://www.danielwagenaar.net/cpcb-ns.html");
   
-      Group const &grp(obj.asGroup());
       int refid = grp.refTextId();
       Text reftext;
       if (contains(refid)) {
