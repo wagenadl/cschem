@@ -607,19 +607,34 @@ void MWData::makeMenus() {
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
-  a = edit->addAction("&Rotate clockwise", [this]() { editor->rotateCW(); },
+  a = edit->addAction("&Rotate clockwise",
+		      [this]() { editor->rotateCW(false, true); },
 		      QKeySequence(Qt::CTRL + Qt::Key_R));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
-  
+
+  a = edit->addAction("Rotate clockwise (incl. text)",
+		      [this]() { editor->rotateCW(); },
+		      QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_R));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+
   a = edit->addAction("Rotate &anticlockwise",
-		      [this]() { editor->rotateCCW(); },
+		      [this]() { editor->rotateCCW(false, true); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
+  a = edit->addAction("Rotate &anticlockwise (incl. text)",
+		      [this]() { editor->rotateCCW(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_R));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+  
   a = edit->addAction("Arbitrary rotatio&n…",
 		      [this]() { arbitraryRotation(); },
 		      QKeySequence(Qt::ALT + Qt::Key_R));
@@ -627,13 +642,13 @@ void MWData::makeMenus() {
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
     
-  a = edit->addAction("&Flip left–right", [this]() { editor->flipH(); },
+  a = edit->addAction("&Flip left–right", [this]() { editor->flipH(false, true); },
 		      QKeySequence(Qt::CTRL + Qt::Key_F));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = edit->addAction("Flip up–down", [this]() { editor->flipV(); },
+  a = edit->addAction("Flip up–down", [this]() { editor->flipV(false, true); },
                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_F));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
@@ -647,6 +662,11 @@ void MWData::makeMenus() {
   
   a = edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
+  QObject::connect(editor, &Editor::selectionIsGroup,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+
+  a = edit->addAction("&Enter group", [this]() { editor->enterGroup(-1); });
   QObject::connect(editor, &Editor::selectionIsGroup,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
@@ -740,6 +760,8 @@ void MWData::makeConnections() {
 		     propbar->setUserOrigin(o);
 		     modebar->setMode(Mode::Edit);
 		   });
+  QObject::connect(editor, &Editor::escapePressed,
+		   [this]() { modebar->setMode(Mode::Edit); });
   QObject::connect(editor, &Editor::hovering,
 		   statusbar, &Statusbar::setCursorXY);
   QObject::connect(editor, &Editor::onObject,

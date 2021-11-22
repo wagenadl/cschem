@@ -25,12 +25,12 @@ public:
   Rect boundingRect() const;
   void flipLeftRight(); // around our center
   void flipUpDown();
-  void flipLeftRight(Dim x0); // around another point
-  void flipUpDown(Dim y0);
+  void flipLeftRight(Dim x0, bool nottext=false); // around another point
+  void flipUpDown(Dim y0, bool nottext=false);
   void rotateCW(); // around our center
   void rotateCCW();
-  void rotateCW(Point const &); // around another point
-  void rotateCCW(Point const &); // around another point
+  void rotateCW(Point const &, bool nottext=false); // around another point
+  void rotateCCW(Point const &, bool nottext=false); // around another point
   void freeRotate(int degcw, Point const &p0);
   void setLayer(Layer l);
   void setGroupAffiliation(int);

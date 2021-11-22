@@ -75,11 +75,11 @@ public slots:
   void setRefText(QString);
   void setFontSize(Dim);
   void setArcAngle(int angle);
-  void rotateCW(bool noundo=false);
-  void rotateCCW(bool noundo=false);
+  void rotateCW(bool noundo=false, bool nottext=false);
+  void rotateCCW(bool noundo=false, bool nottext=false);
   void arbitraryRotation(int angleCW);
-  void flipH(bool noundo=false);
-  void flipV();
+  void flipH(bool noundo=false, bool nottext=false);
+  void flipV(bool noundo=false, bool nottext=false);
   void setRotation(int); // this is not the way to rotate or flip things
   void setFlipped(bool); // this is not the way to rotate or flip things
   void setMode(Mode);
@@ -116,6 +116,7 @@ signals:
   void onObject(QString);
   void missingNodes(QStringList);
   void leaving();
+  void escapePressed();
   void selectionChanged(bool); // true if any objects other than pure points
                                // are selected
   void componentsChanged(); // emitted when a component has been placed,

@@ -43,14 +43,16 @@ void Text::flipLeftRight() {
   flipLeftRight(boundingRect().center().x);
 }
 
-void Text::flipLeftRight(Dim x0) {
+void Text::flipLeftRight(Dim x0, bool nottext) {
   Point ctarget = boundingRect().center().flippedLeftRight(x0);
   qDebug() << "text:flipleftright x0=" << x0 << "p=" << p
 	   << "br=" << boundingRect()
 	   << "center=" << boundingRect().center()
 	   << "target=" << ctarget;
-  flip = !flip;
-  rota = -rota;
+  if (!nottext) {
+    flip = !flip;
+    rota = -rota;
+  }
   Point c1 = boundingRect().center();
   qDebug() << "new center" << c1;
   p += ctarget - c1; // shift it back so center is maintained
@@ -61,12 +63,14 @@ void Text::flipUpDown() {
   flipUpDown(boundingRect().center().y);
 }
 
-void Text::flipUpDown(Dim y0) {
+void Text::flipUpDown(Dim y0, bool nottext) {
   qDebug() << "text::flipupdown" << *this << y0;
   Point ctarget = boundingRect().center().flippedUpDown(y0);
-  rotateCCW();
-  flipLeftRight();
-  rotateCW();
+  if (!nottext) {
+    rotateCCW();
+    flipLeftRight();
+    rotateCW();
+  }
   Point c1 = boundingRect().center();
   p += ctarget - c1; // shift it back so center is maintained
   qDebug() << "  now" << *this;
@@ -84,9 +88,10 @@ void Text::rotateCCW() {
   rotateCCW(boundingRect().center());
 }
 
-void Text::rotateCCW(Point const &p0) {
+void Text::rotateCCW(Point const &p0, bool nottext) {
   Point ctarget = boundingRect().center().rotatedCCW(p0);
-  rota -= 90;
+  if (!nottext)
+    rota -= 90;
   Point c1 = boundingRect().center();
   p += ctarget - c1; // shift it back so center is maintained
 }
@@ -95,9 +100,10 @@ void Text::rotateCW() {
   rotateCW(boundingRect().center());
 }
 
-void Text::rotateCW(Point const &p0) {
+void Text::rotateCW(Point const &p0, bool nottext) {
   Point ctarget = boundingRect().center().rotatedCW(p0);
-  rota += 90;
+  if (!nottext)
+    rota += 90;
   Point c1 = boundingRect().center();
   p += ctarget - c1; // shift it back so center is maintained
 }
