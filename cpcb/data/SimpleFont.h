@@ -12,7 +12,7 @@
 class SimpleFont {
 public:
   SimpleFont();
-  QVector<Polyline> const &character(char) const;
+  QVector<Polyline> const &character(int) const;
   // QVector<QPolygonF> const &sizedCharacter(char, Dim fs) const;
   static SimpleFont const &instance();
   Dim fontSize() const; // nominal font size
@@ -25,7 +25,7 @@ public:
                              // bottom of "X".
   double scaleFactor(Dim altFontSize) const;
 private:
-  QMap<char, QVector<Polyline>> chars;
+  QMap<int, QVector<Polyline>> chars;
   // mutable QMap<Dim, QMap<char, QVector<QPolygonF>>> sizedchars;
 };
 

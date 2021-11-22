@@ -870,6 +870,8 @@ void MWData::selectionFromBOM() {
   qDebug() <<"selection from bom";
   if (editor->breadcrumbs().size())
     return; // we only care at top level
+  if (bomv->isQuiet())
+    return;
   QSet<int> sel = bomv->selectedElements();
   editor->select(sel);
 }
