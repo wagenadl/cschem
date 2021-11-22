@@ -26,11 +26,10 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   addAct2(Mode::PlacePlane, "Plane", "Filled planes", Qt::Key_F7);
   addAct2(Mode::PickupTrace, "Disconnect", "Pickup trace", Qt::Key_F8);
   addAct2(Mode::PlaceNPHole, "NPHole", "Nonplated hole", Qt::Key_F9);
-  addAct2(Mode::BoardOutline, "BoardOutline", "Board outline", Qt::Key_F10);
+  //  addAct2(Mode::BoardOutline, "BoardOutline", "Board outline", Qt::Key_F10);
 
   addSeparator();
   a_origin = addAct(Mode::SetIncOrigin, "AbsOrigin", Qt::Key_F11);
-  addSeparator();
 
   a_constr = addAction("Angles",
 		       [this]() { setConstraint(!isconstr); });

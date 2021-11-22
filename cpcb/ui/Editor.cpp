@@ -50,6 +50,10 @@ void Editor::setMode(Mode m) {
       d->planeeditor = 0;
     }
   }
+  if (m==Mode::Edit) 
+    setCursor(Qt::ArrowCursor);
+  else
+    setCursor(Qt::CrossCursor);
   update();
 }
 
@@ -281,11 +285,13 @@ void Editor::keyPressEvent(QKeyEvent *e) {
   case Qt::Key_Escape:
     if (d->tracer) {
       d->abortTracing();
-    } else {
+    } else if (d->mode==Mode::Edit) {
       if (e->modifiers() & Qt::ControlModifier)
 	leaveAllGroups();
       else
 	leaveGroup();
+    } else {
+      emit escapePressed();
     }
     break;
   case Qt::Key_Enter: case Qt::Key_Return:
@@ -421,6 +427,18 @@ void Editor::doubleClickOn(Point p, int id) {
 }
 
 bool Editor::enterGroup(int sub) {
+  if (sub<0) {
+    // use selection, if a group
+    Group &here(d->currentGroup());
+    for (int id: d->selection) {
+      if (here.object(id).isGroup()) {
+	if (sub<0)
+	  sub = id;
+	else
+	  return false;
+      }
+    }
+  }
   clearSelection();
   Group const &here(d->currentGroup());
   if (here.contains(sub) && here.object(sub).isGroup()) {
@@ -866,7 +884,7 @@ void Editor::arbitraryRotation(int degCW) {
     here.object(id).freeRotate(degCW, center);
 }  
 
-void Editor::rotateCW(bool noundo) {
+void Editor::rotateCW(bool noundo, bool nottext) {
   Group &here(d->currentGroup());
   Rect box(d->selectionBounds());
   if (box.isEmpty())
@@ -875,8 +893,10 @@ void Editor::rotateCW(bool noundo) {
   UndoCreator uc(d);
   if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
     uc.realize();
+  if (d->selection.size()==1)
+    nottext=false;
   for (int id: d->selection)
-    here.object(id).rotateCW(center);
+    here.object(id).rotateCW(center, nottext);
 
   Dim mrg = d->pressMargin();
   for (Point p: selectedPoints()) {
@@ -908,10 +928,10 @@ void Editor::rotateCW(bool noundo) {
   }
 }
 
-void Editor::rotateCCW(bool noundo) {
-  rotateCW(noundo);
-  rotateCW(true);
-  rotateCW(true);
+void Editor::rotateCCW(bool noundo, bool nottext) {
+  rotateCW(noundo, nottext);
+  rotateCW(true, nottext);
+  rotateCW(true, nottext);
   update();
 }
 
@@ -957,7 +977,7 @@ void Editor::translate(Point dp) {
   }
 }
 
-void Editor::flipH(bool noundo) {
+void Editor::flipH(bool noundo, bool nottext) {
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
@@ -968,9 +988,10 @@ void Editor::flipH(bool noundo) {
     uc.realize();
 
   Group &here(d->currentGroup());
-  
+  if (d->selection.size()==1)
+    nottext=false;  
   for (int id: d->selection)
-    here.object(id).flipLeftRight(center);
+    here.object(id).flipLeftRight(center, nottext);
 
   Dim mrg = d->pressMargin();
   for (Point p: selectedPoints()) {
@@ -1001,10 +1022,10 @@ void Editor::flipH(bool noundo) {
   }
 }
 
-void Editor::flipV() {
-  rotateCW();
-  flipH(true);
-  rotateCCW(true);
+void Editor::flipV(bool noundo, bool nottext) {
+  rotateCW(noundo, nottext);
+  flipH(true, nottext);
+  rotateCCW(true, nottext);
   update();
 }
 

@@ -492,13 +492,13 @@ void Object::translate(Point const &p) {
   }
 }
 
-void Object::rotateCCW(Point const &p0) {
-  rotateCW(p0);
-  rotateCW(p0);
-  rotateCW(p0);
+void Object::rotateCCW(Point const &p0, bool nottext) {
+  rotateCW(p0, nottext);
+  rotateCW(p0, nottext);
+  rotateCW(p0, nottext);
 }
 
-void Object::rotateCW(Point const &p0) {
+void Object::rotateCW(Point const &p0, bool nottext) {
   switch (type()) {
   case Type::Null:
     break;
@@ -515,7 +515,7 @@ void Object::rotateCW(Point const &p0) {
     asArc().rotateCW(p0);
     break;
   case Type::Text:
-    asText().rotateCW(p0);
+    asText().rotateCW(p0, nottext);
     break;
   case Type::Trace:
     asTrace().p1.rotateCW(p0);
@@ -560,7 +560,7 @@ void Object::freeRotate(int degCW, Point const &p0) {
   }
 }
 
-void Object::flipLeftRight(Dim x0) {
+void Object::flipLeftRight(Dim x0, bool nottext) {
   switch (type()) {
   case Type::Null:
     break;
@@ -577,7 +577,7 @@ void Object::flipLeftRight(Dim x0) {
     asArc().flipLeftRight(x0);
     break;
   case Type::Text:
-    asText().flipLeftRight(x0);
+    asText().flipLeftRight(x0, nottext);
     break;
   case Type::Trace:
     asTrace().p1.flipLeftRight(x0);
@@ -591,7 +591,7 @@ void Object::flipLeftRight(Dim x0) {
   }
 }
 
-void Object::flipUpDown(Dim y0) {
+void Object::flipUpDown(Dim y0, bool nottext) {
   switch (type()) {
   case Type::Null:
     break;
@@ -608,7 +608,7 @@ void Object::flipUpDown(Dim y0) {
     asArc().flipUpDown(y0);
     break;
   case Type::Text:
-    asText().flipUpDown(y0);
+    asText().flipUpDown(y0, nottext);
     break;
   case Type::Trace:
     asTrace().p1.flipUpDown(y0);
