@@ -16,11 +16,13 @@ public:
   void showEvent(QShowEvent *) override;
   QSet<int> selectedElements() const;
   void selectElements(QSet<int> const &);
+  bool isQuiet() const;
   void resetWidth();
   void resizeEvent(QResizeEvent *) override;
 private:
   class QSortFilterProxyModel *sortProxy;
   class BOM *pl;
+  int quiet;
 };
 
 #endif

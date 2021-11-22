@@ -22,6 +22,7 @@ bool SortProxy::lessThan(QModelIndex const &a, QModelIndex const &b) const {
 
 
 BOMView::BOMView(QWidget *parent): QTableView(parent) {
+  quiet = 0;
   HtmlDelegate *delegate = new HtmlDelegate(this);
   setItemDelegateForColumn(int(BOM::Column::Ref), delegate);
   setSelectionBehavior(SelectRows);
@@ -31,6 +32,10 @@ BOMView::BOMView(QWidget *parent): QTableView(parent) {
 }
 
 BOMView::~BOMView() {
+}
+
+bool BOMView::isQuiet() const {
+  return quiet > 0;
 }
 
 void BOMView::setModel(BOM *pl0) {
@@ -73,6 +78,7 @@ QSet<int> BOMView::selectedElements() const {
 }
 
 void BOMView::selectElements(QSet<int> const &set) {
+  quiet++;
   QMap<int, int> id2row;
   for (int row=0; row<model()->rowCount(); row++) {
     int id
@@ -99,6 +105,7 @@ void BOMView::selectElements(QSet<int> const &set) {
 		       sortProxy->index(row, C-1));
     selectionModel()->select(sel, QItemSelectionModel::Deselect);
   }
+  quiet--;
 }
 
 void BOMView::resizeEvent(QResizeEvent *e) {

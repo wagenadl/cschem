@@ -1124,9 +1124,11 @@ Group Group::subset(QSet<int> selection) const {
       Group &grp(g.object(gid).asGroup());
       if (grp.refTextId()>0) {
 	int tid = idmap[grp.refTextId()];
-	Text &txt(g.object(tid).asText());
 	grp.setRefTextId(tid);
-	txt.setGroupAffiliation(gid);
+        if (tid) {
+          Text &txt(g.object(tid).asText());
+          txt.setGroupAffiliation(gid);
+        }
       }
     }
   }

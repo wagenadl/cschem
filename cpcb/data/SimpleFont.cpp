@@ -7,7 +7,7 @@
 SimpleFont::SimpleFont() {
   font const &ft = simpleFont();
   Dim dy = baselineShift();
-  for (char c: ft.keys()) {
+  for (int c: ft.keys()) {
     QVector<Polyline> w;
     for (polyline v: ft[c]) {
       Polyline pp;
@@ -20,9 +20,11 @@ SimpleFont::SimpleFont() {
     }
     chars[c] = w;
   }
+  chars[0x2212] = chars[0x2d]; // minus -> ascii
+  chars[0x2013] = chars[0x2d]; // en-dash -> ascii
 }
 
-QVector<Polyline> const &SimpleFont::character(char c) const {
+QVector<Polyline> const &SimpleFont::character(int c) const {
   static QVector<Polyline> nul;
   auto it(chars.find(c));
   return it == chars.end() ? nul : *it;
