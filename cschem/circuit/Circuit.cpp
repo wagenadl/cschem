@@ -5,6 +5,7 @@
 #include "PinID.h"
 #include "PartNumbering.h"
 #include <QRegularExpression>
+#include "IDFactory.h"
 
 Circuit::Circuit() {
   valid = true;
@@ -219,7 +220,7 @@ int Circuit::renumber(int start, QMap<int, int> *mapout) {
   
   if (mapout)
     *mapout = eltmap;
-  
+  IDFactory::instance().reserve(newid);
   return newid - 1;
 }
 
@@ -353,3 +354,31 @@ QSet<QString> Circuit::allNames() const {
   return names;
 }
 
+void Circuit::verifyIDs() const {
+  bool ok = true;
+  for (int id: elements.keys()) {
+    if (elements[id].id != id) {
+      qDebug() << "Element " << id << " calls itself " << elements[id].id
+	       << ": " << elements[id].name << "/" << elements[id].value;
+      ok = false;
+    }
+  }
+  for (int id: connections.keys()) {
+    if (connections[id].id != id) {
+      qDebug() << "Connection " << id << " calls itself " << connections[id].id
+	       << ": " << connections[id].fromId << "/" << connections[id].toId;
+      ok = false;
+    }
+  }
+  for (int id: textuals.keys()) {
+    if (textuals[id].id != id) {
+      qDebug() << "Textual " << id << " calls itself " << textuals[id].id
+	       << ": " << textuals[id].text;
+      ok = false;
+    }
+  }
+  if (ok) {
+    qDebug() << "Circuit OK";
+  }
+}
+      
