@@ -2,6 +2,5 @@
   <qresource>
     <file alias="symbols.svg">symbols.svg</file>
     <file alias="packages.xml">packages.xml</file>
-    <file alias="version">version</file>
   </qresource>
 </RCC>

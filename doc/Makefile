@@ -1,4 +1,7 @@
-ALL: cschem-userguide.pdf cpcb-userguide.pdf
+ALL: cschem-userguide.pdf cpcb-userguide.pdf cpcb.1 cschem.1
+
+%.1: %.1.txt
+	a2x --doctype manpage --format manpage --no-xmllint --destination . $<
 
 %.pdf: ../doc/%.tex images
 	pdflatex $<
