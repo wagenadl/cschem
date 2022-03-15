@@ -1,0 +1,14 @@
+install(TARGETS cschem DESTINATION bin)
+install(TARGETS cpcb DESTINATION bin)
+
+install(FILES doc/cschem.1 DESTINATION share/man/man1)
+install(FILES doc/cpcb.1 DESTINATION share/man/man1)
+install(FILES README.md DESTINATION share/doc/cschem)
+install(FILES CHANGELOG DESTINATION share/doc/cschem)
+install(FILES ${CMAKE_BINARY_DIR}/cschem-userguide.pdf DESTINATION share/doc/cschem)
+install(FILES ${CMAKE_BINARY_DIR}/cpcb-userguide.pdf DESTINATION share/doc/cschem)
+
+install(PROGRAMS cschem/cschem.desktop DESTINATION share/applications)
+install(FILES cschem/cschem.xml DESTINATION share/mime/packages)
+install(PROGRAMS cpcb/cpcb.desktop DESTINATION share/applications)
+install(FILES cpcb/cpcb.xml DESTINATION share/mime/packages)
