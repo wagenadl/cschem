@@ -72,6 +72,7 @@ public:
   QSet<int> containedElements(int containerId) const;
   int containerOf(int elt) const; // or -1
   QSet<QString> allNames() const;
+  void verifyIDs() const;
 public:
   SafeMap<int, Element> elements;
   SafeMap<int, Connection> connections;

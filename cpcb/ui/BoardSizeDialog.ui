@@ -104,7 +104,7 @@
   <customwidget>
    <class>DimSpinner</class>
    <extends>QDoubleSpinBox</extends>
-   <header>../../cpcb/ui/DimSpinner.h</header>
+   <header>ui/DimSpinner.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
