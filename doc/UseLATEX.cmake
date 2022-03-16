@@ -922,6 +922,11 @@ function(latex_setup_variables)
     DOC "The pdf to ps converter program from the Poppler package."
     )
 
+  find_program(SVGPDF_CONVERTER
+    NAMES inkscape
+    DOC "Use inkscape to convert SVG to PDF."
+    )
+  
   find_program(HTLATEX_COMPILER
     NAMES htlatex
     PATHS ${MIKTEX_BINARY_PATH}
@@ -940,6 +945,7 @@ function(latex_setup_variables)
     PDFTOPS_CONVERTER
     LATEX2HTML_CONVERTER
     HTLATEX_COMPILER
+    SVGPDF_CONVERTER
     )
 
   latex_needit(LATEX_COMPILER latex)
@@ -951,6 +957,7 @@ function(latex_setup_variables)
   latex_wantit(DVIPS_CONVERTER dvips)
   latex_wantit(PS2PDF_CONVERTER ps2pdf)
   latex_wantit(PDFTOPS_CONVERTER pdftops)
+  latex_wantit(SVGPDF_CONVERTER inkscape)
 
   set(LATEX_COMPILER_FLAGS "-interaction=batchmode -file-line-error"
     CACHE STRING "Flags passed to latex.")
@@ -1179,8 +1186,15 @@ function(latex_add_convert_command
     flags
     )
   set(require_imagemagick_convert TRUE)
+  set(require_inkscape_convert FALSE)
   set(convert_flags "")
-  if(${input_extension} STREQUAL ".eps" AND ${output_extension} STREQUAL ".pdf")
+  if (${input_extension} STREQUAL ".svg" AND ${output_extension} STREQUAL ".pdf")
+    if (SVGPDF_CONVERTER)
+      set(require_imagemagick_convert FALSE)
+      set(require_inkscape_convert TRUE)
+      set(converter ${SVGPDF_CONVERTER})
+    endif()
+  elseif(${input_extension} STREQUAL ".eps" AND ${output_extension} STREQUAL ".pdf")
     # ImageMagick has broken eps to pdf conversion
     # use ps2pdf instead
     if(PS2PDF_CONVERTER)
@@ -1224,6 +1238,12 @@ function(latex_add_convert_command
     else()
       message(SEND_ERROR "Could not find convert program. Please download ImageMagick from http://www.imagemagick.org and install.")
     endif()
+  elseif(require_inkscape_convert)
+    add_custom_command(OUTPUT ${output_path}
+      COMMAND ${converter}
+        ARGS --export-type=pdf -o ${output_path} ${input_path}
+      DEPENDS ${input_path}
+      )
   else() # Not ImageMagick convert
     add_custom_command(OUTPUT ${output_path}
       COMMAND ${converter}
