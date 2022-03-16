@@ -941,9 +941,14 @@ void Scene::copyToClipboard(bool cut) {
 }
 
 void Scene::pasteFromClipboard() {
+  qDebug() << "paste";
+  qDebug() << "check pre-existing circuit";
+  d->circ().verifyIDs();
   SelChgPostpone blk(d);
   int mx = d->circ().maxId();
   Circuit pp = Clipboard::clipboard().retrieve();
+  qDebug() << "check clipboard circuit";
+  pp.verifyIDs();
   SymbolLibrary const &altlib = Clipboard::clipboard().library();
   QPoint cm = Geometry(pp, d->lib()).centerOfPinMass();
   pp.translate(d->lib().downscale(d->mousexy) - cm);
@@ -952,6 +957,8 @@ void Scene::pasteFromClipboard() {
     qDebug() << "nothing to paste";
     return;
   }
+  qDebug() << "check clipboard circuit after renumber";
+  pp.verifyIDs();
 
   d->preact();
 
@@ -961,8 +968,12 @@ void Scene::pasteFromClipboard() {
 	d->lib().insert(altlib.symbol(elt.symbol()));
 	  
   d->circ().merge(pp);
+  qDebug() << "check circuit after merge";
+  d->circ().verifyIDs();
   d->rebuildAsNeeded(QSet<int>::fromList(pp.elements.keys()),
                      QSet<int>::fromList(pp.connections.keys()));
+  qDebug() << "check circuit after rebuild";
+  d->circ().verifyIDs();
   clearSelection();
   for (int id: pp.elements.keys()) 
     if (d->elts.contains(id))

@@ -2,7 +2,7 @@
 
 #include "SimpleFont.h"
 
-#include "font.cpp"
+#include "font.h"
 
 SimpleFont::SimpleFont() {
   font const &ft = simpleFont();

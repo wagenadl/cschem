@@ -1,0 +1,6 @@
+// the configured options and settings for CSCHEM
+
+#define CSCHEM_VERSION @CSchem_VERSION@
+#define CSCHEM_VERSION_MAJOR @CSchem_VERSION_MAJOR@
+#define CSCHEM_VERSION_MINOR @CSchem_VERSION_MINOR@
+#define CSCHEM_VERSION_PATCH @CSchem_VERSION_PATCH@

@@ -21,17 +21,13 @@
 #include <QFileInfo>
 #include <QDebug>
 #include "BuildDate.h"
+#include "config.h"
 
 namespace Version {
   QString verbit() {
-    static QString ver = "";
-    if (ver.isEmpty()) {
-      QFile fv(":/version");
-      if (fv.open(QFile::ReadOnly)) 
-	ver = QString(fv.readAll()).simplified();
-      else
-	ver = "?.?.?";
-    }
+    QString ver = QString::number(CSCHEM_VERSION_MAJOR);
+    ver += "." + QString::number(CSCHEM_VERSION_MINOR);
+    ver += "." + QString::number(CSCHEM_VERSION_PATCH);
     return ver;
   }
 
