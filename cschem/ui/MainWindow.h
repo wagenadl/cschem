@@ -43,7 +43,7 @@ public slots:
   void partListToClipboardAction();
   void resolveConflictsAction();
 public:
-  void load(QString filename);
+  bool load(QString filename); // true unless error
   void create(class Schem const &schem);
   bool saveAs(QString filename); // true unless error
 private:
