@@ -3,6 +3,7 @@
 #include "MainWindow.h"
 #include <QGraphicsView>
 #include "Scene.h"
+#include "RecentFiles.h"
 #include "circuit/Schem.h"
 #include "svg/SymbolLibrary.h"
 #include "file/FileIO.h"
@@ -38,7 +39,8 @@ public:
     libview(0), libviewdock(0),
     partlistview(0), partlistviewdock(0),
     unsaved(false),
-    recursedepth(0) {
+    recursedepth(0),
+    recentfiles(0) {
   }
 public:
   QGraphicsView *view;
@@ -49,6 +51,7 @@ public:
   QDockWidget *libviewdock;
   PartListView *partlistview;
   QDockWidget *partlistviewdock;
+  RecentFiles *recentfiles;
   bool unsaved;
   int recursedepth;
 };
@@ -137,6 +140,15 @@ void MainWindow::createActions() {
   act->setStatusTip(tr("Open an existing file"));
   connect(act, &QAction::triggered, this, &MainWindow::openAction);
   menu->addAction(act);
+
+  d->recentfiles = new RecentFiles(this);
+  connect(d->recentfiles, &RecentFiles::selected,
+	  [this](QString fn) {
+	    auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
+	    mw->load(fn);
+	    mw->show();
+	  });
+  menu->addMenu(d->recentfiles);
 
   act = new QAction(tr("&Save"), this);
   act->setShortcuts(QKeySequence::Save);
@@ -397,22 +409,36 @@ void MainWindow::create(Schem const &schem) {
   setStatusMessage("Created new circuit");
 }
 
-void MainWindow::load(QString fn) {
-  create(FileIO::loadSchematic(fn));
-
+bool MainWindow::load(QString fn) {
+  qDebug() << "load" << fn;
+  Schem s = FileIO::loadSchematic(fn);
+  create(s);
+  if (s.isEmpty()) {
+    QMessageBox::warning(this, Style::programName(),
+			 tr("Could not load “")
+			 + fn + tr("”"),
+			 QMessageBox::Ok);
+    return false;
+  }
   d->libview->rebuild();
-  setWindowTitle(fn);
-  d->filename = fn;
-  d->lastdir = QFileInfo(fn).dir().absolutePath();
+  QFileInfo fi(fn);
+  d->filename = fi.absoluteFilePath();
+  d->recentfiles->mark(d->filename);
+  setWindowTitle(d->filename);
+  d->lastdir = fi.dir().absolutePath();
   setStatusMessage(tr("Loaded “%1”").arg(fn));
+  return true;
 }
 
 bool MainWindow::saveAs(QString fn) {
   Schem schem = d->scene->schem();
   schem.circuit().renumber(1);
-  if (FileIO::saveSchematic(fn, schem)) {
-    setWindowTitle(fn);
-    d->filename = fn;
+  QFileInfo fi(fn);
+  if (FileIO::saveSchematic(fi.absoluteFilePath(), schem)) {
+    d->filename = fi.absoluteFilePath();
+    d->recentfiles->mark(d->filename);
+    d->lastdir = fi.dir().absolutePath();
+    setWindowTitle(d->filename);
     d->unsaved = false;
     setStatusMessage(tr("Saved “%1”").arg(fn));
     return true;

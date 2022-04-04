@@ -33,6 +33,8 @@ void ensureSymbolLibrary() {
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
+  app.setOrganizationName("Daniel Wagenaar");
+  app.setOrganizationDomain("danielwagenaar.net");
   app.setApplicationName("cschem");
   app.setApplicationDisplayName("CSchem");
   Paths::setExecutablePath(argv[0]);
@@ -43,11 +45,15 @@ int main(int argc, char **argv) {
   if (argc == 1) {
     mws << new MainWindow;
   } else {
+    bool ok = false;
     for (int i=1; i<argc; i++) {
       MainWindow *mw = new MainWindow;
-      mw->load(argv[i]);
+      if (mw->load(argv[i]))
+	ok = true;
       mws << mw;
     }
+    if (!ok)
+      return 1;
   }
   for (auto *mw: mws)
     mw->show();
