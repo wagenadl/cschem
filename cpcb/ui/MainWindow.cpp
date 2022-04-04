@@ -12,7 +12,7 @@
 #include "gerber/PasteMaskWriter.h"
 #include "Find.h"
 #include <QDesktopServices>
-#include "Settings.h"
+#include <QSettings>
 #include "BoardSizeDialog.h"
 #include "data/NetMismatch.h"
 #include "Version.h"
@@ -386,7 +386,7 @@ bool MWData::exportPasteMaskDialog() {
   QString unit = metric ? "mm" : "inch";
   int decimals = metric ? 2 : 3;
   double max = metric ? 1 : .05;
-  Settings stg;
+  QSettings stg;
   Dim dflt = Dim::fromString(stg.value("shrinkage",
                                        Dim::fromInch(0.005).toString())
                              .toString());
@@ -398,8 +398,7 @@ bool MWData::exportPasteMaskDialog() {
                                              0, max, decimals);
   Dim shrnk = metric ? Dim::fromMM(shrinkage)
     : Dim::fromInch(shrinkage);
-  if (shrnk != dflt)
-    stg.setValue("shrinkage", shrnk.toString());
+  stg.setValue("shrinkage", shrnk.toString());
   
   PasteMaskWriter pmw;
   pmw.setShrinkage(shrnk);
