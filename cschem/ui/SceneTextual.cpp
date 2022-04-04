@@ -133,6 +133,8 @@ void STData::rebuildText() {
   QSet<QString> allnames;
   if (scene)
     allnames = scene->circuit().allNames();
+  if (txt.text.startsWith('"') && txt.text.size()>=2 && txt.text.endsWith('"')) 
+    txt.text = "“" + txt.text.mid(1, txt.text.size()-2) + "”";
   txt.text.replace("<=", "≤"); 
   txt.text.replace(">=", "≥");
   txt.text.replace("<<", "≪");

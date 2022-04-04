@@ -15,6 +15,7 @@
 #include <QFile>
 #include <QTransform>
 #include "circuit/Schem.h"
+#include "circuit/PartNumbering.h"
 
 class SvgExporterData {
 public:
@@ -54,7 +55,8 @@ QPointF svgFontDelta() {
 }
 
 void testCircle(QXmlStreamWriter &sw, QPointF p0) {
-  // Use this to test positioning. It places a tiny red circle at the given point
+  // Use this to test positioning.
+  // It places a tiny red circle at the given point.
   sw.writeStartElement("circle");
   sw.writeAttribute("style", "font-style:normal;font-variant:normal;font-weight:normal;opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ff0000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1");
   sw.writeAttribute("cx", QString::number(p0.x()));
@@ -88,35 +90,55 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   sw.writeEndElement(); // g
 
   if (elt.nameVisible) {
-    QString txt = elt.name;
-    bool isLetterPlusNumber = txt.mid(1).toDouble()>0;
+    // copy styling from SceneElement::nameTextToWidget
+    // and PartNumbering::nameTextToToHtml
+    QString name = elt.name;
+    int subidx = (name.left(1)=="V" || name.left(1)=="I") 
+      ? 1
+      : (PartNumbering::isNameWellFormed(name))
+      ? PartNumbering::prefix(name).size()
+      : -1;
+    bool useitalic = subidx>=0;
     QPointF p = elt.namePosition + svgFontDelta();
     sw.writeStartElement("text");
-    sw.writeAttribute("style", svgFontStyle(isLetterPlusNumber, false));
+    sw.writeAttribute("style", svgFontStyle(useitalic, false));
     sw.writeAttribute("x", QString("%1").arg(p.x()));
     sw.writeAttribute("y", QString("%1").arg(p.y()));
-    if (isLetterPlusNumber) {
-      // letter + number
-      sw.writeCharacters(txt.left(1));
+    sw.writeCharacters(useitalic ? name.left(subidx) : name);
+    if (useitalic) {
       sw.writeStartElement("tspan");
       sw.writeAttribute("dy", "5");
       sw.writeAttribute("style", svgFontStyle(false, true));
-      sw.writeCharacters(txt.mid(1));
+      sw.writeCharacters(name.mid(subidx));
       sw.writeEndElement(); // tspan
-    } else {
-      sw.writeCharacters(txt);
     }
     sw.writeEndElement();
   }
   if (elt.valueVisible) {
+    // copy styling from SceneElement::valueTextToWidget
     QPointF p = elt.valuePosition + svgFontDelta();
+    QString txt = elt.value;
     sw.writeStartElement("text");
     sw.writeAttribute("style", svgFontStyle(false, false));
     sw.writeAttribute("x", QString("%1").arg(p.x()));
     sw.writeAttribute("y", QString("%1").arg(p.y()));
-    QString txt = elt.value;
-    sw.writeCharacters(txt);
-    sw.writeEndElement();
+    if ((txt.startsWith("“V") || txt.startsWith("“I"))
+	&& txt.endsWith("”")) {
+      sw.writeCharacters("“");
+      sw.writeStartElement("tspan");
+      sw.writeAttribute("style", svgFontStyle(true, false));
+      sw.writeCharacters(txt.mid(1, 1));
+      sw.writeEndElement(); // tspan
+      sw.writeStartElement("tspan");
+      sw.writeAttribute("dy", "5");
+      sw.writeAttribute("style", svgFontStyle(false, true));
+      sw.writeCharacters(txt.mid(2, txt.size()-3));
+      sw.writeEndElement(); // tspan
+      sw.writeCharacters("”");
+    } else {
+      sw.writeCharacters(txt);
+    }
+    sw.writeEndElement(); // text
   }
   sw.writeEndElement(); // g
 }
