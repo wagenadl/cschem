@@ -32,6 +32,7 @@ public:
   bool linkSchematic(QString fn);
   void unlinkSchematic();
   LinkedSchematic const &linkedSchematic() const;
+  QString linkedSchematicFilename() const;
   Point hoverPoint() const;
   bool isUndoAvailable() const;
   bool isRedoAvailable() const;

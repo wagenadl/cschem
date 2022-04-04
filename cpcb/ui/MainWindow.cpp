@@ -11,6 +11,7 @@
 #include "gerber/GerberWriter.h"
 #include "gerber/PasteMaskWriter.h"
 #include "Find.h"
+#include <QDesktopServices>
 #include "Settings.h"
 #include "BoardSizeDialog.h"
 #include "data/NetMismatch.h"
@@ -33,7 +34,7 @@
 #include <QDockWidget>
 #include <QBitmap>
 #include <QPainter>
-
+#include "ui/RecentFiles.h"
  
 
 class MWData {
@@ -44,6 +45,7 @@ public:
     mcvdock = 0;
     bomv = 0;
     bomvdock = 0;
+    recentfiles = 0;
   }
   void setWindowTitle();
   void resetFilename();
@@ -77,6 +79,7 @@ public:
   void verifyNets();
   void selectionToBOM();
   void selectionFromBOM();
+  void openLinkedSchematic();
   QString getSaveFilename(QString ext, QString caption); // updates pwd
   QString getOpenFilename(QString ext, QString caption, QString desc="");
   // updates pwd
@@ -93,6 +96,7 @@ public:
   QString pwd;
   QString compwd;
   QString filename;
+  RecentFiles *recentfiles;
 };
 
 QString MWData::getOpenFilename(QString ext, QString caption, QString desc) {
@@ -163,6 +167,13 @@ void MWData::boardSizeDialog() {
   }
 }
 
+void MWData::openLinkedSchematic() {
+  QString fn = editor->linkedSchematicFilename();
+  if (fn.isEmpty())
+    return;
+  QDesktopServices::openUrl(QUrl::fromLocalFile(fn));
+}
+
 void MWData::showParts() {
   if (!mcv)
     makeParts();
@@ -204,10 +215,12 @@ void MWData::openDialog() {
 }
 
 void MainWindow::open(QString fn) {
-  if (d->editor->load(fn)) {
-    d->filename = fn;
-    d->pwd = QFileInfo(fn).dir().absolutePath();
-    setWindowTitle(fn);
+  QFileInfo fi(fn);
+  if (d->editor->load(fi.absoluteFilePath())) {
+    d->filename = fi.absoluteFilePath();
+    d->recentfiles->mark(d->filename);
+    d->pwd = fi.dir().absolutePath();
+    setWindowTitle(d->filename);
     if (d->editor->linkedSchematic().isValid())
       d->showParts();
   } else {
@@ -220,7 +233,9 @@ bool MWData::saveImmediately() {
     return saveAsDialog();
   } else {
     bool ok = editor->save(filename);
-    if (!ok)
+    if (ok)
+      recentfiles->mark(filename);
+    else
       QMessageBox::warning(mw, "cpcb",
 			   "Could not save pcb as “"
 			   + filename + "”",
@@ -480,6 +495,7 @@ bool MWData::saveAsDialog() {
   filename = fn;
   pwd = QFileInfo(fn).absolutePath();
   mw->setWindowTitle(fn);
+  recentfiles->mark(fn);
 
   if (editor->save(fn))
     return true;
@@ -548,6 +564,16 @@ void MWData::makeMenus() {
   file->addAction("&Open…", [this]() { openDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_O));
 
+  recentfiles = new RecentFiles("cpcb-recent", mw);
+  mw->connect(recentfiles, &RecentFiles::selected,
+	  [this](QString fn) {
+	    auto *mw1 = editor->pcbLayout().root().isEmpty()
+	      ? mw : new MainWindow();
+	    mw1->open(fn);
+	    mw1->show();
+	  });
+  file->addMenu(recentfiles);
+  
   a = file->addAction("&Save", [this]() { saveImmediately(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_S));
   QObject::connect(editor, &Editor::changedFromSaved,
@@ -722,6 +748,12 @@ void MWData::makeMenus() {
   QObject::connect(editor, &Editor::schematicLinked,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
+  a = tools->addAction("Open linked &schematic",
+		       [this]() { openLinkedSchematic(); });
+  QObject::connect(editor, &Editor::schematicLinked,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+  
   a = tools->addAction("&Verify nets",
 		      [this]() { verifyNets(); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_V));

@@ -141,7 +141,7 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::openAction);
   menu->addAction(act);
 
-  d->recentfiles = new RecentFiles(this);
+  d->recentfiles = new RecentFiles("cschem-recent", this);
   connect(d->recentfiles, &RecentFiles::selected,
 	  [this](QString fn) {
 	    auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();

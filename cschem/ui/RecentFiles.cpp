@@ -5,7 +5,9 @@
 #include <QSettings>
 #include <QFileInfo>
 
-RecentFiles::RecentFiles(QWidget *parent): QMenu("Open &recent", parent) {
+RecentFiles::RecentFiles(QString varname, QWidget *parent):
+  QMenu("Open &recent", parent),
+  varname(varname) {
   for (int n=0; n<MAXFILES; n++) {
     actions[n] = new QAction(this);
     actions[n]->setVisible(false);
@@ -27,12 +29,12 @@ void RecentFiles::mark(QString fn) {
   files.prepend(fn);
   while (files.size() > MAXFILES)
     files.removeLast();
-  QSettings().setValue("recentFileList", files);
+  QSettings().setValue(varname, files);
   updateItems();
 }
 
 QStringList RecentFiles::list() const {
-  return QSettings().value("recentFileList").toStringList();
+  return QSettings().value(varname).toStringList();
 }
 
 void RecentFiles::updateItems() {

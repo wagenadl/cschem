@@ -58,6 +58,8 @@ cschem/circuit/Net.cpp
 cschem/circuit/Textual.cpp
 cschem/ui/HtmlDelegate.h
 cschem/ui/HtmlDelegate.cpp
+cschem/ui/RecentFiles.h
+cschem/ui/RecentFiles.cpp
 "
 
 for a in ${=FILES}; do

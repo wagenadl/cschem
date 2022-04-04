@@ -1261,6 +1261,13 @@ void Editor::dropEvent(QDropEvent *e) {
   }  
 }
 
+QString Editor::linkedSchematicFilename() const {
+  if (d->linkedschematic.isValid())
+    return d->layout.board().linkedschematic;
+  else
+    return QString();
+}
+
 bool Editor::linkSchematic(QString fn) {
   d->linkedschematic.link(fn);
   if (d->linkedschematic.isValid()) {
