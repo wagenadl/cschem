@@ -33,6 +33,8 @@ void ensureOutlineLibrary() {
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
+  app.setOrganizationName("Daniel Wagenaar");
+  app.setOrganizationDomain("danielwagenaar.net");
   app.setApplicationName("cschem");
   app.setApplicationDisplayName("CPCB");
   Paths::setExecutablePath(argv[0]);
