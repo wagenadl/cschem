@@ -21,6 +21,7 @@
 \def\subfig#1#2{{\sf\small\bfseries#1}\raisebox{-.2in}{\raisebox{-.5\height}{\includegraphics[scale=.6]{#2}}}}
 \def\subfigh#1#2#3{{\sf\small\bfseries#1}\raisebox{.1in}{\raisebox{-\height}{\includegraphics[height=#3]{#2}}}}
 \def\sub#1{\textrm{\scriptsize#1}}
+\def\pls{+\discretionary{}{}{}}
 
 \begin{document}
 \thispagestyle{empty}
@@ -171,34 +172,8 @@ expressing an interest.
 % behind.
 
 \section{Compiling the source}
-To compile the source,  start from the provided
-``cschem.tar.gz'' archive or check out the git source at
-http://github.com/wagenadl/cschem. Compilation requires
-``Qt'' version 5.6 or later.
 
-\subsection{Compiling on Linux or Mac OS}
-
-You will need a C++ compiler and ``make''. On Ubuntu Linux, this is as simple
-as ``sudo apt-get install g++ make''. On Mac OS, you need the
-``Command Line tools for XCode'' from the Apple Developers' web
-site\footnote{https://developer.apple.com/xcode.}.
-
-Open a terminal and ``cd'' to the root of the unpacked source
-archive. Then type ``make'' and fetch a cup of tea. Then, either
-manually copy the file ``build/cpcb/cpcb to some location on your PATH, or type ``sudo make
-install'' to install into ``/usr/local/bin''.
-
-\subsection{Compiling on Windows}
-
-Details to follow. Again, feel free to ask!
-% You will need a C++ compiler. I have successfully used both MinGW and
-% Microsoft Visual Studio.
-% 
-% First, run ``updatesources.sh'' in the
-% ``tools'' subfolder in a Cygwin shell. Then open, one by one,
-% ``src/CSchem.pro''
-% and ``webgrab/webgrab.pro'' in Qt
-% Creator and follow the standard build steps.
+Please refer to the ``cschem'' user guide for details.
 
 \chapter{Using CPCB}\label{ch.using}
 
@@ -244,8 +219,8 @@ keyboard shortcuts are available for each of the modes. The modes are
   \item Objects can be deleted or placed on a clipboard using
     standard cut-and-paste operations.
   \item Selected objects can be grouped into a component
-    (``Control''+``G'') and existing components can be ungrouped
-    into separate objects (``Control''+``Shift''+``G'').
+    (``Control''\pls``G'') and existing components can be ungrouped
+    into separate objects (``Control''\pls``Shift''\pls``G'').
   \end{itemize}
   In addition, double-clicking on different types of objects has
   specific effects in this mode:
@@ -312,7 +287,7 @@ editing modes:
 \begin{description}
       \item[Origin selection (F11)] When CPCB first starts, it uses
         absolute coordinates with (0,0) at the top-left of the
-        board. Press F11 switches to incremental coordinates and
+        board. Pressing F11 switches to incremental coordinates and
         invites the user to click on a hole or pad to set the
         origin for incremental coordinates. After an incremental
         origin is selected, CPCB automatically reverts to
