@@ -30,6 +30,7 @@
 #include "circuit/NumberConflicts.h"
 #include "circuit/ContainerConflicts.h"
 #include "svg/Paths.h"
+#include "circuit/PartNumbering.h"
 
 class MWData {
 public:
@@ -59,6 +60,7 @@ public:
 QString MWData::lastdir;
 
 MainWindow::MainWindow(): d(new MWData()) {
+  setWindowIcon(QIcon(":/cschem.png"));
   createView();
   createDocks();
   createActions();
@@ -178,7 +180,7 @@ void MainWindow::createActions() {
   act = new QAction(tr("Copy parts lis&t to clipboard"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
   connect(act, &QAction::triggered,
-	  this, &MainWindow::partListToClipboardAction);
+	  this, &MainWindow::compressedPartListToClipboardAction);
   menu->addAction(act);
   
   act = new QAction(tr("&Quit"), this);
@@ -656,6 +658,18 @@ void MainWindow::partListToClipboardAction() {
   QApplication::clipboard()->setText(text);
   
 } 
+
+
+void MainWindow::compressedPartListToClipboardAction() {
+  QList<QStringList> symbols = d->partlistview->model()->asTable();
+  QStringList header = symbols.takeFirst();
+  QList<QStringList> compressed = PartNumbering::compressPartList(symbols);
+  QString text = header.join("\t") + "\n";
+  for (QStringList const &line: compressed)
+    text += line.join("\t") + "\n";
+  QApplication::clipboard()->setText(text);
+} 
+
 
 void MainWindow::selectionToPartList() {
   qDebug() << "selection to partlist" << d->scene->selectedElements();

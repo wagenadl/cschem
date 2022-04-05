@@ -866,6 +866,7 @@ void MWData::fillBars() {
 }
 
 MainWindow::MainWindow(): QMainWindow() {
+  setWindowIcon(QIcon(":/cpcb.png"));
   d = new MWData(this);
   d->makeEditor();
   d->makeToolbars();
