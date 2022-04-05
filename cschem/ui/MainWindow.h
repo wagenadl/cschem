@@ -41,6 +41,7 @@ public slots:
   void exportPartListAction();
   void circuitImageToClipboardAction();
   void partListToClipboardAction();
+  void compressedPartListToClipboardAction();
   void resolveConflictsAction();
 public:
   bool load(QString filename); // true unless error

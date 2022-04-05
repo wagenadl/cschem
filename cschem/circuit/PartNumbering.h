@@ -25,7 +25,9 @@ public:
   // a well formed name starts with one or more letters followed
   // optionally by one or more digits followed optionnaly by "." and
   // more digits.
-  static bool lessThan(QString a, QString b); 
+  static bool lessThan(QString a, QString b);
+  static QString compactRefs(QSet<QString> refs);
+  static QList<QStringList> compressPartList(QList<QStringList> symbols);
 };
 
 #endif

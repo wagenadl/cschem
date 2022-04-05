@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
   <qresource>
     <file alias="symbols.svg">../cschem/symbols.svg</file>
+    <file alias="cpcb.png">cpcb.png</file>
   </qresource>
 </RCC>
