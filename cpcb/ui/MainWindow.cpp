@@ -275,7 +275,8 @@ void MWData::saveComponentDialog() {
 }
 
 void MWData::openLibrary() {
-  QDesktopServices::openUrl(QUrl(Paths::userComponentRoot()));
+  qDebug() << QUrl::fromLocalFile(Paths::userComponentRoot());
+  QDesktopServices::openUrl(QUrl::fromLocalFile(Paths::userComponentRoot()));
 }
 
 void MWData::insertComponentDialog() {
