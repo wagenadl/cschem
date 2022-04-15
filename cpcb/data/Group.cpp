@@ -461,6 +461,12 @@ QSet<Point> Group::allPoints(Layer l) const {
   return pp;
 }
 
+QSet<Point> Group::altCoords() const {
+  QSet<Point> pp;
+  for (int id: keys()) 
+    pp |= object(id).altCoords();
+  return pp;
+}
       
 
 QSet<Point> Group::pinPoints() const {
