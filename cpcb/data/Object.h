@@ -84,6 +84,7 @@ public:
   QSet<Point> pinPoints(Layer l) const;
   QSet<Point> allPoints() const; // incl. traces and arcs
   QSet<Point> allPoints(Layer) const;
+  QSet<Point> altCoords() const;
 private:
   QSharedDataPointer<class OData> d;
 };

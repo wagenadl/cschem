@@ -75,8 +75,9 @@ public:
   int insertComponent(QString fn);
   QSet<Point> pinPoints() const; // hole and pad centers of immediate children
   QSet<Point> pinPoints(Layer) const; // same, limited to given layer
-  QSet<Point> allPoints() const;
+  QSet<Point> allPoints() const; // holes, pads, elbows
   QSet<Point> allPoints(Layer) const;
+  QSet<Point> altCoords() const; // includes text anchors and planes
   QStringList pinNames() const; // immediate children
   int pinID(QString) const; // child id for named pin or -1
   QString pinName(int) const; // ref for given object or "" if not Hole/Pad

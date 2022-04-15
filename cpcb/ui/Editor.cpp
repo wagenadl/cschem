@@ -1388,19 +1388,24 @@ void Editor::paste() {
 
   // Translate items to be pasted to mouse position
   QSet<Point> pp0 = pst.allPoints();
+  if (pp0.isEmpty())
+    pp0 = pst.altCoords();
   Point p1 = d->hoverpt.roundedTo(d->layout.board().grid);
-  /* Which point of the selection should be placed on p1? Top-left? Median?
-     Let's use median.
-   */
-  QVector<Dim> xx, yy;
-  for (Point const &p: pp0) {
-    xx << p.x;
-    yy << p.y;
+  Point p0;
+  if (pp0.size()) {
+    /* Which point of the selection should be placed on p1? Top-left? Median?
+       Let's use median.
+    */
+    QVector<Dim> xx, yy;
+    for (Point const &p: pp0) {
+      xx << p.x;
+      yy << p.y;
+    }
+    int n = (xx.size()-1)/2;
+    std::nth_element(xx.begin(), xx.begin()+n, xx.end());
+    std::nth_element(yy.begin(), yy.begin()+n, yy.end());
+    p0 = Point(xx[n], yy[n]);
   }
-  int n =(xx.size()-1)/2;
-  std::nth_element(xx.begin(), xx.begin()+n, xx.end());
-  std::nth_element(yy.begin(), yy.begin()+n, yy.end());
-  Point p0(xx[n], yy[n]);
   pst.translate(p1 - p0);
 
   Group &here(d->currentGroup());
