@@ -36,7 +36,6 @@ public:
   QMap<QString, QString> pinIds;
   QString originId;
   QMap<QString, QRectF> annotationBBox;
-  QMap<QString, Qt::Alignment> annotationAlign;
   QMap<QString, QRectF> shAnnotationBBox;
   QMap<int, QMap<QString, QString>> cpins;
   int ncpins;
@@ -261,21 +260,6 @@ void SymbolData::scanPins(XmlElement const &elt) {
 	double w = elt.attributes().value("width").toDouble();
 	double h = elt.attributes().value("height").toDouble();
 	annotationBBox[name] = QRectF(QPointF(x, y), QSizeF(w, h));
-
-	static QMap<QString, Qt::Alignment> map{
-	  {"left",  Qt::AlignLeft | Qt::AlignVCenter },
-	  {"right",  Qt::AlignRight | Qt::AlignVCenter },
-	  {"center",  Qt::AlignHCenter | Qt::AlignVCenter }
-	};
-        annotationAlign[name] = map["center"];
-	if (bits.size()>=3) {
-	  QString align = bits[2];
-	  if (map.contains(align)) {
-	    annotationAlign[name] = map[align];
-	  } else {
-	    qDebug() << "Unknown alignment" << align << "in" << label;
-	  }
-        }
       }
     }
     
@@ -327,9 +311,6 @@ bool Symbol::isValid() const {
   return d->valid;
 }
 
-QRectF Symbol::svgBBox() const {
-  return d->bbox;
-}
 
 QByteArray Symbol::toSvg() const {
   return d->toSvg(true, false);
@@ -358,12 +339,6 @@ QRectF Symbol::shiftedAnnotationBBox(QString id) const {
     : QRectF();
 }
 
-Qt::Alignment Symbol::annotationAlignment(QString id) const {
-  return d->annotationAlign.contains(id)
-    ? d->annotationAlign[id]
-    : (Qt::AlignLeft | Qt::AlignVCenter);
-}
-  
 QString Symbol::prefixForSlotCount(int sc) {
   switch (sc) {
   case 2: return "½ ";

@@ -45,7 +45,6 @@ public:
   void setLayer(Layer);
   Rect boundingRect() const;
   bool onEdge(Point p, Dim mrg) const;
-  Extent extent() const; // only valid if set the old way
   void setExtent(Extent);
 };
 

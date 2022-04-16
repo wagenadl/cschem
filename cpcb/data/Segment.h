@@ -29,11 +29,9 @@ public:
   // otherwise it is on the line extended from the segment.
   Point projectionOntoSegment(Point p) const;
   double angle(Segment const &t) const; // putting t after us. angle [-pi,+pi).
-  Segment orthogonallyDisplaced(Dim d) const;
   bool intersects(Rect r) const;
 protected:
   Fraction projectionCoefficient(Point p) const;
-  Point projectionOntoLine(Point p) const;
 };
 
 QDebug operator<<(QDebug, Segment const &);

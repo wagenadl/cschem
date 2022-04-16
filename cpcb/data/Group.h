@@ -79,7 +79,6 @@ public:
   QSet<Point> allPoints(Layer) const;
   QSet<Point> altCoords() const; // includes text anchors and planes
   QStringList pinNames() const; // immediate children
-  int pinID(QString) const; // child id for named pin or -1
   QString pinName(int) const; // ref for given object or "" if not Hole/Pad
   Point pinPosition(QString name) const;
   Point anchor() const; // first named pin

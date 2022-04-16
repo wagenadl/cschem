@@ -386,20 +386,6 @@ QString Group::pinName(int id) const {
 }
   
 
-int Group::pinID(QString s) const {
-  for (int id: keys()) {
-    Object const &obj = object(id);
-    if (obj.isHole()) {
-      if (obj.asHole().ref==s)
-      return id;
-    } else if (obj.isPad()) {
-      if (obj.asPad().ref==s)
-        return id;
-    }
-  }
-  return -1;
-}
-
 QStringList Group::pinNames() const {
   QMap<QString, int> names;
   for (int id: keys()) {

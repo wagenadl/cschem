@@ -135,10 +135,6 @@ void Arc::setLayer(Layer l) {
   layer = l;
 }
 
-Arc::Extent Arc::extent() const {
-  return Extent::Invalid; // not actually supported...
-}
-
 void Arc::setExtent(Arc::Extent e) {
   // ancient style
   switch (e) {

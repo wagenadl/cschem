@@ -40,7 +40,7 @@ public slots:
   void exportCircuitAction();
   void exportPartListAction();
   void circuitImageToClipboardAction();
-  void partListToClipboardAction();
+  // void partListToClipboardAction();
   void compressedPartListToClipboardAction();
   void resolveConflictsAction();
 public:
@@ -50,7 +50,6 @@ public:
 private:
   void createActions();
   void createView();
-  void createStatusBar();
   void createDocks();
 private slots:
   void plonk(QString);

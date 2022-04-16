@@ -82,11 +82,3 @@ Group &Layout::root() {
   return d->root;
 }
 
-Layout formComponent(Group const &g) {
-  Layout lay;
-  Rect r = g.boundingRect();
-  lay.root() = g.translated(-Point(r.left, r.top));
-  lay.board().width = r.width;
-  lay.board().height = r.height;
-  return lay;
-}
