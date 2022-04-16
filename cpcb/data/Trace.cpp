@@ -48,7 +48,7 @@ Rect Trace::boundingRect() const {
 
 QPainterPath Trace::outlinePath() const {
   Point dp = p2 - p1;
-  Point px = p1 + Point(p1.distance(p2), Dim());
+  Point px = Point(p1.distance(p2), Dim());
   double angle = std::atan2(dp.y.toMils(), dp.x.toMils());
   QPainterPath path;
   double w = width.toMils();
@@ -56,8 +56,7 @@ QPainterPath Trace::outlinePath() const {
   path.addEllipse(px.toMils(), w/2, w/2);
   path.addRect(0, -w/2, px.x.toMils(), w);
   QTransform t; t.rotate(angle*180/3.14159265);
-  path = t.map(path);
-  return path.translated(p1.toMils());
+  return t.map(path).translated(p1.toMils());
 }
 
 
@@ -73,72 +72,29 @@ bool Trace::onSegment(Point p, Dim mrg) const {
   return Segment::onSegment(p, mrg + width/2);
 }
 
-bool Trace::touches(class Trace const &t, Point *pt) const {
-  // this is ridiculously elaborate, but more or less correct
+
+bool Trace::touches(Trace const &t, Point *pt) const {
   if (layer != t.layer)
     return false;
   if (!boundingRect().intersects(t.boundingRect()))
     return false;
+  if (!outlinePath().intersects(t.outlinePath()))
+    return false;
 
-  if (t.onSegment(p1, width/2)) {
-    if (pt)
-      *pt = p1;
-    return true;
-  } else if (t.onSegment(p2, width/2)) {
-    if (pt)
-      *pt = p1;
-    return true;
-  } else if (onSegment(t.p1, t.width/2)) {
-    if (pt)
-      *pt = t.p1;
-    return true;
-  } else if (onSegment(t.p2, t.width/2)) {
-    if (pt)
-      *pt = t.p2;
-    return true;
-  }
-  
-  if (intersects(t, pt))
-    return true;
-  else if (orthogonallyDisplaced(width/2).intersects(t, pt)
-      || orthogonallyDisplaced(-width/2).intersects(t, pt))
-    return true;
-  else if (intersects(t.orthogonallyDisplaced(t.width/2), pt)
-      || intersects(t.orthogonallyDisplaced(-t.width/2), pt))
-    return true;
+  Point intersect;
+  auto yes = [pt](Point p) {
+               if (pt)
+                 *pt = p;
+               return true;
+             };
+  intersects(t, &intersect); // this may not yield true, but if it doesn't
+  // ... it should still be close enough
+  if (onP1(intersect, t.width/2)) 
+    return yes(p1);
+  else if (onP2(intersect, t.width/2))
+    return yes(p2);
   else
-    return false;
-}
-
-bool Trace::touches(class Segment const &t, Point *pt) const {
-  if (!boundingRect().intersects(t.boundingRect()))
-    return false;
-
-  if (t.onSegment(p1, width/2)) {
-    if (pt)
-      *pt = p1;
-    return true;
-  } else if (t.onSegment(p2, width/2)) {
-    if (pt)
-      *pt = p1;
-    return true;
-  } else if (onSegment(t.p1)) {
-    if (pt)
-      *pt = t.p1;
-    return true;
-  } else if (onSegment(t.p2)) {
-    if (pt)
-      *pt = t.p2;
-    return true;
-  }
-
-  if (intersects(t, pt))
-    return true;
-  else if (orthogonallyDisplaced(width/2).intersects(t, pt)
-      || orthogonallyDisplaced(-width/2).intersects(t, pt))
-    return true;
-  else
-    return false;
+    return yes(intersect);
 }
 
 bool Trace::operator==(Trace const &t) const {
