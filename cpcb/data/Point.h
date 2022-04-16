@@ -22,6 +22,7 @@ public:
   Point roundedTo(Dim o) const { return Point(x.roundedTo(o),
 					      y.roundedTo(o)); }
   Dim distance(Point const &o) const { return Dim::quadrature(o.x-x, o.y-y); }
+  Dim distanceToOrigin() const { return Dim::quadrature(x, y); }
   bool isNull() const;
   Point operator+(Point const &o) const { return Point(x+o.x, y+o.y); }
   Point operator-(Point const &o) const { return Point(x-o.x, y-o.y); }

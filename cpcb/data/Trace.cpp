@@ -1,6 +1,8 @@
 // Trace.cpp
 
 #include "Trace.h"
+#include <cmath>
+#include <QTransform>
 
 Trace::Trace() {
   layer = Layer::Invalid;
@@ -43,6 +45,21 @@ QDebug operator<<(QDebug d, Trace const &t) {
 Rect Trace::boundingRect() const {
   return Segment::boundingRect().grow(width);
 }
+
+QPainterPath Trace::outlinePath() const {
+  Point dp = p2 - p1;
+  Point px = p1 + Point(p1.distance(p2), Dim());
+  double angle = std::atan2(dp.y.toMils(), dp.x.toMils());
+  QPainterPath path;
+  double w = width.toMils();
+  path.addEllipse(QPoint(0,0), w/2, w/2);
+  path.addEllipse(px.toMils(), w/2, w/2);
+  path.addRect(0, -w/2, px.x.toMils(), w);
+  QTransform t; t.rotate(angle*180/3.14159265);
+  path = t.map(path);
+  return path.translated(p1.toMils());
+}
+
 
 bool Trace::onP1(Point p, Dim mrg) const {
   return Segment::onP1(p, mrg + width/2);
