@@ -27,10 +27,6 @@ Fraction Segment::projectionCoefficient(Point p) const {
   return Fraction(a, b);
 }
 
-Point Segment::projectionOntoLine(Point p) const {
-  Fraction frc(projectionCoefficient(p));
-  return p1 + (p2-p1)*frc.num / frc.denom;
-}
 
 Point Segment::projectionOntoSegment(Point p) const {
   Fraction frc(projectionCoefficient(p));
@@ -148,13 +144,6 @@ double Segment::angle(Segment const &t) const {
   while (a<-PI)
     a += 2*PI;
   return a;
-}
-
-Segment Segment::orthogonallyDisplaced(Dim d) const {
-  double us = atan2(p2.y.toMils() - p1.y.toMils(),
-		    p2.x.toMils() - p1.x.toMils());
-  Point dxy(d*sin(us), d*cos(us));
-  return Segment(p1 + dxy, p2 + dxy);
 }
 
 bool Segment::intersects(Rect r) const {

@@ -19,7 +19,6 @@ public:
   double scale() const;
   int id() const;
   QPixmap draggable() const;
-  QPoint mapWidgetToDraggable(QPixmap const &draggable, QPoint onWidget) const;
   QPoint mapGroupToDraggable(QPixmap const &draggable, Point onGroup) const;
 public slots:
   void setGroup(Group const &);

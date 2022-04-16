@@ -80,10 +80,6 @@ public:
   bool simplifySegment(int conid, int seg);
   /* More aggressive version of simplifyConnection(), removes zigzags and
      U-turns. */
-  bool removeIfInvalid(int conid);
-  /* Removes the connection if it is invalid. True if succesful. */
-  bool removeIfDangling(int conid);
-  /* Removes the connection if it is dangling. True if succesful. */
   bool removeAllDanglingOrInvalid();
   /* Removes all dangling or invalid connections from the
      circuit. True if successful. */

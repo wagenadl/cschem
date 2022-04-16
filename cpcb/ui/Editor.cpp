@@ -522,14 +522,6 @@ void Editor::selectPoint(Point p, bool add) {
   d->emitSelectionStatus();
 }
 
-void Editor::deselect(int id) {
-  d->invalidateStuckPoints();
-  if (d->selection.contains(id)) {
-    d->selection.remove(id);
-    update();
-    d->emitSelectionStatus();
-  }
-}
 
 void Editor::deselectPoint(Point p) {
   d->invalidateStuckPoints();
@@ -547,16 +539,6 @@ void Editor::deselectPoint(Point p) {
   }
 }
 
-void Editor::selectAll() {
-  d->invalidateStuckPoints();
-  Group const &here(d->currentGroup());
-  d->selection = QSet<int>::fromList(here.keys());
-  d->purepts.clear();
-  for (int id: d->selection)
-    d->selectPointsOf(id);
-  update();
-  d->emitSelectionStatus();
-}
 
 void Editor::clearSelection() {
   d->invalidateStuckPoints();
@@ -1347,22 +1329,11 @@ void Editor::redo() {
   update();
 }
 
-bool Editor::isUndoAvailable() const {
-  return !d->undostack.isEmpty();
-}
-
-bool Editor::isRedoAvailable() const {
-  return !d->redostack.isEmpty();
-}
 
 bool Editor::isAsSaved() const {
   return d->stepsfromsaved == 0;
 }
 
-
-void Editor::markAsSaved() {
-  d->stepsfromsaved = 0;
-}
 
 void Editor::cut() {
   copy();
@@ -1415,10 +1386,6 @@ void Editor::paste() {
     select(id, true);
   d->updateOnWhat(true);
   emit componentsChanged();
-}
-
-PlaneEditor *Editor::planeEditor() const {
-  return d->planeeditor;
 }
 
 void Editor::deleteDanglingTraces() {

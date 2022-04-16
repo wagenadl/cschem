@@ -312,10 +312,6 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, [this]() { d->scene->key_backspace(); });
 }
 
-void MainWindow::createStatusBar() {
-  statusBar()->showMessage(tr("Ready"));
-}
-
 MainWindow::~MainWindow() {
   delete d;
 }
@@ -649,7 +645,8 @@ void MainWindow::circuitImageToClipboardAction() {
   }
   QApplication::clipboard()->setPixmap(img);
 }
- 
+
+/*
 void MainWindow::partListToClipboardAction() {
   QList<QStringList> symbols = d->partlistview->model()->asTable();
   QString text;
@@ -658,7 +655,7 @@ void MainWindow::partListToClipboardAction() {
   QApplication::clipboard()->setText(text);
   
 } 
-
+*/
 
 void MainWindow::compressedPartListToClipboardAction() {
   QList<QStringList> symbols = d->partlistview->model()->asTable();
