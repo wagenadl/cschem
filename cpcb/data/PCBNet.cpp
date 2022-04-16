@@ -90,6 +90,10 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
       if (h.touches(obj.asTrace()))
         insertRecursively(nid);
       break;
+    case Object::Type::Hole:
+      if (h.touches(obj.asHole()))
+        insertRecursively(nid);
+      break;
     case Object::Type::Pad:
       if (h.touches(obj.asPad()))
         insertRecursively(nid);
