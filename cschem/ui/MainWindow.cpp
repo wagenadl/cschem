@@ -44,6 +44,8 @@ public:
     recentfiles(0) {
   }
 public:
+  void fitView();
+public:
   QGraphicsView *view;
   Scene *scene;
   QString filename;
@@ -58,6 +60,28 @@ public:
 };
 
 QString MWData::lastdir;
+
+void MWData::fitView() {
+  QRectF br;
+  if (scene)
+    br = scene->itemsBoundingRect();
+  int W = 1000;
+  int H = 700;
+  if (br.isEmpty())
+    br = QRectF(QPointF(-W/2, -H/2), QSizeF(W, H));
+  qDebug() << "fitview" << br << view->transform();
+  int w = br.width();
+  int h = br.height();
+  if (w < W)
+    br = QRectF(QPointF(br.left() - (W-w)/2, br.top()), QSizeF(W, h));
+  w = br.width();
+  if (h < H) 
+    br = QRectF(QPointF(br.left(), br.top() - (H-h)/2), QSizeF(w, H));
+  qDebug() << "fitview" << scene << br << scene->sceneRect() << scene->itemsBoundingRect();
+  view->setTransform(QTransform());
+  view->scale(W/w, W/w);
+  view->centerOn(br.center());
+}
 
 MainWindow::MainWindow(): d(new MWData()) {
   setWindowIcon(QIcon(":/cschem.png"));
@@ -383,6 +407,7 @@ void MainWindow::create(Schem const &schem) {
   connect(d->scene->hoverManager(), &HoverManager::hoverChanged,
           this, &MainWindow::setStatusMessage);
   d->view->setScene(d->scene);
+  d->fitView();
   setWindowTitle(Style::programName());
   d->filename = "";
 
