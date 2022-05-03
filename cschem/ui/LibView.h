@@ -19,6 +19,7 @@ public slots:
   void rebuild();
   void setLibrary(class SymbolLibrary const *lib);
 public:
+  void resizeEvent(QResizeEvent *e) override;
   void activate(QString); // causes the signal to be emitted
   friend class LibViewData;
 private:
