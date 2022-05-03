@@ -28,7 +28,7 @@ endif()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt5 COMPONENTS Widgets Svg REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Svg PrintSupport REQUIRED)
 
 ######################################################################
 # Add the executables
@@ -41,6 +41,7 @@ include(cpcb/CMakeLists.txt)
 # Libraries to link to - Qt must be mentioned
 target_link_libraries(cschem Qt5::Widgets)
 target_link_libraries(cschem Qt5::Svg)
+target_link_libraries(cschem Qt5::PrintSupport)
 target_link_libraries(cpcb Qt5::Widgets)
 target_link_libraries(cpcb Qt5::Svg)
 

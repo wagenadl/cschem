@@ -37,6 +37,8 @@ public slots:
   void rotateCCWAction();
   void rotateCWAction();
   void flipAction();
+  void printPreviewAction();
+  void printDialogAction();
   void exportCircuitAction();
   void exportPartListAction();
   void circuitImageToClipboardAction();
