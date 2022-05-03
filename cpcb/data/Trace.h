@@ -9,6 +9,7 @@
 #include "Layer.h"
 #include <QXmlStreamReader>
 #include <QDebug>
+#include <QPainterPath>
 
 class Trace: public Segment {
 public:
@@ -18,6 +19,7 @@ public:
   Trace();
   bool isValid() const { return layer!=Layer::Invalid; }
   Rect boundingRect() const;
+  QPainterPath outlinePath() const;
   bool onP1(Point p, Dim mrg=Dim()) const;
   // ONP1(p, mrg) returns true if P is close enough to P1.
   // Close enough means within a distance .5*WIDTH + MRG.
@@ -26,7 +28,6 @@ public:
   // ONSEGMENT(p, mrg) returns true if P is close enough to the line segment.
   // Close enough means within a distance .5*WIDTH + MRG.
   // ONSEGMENT returns true even if ONP1 or ONP2 would return true as well.
-  bool touches(Segment const &t, Point *intersection=0) const;
   bool touches(Trace const &t, Point *intersection=0) const;
   bool touches(Rect r) const;
   bool operator==(Trace const &) const;

@@ -3,6 +3,8 @@
 #include "Pad.h"
 #include "Trace.h"
 #include "FilledPlane.h"
+#include "Board.h"
+#include <QTransform>
 
 Pad::Pad() {
   fpcon = false;
@@ -42,8 +44,6 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Pad const &t) {
   s.writeAttribute("h", t.height.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
   s.writeAttribute("ref", t.ref);
-  if (t.elliptic)
-    s.writeAttribute("ell", "1");
   if (t.fpcon)
     s.writeAttribute("fp", "1");
   if (t.noclear)
@@ -72,7 +72,6 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
     t.layer = Layer::Invalid;
   t.fpcon = a.value("fp") != 0;
   t.noclear = a.value("noclear").toInt() != 0;
-  t.elliptic = a.value("ell").toInt() != 0;
   t.ref = a.value("ref").toString();
   t.rota = FreeRotation(a.value("rot").toInt());
   s.skipCurrentElement();
@@ -84,7 +83,6 @@ QDebug operator<<(QDebug d, Pad const &t) {
     << t.width
     << t.height
     << t.layer
-    << (t.elliptic ? "ell" : "")
     << (t.fpcon ? "fp" : "")
     << (t.noclear ? "noclear" : "")
     << t.rota
@@ -93,28 +91,55 @@ QDebug operator<<(QDebug d, Pad const &t) {
 }
 
 Rect Pad::boundingRect() const {
-  Point dp(width/2, height/2);
+  Dim rx = width/2;
+  Dim ry = height/2;
+  if (fpcon)
+    rx += Board::padClearance(width, height) + Board::fpConOverlap();
+  Point dp(rx, ry);
   if (rota) {
+    // I'm not at all sure this is correct
     Rect r(p, p);
-    r |= p+dp.rotatedFreely(rota);
-    r |= p+(-dp).rotatedFreely(rota);
+    r |= p + dp.rotatedFreely(rota);
+    r |= p + (-dp).rotatedFreely(rota);
     dp.y = -dp.y;
-    r |= p+dp.rotatedFreely(rota);
-    r |= p+(-dp).rotatedFreely(rota);
+    r |= p + dp.rotatedFreely(rota);
+    r |= p + (-dp).rotatedFreely(rota);
     return r;
   } else {
     return Rect(p - dp, p + dp);
   }
 }
 
+QPainterPath Pad::outlinePath() const {
+  QPainterPath path;
+  double w = width.toMils();
+  double h = height.toMils();
+  path.addRect(-w/2, -h/2, w, h);
+  if (fpcon) {
+    double w1 = Board::fpConWidth(width, height).toMils();
+    double dl = (Board::padClearance(width, height)
+                 + Board::fpConOverlap()).toMils();
+    path.addRect(-w/2 - dl, -w1/2, w + 2*dl, w1);
+    path.addRect(-w1/2, -h/2 - dl, w1, h + 2*dl);
+  }
+  int r = rota;
+  if (r) {
+    QTransform t;
+    t.rotate(-r);
+    path = t.map(path);
+  }
+  return path.translated(p.toMils());
+}
+
+
 
 bool Pad::touches(class Pad const &pad) const {
   if (pad.layer != layer)
     return false;
-  Point dp = p - pad.p;
-  Dim dx = dp.x.abs();
-  Dim dy = dp.y.abs();
-  return dx <= width/2 + pad.width/2 && dy <= height/2 + pad.height/2;
+  if (!boundingRect().intersects(pad.boundingRect()))
+    return false;
+
+  return outlinePath().intersects(pad.outlinePath());
 }
 
 bool Pad::touches(class Trace const &t) const {

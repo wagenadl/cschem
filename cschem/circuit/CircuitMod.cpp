@@ -368,13 +368,6 @@ bool CircuitMod::removeConnectionsEquivalentTo(int id) {
   return res;
 }
 
-bool CircuitMod::removeIfDangling(int id) {
-  if (d->circ.connections.contains(id) && d->circ.connections[id].isDangling()) 
-    return deleteConnection(id);
-  else
-    return false;
-}
-
 bool CircuitMod::removeAllDanglingOrInvalid() {
   bool any = false;
   while (true) {
@@ -397,13 +390,6 @@ bool CircuitMod::removeAllDanglingOrInvalid() {
   return any;
 }
 
-bool CircuitMod::removeIfInvalid(int id) {
-  if (d->circ.connections.contains(id)
-      && !d->circ.connections[id].isValid())
-    return deleteConnection(id);
-  else
-    return false;
-}
 
 bool CircuitMod::simplifySegment(int id, int seg) {
   if (!d->circ.connections.contains(id))

@@ -158,6 +158,24 @@ void LibView::rebuild() {
       header = "Ports";
     else if (s.contains(":container:"))
       header = "Containers";
+    else if (s.contains(":battery"))
+      header = "Battery";
+    else if (s.contains(":connector"))
+      header = "Connectors";
+    else if (s.contains(":jumper"))
+      header = "Jumper";
+    else if (s.contains(":diode"))
+      header = "Diodes";
+    else if (s.contains(":ic"))
+      header = "ICs";
+    else if (s.contains(":logic"))
+      header = "Logic";
+    else if (s.contains(":passive"))
+      header = "Passives";
+    else if (s.contains(":switch"))
+      header = "Switches";
+    else if (s.contains(":transistor"))
+      header = "Transistors";
     else
       header = "Parts";
     if (header != lastheader) {
@@ -177,10 +195,19 @@ void LibView::rebuild() {
   }
 
   d->scene->setSceneRect(r.adjusted(-7, -14, 7, 14));
-  scale(1);
+  setMinimumWidth(92);
+  resize(92, 1000);
+}
+
+void LibView::resizeEvent(QResizeEvent *e) {
+  QGraphicsView::resizeEvent(e);
+  double scl = transform().m11();
+  double x = viewport()->width() / sceneRect().width() / scl;
+  QGraphicsView::scale(x, x);
 }
 
 void LibView::scale(double x) {
+  return;
   QGraphicsView::scale(x, x);
   QRectF r = d->scene->sceneRect();
   setMinimumWidth(mapFromScene(r.bottomRight()).x()

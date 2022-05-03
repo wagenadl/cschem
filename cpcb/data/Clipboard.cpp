@@ -1,5 +1,6 @@
 // Clipboard.cpp
 
+#include <QPainterPath>
 #include "Clipboard.h"
 #include <QApplication>
 #include <QClipboard>

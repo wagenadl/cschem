@@ -16,13 +16,6 @@ public:
     valid = false;
     anyunit = false;
   }
-  void toUnit(Unit u) {
-    if (unit==Unit::Inch && u==Unit::Mm) 
-      number *= 25.4;
-    else if (unit==Unit::Mm && u==Unit::Inch)
-      number /= 25.4;
-    unit = u;
-  }      
 public:
   double number;
   Unit unit;

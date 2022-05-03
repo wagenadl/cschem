@@ -34,11 +34,8 @@ public:
   LinkedSchematic const &linkedSchematic() const;
   QString linkedSchematicFilename() const;
   Point hoverPoint() const;
-  bool isUndoAvailable() const;
-  bool isRedoAvailable() const;
   bool isAsSaved() const;
   double pixelsPerMil() const;
-  class PlaneEditor *planeEditor() const;
   Point userOrigin() const;
   class BOM *bom() const;
   bool loadBOM(QString fn);
@@ -59,8 +56,6 @@ public slots:
   void select(QSet<int>);
   void selectPoint(Point, bool add=false);
   void deselectPoint(Point);
-  void deselect(int); // ditto
-  void selectAll();
   void selectTrace(bool wholetree);
   // expand selection with rest of multisegment trace
   void clearSelection();
@@ -102,7 +97,6 @@ public slots:
   void cut();
   void copy();
   void paste();
-  void markAsSaved();
   void translate(Point);
   void updateOnNet();
   void pretendOnNet(NodeID);

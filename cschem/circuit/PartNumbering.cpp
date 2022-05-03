@@ -68,15 +68,6 @@ QString PartNumbering::prettyValue(QString value, QString name) {
   return value;
 }
 
-QString PartNumbering::shortValue(QString value, QString) {
-  // remove space after number
-  // remove Ohm, F, ?
-  return value;
-}
-
-QString PartNumbering::htmlToSvg(QString html) {
-  return html;
-}
  
 static QRegularExpression wfn("^([A-Za-z]+)((\\d+)(.(\\d+))?)?$");
 // e.g., "A1.2"

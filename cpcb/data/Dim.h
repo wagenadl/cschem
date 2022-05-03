@@ -54,6 +54,7 @@ public:
   }
   Dim abs() const { return isNegative() ? Dim(-d) : Dim(d); }
   qint64 raw() const { return d; }
+  Dim nonneg() const { return d > 0 ? *this : Dim(); }
 public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }
   static Dim fromMils(float x) { return Dim(int(std::round(PerMil*x))); }

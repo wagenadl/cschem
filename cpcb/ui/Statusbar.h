@@ -21,11 +21,6 @@ signals:
   void layerVisibilityEdited(Layer, bool);
   void planesVisibilityEdited(bool);
   void netsVisibilityEdited(bool);
-public:
-  Dim gridSpacing() const;
-  bool isLayerVisible(Layer) const;
-  bool arePlanesVisible() const;
-  bool areNetsVisible() const;
 public slots:
   void setCursorXY(Point);
   void setObject(QString);
@@ -33,12 +28,6 @@ public slots:
   void hideCursorXY();
   void setGrid(Dim);
   void setBoard(Board const &);
-  void hideLayer(Layer);
-  void showLayer(Layer);
-  void hidePlanes();
-  void showPlanes();
-  void hideNets();
-  void showNets();
   void resetGridChoices();
   void setUserOrigin(Point);
 private:

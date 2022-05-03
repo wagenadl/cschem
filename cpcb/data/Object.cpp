@@ -622,6 +622,26 @@ void Object::flipUpDown(Dim y0, bool nottext) {
   }
 }
 
+QSet<Point> Object::altCoords() const {
+  if (type()==Object::Type::Group)
+    return asGroup().altCoords();
+  QSet<Point> pp = allPoints();
+  if (pp.size())
+    return pp;
+  switch (type()) {
+  case Object::Type::Text:
+    pp << asText().p;
+    break;
+  case Object::Type::Plane:
+    for (Point const &p: asPlane().perimeter)
+      pp << p;
+    break;
+  default:
+    break;
+  }
+  return pp;
+}
+
 QSet<Point> Object::allPoints() const {
   QSet<Point> pp;
   switch (type()) {

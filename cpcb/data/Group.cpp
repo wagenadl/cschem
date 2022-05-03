@@ -386,20 +386,6 @@ QString Group::pinName(int id) const {
 }
   
 
-int Group::pinID(QString s) const {
-  for (int id: keys()) {
-    Object const &obj = object(id);
-    if (obj.isHole()) {
-      if (obj.asHole().ref==s)
-      return id;
-    } else if (obj.isPad()) {
-      if (obj.asPad().ref==s)
-        return id;
-    }
-  }
-  return -1;
-}
-
 QStringList Group::pinNames() const {
   QMap<QString, int> names;
   for (int id: keys()) {
@@ -461,6 +447,12 @@ QSet<Point> Group::allPoints(Layer l) const {
   return pp;
 }
 
+QSet<Point> Group::altCoords() const {
+  QSet<Point> pp;
+  for (int id: keys()) 
+    pp |= object(id).altCoords();
+  return pp;
+}
       
 
 QSet<Point> Group::pinPoints() const {
