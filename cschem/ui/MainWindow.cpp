@@ -88,7 +88,7 @@ void MWData::fitView() {
     view->scale(W/w, W/w);
     view->centerOn(br.center());
   } else {
-    view->fitInView(br);
+    view->fitInView(br, Qt::KeepAspectRatio);
   }
 }
 
