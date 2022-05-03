@@ -31,6 +31,7 @@
 #include "circuit/ContainerConflicts.h"
 #include "svg/Paths.h"
 #include "circuit/PartNumbering.h"
+#include "PrintPreview.h"
 
 class MWData {
 public:
@@ -160,6 +161,16 @@ void MainWindow::createActions() {
   act = new QAction(tr("Save &as…"), this);
   act->setShortcuts(QKeySequence::SaveAs);
   connect(act, &QAction::triggered, this, &MainWindow::saveAsAction);
+  menu->addAction(act);
+
+  act = new QAction(tr("&Print…"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
+  connect(act, &QAction::triggered, this, &MainWindow::printDialogAction);
+  menu->addAction(act);
+
+  act = new QAction(tr("Print pre&view…"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
+  connect(act, &QAction::triggered, this, &MainWindow::printPreviewAction);
   menu->addAction(act);
 
   act = new QAction(tr("&Export circuit as SVG…"), this);
@@ -729,3 +740,10 @@ void MainWindow::resolveConflictsAction() {
 }
 
  
+void MainWindow::printPreviewAction() {
+  PrintPreview::preview(this, d->scene, d->filename);
+}
+
+void MainWindow::printDialogAction() {
+  PrintPreview::print(this, d->scene, d->filename);
+}
