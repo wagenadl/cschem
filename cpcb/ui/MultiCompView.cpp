@@ -193,9 +193,6 @@ void MultiCompView::setScale(double pxPerMil) {
   d->setMinWidth();
 }
 
-double MultiCompView::pixPerMil() const {
-  return d->ppm;
-}
 
 void MultiCompView::linkEditor(class Editor *ed) {
   for (auto ev: d->evs)

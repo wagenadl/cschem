@@ -45,6 +45,9 @@ public:
     recentfiles(0) {
   }
 public:
+  void fitView();
+  void rescale(double);
+public:
   QGraphicsView *view;
   Scene *scene;
   QString filename;
@@ -60,13 +63,41 @@ public:
 
 QString MWData::lastdir;
 
+void MWData::rescale(double x) {
+  view->scale(x, x);
+}
+
+void MWData::fitView() {
+  QRectF br;
+  if (scene)
+    br = scene->itemsBoundingRect();
+  int W = 1000;
+  int H = 700;
+  if (br.isEmpty())
+    br = QRectF(QPointF(-W/2, -H/2), QSizeF(W, H));
+  int w = br.width();
+  int h = br.height();
+  if (w < W)
+    br = QRectF(QPointF(br.left() - (W-w)/2, br.top()), QSizeF(W, h));
+  w = br.width();
+  if (h < H) 
+    br = QRectF(QPointF(br.left(), br.top() - (H-h)/2), QSizeF(w, H));
+  if (view->width() < 300 || view->height() < 300) {
+    // tiny window, let's be reasonable
+    view->setTransform(QTransform());
+    view->scale(W/w, W/w);
+    view->centerOn(br.center());
+  } else {
+    view->fitInView(br);
+  }
+}
+
 MainWindow::MainWindow(): d(new MWData()) {
   setWindowIcon(QIcon(":/cschem.png"));
   createView();
   createDocks();
   createActions();
-  d->view->scale(1.5, 1.5);
-  d->libview->scale(1.5);
+  d->rescale(1);
   create(Schem());
   int w0 = 10 * d->libview->width();
   int h0 = 3 * w0 / 4;
@@ -76,9 +107,7 @@ MainWindow::MainWindow(): d(new MWData()) {
     w = w0;
   if (h < h0)
     h = h0;
-  //  QPoint p0 = d->view->mapFromScene(d->scene->sceneRect().bottomRight());
   resize(w, h);
-  // resize(d->libview->width() + p0.x() + 100, p0.y() + 100);
 }
 
 void MainWindow::createDocks() {
@@ -292,6 +321,11 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::zoomOut);
   menu->addAction(act);
 
+  act = new QAction(tr("Zoom to &fit"), this);
+  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_0));
+  connect(act, &QAction::triggered, [this]() { d->fitView(); });
+  menu->addAction(act);
+  
   act = new QAction(tr("&Library"), this);
   act->setStatusTip(tr("Show/hide library pane"));
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
@@ -321,10 +355,6 @@ void MainWindow::createActions() {
   act->setShortcut(QKeySequence(Qt::Key_Backspace));
   addAction(act);
   connect(act, &QAction::triggered, [this]() { d->scene->key_backspace(); });
-}
-
-void MainWindow::createStatusBar() {
-  statusBar()->showMessage(tr("Ready"));
 }
 
 MainWindow::~MainWindow() {
@@ -398,6 +428,7 @@ void MainWindow::create(Schem const &schem) {
   connect(d->scene->hoverManager(), &HoverManager::hoverChanged,
           this, &MainWindow::setStatusMessage);
   d->view->setScene(d->scene);
+  d->fitView();
   setWindowTitle(Style::programName());
   d->filename = "";
 
@@ -423,7 +454,6 @@ void MainWindow::create(Schem const &schem) {
 }
 
 bool MainWindow::load(QString fn) {
-  qDebug() << "load" << fn;
   Schem s = FileIO::loadSchematic(fn);
   create(s);
   if (s.isEmpty()) {
@@ -473,11 +503,11 @@ void MainWindow::markChanged() {
 }
 
 void MainWindow::zoomIn() {
-  d->view->scale(1.5, 1.5);
+  d->rescale(1.5);
 }
 
 void MainWindow::zoomOut() {
-  d->view->scale(1/1.5, 1/1.5);
+  d->rescale(1/1.5);
 }
 
 void MainWindow::setStatusMessage(QString msg) {
@@ -599,9 +629,9 @@ void MainWindow::exportCircuitAction() {
   QString fn = fns.first();
 
   SvgExporter xp(d->scene->schem());
-  if (!xp.exportSvg(fn)) {
-    qDebug() << "Failed to export svg";
-  }
+  if (!xp.exportSvg(fn))
+    QMessageBox::warning(this, "CSchem",
+                         "Failed to export svg");
 }
 
 void MainWindow::exportPartListAction() {
@@ -641,8 +671,7 @@ void MainWindow::exportPartListAction() {
       ts << "\n";
     }
   } else {
-    qDebug() << "Failed to export parts list";
-    // should show error box
+    QMessageBox::warning(this, "CSchem", "Failed to export parts list");
   }
 }
 
@@ -660,7 +689,8 @@ void MainWindow::circuitImageToClipboardAction() {
   }
   QApplication::clipboard()->setPixmap(img);
 }
- 
+
+/*
 void MainWindow::partListToClipboardAction() {
   QList<QStringList> symbols = d->partlistview->model()->asTable();
   QString text;
@@ -669,7 +699,7 @@ void MainWindow::partListToClipboardAction() {
   QApplication::clipboard()->setText(text);
   
 } 
-
+*/
 
 void MainWindow::compressedPartListToClipboardAction() {
   QList<QStringList> symbols = d->partlistview->model()->asTable();
@@ -683,7 +713,6 @@ void MainWindow::compressedPartListToClipboardAction() {
 
 
 void MainWindow::selectionToPartList() {
-  qDebug() << "selection to partlist" << d->scene->selectedElements();
   d->recursedepth ++;
   if (d->recursedepth == 1)
     d->partlistview->selectElements(d->scene->selectedElements());

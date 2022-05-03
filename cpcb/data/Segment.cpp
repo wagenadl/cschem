@@ -27,6 +27,7 @@ Fraction Segment::projectionCoefficient(Point p) const {
   return Fraction(a, b);
 }
 
+
 Point Segment::projectionOntoSegment(Point p) const {
   Fraction frc(projectionCoefficient(p));
   if (frc.num<=0)
@@ -76,14 +77,14 @@ bool Segment::onSegment(Point p, Dim mrg) const {
 }
 
 bool Segment::intersects(Segment const &t, Point *intersection) const {
-  bool res;
-  Point p = intersectionWith(t, &res);
-  if (intersection)
-    *intersection = p;
-  return res;
-}
+  auto ret = [intersection](bool res, Point p) {
+         if (intersection)
+           *intersection = p;
+         return res;
+       };
+  auto yes = [ret](Point p) { return ret(true, p); };
+  auto no = [ret](Point p) { return ret(false, p); };
 
-Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
   /* Mathematical idea: represent us as p1 + a dp where a in [0, 1] and
      other segment as p1' + a' dp' (where a' in [0, 1]). Find intersection.
      We have x = x1 + a dx = x1' + a' dx' and y = y1 + a dy = y1' + a' dy'.
@@ -112,39 +113,24 @@ Point Segment::intersectionWith(class Segment const &t, bool *ok) const {
   double nrm = dx*dy_ - dy*dx_;
   if (fabs(nrm)<1e-6) {
     // parallel; "intersects" iff directly overlapping
-    if (onSegment(t.p1, Dim::fromMM(.001))) {
-      if (ok)
-	*ok = true;
-      return t.p1;
-    } else if (onSegment(t.p2, Dim::fromMM(.001))) {
-      if (ok)
-	*ok = true;
-      return t.p2;
-    } else if (t.onSegment(p1, Dim::fromMM(.001))) {
-      if (ok)
-	*ok = true;
-      return p1;
-    } else if (t.onSegment(p2, Dim::fromMM(.001))) {
-      if (ok)
-	*ok = true;
-      return p2;
-    } else {
-      if (ok)
-	*ok = false;
-      return Point();
-    }
+    if (onSegment(t.p1, Dim::fromMM(.001)))
+      return yes(t.p1);
+    else if (onSegment(t.p2, Dim::fromMM(.001))) 
+      return yes(t.p2);
+    else if (t.onSegment(p1, Dim::fromMM(.001))) 
+      return yes(p1);
+    else if (t.onSegment(p2, Dim::fromMM(.001))) 
+      return yes(p2);
+    else 
+      return no((p1 + p2 + t.p1 + t.p2) / 4);
   }
   double a = (dy_*(x1_-x1) - dx_*(y1_-y1)) / nrm;
   double a_ = (dy*(x1_-x1) - dx*(y1_-y1)) / nrm;
-  if (a>=0 && a<=1 && a_>=0 && a_<=1) {
-    if (ok)
-      *ok = true;
-    return Point(Dim::fromMils(x1 + a*dx), Dim::fromMils(y1 + a*dy));
-  } else {
-    if (ok)
-      *ok = false;
-    return Point();
-  }
+  Point p(Dim::fromMils(x1 + a*dx), Dim::fromMils(y1 + a*dy));
+  if (a>=0 && a<=1 && a_>=0 && a_<=1)
+    return yes(p);
+  else
+    return no(p);
 }
 
 double Segment::angle(Segment const &t) const {
@@ -158,13 +144,6 @@ double Segment::angle(Segment const &t) const {
   while (a<-PI)
     a += 2*PI;
   return a;
-}
-
-Segment Segment::orthogonallyDisplaced(Dim d) const {
-  double us = atan2(p2.y.toMils() - p1.y.toMils(),
-		    p2.x.toMils() - p1.x.toMils());
-  Point dxy(d*sin(us), d*cos(us));
-  return Segment(p1 + dxy, p2 + dxy);
 }
 
 bool Segment::intersects(Rect r) const {

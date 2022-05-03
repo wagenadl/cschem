@@ -45,13 +45,10 @@ bool Polyline::contains(Point p, Dim mrg) const {
   Segment s0(p, Point(Dim::infinity(), p.y));
   int n = 0;
   bool ok;
-  for (int k=0; k<K-1; k++) {
-    s0.intersectionWith(Segment(operator[](k), operator[](k+1)), &ok);
-    if (ok)
+  for (int k=0; k<K-1; k++)
+    if (s0.intersects(Segment(operator[](k), operator[](k+1))))
       n++;
-  }
-  s0.intersectionWith(Segment(operator[](0), operator[](K-1)), &ok);
-  if (ok)
+  if (s0.intersects(Segment(operator[](0), operator[](K-1))))
     n++;
   
   return (n&1) ? true : false;

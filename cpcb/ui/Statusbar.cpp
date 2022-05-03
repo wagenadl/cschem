@@ -107,21 +107,6 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
 Statusbar::~Statusbar() {
 }
 
-Dim Statusbar::gridSpacing() const {
-  return Dim::fromString(gridui->currentData().toString());
-}
-
-bool Statusbar::isLayerVisible(Layer l) const {
-  return layerui.contains(l) ? layerui[l]->isChecked() : true;
-}
-
-bool Statusbar::arePlanesVisible() const {
-  return planesui->isChecked();
-}
-
-bool Statusbar::areNetsVisible() const {
-  return netsui->isChecked();
-}
 
 void Statusbar::setBoard(Board const &b) {
   board = b;
@@ -182,36 +167,6 @@ void Statusbar::setGrid(Dim g) {
     gridui->setCurrentIndex(gridui->count()-1);
     gridsp->parseValue();
   }
-}
-
-void Statusbar::hideLayer(Layer l) {
-  board.layervisible[l] = false;
-  if (layerui.contains(l))
-    layerui[l]->setChecked(false);
-}
-
-void Statusbar::showLayer(Layer l) {
-  board.layervisible[l] = true;
-  if (layerui.contains(l))
-    layerui[l]->setChecked(true);
-}
-
-void Statusbar::hidePlanes() {
-  board.planesvisible = false;
-  planesui->setChecked(false);
-}
-
-void Statusbar::showPlanes() {
-  board.planesvisible = true;
-  planesui->setChecked(true);
-}
-
-void Statusbar::hideNets() {
-  netsui->setChecked(false);
-}
-
-void Statusbar::showNets() {
-  netsui->setChecked(true);
 }
 
 void Statusbar::setCursorXY(Point p1) {

@@ -11,8 +11,6 @@ public:
   static QString abbreviation(QString symbol);
   static QString nameToHtml(QString name);
   static QString prettyValue(QString value, QString name="");
-  static QString shortValue(QString value, QString name="");
-  static QString htmlToSvg(QString html);
   static bool initiallyShowValue(QString symbol);
   static bool initiallyShowName(QString symbol);
   static QString prefix(QString name); // "R" part of "R3"

@@ -9,6 +9,7 @@
 #include <QXmlStreamReader>
 #include <QDebug>
 #include "Layer.h"
+#include <QPainterPath>
 
 class Pad {
 public:
@@ -17,7 +18,6 @@ public:
   Dim height;
   FreeRotation rota;
   Layer layer;
-  bool elliptic;
   QString ref;
   bool fpcon;
   bool noclear;
@@ -25,6 +25,7 @@ public:
   Pad();
   bool isValid() const { return layer!=Layer::Invalid; }
   Rect boundingRect() const;
+  QPainterPath outlinePath() const;
   void rotateCW(); // around our center
   bool touches(class Pad const &t) const;
   bool touches(class Trace const &t) const;

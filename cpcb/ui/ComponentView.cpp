@@ -143,15 +143,12 @@ void ComponentView::mouseMoveEvent(QMouseEvent *e) {
   drag->setMimeData(mimeData);
   QPixmap drg(draggable());
   drag->setPixmap(drg);
-#if 0
-  drag->setHotSpot(mapWidgetToDraggable(drg, presspt));
-#else
   QStringList pn(grp.pinNames());
   if (pn.isEmpty())
     drag->setHotSpot(mapGroupToDraggable(drg, grp.boundingRect().center()));
   else
     drag->setHotSpot(mapGroupToDraggable(drg, grp.pinPosition(pn.first())));
-#endif
+
   drag->exec(Qt::CopyAction, Qt::CopyAction);
 }
 
@@ -234,12 +231,6 @@ void ComponentView::dropEvent(QDropEvent *e) {
   e->ignore();
 }
 
-QPoint ComponentView::mapWidgetToDraggable(QPixmap const &drg,
-					   QPoint pw) const {
-  QPoint cw(width()/2, height()/2);
-  QPoint cd(drg.width()/2, drg.height()/2);
-  return pw - cw + cd;
-}
 
 QPoint ComponentView::mapGroupToDraggable(QPixmap const &drg, Point p) const {
   QPointF pg = (p - grp.boundingRect().center()).toMils();

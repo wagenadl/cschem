@@ -6,6 +6,7 @@
 #include "pi.h"
 #include "Board.h"
 #include "Pad.h"
+#include <QTransform>
 
 Hole::Hole() {
   fpcon = Layer::Invalid;
@@ -31,6 +32,34 @@ Rect Hole::boundingRect() const {
     rct |= p + se.rotatedFreely(rota);
   }
   return rct;
+}
+
+QPainterPath Hole::outlinePath(Layer l) const {
+  QPainterPath path;
+  double od_ = od.toMils();
+  double sl = slotlength.toMils();
+  if (square) {
+    path.addRect(-od_/2 - sl/2, -od_/2, od_ + sl, od_);
+  } else if (sl>0) {
+    path.addRect(-sl/2, -od_/2, sl, od_);
+    path.addEllipse(QPointF(-sl/2, 0), od_/2, od_/2);
+    path.addEllipse(QPointF(sl/2, 0), od_/2, od_/2);
+  } else {
+    path.addEllipse(QPointF(0, 0), od_/2, od_/2);
+  }
+  if (l!=Layer::Invalid && l==fpcon) {
+    double w = Board::fpConWidth(od, od).toMils();
+    double dl = (Board::padClearance(od, od) + Board::fpConOverlap()).toMils();
+    path.addRect(-od_/2 - dl - sl/2, -w/2, od_ + sl + 2*dl, w);
+    path.addRect(-w/2, -od_/2 - dl, w, od_ + 2*dl);
+  }
+  int r = rota;
+  if (r) {
+    QTransform t;
+    t.rotate(-r);
+    path = t.map(path);
+  }
+  return path.translated(p.toMils());
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
@@ -88,23 +117,19 @@ QDebug operator<<(QDebug d, Hole const &t) {
   return d;
 }
 
+bool Hole::touches(class Hole const &other) const {
+  if (!boundingRect().intersects(other.boundingRect()))
+    return false;
+  return outlinePath(fpcon).intersects(other.outlinePath(fpcon));
+}
+  
+
 bool Hole::touches(class Pad const &pad) const {
   if (!(pad.layer==Layer::Top || pad.layer==Layer::Bottom))
     return false;
-  Point dp = p - pad.p;
-  Dim dx = dp.x.abs();
-  Dim dy = dp.y.abs();
-  if (square) {
-    return dx <= od/2 + pad.width/2 && dy <= od/2 + pad.height/2;
-  } else {
-    dx -= pad.width/2;
-    dy -= pad.height/2;
-    if (dx.isNegative())
-      dx = Dim();
-    if (dy.isNegative())
-      dy = Dim();
-    return Dim::quadrature(dx, dy) <= od/2;
-  }
+  if (!boundingRect().intersects(pad.boundingRect()))
+    return false;
+  return outlinePath(pad.layer).intersects(pad.outlinePath());
 }
    
 bool Hole::touches(Trace const &t) const {
@@ -112,59 +137,7 @@ bool Hole::touches(Trace const &t) const {
     return false;
   if (!t.touches(boundingRect()))
     return false;
-  if (p==t.p1 || p==t.p2)
-    return true;
-  if (t.onSegment(p, od/2))
-    return true;
-  if (fpcon==t.layer) {
-    Segment t1;
-    t1.p1 = p;
-    t1.p2 = (p + Point(slotlength/2 + od/2
-		       + Board::padClearance(od,od) + Board::fpConOverlap(),
-		       Dim()))
-      .rotatedFreely(rota, p);
-    if (t.touches(t1))
-      return true;
-    t1.p2 = (p - Point(slotlength/2 + od/2
-		       + Board::padClearance(od,od) + Board::fpConOverlap(),
-		       Dim()))
-      .rotatedFreely(rota, p);
-    if (t.touches(t1))
-      return true;
-    t1.p2 = (p + Point(Dim(), od/2
-		       + Board::padClearance(od,od) + Board::fpConOverlap()))
-      .rotatedFreely(rota, p);
-    if (t.touches(t1))
-      return true;
-    t1.p2 = (p - Point(Dim(), od/2
-		       + Board::padClearance(od,od) + Board::fpConOverlap()))
-      .rotatedFreely(rota, p);
-    if (t.touches(t1))
-      return true;
-  }
-  if (square) {
-    Segment t1;
-    t1.p1 = t.p1.rotatedFreely(-rota, p);
-    t1.p2 = t.p2.rotatedFreely(-rota, p);
-    Point dxy(slotlength/2+od/2,od/2);
-    Rect r0(p - dxy, p + dxy);
-    return t1.intersects(r0)
-      || t1.orthogonallyDisplaced(-t.width/2).intersects(r0)
-      || t1.orthogonallyDisplaced(t.width/2).intersects(r0);
-  } else {
-    if (slotlength.isPositive()) {
-      Trace me;
-      me.layer = t.layer;
-      me.width = od;
-      Point dxy(cos(PI*rota/180)*slotlength/2,
-		sin(PI*rota/180)*slotlength/2);
-      me.p1 = p + dxy;
-      me.p2 = p - dxy;
-      return t.touches(me);
-    } else {
-      return false;
-    }
-  }
+  return outlinePath(t.layer).intersects(t.outlinePath());
 }
 
 bool Hole::touches(FilledPlane const &fp) const {

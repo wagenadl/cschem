@@ -332,8 +332,47 @@ void MWData::verifyNets() {
     names << nn.humanName();
   statusbar->setMissing(names);
   if (nm.wronglyInNet.isEmpty() && nm.missingFromNet.isEmpty()
-      && nm.missingEntirely.isEmpty())
+      && nm.missingEntirely.isEmpty()) {
     QMessageBox::information(0, "cpcb", "All nets verified OK.");
+  } else {
+    QStringList msgs;
+    msgs << "Verification unsuccessful:";
+    QSet<QString> missing;
+    for (NodeID const &n: nm.missingFromNet) 
+      missing << grp.nodeName(n).humanName();
+    QStringList missinglist;
+    for (QString m: missing)
+      missinglist << m;
+    if (missinglist.size()==1) 
+      msgs << missinglist[0] + " is missing a connection.";
+    else if (missinglist.size()>1)
+      msgs << "Some connections are missing.";
+
+    QSet<QString> wrongly;
+    for (NodeID const &n: nm.wronglyInNet) 
+      wrongly << grp.nodeName(n).humanName();
+    QStringList wronglylist;
+    for (QString m: wrongly)
+      wronglylist << m;
+    if (wronglylist.size()==1)
+      msgs << wronglylist[0] + " has a spurious connection.";
+    else if (wronglylist.size()>1)
+      msgs << "There are spurious connections.";
+
+    QStringList missingEntirely;
+    for (Nodename const &n: nm.missingEntirely)
+      missingEntirely << n.humanName();
+    if (missingEntirely.size()==1)
+      msgs << missingEntirely[0] + " has not been placed.";
+    else if (missingEntirely.size()>1)
+      msgs << "Some pins or components have not been placed.";
+    msgs << "";
+    if (nm.missingFromNet.size() || nm.wronglyInNet.size())
+      msgs << "One affected net has been highlighted.";
+    if (nm.missingEntirely.size()>1)
+      msgs << "See status bar for details.";
+    QMessageBox::warning(0, "cpcb", msgs.join("\n"));
+  }
 }
 
 void MWData::linkSchematicDialog() {

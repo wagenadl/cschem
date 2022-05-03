@@ -54,6 +54,7 @@ QPointF svgFontDelta() {
   return QPointF(0, svgFontSize() * .3);
 }
 
+/*
 void testCircle(QXmlStreamWriter &sw, QPointF p0) {
   // Use this to test positioning.
   // It places a tiny red circle at the given point.
@@ -64,6 +65,7 @@ void testCircle(QXmlStreamWriter &sw, QPointF p0) {
   sw.writeAttribute("r", "2");
   sw.writeEndElement();
 }
+*/
 
 void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   QString sym = elt.symbol();
