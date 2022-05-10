@@ -234,7 +234,7 @@ void SceneData::growSceneRect(QSet<int> const &eltids) {
   for (int id: eltids)
     if  (elts.contains(id))
       r0 |= elts[id]->sceneBoundingRect();
-  r0.adjust(-100, -100, 100, 100);
+  r0.adjust(-250, -250, 750, 750);
   scene->setSceneRect(r0 | scene->sceneRect());
 }
 
@@ -244,7 +244,7 @@ void SceneData::resetSceneRect() {
     r0 |= e->sceneBoundingRect();
   for (auto c: conns)
     r0 |= c->sceneBoundingRect();
-  r0.adjust(-100, -100, 100, 100);
+  r0.adjust(-250, -250, 750, 750);
   scene->setSceneRect(r0);
 }  
 

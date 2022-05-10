@@ -71,17 +71,20 @@ void MWData::fitView() {
   QRectF br;
   if (scene)
     br = scene->itemsBoundingRect();
-  int W = 1000;
-  int H = 700;
+  double W = 1000;
+  double H = 700;
   if (br.isEmpty())
     br = QRectF(QPointF(-W/2, -H/2), QSizeF(W, H));
-  int w = br.width();
-  int h = br.height();
+  else
+    br.adjust(-50, -50, 100, 100);
+  double w = br.width();
+  double h = br.height();
   if (w < W)
     br = QRectF(QPointF(br.left() - (W-w)/2, br.top()), QSizeF(W, h));
   w = br.width();
   if (h < H) 
     br = QRectF(QPointF(br.left(), br.top() - (H-h)/2), QSizeF(w, H));
+  qDebug() << "fitview" << br << W << w;
   if (view->width() < 300 || view->height() < 300) {
     // tiny window, let's be reasonable
     view->setTransform(QTransform());
@@ -322,7 +325,9 @@ void MainWindow::createActions() {
   menu->addAction(act);
 
   act = new QAction(tr("Zoom to &fit"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_0));
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence(Qt::CTRL + Qt::Key_0)
+                    << QKeySequence(Qt::Key_0));
   connect(act, &QAction::triggered, [this]() { d->fitView(); });
   menu->addAction(act);
   
