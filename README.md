@@ -31,9 +31,8 @@ contributions are welcome.
 
 ## Installation
 
-An installation package is currently available for Ubuntu
-Linux. Binary packages for Windows 10 and Mac OS X will be made
-availabel soon.
+Installation packages are currently available for Ubuntu
+Linux and Windows 10. An installation package for Mac OS X is not hard to make, so let me know if you want it.
 
 ## Installation from source on Linux
 
@@ -64,27 +63,34 @@ availabel soon.
 
 * Compile the code:
 
-        make
+        mkdir build
+	cd build
+	cmake ..
+	cmake --build .
 
 * Test the result:
 
-        ./build/cschem/cschem
-        ./build/cpcb/cpcb
+        ./cschem
+        ./cpcb
 
-* Once you are happy, install ELN to a system location:
+* Once you are happy, install CSchem to a system location:
 
         sudo make install
 
   (This installs the binaries in `/usr/local/bin` and some extra files in
-  `/usr/local/share`. If you prefer other locations, please edit lines 10
-  and 11 of the Makefile.)
+  `/usr/local/share`. The environment variable CMAKE_INSTALL_PREFIX can be used to specify another location.)
+  
+  Or, more conveniently, create your own .deb and install that:
+  
+  	cpack .
+	sudo dpkg -i cschem_0.2.0-1_amd64.deb
 
 Please let me know if you have trouble. I will gladly try to help.
 
 ## Installation from source on Mac OS X
 
-Instructions to appear soon.
+If you have CMake installed on your system, the steps should be exactly the same, except that CPACK will produce a .dmg. (This has not yet been tested. Please let me know how you fare.)
 
 ## Installation from source on Windows
 
-Instructions to appear soon.
+If you have CMake installed on your system, the steps should be exactly the same, except that CPACK will produce a .exe. I like to use the git bash shell to interact with CMake. Double click the resulting .exe to install CSchem.
