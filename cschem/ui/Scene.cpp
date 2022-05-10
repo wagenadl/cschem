@@ -57,7 +57,7 @@ public:
   bool startSvgDragIn(QString fn, QPointF sp);
   QPointF moveDragIn(QPointF sp);
   void hideDragIn();
-  bool importAndPlonk(QString filename, QPointF sp, bool merge=true);
+  bool importAndPlonk(Symbol const &sym, QPointF sp, bool merge=true);
   void modifyContents(Element const &container, QString oldname, int sibid=-1);
   void modifyContainerAndSiblings(Element const &container, QString oldname);
   void newTextual(QPointF);
@@ -1031,8 +1031,8 @@ bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
   return true;
 }
 
-bool SceneData::importAndPlonk(QString filename, QPointF pos, bool merge) {
-  Symbol symbol = Symbol::load(filename);
+bool SceneData::importAndPlonk(Symbol const &symbol, QPointF pos, bool merge) {
+  qDebug() << "importAndPlonk" << pos << merge;
   if (!symbol.isValid())
     return false;
   lib().insert(symbol);
@@ -1089,35 +1089,33 @@ void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
 
 void Scene::dragEnterEvent(QGraphicsSceneDragDropEvent *e) {
   d->hovermanager->update(e->scenePos());
+
   QMimeData const *md = e->mimeData();
+
   if (md->hasFormat("application/x-dnd-cschem")) {
     d->hovermanager->setPrimaryPurpose(HoverManager::Purpose::None);
     d->startSymbolDragIn(QString(md->data("application/x-dnd-cschem")),
-		   e->scenePos());
+                         e->scenePos());
     e->accept();
-  } else if (md->hasUrls()) {
+    return;
+  }
+
+  if (md->hasUrls()) {
     QList<QUrl> urls = md->urls();
-    QString fn;
     for (QUrl url: urls) {
       if (url.isLocalFile()) {
-          QString fn1 = url.toLocalFile();
-          if (fn1.toLower().endsWith(".svg")) {
-    fn = fn1;
-	break;
-      }
+          QString fn = url.toLocalFile();
+          if (fn.toLower().endsWith(".svg")) {
+            if (d->startSvgDragIn(fn, e->scenePos())) {
+              e->accept();
+              return;
+            }
+          }
       }
     }
-    if (!fn.isEmpty()) {
-      if (d->startSvgDragIn(fn, e->scenePos()))
-	e->accept();
-      else
-	e->ignore();
-    } else {
-      e->ignore();
-    }
-  } else {
-    e->ignore();
   }
+   
+  e->ignore();
 }
 
 void Scene::dragLeaveEvent(QGraphicsSceneDragDropEvent *e) {
@@ -1142,34 +1140,35 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
   QPointF droppos = d->moveDragIn(e->scenePos());
-  d->hideDragIn();
 
   QMimeData const *md = e->mimeData();
+
   if (md->hasFormat("application/x-dnd-cschem")) {
     plonk(QString(md->data("application/x-dnd-cschem")), droppos, true);
+    d->hideDragIn();
     e->accept();
-  } else if (md->hasUrls()) {
-    QList<QUrl> urls = md->urls();
-    bool take = false;
-    d->preact();
-    clearSelection();
-    for (QUrl url: urls) {
-      if (url.isLocalFile()) {
-          QString fn1 = url.toLocalFile();
-          if (fn1.toLower().endsWith(".svg"))
-        take = d->importAndPlonk(fn1, e->scenePos(), true);
-      }
-    }
-    if (take) {
-        emit libraryChanged();
-	e->accept();
-    } else {
-      d->unact();
-      e->ignore();
-    }
-  } else {
-    e->ignore();
+    return;
   }
+  
+  if (md->hasUrls()) {
+    // Surely this means we have a dragin?
+    if (!d->dragin) {
+      qDebug() << "Drop without a drag!?";
+      e->ignore();
+      d->hideDragIn();
+      return;
+    }
+    Symbol const &sym = d->dragin->symbol();
+    if (d->importAndPlonk(sym, droppos, true)) {
+      emit libraryChanged();
+      e->accept();
+      d->hideDragIn();
+      return;
+    }
+  }
+
+  e->ignore();
+  d->hideDragIn();
   // i'd like to set focus, but it doesn't happen somehow
 }
 
