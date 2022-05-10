@@ -113,6 +113,7 @@ LibView::LibView(QWidget *parent): QGraphicsView(parent),
   setScene(d->scene);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  resize(92, 1000);
 }
 
 void LibView::clear() {
@@ -196,7 +197,6 @@ void LibView::rebuild() {
 
   d->scene->setSceneRect(r.adjusted(-7, -14, 7, 14));
   setMinimumWidth(92);
-  resize(92, 1000);
 }
 
 void LibView::resizeEvent(QResizeEvent *e) {
