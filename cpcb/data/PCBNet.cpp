@@ -45,7 +45,9 @@ void Builder::insertRecursively(NodeID nid) {
 }
 
 void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
-  Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  bool toplevel = grpid.isEmpty();
+  Group const &univ(toplevel ? root : root.object(grpid).asGroup());
+  bool discountwire = univ.pkg.contains("trace");
   for (int id: univ.keys()) {
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
@@ -61,9 +63,7 @@ void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
         insertRecursively(nid);
       break;
     case Object::Type::Trace:
-      //if (obj.asTrace().layer!=Layer::Silk)
-      //  qDebug() << "testing" << tr << "vs" << obj.asTrace();
-      if (obj.asTrace().touches(tr))
+      if (!discountwire && obj.asTrace().touches(tr))
         insertRecursively(nid);
       break;
     case Object::Type::Plane:
@@ -79,7 +79,9 @@ void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
 }
 
 void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
-  Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  bool toplevel = grpid.isEmpty();
+  Group const &univ(toplevel ? root : root.object(grpid).asGroup());
+  bool discountwire = univ.pkg.contains("trace");
   for (int id: univ.keys()) {
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
@@ -87,7 +89,7 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
     Object const &obj(univ.object(id));
     switch (obj.type()) {
     case Object::Type::Trace:
-      if (h.touches(obj.asTrace()))
+      if (!discountwire && h.touches(obj.asTrace())) // ignore traces inside groups
         insertRecursively(nid);
       break;
     case Object::Type::Hole:
@@ -112,7 +114,9 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
 }
 
 void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
-  Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  bool toplevel = grpid.isEmpty();
+  Group const &univ(toplevel ? root : root.object(grpid).asGroup());
+  bool discountwire = univ.pkg.contains("trace");
   for (int id: univ.keys()) {
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
@@ -128,7 +132,7 @@ void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
         insertRecursively(nid);
       break;
     case Object::Type::Trace:
-      if (pad.touches(obj.asTrace()))
+      if (!discountwire && pad.touches(obj.asTrace())) // ignore traces inside group
         insertRecursively(nid);
       break;
     case Object::Type::Plane:
