@@ -80,8 +80,9 @@ Tracer::~Tracer() {
 }
 
 void Tracer::start(class Point const &p) {
-  d->tracestart = p;
   move(p);
+  d->tracestart = d->tracecurrent;
+  qDebug() << "start" << d->tracestart << d->tracecurrent;
   if (!d->tracing && d->onsomething) {
     d->maybeSplit(true);
   }
@@ -161,15 +162,17 @@ void Tracer::pickup(Point const &p) {
 }
 
 void Tracer::move(Point const &p) {
-  d->onnode = d->ed->currentGroup().nodeAt(p, d->ed->pressMargin(),
-					  d->layer);
+  d->onnode = d->ed->currentGroup().nodeAt(p, d->ed->pressMargin(), d->layer);
   d->onlp = d->onnode.location(d->ed->currentGroup(),
-                              p.roundedTo(d->ed->layout.board().grid));
+                               p.roundedTo(d->ed->layout.board().grid));
   d->onsomething = d->onlp.layer != Layer::Invalid;
   if (d->onsomething) 
     d->tracecurrent = d->onlp.point;
   else
     d->tracecurrent = d->constrain(p);
+  qDebug() << "Tracer::move" << p << d->onnode
+           << d->onlp.layer << d->onlp.point 
+           << d->onsomething << d->tracecurrent;
 }
 
 void Tracer::render(QPainter &p) {
