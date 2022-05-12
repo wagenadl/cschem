@@ -462,7 +462,13 @@ bool EData::isMoveSignificant(Point p) {
 
 void EData::moveMoving(Point p) {
   if (isMoveSignificant(p)) {
+    // if we are moving a trace end,
+    // we should try to magnetically attach to pads and pins and trace ends
+    // also, we should have a way to snap to current grid rather than move
+    // by integer multiples of that grid.
+    // pins and pads already jump to grid. what is different?
     movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+    qDebug() << "EData::moveMoving" << p << movingdelta;
     ed->tentativeMove(movingdelta);
     ed->update();
   }
@@ -654,6 +660,12 @@ void EData::startMoveSelection(int fave) {
 	  movingstart = obj.asPad().p;
 	}
       }
+    } else if (obj.isTrace()) {
+      Trace const &trc(obj.asTrace());
+      if (trc.onP1(movingstart))
+        movingstart = trc.p1;
+      else if (trc.onP2(movingstart))
+        movingstart = trc.p2;
     }
   }
   movingdelta = Point();
