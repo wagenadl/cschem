@@ -467,8 +467,39 @@ void EData::moveMoving(Point p) {
     // also, we should have a way to snap to current grid rather than move
     // by integer multiples of that grid.
     // pins and pads already jump to grid. what is different?
+    Dim mrg = pressMargin();
+    int fave = visibleObjectAt(p, mrg);
     movingdelta = p.roundedTo(layout.board().grid) - movingstart;
-    qDebug() << "EData::moveMoving" << p << movingdelta;
+    qDebug() << "EData::moveMoving" << p << movingdelta << fave;
+    if (fave>0) {
+      // perhaps snap
+      Object const &obj = currentGroup().object(fave);
+      if (obj.isHole()) {
+        movingdelta = obj.asHole().p - movingstart;
+      } else if (obj.isPad()) {
+        qDebug() << "movingdelta" << movingdelta;
+        movingdelta = obj.asPad().p - movingstart;
+      } else if (obj.isGroup()) {
+        Group const &grp(obj.asGroup());
+        fave = visibleObjectAt(grp, p, mrg);
+        if (fave>0) {
+          Object const &obj = grp.object(fave);
+          if (obj.isHole()) {
+            movingdelta = obj.asHole().p - movingstart;
+          } else if (obj.isPad()) {
+            movingdelta = obj.asPad().p - movingstart; 
+          }
+        }
+      } else if (obj.isTrace()) {
+        qDebug() << "move trace";
+        Trace const &trc(obj.asTrace());
+        if (trc.onP1(p))
+          movingdelta = trc.p1 - movingstart;
+        else if (trc.onP2(p))
+          movingdelta = trc.p2 - movingstart;
+      }
+    }
+
     ed->tentativeMove(movingdelta);
     ed->update();
   }
@@ -661,10 +692,11 @@ void EData::startMoveSelection(int fave) {
 	}
       }
     } else if (obj.isTrace()) {
+      qDebug() << "move trace";
       Trace const &trc(obj.asTrace());
-      if (trc.onP1(movingstart))
+      if (trc.onP1(presspoint))
         movingstart = trc.p1;
-      else if (trc.onP2(movingstart))
+      else if (trc.onP2(presspoint))
         movingstart = trc.p2;
     }
   }
@@ -728,7 +760,7 @@ void EData::movePanning(QPoint p) {
 }
 
 void EData::releaseMoving(Point p) {
-  movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+  //  movingdelta = p.roundedTo(layout.board().grid) - movingstart;
   if (movingdelta.isNull() || !isMoveSignificant(p)) {
     moving = false;
     ed->update();
