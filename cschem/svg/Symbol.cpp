@@ -18,12 +18,13 @@ static QMap<QString, QSharedPointer<QSvgRenderer> > &symbolRenderers() {
 
 class SymbolData: public QSharedData {
 public:
-  SymbolData(): valid(false) { }
+  SymbolData(): valid(false), ncpins(0) { }
   void newshift();
   void ensureBBox();
   void writeSvg(QXmlStreamWriter &sw, bool withpins) const;
   QByteArray toSvg(bool withbbox, bool withpins) const;
   void scanPins(XmlElement const &elt);
+  void setError(QString err);
 public:
   XmlElement elt;
   QString name;
@@ -38,8 +39,9 @@ public:
   QMap<QString, QRectF> annotationBBox;
   QMap<QString, QRectF> shAnnotationBBox;
   QMap<int, QMap<QString, QString>> cpins;
-  int ncpins;
   // maps subelement number to map of pin name to physical pin number
+  int ncpins;
+  QStringList errors;
 };
 
 QPointF Symbol::svgOrigin() const {
@@ -133,11 +135,18 @@ void SymbolData::ensureBBox() {
   newshift();
 }
 
-Symbol::Symbol() {
-  d = new SymbolData;
+void SymbolData::setError(QString err) {
+  valid = false;
+  errors << err;
 }
 
-Symbol::Symbol(XmlElement const &elt, QString name): Symbol() {
+Symbol::Symbol() {
+  d = new SymbolData;
+  d->setError("Not a symbol file.");
+}
+
+Symbol::Symbol(XmlElement const &elt, QString name) {
+  d = new SymbolData;
   d->elt = elt;
   d->elt.removeAttribute("transform");
   if (name.isEmpty()) {
@@ -146,12 +155,16 @@ Symbol::Symbol(XmlElement const &elt, QString name): Symbol() {
     d->name = name;
     d->elt.setTitle(name);
   }
-  d->ncpins = 0;
+  if (d->name.isEmpty())
+    d->setError("Symbol has no name.");
+  else
+    d->valid = true;
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
       d->scanPins(e.element());
+  if (d->valid && d->pins.isEmpty())
+    d->setError("No pins found in symbol definition.");
   d->ensureBBox();
-  d->valid = true;
   forgetRenderer(*this);
 }
 
@@ -163,16 +176,12 @@ Symbol Symbol::load(QString svgfn) {
   QFile file(svgfn);
   QString name = QFileInfo(svgfn).baseName();
   name.replace("-", ":");
-  if (!name.startsWith("port:")
-      && !name.startsWith("part-"))
+  if (!name.startsWith("port:") && !name.startsWith("part:"))
     name = "part:" + name;
-  qDebug() << "symbol load" << svgfn << " named " << name << " exists " << file.exists();
-  if (svgfn.startsWith("/")) {
-      qDebug() << "starts with slash";
-  }
+  qDebug() << "symbol load" << svgfn << " named " << name
+           << " exists " << file.exists();
   if (!file.open(QFile::ReadOnly)) 
     return sym;
-  qDebug() << "symbol load opened";
   QXmlStreamReader sr(&file);
   int groupcount = 0;
   while (!sr.atEnd()) {
@@ -191,11 +200,10 @@ Symbol Symbol::load(QString svgfn) {
       }
     }
   }
-  qDebug() << "Loaded symbol" << name << "with pins" << sym.pinNames();
-  if (sym.totalPinCount()<=0) {
-    qDebug() << "No pins found in svg";
-    return Symbol();
-  }
+  qDebug() << "Loaded symbol";
+  for (QString s: sym.stats().split("\n"))
+    qDebug() << s;
+  qDebug() << "--";
   if (groupcount>1)
     qDebug() << "Only the first group was read";
   
@@ -219,6 +227,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
      Also scans for rectangles with name matching {annotation:WHAT} where
      WHAT must be "ref" (or "name") or "value".
    */
+  qDebug() << "scanpins" << elt.qualifiedName() << elt.title() << elt.label();
   if (elt.qualifiedName()=="circle") {
     QString label = elt.title();
     if (label.isEmpty())
@@ -238,11 +247,18 @@ void SymbolData::scanPins(XmlElement const &elt) {
 	int didx = name.indexOf(".");
 	if (sidx>0 && didx>sidx) {
 	  int n = name.mid(sidx+1,didx-sidx-1).toInt();
-	  if (n<=0)
+	  if (n<=0) {
 	    qDebug() << "Symbol: Nonpositive slot??";
+          setError("All “CP” pins should have a positive slot number. “"
+                   + name + "” is ill-formed.");
+          }
 	  QString sub = name.mid(didx+1);
 	  cpins[n][sub] = name.left(sidx);
-	}
+	} else {
+          qDebug() << "Symbol: CP without slot number??";
+          setError("All “CP” pins should have a slot number. “"
+                   + name + "” is ill-formed.");
+        }
       }
     }
   } else if (elt.qualifiedName()=="rect") {
@@ -372,4 +388,26 @@ int Symbol::totalPinCount() const {
     npins += containedPins(n).size();
   npins += d->ncpins;
   return npins;
+}
+
+QString Symbol::stats() const {
+  QStringList res;
+  res << "Symbol name: " + d->name;
+  res << "Pin count: " + QString::number(d->pins.size());
+  res << "Pins:";
+  for (auto it=d->pinIds.begin(); it!=d->pinIds.end(); ++it) 
+    res << "  " + it.key() + ": " + it.value();
+  res << "Unconnected pin count: " + QString::number(d->ncpins);
+  res << "Container slot count: " + QString::number(slotCount());
+  res << "Container slots:";
+  for (auto it1=d->cpins.begin(); it1!=d->cpins.end(); ++it1) {
+    res << "  " + QString::number(it1.key());
+    for (auto it=it1.value().begin(); it!=it1.value().end(); ++it)
+      res << "    " + it.key() + ": " + it.value();
+  }
+  return res.join("\n");
+}
+
+QStringList Symbol::problems() const {
+  return d->errors;
 }
