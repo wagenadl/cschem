@@ -7,7 +7,7 @@
 #include "UndoCreator.h"
 #include "PinNameEditor.h"
 #include "svg/Symbol.h"
-
+#include <QIcon>
 #include <QMessageBox>
 
 constexpr int MOVETHRESHOLD_PIX = 4;
@@ -308,6 +308,7 @@ void EData::drawSelectedPoints(QPainter &p) const {
 
 void EData::abortTracing() {
   if (tracer) {
+    ed->setCursor(crossCursor());
     tracer->end();
     delete tracer;
     tracer = 0;
@@ -411,7 +412,8 @@ void EData::pressPickingUp(Point p, Qt::KeyboardModifiers m) {
     pressTracingWithShift(p);
     return;
   }
-  
+
+  ed->setCursor(tinyCursor());
   tracer = new Tracer(this);
   tracer->pickup(p);
   if (tracer->isTracing()) 
@@ -444,6 +446,7 @@ void EData::pressTracing(Point p, Qt::KeyboardModifiers m) {
       pressTracingWithShift(p);
       return;
     }
+    ed->setCursor(tinyCursor());
     tracer = new Tracer(this);
   }
   tracer->click(p);
@@ -455,14 +458,16 @@ bool EData::isMoveSignificant(Point p) {
   if (significantmove)
     return true;
 
-  significantmove = (mils2widget.map(p.toMils())
-		     - mils2widget.map(presspoint.toMils()))
-    .manhattanLength() > MOVETHRESHOLD_PIX;
+  significantmove = p.distance(presspoint).toMils() * mils2px
+    >= MOVETHRESHOLD_PIX;
   return significantmove;
 }
 
 void EData::moveMoving(Point p) {
+  bool wassig = significantmove;
   if (isMoveSignificant(p)) {
+    if (!wassig)
+      ed->setCursor(tinyCursor());
     // if we are moving a trace end,
     // we should try to magnetically attach to pads and pins and trace ends
     // also, we should have a way to snap to current grid rather than move
@@ -762,6 +767,8 @@ void EData::movePanning(QPoint p) {
 }
 
 void EData::releaseMoving(Point p) {
+  if (isMoveSignificant(p))
+    ed->setCursor(Qt::ArrowCursor);
   //  movingdelta = p.roundedTo(layout.board().grid) - movingstart;
   if (movingdelta.isNull() || !isMoveSignificant(p)) {
     moving = false;
@@ -931,3 +938,22 @@ void EData::editPinName(int groupid, int hole_pad_id) {
   }
 }
 
+QCursor EData::crossCursor() {
+  static bool got = false;
+  static QCursor cursor;
+  if (got)
+    return cursor;
+  cursor = QCursor(QIcon(":icons/CursorCross.svg").pixmap(64,64), 32, 32);
+  got = true;
+  return cursor;
+}
+
+QCursor EData::tinyCursor() {
+  static bool got = false;
+  static QCursor cursor;
+  if (got)
+    return cursor;
+  cursor = QCursor(QIcon(":icons/CursorCross.svg").pixmap(32,32), 16, 16);
+  got = true;
+  return cursor;
+}
