@@ -642,6 +642,7 @@ void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
     rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
 			    .toRect());
   } else {
+    qDebug() << "pressedit" << fave << selection.contains(fave) << add;
     if (selection.contains(fave)) {
       if (add) {
 	dropFromSelection(fave, p, mrg);
