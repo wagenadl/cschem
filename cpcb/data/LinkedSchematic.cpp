@@ -89,9 +89,9 @@ void LSData::validateNets() {
 	  name = name.mid(dotidx+1);
 	}
 	aliases[Nodename(comp, num)] = Nodename(compa, name);
-        qDebug() << "Added alias for " << comp << num << ": " << compa << name;
+        //qDebug() << "Added alias for " << comp << num << ": " << compa << name;
       } else {
-        qDebug() << "No alias for" << nn.component() << nn.pinNumber() << nn.pinName();
+        //qDebug() << "No alias for" << nn.component() << nn.pinNumber() << nn.pinName();
       }
     }
   }

@@ -438,7 +438,7 @@ void PBData::fillFontSize(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillGroupProps(QSet<int> const &/*objects*/, Group const &here) {
-  qDebug() << "fillgroupprops";
+  //qDebug() << "fillgroupprops";
   pkg->setText(here.pkg);
   partno->setText(here.partno);
   notes->document()->setPlainText(here.notes);
@@ -597,9 +597,9 @@ void PBData::hideAndShow() {
     break;
   }
 
-  qDebug() << "crumbs" << (editor->breadcrumbs().size()>0);
+  //qDebug() << "crumbs" << (editor->breadcrumbs().size()>0);
   grouppropa->setVisible(editor->breadcrumbs().size()>0);
-  qDebug() << "vis" << grouppropg->isVisible() << partno->isVisible();
+  //qDebug() << "vis" << grouppropg->isVisible() << partno->isVisible();
   
 }
 
@@ -813,13 +813,13 @@ void PBData::setupUI() {
       for (QToolButton *oth: exclusiveGroups[container]) {
 	QObject::connect(oth, &QToolButton::clicked,
 			 [s, oth]() {
-			   qDebug() << "click1" << s << oth;
+			   //qDebug() << "click1" << s << oth;
 			   s->setChecked(false);
 			   oth->setChecked(true);
 			 });
 	QObject::connect(s,  &QToolButton::clicked,
 			 [s, oth]() {
-			   qDebug() << "click2" << s << oth;
+			   //qDebug() << "click2" << s << oth;
 			   s->setChecked(true);
 			   oth->setChecked(false);
 			 });
@@ -1143,7 +1143,7 @@ void Propertiesbar::reflectMode(Mode m) {
   }
   if (m==Mode::PlacePlane) {
     if (!layerIsCopper(d->checkedLayer())) {
-      qDebug() << "PlacePlane - selecting bottom layer";
+      //qDebug() << "PlacePlane - selecting bottom layer";
       d->checkLayer(Layer::Bottom);
       d->editor->properties().layer = Layer::Bottom;
     }

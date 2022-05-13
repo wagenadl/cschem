@@ -478,22 +478,22 @@ void EData::moveMoving(Point p) {
     movingdelta = p.roundedTo(layout.board().grid) - movingstart;
     qDebug() << "EData::moveMoving" << p << movingdelta << fave;
     if (fave>0) {
+      Point altpt = movingstart;
       // perhaps snap
       Object const &obj = currentGroup().object(fave);
       if (obj.isHole()) {
-        movingdelta = obj.asHole().p - movingstart;
+        altpt = obj.asHole().p;
       } else if (obj.isPad()) {
-        qDebug() << "movingdelta" << movingdelta;
-        movingdelta = obj.asPad().p - movingstart;
+        altpt = obj.asPad().p;
       } else if (obj.isGroup()) {
         Group const &grp(obj.asGroup());
         fave = visibleObjectAt(grp, p, mrg);
         if (fave>0) {
           Object const &obj = grp.object(fave);
           if (obj.isHole()) {
-            movingdelta = obj.asHole().p - movingstart;
+            altpt = obj.asHole().p;
           } else if (obj.isPad()) {
-            movingdelta = obj.asPad().p - movingstart; 
+            altpt = obj.asPad().p; 
           }
         }
       } else if (obj.isTrace()) {
@@ -501,10 +501,13 @@ void EData::moveMoving(Point p) {
         Trace const &trc(obj.asTrace());
         Dim mrg = pressMargin();
         if (trc.onP1(p, mrg))
-          movingdelta = trc.p1 - movingstart;
+          altpt = trc.p1;
         else if (trc.onP2(p, mrg))
-          movingdelta = trc.p2 - movingstart;
+          altpt = trc.p2;
       }
+      if (altpt != movingstart) // no magnetism to our starting point:
+        // user is trying to get away from there.
+        movingdelta = altpt - movingstart;
     }
 
     ed->tentativeMove(movingdelta);
@@ -918,9 +921,9 @@ void EData::editPinName(int groupid, int hole_pad_id) {
   bool ok = false;
   Symbol const &sym(linkedschematic.schematic()
 		    .symbolForNamedElement(group_ref));
-  qDebug() << "editpinname" << pin_ref;
+  qDebug() << "editpinname" << pin_ref << sym.isValid();
   if (sym.isValid()) {
-    PinNameEditor pne(group_ref, pin_ref, sym);
+    PinNameEditor pne(group_ref, pin_ref, sym, ed, grp.allPins().size());
     ok = pne.exec();
     if (ok)
       pin_ref = pne.pinRef();
