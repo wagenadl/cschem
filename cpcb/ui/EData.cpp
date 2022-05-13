@@ -11,7 +11,7 @@
 #include <QMessageBox>
 
 constexpr int MOVETHRESHOLD_PIX = 4;
-constexpr int MARGIN_PIX = 4;
+constexpr int MARGIN_PIX = 5;
 
 EData::EData(Editor *ed): ed(ed) {
   autofit = false;
@@ -494,9 +494,10 @@ void EData::moveMoving(Point p) {
       } else if (obj.isTrace()) {
         qDebug() << "move trace";
         Trace const &trc(obj.asTrace());
-        if (trc.onP1(p))
+        Dim mrg = pressMargin();
+        if (trc.onP1(p, mrg))
           movingdelta = trc.p1 - movingstart;
-        else if (trc.onP2(p))
+        else if (trc.onP2(p, mrg))
           movingdelta = trc.p2 - movingstart;
       }
     }
