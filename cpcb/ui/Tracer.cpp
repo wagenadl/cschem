@@ -163,8 +163,9 @@ void Tracer::pickup(Point const &p) {
 
 void Tracer::move(Point const &p) {
   d->onnode = d->ed->currentGroup().nodeAt(p, d->ed->pressMargin(), d->layer);
-  d->onlp = d->onnode.location(d->ed->currentGroup(),
-                               p.roundedTo(d->ed->layout.board().grid));
+  d->onlp = d->onnode.location(d->ed->currentGroup(), p,
+                               d->ed->pressMargin());
+                     //p.roundedTo(d->ed->layout.board().grid));
   d->onsomething = d->onlp.layer != Layer::Invalid;
   if (d->onsomething) 
     d->tracecurrent = d->onlp.point;

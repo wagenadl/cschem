@@ -41,5 +41,6 @@
 <file>icons/IncOrigin.svg</file>
 <file>icons/BoardOutline.svg</file>
 <file>icons/NPHole.svg</file>
+<file>icons/CursorCross.svg</file>
 </qresource>
 </RCC>

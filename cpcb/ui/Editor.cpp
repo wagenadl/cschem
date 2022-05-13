@@ -53,7 +53,7 @@ void Editor::setMode(Mode m) {
   if (m==Mode::Edit) 
     setCursor(Qt::ArrowCursor);
   else
-    setCursor(Qt::CrossCursor);
+    setCursor(d->crossCursor());
   update();
 }
 
