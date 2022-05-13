@@ -37,19 +37,19 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   connect(gridui, QOverload<QString const &>::of(&QComboBox::activated),
 	  [this]() {
 	    int mc = gridui->maxCount();
-	    gridsp->parseValue();
 	    if (gridui->currentIndex()==mc-1) {
 	      if (gridsp->isValid()) 
 		gridui->removeItem(mc-2);
 	      else
 		gridui->removeItem(mc-1);
 	    }
+            gridsp->setText(gridui->currentText());
 	    gridsp->parseValue();
-	    qDebug() << "gridsp" << gridsp->isValid() << gridsp->hasValue() << gridsp->value() << gridsp->isMetric();
 	    if (gridsp->isValid()) {
 	      Dim g = gridsp->value();
 	      gridui->setItemData(gridui->currentIndex(),
 				  QVariant(g.toString()));
+              gridui->clearFocus();
 	      if (g != board.grid) {
 		board.grid = g;
 		if (!noemit)
@@ -148,16 +148,10 @@ void Statusbar::resetGridChoices() {
 
 void Statusbar::setGrid(Dim g) {
   board.grid = g;
-  qDebug() << "setgrid" << g;
   int idx = gridui->findData(QVariant(g.toString()));
-  qDebug() << "idx = " << idx;
-  qDebug() << "mc = " << gridui->maxCount() << gridui->currentIndex();
   if (idx>=0) {
     gridui->setCurrentIndex(idx);
   } else {
-    for (int i=0; i<gridui->count(); i++) {
-      qDebug() << "at" << i << gridui->itemText(i) << gridui->itemData(i);
-    }
     if (g.isMetric())
       gridui->addItem(QString("%1 mm").arg(g.toMM()),
 		      QVariant(g.toString()));
