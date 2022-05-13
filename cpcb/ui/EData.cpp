@@ -642,7 +642,6 @@ void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
     rubberband->setGeometry(QRectF(mils2widget.map(p.toMils()), QSize(0,0))
 			    .toRect());
   } else {
-    qDebug() << "pressedit" << fave << selection.contains(fave) << add;
     if (selection.contains(fave)) {
       if (add) {
 	dropFromSelection(fave, p, mrg);
@@ -702,9 +701,9 @@ void EData::startMoveSelection(int fave) {
     } else if (obj.isTrace()) {
       qDebug() << "move trace";
       Trace const &trc(obj.asTrace());
-      if (trc.onP1(presspoint))
+      if (trc.onP1(presspoint, 1.1*pressMargin()))
         movingstart = trc.p1;
-      else if (trc.onP2(presspoint))
+      else if (trc.onP2(presspoint, 1.1*pressMargin()))
         movingstart = trc.p2;
     }
   }
