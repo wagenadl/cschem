@@ -1311,6 +1311,13 @@ void Scene::clearSelection() {
     elt->setSelected(false);
 }
 
+void Scene::addToSelection(int id) {
+  if (d->elts.contains(id)) {
+    d->elts[id]->setSelected(true);
+    perhapsEmitSelectionChange();
+  }
+}
+
 void Scene::perhapsEmitSelectionChange() {
   if (d->postpone<=0)
     emit selectionChanged();
