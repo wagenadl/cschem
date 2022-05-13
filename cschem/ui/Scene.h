@@ -52,6 +52,7 @@ public:
   class PartList *partlist() const;
   class HoverManager *hoverManager() const;
   void clearSelection();
+  void addToSelection(int id);
   void perhapsEmitSelectionChange();
   void repositionTextual(int id, QPoint p);
   void storeTextualText(int id, QString t);

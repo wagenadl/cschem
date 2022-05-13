@@ -178,8 +178,8 @@ Symbol Symbol::load(QString svgfn) {
   name.replace("-", ":");
   if (!name.startsWith("port:") && !name.startsWith("part:"))
     name = "part:" + name;
-  qDebug() << "symbol load" << svgfn << " named " << name
-           << " exists " << file.exists();
+  //qDebug() << "symbol load" << svgfn << " named " << name
+  //         << " exists " << file.exists();
   if (!file.open(QFile::ReadOnly)) 
     return sym;
   QXmlStreamReader sr(&file);
@@ -200,10 +200,10 @@ Symbol Symbol::load(QString svgfn) {
       }
     }
   }
-  qDebug() << "Loaded symbol";
-  for (QString s: sym.stats().split("\n"))
-    qDebug() << s;
-  qDebug() << "--";
+  //qDebug() << "Loaded symbol";
+  //for (QString s: sym.stats().split("\n"))
+  //  qDebug() << s;
+  //qDebug() << "--";
   if (groupcount>1)
     qDebug() << "Only the first group was read";
   
@@ -227,7 +227,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
      Also scans for rectangles with name matching {annotation:WHAT} where
      WHAT must be "ref" (or "name") or "value".
    */
-  qDebug() << "scanpins" << elt.qualifiedName() << elt.title() << elt.label();
+  //qDebug() << "scanpins" << elt.qualifiedName() << elt.title() << elt.label();
   if (elt.qualifiedName()=="circle") {
     QString label = elt.title();
     if (label.isEmpty())
