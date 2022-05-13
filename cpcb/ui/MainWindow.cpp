@@ -756,8 +756,17 @@ void MWData::makeMenus() {
   a->setEnabled(false);
 
   edit->addAction("Find", [this]() { Find(editor).run(); },
-                  QKeySequence(Qt::CTRL + Qt::Key_Slash));
+                  QKeySequence(Qt::Key_Slash));
 
+  edit->addAction("Toggle &grid", [this]() { statusbar->toggleGrid(); },
+                  QKeySequence("#"));
+  edit->addAction("Cycle grid", [this]() { statusbar->nextGrid(); },
+                  QKeySequence(Qt::Key_Period));
+  edit->addAction("Reverse cycle grid",
+                  [this]() { statusbar->previousGrid(); },
+                  QKeySequence(Qt::Key_Comma));
+
+  
   auto *tools = mb->addMenu("&Tools");
   tools->addAction("&Open library", [this]() { openLibrary(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
