@@ -12,11 +12,16 @@ public:
     layer = ed->props.layer;
     constr45 = ed->props.angleconstraint;
     onsomething = false;
+    second = false;
   }
-  Point constrain(Point p) {
+  Point toGrid(Point p) const {
+    Dim grid = ed->layout.board().grid;
+    return p.roundedTo(grid);
+  }
+  Point constrain(Point p) const {
     Dim grid = ed->layout.board().grid;
     if (constr45 && tracing) {
-      Point p0 = tracestart.roundedTo(grid);
+      Point p0 = tracestart;//.roundedTo(grid);
       p = p.roundedTo(grid);
       Dim dx = p.x - p0.x;
       Dim dy = p.y - p0.y;
@@ -50,7 +55,18 @@ public:
         here.insert(Object(t1));
       }
     }
-  }    
+  }
+  void insertTrace(Point from, Point to) {
+    UndoCreator uc(ed, true);
+    Group &here(ed->currentGroup());
+    Trace t;
+    t.p1 = from;
+    t.p2 = to;
+    t.width = ed->props.linewidth;
+    t.layer = ed->props.layer;
+    here.insert(Object(t));
+  }
+
 public:
   EData *ed;
   Point tracestart;
@@ -62,6 +78,8 @@ public:
   bool onsomething;
   NodeID onnode; // only valid if onsomething
   LayerPoint onlp; // only valid if onsomething
+  bool second;
+  Point previousstart;
 };
 
 void Tracer::setLayer(Layer const &l) {
@@ -104,18 +122,32 @@ void Tracer::confirm() {
     return;
   }
 
-  UndoCreator uc(d->ed, true);
-  Group &here(d->ed->currentGroup());
-  Trace t;
-  t.p1 = d->tracestart;
-  t.p2 = d->tracecurrent;
-  t.width = d->ed->props.linewidth;
-  t.layer = d->ed->props.layer;
-  here.insert(Object(t));
+  if (d->tracing && d->constr45 && d->second
+      && d->toGrid(d->tracecurrent) == d->tracecurrent
+      && d->toGrid(d->tracestart) != d->tracestart) {
+    // consider undoing previous trace
+    Dim lx = d->tracecurrent.x - d->tracestart.x;
+    Dim ly = d->tracecurrent.y - d->tracestart.y;
+    Point p0 = d->tracestart.roundedTo(d->ed->layout.board().grid);
+    Dim dx = p0.x - d->tracestart.x;
+    Dim dy = p0.y - d->tracestart.y;
+    Point p1 = (abs(dx) < abs(dy)) 
+      // consider shifting x
+      ? Point(d->tracecurrent.x - sign(lx)*abs(ly), d->tracestart.y)
+      // consider shifting y
+      : Point(d->tracestart.x, d->tracecurrent.y - sign(ly)*abs(lx));
+    d->ed->ed->undo();
+    d->insertTrace(d->previousstart, p1);
+    d->tracestart = p1; // fake it for now
+  }
+  d->insertTrace(d->tracestart, d->tracecurrent);
+
   if (d->onsomething) {
     d->maybeSplit(false);
     end();
   } else {
+    d->previousstart = d->tracestart;
+    d->second = true;
     start(d->tracecurrent);
   }
 }
