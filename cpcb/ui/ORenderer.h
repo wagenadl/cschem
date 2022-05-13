@@ -73,6 +73,7 @@ private:
   Board brd;
   Override overr;
   double inNetMils;
+  double overrideMils;
 };
 
 #endif
