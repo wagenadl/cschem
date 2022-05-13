@@ -801,12 +801,29 @@ void MWData::makeMenus() {
   a->setEnabled(false);
   
   auto *view = mb->addMenu("&View");
-  view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },
-		  QKeySequence(Qt::Key_0));
-  view->addAction("Zoom &in", [this]() { editor->zoomIn(); },
-		  QKeySequence(Qt::Key_Equal));
-  view->addAction("Zoom &out", [this]() { editor->zoomOut(); },
-		  QKeySequence(Qt::Key_Minus));
+  QAction *act = new QAction("&Scale to fit", mw);
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence(Qt::CTRL + Qt::Key_0)
+                    << QKeySequence(Qt::Key_0));
+  mw->connect(act, &QAction::triggered, [this]() { editor->scaleToFit(); });
+  view->addAction(act);
+  
+  act = new QAction("Zoom &in", mw);
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence(QKeySequence::ZoomIn)
+		    << QKeySequence(Qt::CTRL + Qt::Key_Equal)
+		    << QKeySequence(Qt::Key_Equal)
+		    << QKeySequence(Qt::Key_Plus));
+  mw->connect(act, &QAction::triggered, [this]() { editor->zoomIn(); });
+  view->addAction(act);
+
+  act = new QAction("Zoom &out", mw);
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence::ZoomOut
+                    << QKeySequence(Qt::Key_Minus));
+  mw->connect(act, &QAction::triggered, [this]() { editor->zoomOut(); });
+  view->addAction(act);
+  
   view->addAction("Show &parts to be placed", [this]() { showParts(); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
   view->addAction("Show &BOM", [this]() { showBOM(); },
