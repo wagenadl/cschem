@@ -208,6 +208,7 @@ void EData::drawObjects(QPainter &p) const {
 
   Board const &brd = layout.board();
   ORenderer rndr(&p);
+  rndr.setInNetMils(2/mils2px);
   rndr.setBoard(brd);
   if (moving)
     rndr.setMoving(movingdelta);

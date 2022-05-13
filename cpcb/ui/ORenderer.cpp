@@ -9,13 +9,18 @@
 #include <QSvgGenerator>
 #include <QBuffer>
 
-constexpr double inNetMils = 10;
+
 constexpr double overrideMils = 30;
 
 ORenderer::ORenderer(QPainter *p, Point const &o): p(p), origin(o) {
   toplevel = true;
   overr = Override::None;
   subl = Sublayer::Main;
+  inNetMils = 10;
+}
+
+void ORenderer::setInNetMils(double mils) {
+  inNetMils = mils;
 }
 
 void ORenderer::setPainter(QPainter *p1) {
