@@ -45,14 +45,25 @@ int main(int argc, char **argv) {
   ensureOutlineLibrary();
   
   QStringList args = app.arguments();
-  
-  MainWindow mw;
 
-  if (args.size()>=2)
-    mw.open(args.last());  
-  QSize avg = app.primaryScreen()->availableSize();
-  mw.resize(3*avg.width()/4, 3*avg.height()/4);
-  mw.show();
+  QList<MainWindow *> mws;
+  if (argc==1) {
+    mws << new MainWindow;
+  } else {
+    bool ok = false;
+    for (int i=1; i<argc; i++) {
+      MainWindow *mw = new MainWindow;
+      if (mw->open(argv[i]))
+	ok = true;
+      mws << mw;
+      if (!ok)
+	return 1;
+    }
+  }
+
+  for (auto *mw: mws)
+    mw->show();
+
   return app.exec();
 }
 
