@@ -137,7 +137,7 @@ LinkedSchematic::~LinkedSchematic() {
 }
 
 bool LinkedSchematic::isValid() const {
-  return !d->fn.isEmpty();
+  return !d->schem.isEmpty();
 }
 
 Schem LinkedSchematic::schematic() const {

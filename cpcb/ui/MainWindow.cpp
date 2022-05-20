@@ -214,18 +214,35 @@ void MWData::openDialog() {
   }
 }
 
-void MainWindow::open(QString fn) {
+bool MainWindow::open(QString fn) {
   QFileInfo fi(fn);
-  if (d->editor->load(fi.absoluteFilePath())) {
-    d->filename = fi.absoluteFilePath();
-    d->recentfiles->mark(d->filename);
-    d->pwd = fi.dir().absolutePath();
-    setWindowTitle(d->filename);
-    if (d->editor->linkedSchematic().isValid())
-      d->showParts();
-  } else {
+  if (!d->editor->load(fi.absoluteFilePath())) {
     d->resetFilename();
+    QMessageBox::warning(this, "CPCB",
+			 "Could not load “" + fn + "”",
+			 QMessageBox::Ok);
+    return false;
   }
+  
+  d->filename = fi.absoluteFilePath();
+  d->recentfiles->mark(d->filename);
+  d->pwd = fi.dir().absolutePath();
+  setWindowTitle(d->filename);
+
+  if (!d->editor->linkedSchematic().isValid()
+      && !d->editor->pcbLayout().board().linkedschematic.isEmpty()) {
+    if (QMessageBox::warning(this, "CPCB",
+			     "Could not load linked schematic “"
+			     + d->editor->pcbLayout().board().linkedschematic
+			     + "”. Would you like to browse for it?",
+			     QMessageBox::Yes | QMessageBox::No)
+	== QMessageBox::Yes) {
+      d->linkSchematicDialog();
+    }
+  } else if (d->editor->linkedSchematic().isValid()) {
+    d->showParts();
+  }
+  return true;
 }  
 
 bool MWData::saveImmediately() {
