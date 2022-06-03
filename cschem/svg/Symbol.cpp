@@ -166,6 +166,7 @@ Symbol::Symbol(XmlElement const &elt, QString name) {
     d->setError("No pins found in symbol definition.");
   d->ensureBBox();
   forgetRenderer(*this);
+  // qDebug() << stats();
 }
 
 Symbol::~Symbol() {

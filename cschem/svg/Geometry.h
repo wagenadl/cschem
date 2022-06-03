@@ -21,6 +21,8 @@ public:
   QPoint pinPosition(class PinID const &) const;
   QPoint pinPosition(int elt, QString pin) const;
   QPoint pinPosition(class Element const &elt, QString pin) const;
+  QMap<QString, QPoint> pinPositions(int elt) const;
+  QMap<QString, QPoint> pinPositions(class Element const &elt) const;
   QPoint preferredRoutingDirection(class PinID const &) const;
   QPoint preferredRoutingDirection(int elt, QString pin) const;
   QPoint preferredRoutingDirection(Element const &elt, QString pin) const;
