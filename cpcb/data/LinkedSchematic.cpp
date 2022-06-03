@@ -9,6 +9,7 @@
 class LSData {
 public:
   LSData(LinkedSchematic *ls) {
+    havenets = false;
     watcher = new QFileSystemWatcher(ls);
   }
   void invalidateNets();
@@ -67,6 +68,7 @@ void LSData::validateNets() {
   qDebug() << "netaliases" << netaliases;
   for (QString a: netaliases.keys()) {
     QString v = netalias(a, netaliases);
+    qDebug() << "  alias" << a << v;
     if (v!=a) {
       netmap[v].merge(netmap[a]);
       netmap.remove(a);
@@ -77,7 +79,9 @@ void LSData::validateNets() {
     nets << LinkedNet(schem, net);
 
   for (LinkedNet const &lnet: nets) {
+    qDebug() << "LINKED NET" << lnet.name;
     for (Nodename const  &nn: lnet.nodes) {
+      qDebug() << "  node" << nn.component() << nn.pinNumber() << nn.pinName();
       if (nn.hasPinNumber() && nn.hasPinName()) {
 	QString num(QString::number(nn.pinNumber()));
 	QString name(nn.pinName());
@@ -89,9 +93,6 @@ void LSData::validateNets() {
 	  name = name.mid(dotidx+1);
 	}
 	aliases[Nodename(comp, num)] = Nodename(compa, name);
-        //qDebug() << "Added alias for " << comp << num << ": " << compa << name;
-      } else {
-        //qDebug() << "No alias for" << nn.component() << nn.pinNumber() << nn.pinName();
       }
     }
   }
