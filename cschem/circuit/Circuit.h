@@ -11,6 +11,7 @@
 #include <QMap>
 #include <QPoint>
 #include "SafeMap.h"
+#include "PinID.h"
 
 class Circuit {
 public:
@@ -73,6 +74,7 @@ public:
   int containerOf(int elt) const; // or -1
   QSet<QString> allNames() const;
   void verifyIDs() const;
+  QString humanPinName(PinID pin) const;
 public:
   SafeMap<int, Element> elements;
   SafeMap<int, Connection> connections;

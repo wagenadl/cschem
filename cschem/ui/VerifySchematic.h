@@ -1,12 +1,12 @@
-// VerifyPorts.h
+// VerifySchematic.h
 
-#ifndef VERIFYPORTS_H
+#ifndef VERIFYSCHEMATIC_H
 
-#define VERIFYPORTS_H
+#define VERIFYSCHEMATIC_H
 
-class VerifyPorts {
+class VerifySchematic {
 public:
-  VerifyPorts(class Scene *scene, class QWidget *parent);
+  VerifySchematic(class Scene *scene, class QWidget *parent);
   void run();
 private:
   Scene *scene;

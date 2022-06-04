@@ -33,7 +33,7 @@
 #include "circuit/PartNumbering.h"
 #include "PrintPreview.h"
 #include "FindSym.h"
-#include "VerifyPorts.h"
+#include "VerifySchematic.h"
 
 class MWData {
 public:
@@ -309,8 +309,8 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::resolveConflictsAction);
   menu->addAction(act);
 
-  menu->addAction("&Verify nets",
-                  [this]() { VerifyPorts(d->scene, this).run(); });
+  menu->addAction("&Verify schematic",
+                  [this]() { VerifySchematic(d->scene, this).run(); });
 
   
   menu = menuBar()->addMenu(tr("&View"));
