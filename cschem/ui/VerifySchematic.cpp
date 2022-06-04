@@ -1,16 +1,16 @@
-// VerifyPorts.cpp
+// VerifySchematic.cpp
 
-#include "VerifyPorts.h"
+#include "VerifySchematic.h"
 #include "circuit/Circuit.h"
 #include "svg/Geometry.h"
 #include "Scene.h"
 #include <QMessageBox>
 
-VerifyPorts::VerifyPorts(Scene *scene, QWidget *parent):
+VerifySchematic::VerifySchematic(Scene *scene, QWidget *parent):
   scene(scene), parent(parent) {
 }
 
-void VerifyPorts::run() {
+void VerifySchematic::run() {
   scene->clearSelection();
 
   Circuit const &circuit(scene->circuit());
@@ -58,7 +58,7 @@ void VerifyPorts::run() {
 			     "Disconnected port(s) found: "
 			     + QStringList(disconnectedportnames.toList()).join(", ")
 			     + ".");
-    //    return;
+    return;
   }
 
   // Any ports that occur only once?
@@ -100,21 +100,21 @@ void VerifyPorts::run() {
   Geometry geom(circuit, scene->library());
   for (int e: circuit.elements.keys()) {
     Element const &elt(circuit.elements[e]);
+    qDebug() << "Element " << elt.name;
     QMap<QString, QPoint> pos = geom.pinPositions(elt);
-    for (QString const &pin: pos.keys())
+    for (QString const &pin: pos.keys()) {
       pins[PinID(e, pin)] = pos[pin];
+      qDebug() << "  pin " << pin << pos[pin];
+    }
   }
   QStringList problems;
   for (PinID const &id1: pins.keys()) {
     for (PinID const &id2: pins.keys()) {
-      if (id1!=id2 && (pins[id1] - pins[id2]).manhattanLength() < 10) {
+      if (id1.element() < id2.element()
+          && (pins[id1] - pins[id2]).manhattanLength() <= 2) {
 	if (!cons.contains(QPair<PinID, PinID>(id1, id2))) {
-	  problems
-	    << QString("%1:%2 near %3:%4")
-	    .arg(circuit.elements[id1.element()].name)
-	    .arg(id1.pin())
-	    .arg(circuit.elements[id2.element()].name)
-	    .arg(id2.pin());
+	  problems << (circuit.humanPinName(id1) + " and "
+                       + circuit.humanPinName(id2));
 	  scene->addToSelection(id1.element());
 	  scene->addToSelection(id2.element());
 	}
