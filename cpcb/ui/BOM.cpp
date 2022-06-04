@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QTextStream>
 #include "data/CSV.h"
+#include <QFile>
 
 class BOMData {
 public:
