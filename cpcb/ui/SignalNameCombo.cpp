@@ -5,7 +5,8 @@
 #include "svg/Symbol.h"
 #include <QDebug>
 
-SignalNameCombo::SignalNameCombo(Symbol const &sym, QWidget *parent):
+SignalNameCombo::SignalNameCombo(Symbol const &sym, QWidget *parent,
+                                 int pincount):
   QComboBox(parent) {
   QStringList pins;
   QMap<QString, QString> data;
@@ -32,6 +33,8 @@ SignalNameCombo::SignalNameCombo(Symbol const &sym, QWidget *parent):
     nice.replace("-", "−");
     addItem(nice, QVariant(data[p]));
   }
+  if (pins.size() < pincount)
+    addItem("–", QVariant(QString()));
 }
 
 void SignalNameCombo::setCurrent(QString s) {

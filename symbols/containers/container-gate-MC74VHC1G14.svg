@@ -25,11 +25,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.3808543"
-     inkscape:cx="-69.361167"
-     inkscape:cy="100.27051"
+     inkscape:zoom="4.7459459"
+     inkscape:cx="62.474374"
+     inkscape:cy="92.5"
      inkscape:document-units="px"
-     inkscape:current-layer="g4484"
+     inkscape:current-layer="layer2"
      showgrid="true"
      units="px"
      fit-margin-top="0"
@@ -239,7 +239,7 @@
        id="pin:K-6-7-2-3-6-5-5-7-4"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.435;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#009800;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate">
       <title
-         id="title1505-7-3-6-4-7">cp:4/Y</title>
+         id="title1505-7-3-6-4-7">cp:4/1.Y</title>
     </circle>
     <circle
        inkscape:transform-center-y="2.3834746"
@@ -251,7 +251,7 @@
        id="pin:K-6-7-2-3-6-5-56-3-3"
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.435;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#009800;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate">
       <title
-         id="title1505-7-3-93-1-7">cp:2/A</title>
+         id="title1505-7-3-93-1-7">cp:2/1.A</title>
     </circle>
   </g>
 </svg>

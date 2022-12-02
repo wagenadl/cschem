@@ -53,7 +53,7 @@ void Editor::setMode(Mode m) {
   if (m==Mode::Edit) 
     setCursor(Qt::ArrowCursor);
   else
-    setCursor(Qt::CrossCursor);
+    setCursor(d->crossCursor());
   update();
 }
 
@@ -70,7 +70,7 @@ bool Editor::load(QString fn) {
   scaleToFit();
   update();
   d->linkedschematic.link(d->layout.board().linkedschematic);
-  emit schematicLinked(!d->layout.board().linkedschematic.isEmpty());
+  emit schematicLinked(d->linkedschematic.isValid());
   emit boardChanged(d->layout.board());
   d->bom->rebuild();
   return !d->layout.root().isEmpty();

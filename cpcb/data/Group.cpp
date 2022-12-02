@@ -753,9 +753,9 @@ static int readGroupAndRef(QXmlStreamReader &s, Group &t) {
     t.object(gid).asGroup().setRefTextId(tid);
   } else {
     if (gid<=0)
-      qDebug() << "Missing group in gr";
+      qDebug() << "Missing group in gr" << tid << t.object(tid).asText().text;
     if (tid<=0)
-      qDebug() << "Missing ref text in gr";
+      qDebug() << "Missing ref text in gr" << gid << t.object(gid).asGroup().ref;
   }
   return gid;
 }

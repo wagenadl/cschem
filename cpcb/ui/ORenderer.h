@@ -27,6 +27,7 @@ public:
 public:
   ORenderer(QPainter *painter, Point const &origin=Point());
   ~ORenderer();
+  void setInNetMils(double mils);
   void setBoard(class Board const &); // needed for clearance drawing
   void setMoving(Point const &movingdelta);
   void setSelPoints(QMap<Layer, QSet<Point> > const &);
@@ -71,6 +72,8 @@ private:
   Sublayer subl;
   Board brd;
   Override overr;
+  double inNetMils;
+  double overrideMils;
 };
 
 #endif
