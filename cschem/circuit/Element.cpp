@@ -209,3 +209,34 @@ bool Element::operator==(Element const &o) const {
 }
 
     
+QString Element::humanPinName(QString pin) const {
+  QString en = name;
+  switch (type) {
+  case Element::Type::Invalid:
+    return "invalid object";
+  case Element::Type::Component: 
+    if (en.isEmpty())
+      en = "unnamed component";
+    if (pin.isEmpty())
+      return "pin of " + en;
+    else if (pin==PinID::NOPIN)
+      return en;
+    else if (pin.toInt()>0)
+      return "pin " + pin + " of " + en;
+    else
+      return QString("pin “%1” of %2").arg(pin).arg(en);
+    
+  case Element::Type::Port:
+    if (en.isEmpty())
+      en = QString("port “%1”").arg(symbol().split(":").last());
+    else
+      en = QString("port “%1”").arg(en);
+    if (pin==PinID::NOPIN)
+      return en;
+    else
+      return "pin of " + en;
+  case Element::Type::Junction:
+    return "junction";
+  }
+  return ""; // not executed
+}
