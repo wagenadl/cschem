@@ -32,8 +32,8 @@ find_package(Qt5 COMPONENTS Widgets Svg PrintSupport REQUIRED)
 
 ######################################################################
 # Add the executables
-add_executable(cschem WIN32 MACOSX_BUNDLE)
-add_executable(cpcb WIN32 MACOSX_BUNDLE)
+add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp)
+add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp)
 
 include(cschem/CMakeLists.txt)
 include(cpcb/CMakeLists.txt)
