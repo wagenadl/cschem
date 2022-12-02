@@ -334,36 +334,7 @@ void HoverManagerData::update() {
 }
 
 QString HoverManagerData::pointName(int e, QString p) const {
-  Element const &elem = scene->circuit().elements[e];
-  QString en = elem.name;
-  switch (elem.type) {
-  case Element::Type::Invalid:
-    return "invalid object";
-  case Element::Type::Component: 
-    if (en.isEmpty())
-      en = "unnamed component";
-    if (p.isEmpty())
-      return "pin of " + en;
-    else if (p==PinID::NOPIN)
-      return en;
-    else if (p.toInt()>0)
-      return "pin " + p + " of " + en;
-    else
-      return QWidget::tr("pin “%1” of %2").arg(p).arg(en);
-    
-  case Element::Type::Port:
-    if (en.isEmpty())
-      en = QWidget::tr("port “%1”").arg(elem.symbol().split(":").last());
-    else
-      en = QWidget::tr("port “%1”").arg(en);
-    if (p==PinID::NOPIN)
-      return en;
-    else
-      return "pin of " + en;
-  case Element::Type::Junction:
-    return "junction";
-  }
-  return ""; // not executed
+  return scene->circuit().elements[e].humanPinName(p);
 }
 
 QString HoverManagerData::netName(int con) const {

@@ -32,6 +32,8 @@
 #include "svg/Paths.h"
 #include "circuit/PartNumbering.h"
 #include "PrintPreview.h"
+#include "FindSym.h"
+#include "VerifySchematic.h"
 
 class MWData {
 public:
@@ -283,8 +285,11 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::flipAction);
   menu->addAction(act);
 
-  menu = menuBar()->addMenu(tr("&Tools"));
+  menu->addAction("Find", [this]() { FindSym(d->scene, this).run(); },
+                  QKeySequence(Qt::Key_Slash));
 
+  
+  menu = menuBar()->addMenu(tr("&Tools"));
   
   act = new QAction(tr("&Open external symbol library"), this);
   act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
@@ -304,6 +309,10 @@ void MainWindow::createActions() {
   connect(act, &QAction::triggered, this, &MainWindow::resolveConflictsAction);
   menu->addAction(act);
 
+  menu->addAction("&Verify schematic",
+                  [this]() { VerifySchematic(d->scene, this).run(); });
+
+  
   menu = menuBar()->addMenu(tr("&View"));
 
   act = new QAction(tr("&Zoom in"), this);

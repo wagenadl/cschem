@@ -7,11 +7,11 @@
 #include "UndoCreator.h"
 #include "PinNameEditor.h"
 #include "svg/Symbol.h"
-
+#include <QIcon>
 #include <QMessageBox>
 
 constexpr int MOVETHRESHOLD_PIX = 4;
-constexpr int MARGIN_PIX = 4;
+constexpr int MARGIN_PIX = 5;
 
 EData::EData(Editor *ed): ed(ed) {
   autofit = false;
@@ -208,6 +208,7 @@ void EData::drawObjects(QPainter &p) const {
 
   Board const &brd = layout.board();
   ORenderer rndr(&p);
+  rndr.setInNetMils(2/mils2px);
   rndr.setBoard(brd);
   if (moving)
     rndr.setMoving(movingdelta);
@@ -307,6 +308,7 @@ void EData::drawSelectedPoints(QPainter &p) const {
 
 void EData::abortTracing() {
   if (tracer) {
+    ed->setCursor(crossCursor());
     tracer->end();
     delete tracer;
     tracer = 0;
@@ -410,7 +412,8 @@ void EData::pressPickingUp(Point p, Qt::KeyboardModifiers m) {
     pressTracingWithShift(p);
     return;
   }
-  
+
+  ed->setCursor(tinyCursor());
   tracer = new Tracer(this);
   tracer->pickup(p);
   if (tracer->isTracing()) 
@@ -443,6 +446,7 @@ void EData::pressTracing(Point p, Qt::KeyboardModifiers m) {
       pressTracingWithShift(p);
       return;
     }
+    ed->setCursor(tinyCursor());
     tracer = new Tracer(this);
   }
   tracer->click(p);
@@ -454,15 +458,58 @@ bool EData::isMoveSignificant(Point p) {
   if (significantmove)
     return true;
 
-  significantmove = (mils2widget.map(p.toMils())
-		     - mils2widget.map(presspoint.toMils()))
-    .manhattanLength() > MOVETHRESHOLD_PIX;
+  significantmove = p.distance(presspoint).toMils() * mils2px
+    >= MOVETHRESHOLD_PIX;
   return significantmove;
 }
 
 void EData::moveMoving(Point p) {
+  bool wassig = significantmove;
   if (isMoveSignificant(p)) {
+    if (!wassig)
+      ed->setCursor(tinyCursor());
+    // if we are moving a trace end,
+    // we should try to magnetically attach to pads and pins and trace ends
+    // also, we should have a way to snap to current grid rather than move
+    // by integer multiples of that grid.
+    // pins and pads already jump to grid. what is different?
+    Dim mrg = pressMargin();
+    int fave = visibleObjectAt(p, mrg);
     movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+    qDebug() << "EData::moveMoving" << p << movingdelta << fave;
+    if (fave>0) {
+      Point altpt = movingstart;
+      // perhaps snap
+      Object const &obj = currentGroup().object(fave);
+      if (obj.isHole()) {
+        altpt = obj.asHole().p;
+      } else if (obj.isPad()) {
+        altpt = obj.asPad().p;
+      } else if (obj.isGroup()) {
+        Group const &grp(obj.asGroup());
+        fave = visibleObjectAt(grp, p, mrg);
+        if (fave>0) {
+          Object const &obj = grp.object(fave);
+          if (obj.isHole()) {
+            altpt = obj.asHole().p;
+          } else if (obj.isPad()) {
+            altpt = obj.asPad().p; 
+          }
+        }
+      } else if (obj.isTrace()) {
+        qDebug() << "move trace";
+        Trace const &trc(obj.asTrace());
+        Dim mrg = pressMargin();
+        if (trc.onP1(p, mrg))
+          altpt = trc.p1;
+        else if (trc.onP2(p, mrg))
+          altpt = trc.p2;
+      }
+      if (altpt != movingstart) // no magnetism to our starting point:
+        // user is trying to get away from there.
+        movingdelta = altpt - movingstart;
+    }
+
     ed->tentativeMove(movingdelta);
     ed->update();
   }
@@ -654,6 +701,13 @@ void EData::startMoveSelection(int fave) {
 	  movingstart = obj.asPad().p;
 	}
       }
+    } else if (obj.isTrace()) {
+      qDebug() << "move trace";
+      Trace const &trc(obj.asTrace());
+      if (trc.onP1(presspoint, 1.1*pressMargin()))
+        movingstart = trc.p1;
+      else if (trc.onP2(presspoint, 1.1*pressMargin()))
+        movingstart = trc.p2;
     }
   }
   movingdelta = Point();
@@ -716,7 +770,9 @@ void EData::movePanning(QPoint p) {
 }
 
 void EData::releaseMoving(Point p) {
-  movingdelta = p.roundedTo(layout.board().grid) - movingstart;
+  if (isMoveSignificant(p))
+    ed->setCursor(Qt::ArrowCursor);
+  //  movingdelta = p.roundedTo(layout.board().grid) - movingstart;
   if (movingdelta.isNull() || !isMoveSignificant(p)) {
     moving = false;
     ed->update();
@@ -865,9 +921,9 @@ void EData::editPinName(int groupid, int hole_pad_id) {
   bool ok = false;
   Symbol const &sym(linkedschematic.schematic()
 		    .symbolForNamedElement(group_ref));
-  qDebug() << "editpinname" << pin_ref;
+  qDebug() << "editpinname" << pin_ref << sym.isValid();
   if (sym.isValid()) {
-    PinNameEditor pne(group_ref, pin_ref, sym);
+    PinNameEditor pne(group_ref, pin_ref, sym, ed, grp.allPins().size());
     ok = pne.exec();
     if (ok)
       pin_ref = pne.pinRef();
@@ -885,3 +941,22 @@ void EData::editPinName(int groupid, int hole_pad_id) {
   }
 }
 
+QCursor EData::crossCursor() {
+  static bool got = false;
+  static QCursor cursor;
+  if (got)
+    return cursor;
+  cursor = QCursor(QIcon(":icons/CursorCross.svg").pixmap(64,64), 32, 32);
+  got = true;
+  return cursor;
+}
+
+QCursor EData::tinyCursor() {
+  static bool got = false;
+  static QCursor cursor;
+  if (got)
+    return cursor;
+  cursor = QCursor(QIcon(":icons/CursorCross.svg").pixmap(32,32), 16, 16);
+  got = true;
+  return cursor;
+}

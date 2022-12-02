@@ -214,18 +214,35 @@ void MWData::openDialog() {
   }
 }
 
-void MainWindow::open(QString fn) {
+bool MainWindow::open(QString fn) {
   QFileInfo fi(fn);
-  if (d->editor->load(fi.absoluteFilePath())) {
-    d->filename = fi.absoluteFilePath();
-    d->recentfiles->mark(d->filename);
-    d->pwd = fi.dir().absolutePath();
-    setWindowTitle(d->filename);
-    if (d->editor->linkedSchematic().isValid())
-      d->showParts();
-  } else {
+  if (!d->editor->load(fi.absoluteFilePath())) {
     d->resetFilename();
+    QMessageBox::warning(this, "CPCB",
+			 "Could not load “" + fn + "”",
+			 QMessageBox::Ok);
+    return false;
   }
+  
+  d->filename = fi.absoluteFilePath();
+  d->recentfiles->mark(d->filename);
+  d->pwd = fi.dir().absolutePath();
+  setWindowTitle(d->filename);
+
+  if (!d->editor->linkedSchematic().isValid()
+      && !d->editor->pcbLayout().board().linkedschematic.isEmpty()) {
+    if (QMessageBox::warning(this, "CPCB",
+			     "Could not load linked schematic “"
+			     + d->editor->pcbLayout().board().linkedschematic
+			     + "”. Would you like to browse for it?",
+			     QMessageBox::Yes | QMessageBox::No)
+	== QMessageBox::Yes) {
+      d->linkSchematicDialog();
+    }
+  } else if (d->editor->linkedSchematic().isValid()) {
+    d->showParts();
+  }
+  return true;
 }  
 
 bool MWData::saveImmediately() {
@@ -756,8 +773,17 @@ void MWData::makeMenus() {
   a->setEnabled(false);
 
   edit->addAction("Find", [this]() { Find(editor).run(); },
-                  QKeySequence(Qt::CTRL + Qt::Key_Slash));
+                  QKeySequence(Qt::Key_Slash));
 
+  edit->addAction("Toggle &grid", [this]() { statusbar->toggleGrid(); },
+                  QKeySequence("#"));
+  edit->addAction("Cycle grid", [this]() { statusbar->nextGrid(); },
+                  QKeySequence(Qt::Key_Period));
+  edit->addAction("Reverse cycle grid",
+                  [this]() { statusbar->previousGrid(); },
+                  QKeySequence(Qt::Key_Comma));
+
+  
   auto *tools = mb->addMenu("&Tools");
   tools->addAction("&Open library", [this]() { openLibrary(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
@@ -801,12 +827,29 @@ void MWData::makeMenus() {
   a->setEnabled(false);
   
   auto *view = mb->addMenu("&View");
-  view->addAction("&Scale to fit", [this]() { editor->scaleToFit(); },
-		  QKeySequence(Qt::Key_0));
-  view->addAction("Zoom &in", [this]() { editor->zoomIn(); },
-		  QKeySequence(Qt::Key_Equal));
-  view->addAction("Zoom &out", [this]() { editor->zoomOut(); },
-		  QKeySequence(Qt::Key_Minus));
+  QAction *act = new QAction("&Scale to fit", mw);
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence(Qt::CTRL + Qt::Key_0)
+                    << QKeySequence(Qt::Key_0));
+  mw->connect(act, &QAction::triggered, [this]() { editor->scaleToFit(); });
+  view->addAction(act);
+  
+  act = new QAction("Zoom &in", mw);
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence(QKeySequence::ZoomIn)
+		    << QKeySequence(Qt::CTRL + Qt::Key_Equal)
+		    << QKeySequence(Qt::Key_Equal)
+		    << QKeySequence(Qt::Key_Plus));
+  mw->connect(act, &QAction::triggered, [this]() { editor->zoomIn(); });
+  view->addAction(act);
+
+  act = new QAction("Zoom &out", mw);
+  act->setShortcuts(QList<QKeySequence>()
+                    << QKeySequence::ZoomOut
+                    << QKeySequence(Qt::Key_Minus));
+  mw->connect(act, &QAction::triggered, [this]() { editor->zoomOut(); });
+  view->addAction(act);
+  
   view->addAction("Show &parts to be placed", [this]() { showParts(); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
   view->addAction("Show &BOM", [this]() { showBOM(); },

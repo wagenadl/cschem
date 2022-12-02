@@ -82,6 +82,8 @@ public:
   Dim pressMargin() const;
   void editPinName(int groupid, int hole_pad_id);
   Point tracePoint(Point p, bool *onsomething_return=0) const;
+  static QCursor crossCursor();
+  static QCursor tinyCursor();
 public:
   Editor *ed;
   Layout layout;

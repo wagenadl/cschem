@@ -42,7 +42,7 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
     // a net with one named node is not bad. By definition.
   }
 
-  // qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
+ qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
 
   for (Nodename const &name: linkednet.nodes) {
     if (pcbnames.contains(name))
@@ -56,7 +56,7 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
     }
     if (!got) {
       NodeID id = root.findNodeByName(name);
-      // qDebug() << "looking for" << name << "gave" << id;
+       qDebug() << "looking for" << name << "gave" << id;
       if (!id.isEmpty())
 	missingFromNet << id;
       else

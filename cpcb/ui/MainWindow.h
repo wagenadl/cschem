@@ -10,7 +10,7 @@ class MainWindow: public QMainWindow {
 public:
   MainWindow();
   virtual ~MainWindow();
-  void open(QString);
+  bool open(QString);
 protected:
   void closeEvent(QCloseEvent *);
 private:

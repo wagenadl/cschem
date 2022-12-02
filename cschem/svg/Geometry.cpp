@@ -34,6 +34,7 @@ public:
   void ensureConnectionDB();
   QPoint pinPosition(int elt, QString pin) const;
   QPoint pinPosition(Element const &elt, QString pin) const;
+  QMap<QString, QPoint> pinPositions(Element const &elt) const;
   QPoint preferredRoutingDirection(int elt, QString pin) const;
   QPoint preferredRoutingDirection(Element const &elt, QString pin) const;
   QPolygon connectionPath(Connection const &con) const;
@@ -148,6 +149,21 @@ QPoint Geometry::pinPosition(Element const &elt, QString pin) const {
     return QPoint();
 }
 
+QMap<QString, QPoint> Geometry::pinPositions(int elt) const {
+  if (d)
+    return d->pinPositions(d->circ.elements[elt]);
+  else
+    return QMap<QString, QPoint>();
+}
+
+QMap<QString, QPoint> Geometry::pinPositions(Element const &elt) const {
+  if (d)
+    return d->pinPositions(elt);
+  else
+    return QMap<QString, QPoint>();
+}
+
+
 QPoint GeometryData::pinPosition(int eltid, QString pin) const {
   return pinPosition(circ.elements[eltid], pin);
 }
@@ -241,6 +257,14 @@ QRectF Geometry::visualBoundingRect() const {
   for (Textual const &txt: d->circ.textuals)
     r |= textualBox(d->lib.upscale(txt.position), txt.text);
   return r;
+}
+
+QMap<QString, QPoint> GeometryData::pinPositions(Element const &elt) const {
+  Symbol const &prt(lib.symbol(elt.symbol()));
+  QMap<QString, QPoint> res;
+  for (QString const &pin: prt.pinNames())
+    res[pin] = pinPosition(elt, pin);
+  return res;
 }
 
 QPoint GeometryData::pinPosition(Element const &elt, QString pin) const {

@@ -30,6 +30,11 @@ public slots:
   void setBoard(Board const &);
   void resetGridChoices();
   void setUserOrigin(Point);
+  void toggleGrid();
+  void nextGrid();
+  void previousGrid();
+private slots:
+  void parseGrid();
 private:
   void updateCursor();
 private:
@@ -45,6 +50,7 @@ private:
   QString obj;
   Point ori;
   class DimSpinner *gridsp;
+  Dim lastgrid;
 };
 
 #endif

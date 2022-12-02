@@ -18,6 +18,7 @@
 #include "PartList.h"
 #include "circuit/PartNumbering.h"
 #include "SceneTextual.h"
+#include <QMessageBox>
 
 class SceneData {
 public:
@@ -1017,8 +1018,8 @@ void SceneData::hideDragIn() {
 bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
   Symbol symbol = Symbol::load(filename);
   qDebug() << "startSvgDragIn" << filename << pos << symbol.isValid();
-  if (!symbol.isValid())
-    return false;
+  //  if (!symbol.isValid())
+  //return false;
 
   if (dragin)
     delete dragin;
@@ -1159,11 +1160,20 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
       return;
     }
     Symbol const &sym = d->dragin->symbol();
-    if (d->importAndPlonk(sym, droppos, true)) {
-      emit libraryChanged();
-      e->accept();
-      d->hideDragIn();
-      return;
+    if (sym.isValid()) {
+      if (d->importAndPlonk(sym, droppos, true)) {
+        emit libraryChanged();
+        e->accept();
+        d->hideDragIn();
+        return;
+      } else {
+        QMessageBox::warning(0, "CSchem",
+                             "Failed to import symbol file. Reason unknown.");
+      }
+    } else {
+      QMessageBox::warning(0, "CSchem",
+                           "Failed to import symbol file:\n\n"
+                           + sym.problems().join("\n"));
     }
   }
 
@@ -1299,6 +1309,13 @@ void Scene::clearSelection() {
   SelChgPostpone blk(d);
   for (SceneElement *elt: elements())
     elt->setSelected(false);
+}
+
+void Scene::addToSelection(int id) {
+  if (d->elts.contains(id)) {
+    d->elts[id]->setSelected(true);
+    perhapsEmitSelectionChange();
+  }
 }
 
 void Scene::perhapsEmitSelectionChange() {

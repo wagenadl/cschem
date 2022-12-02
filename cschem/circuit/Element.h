@@ -7,6 +7,7 @@
 #include <QPoint>
 #include <QXmlStreamReader>
 #include <QDebug>
+#include "PinID.h"
 
 class Rotation {
 public:
@@ -46,6 +47,7 @@ public:
   QString cname() const; // "A3" part of "A3.2"
   QString csuffix() const; // ".2" part of "A3.2"
   bool isNameWellFormed() const;
+  QString humanPinName(QString pin=PinID::NOPIN) const;
 public:
   void translate(QPoint delta);
   void autoSetVisibility();

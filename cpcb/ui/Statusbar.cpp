@@ -29,34 +29,14 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   gridsp->setMode(Expression::Mode::Explicit);
   gridsp->hideTrailingZeros();
   gridui = new QComboBox;
-  gridui->setStyleSheet("QComboBox { margin-right: 8px; }");
+  //gridui->setStyleSheet("QComboBox { margin-right: 20px; }");
+  gridui->setMinimumContentsLength(6);
   gridui->setEditable(true);
   gridui->setInsertPolicy(QComboBox::InsertAtBottom);
   gridui->setLineEdit(gridsp);
   gridui->setToolTip("Grid spacing");
-  connect(gridui, QOverload<QString const &>::of(&QComboBox::activated),
-	  [this]() {
-	    int mc = gridui->maxCount();
-	    gridsp->parseValue();
-	    if (gridui->currentIndex()==mc-1) {
-	      if (gridsp->isValid()) 
-		gridui->removeItem(mc-2);
-	      else
-		gridui->removeItem(mc-1);
-	    }
-	    gridsp->parseValue();
-	    qDebug() << "gridsp" << gridsp->isValid() << gridsp->hasValue() << gridsp->value() << gridsp->isMetric();
-	    if (gridsp->isValid()) {
-	      Dim g = gridsp->value();
-	      gridui->setItemData(gridui->currentIndex(),
-				  QVariant(g.toString()));
-	      if (g != board.grid) {
-		board.grid = g;
-		if (!noemit)
-		  emit gridEdited(board.grid);
-	      }
-	    }
-	  });
+  connect(gridui, &QComboBox::textActivated,
+          this, &Statusbar::parseGrid);
   resetGridChoices();
   addPermanentWidget(gridui);
 
@@ -121,6 +101,59 @@ void Statusbar::setBoard(Board const &b) {
   noemit = false;
 }
 
+void Statusbar::parseGrid() {
+  int mc = gridui->maxCount();
+  if (gridui->currentIndex()==mc-1) {
+    if (gridsp->isValid()) 
+      gridui->removeItem(mc-2);
+    else
+      gridui->removeItem(mc-1);
+  }
+  gridsp->setText(gridui->currentText());
+  gridsp->parseValue();
+  if (gridsp->isValid()) {
+    Dim g = gridsp->value();
+    gridui->setItemData(gridui->currentIndex(),
+                        QVariant(g.toString()));
+    gridui->clearFocus();
+    if (g != board.grid) {
+      board.grid = g;
+      if (!noemit)
+        emit gridEdited(board.grid);
+    }
+    if (g.isPositive())
+      lastgrid = g;
+  }
+}
+
+
+void Statusbar::nextGrid() {
+  int idx = gridui->currentIndex() + 1;
+  if (idx >= gridui->count())
+    idx = 0;
+  gridui->setCurrentIndex(idx);
+  parseGrid();
+}
+
+void Statusbar::previousGrid() {
+  int idx = gridui->currentIndex() - 1;
+  if (idx < 0)
+    idx = gridui->count() - 1;
+  gridui->setCurrentIndex(idx);
+  parseGrid();
+}
+
+
+void Statusbar::toggleGrid() {
+  if (board.grid.isPositive()) {
+    lastgrid = board.grid;
+    setGrid(Dim());
+  } else {
+    setGrid(lastgrid);
+  }
+  emit gridEdited(board.grid);
+}
+
 void Statusbar::resetGridChoices() {
   Dim g = board.grid;
   gridui->clear();
@@ -144,20 +177,18 @@ void Statusbar::resetGridChoices() {
       gridui->setItemText(7, QString("%1”").arg(g.toInch()));
     gridsp->parseValue();
   }
+  if (g.isPositive())
+    lastgrid = g;
 }
+
+
 
 void Statusbar::setGrid(Dim g) {
   board.grid = g;
-  qDebug() << "setgrid" << g;
   int idx = gridui->findData(QVariant(g.toString()));
-  qDebug() << "idx = " << idx;
-  qDebug() << "mc = " << gridui->maxCount() << gridui->currentIndex();
   if (idx>=0) {
     gridui->setCurrentIndex(idx);
   } else {
-    for (int i=0; i<gridui->count(); i++) {
-      qDebug() << "at" << i << gridui->itemText(i) << gridui->itemData(i);
-    }
     if (g.isMetric())
       gridui->addItem(QString("%1 mm").arg(g.toMM()),
 		      QVariant(g.toString()));
@@ -167,6 +198,8 @@ void Statusbar::setGrid(Dim g) {
     gridui->setCurrentIndex(gridui->count()-1);
     gridsp->parseValue();
   }
+  if (g.isPositive())
+    lastgrid = g;
 }
 
 void Statusbar::setCursorXY(Point p1) {

@@ -23,6 +23,7 @@ public:
   QStringList pinNames() const; // sorted
   QPointF bbOrigin() const; // position of first pin relative to TL of bbox
   bool isValid() const;
+  QStringList problems() const;
   QPointF svgOrigin() const; // position of first pin in svg
   QPointF shiftedPinPosition(QString pinname) const;
   // as if first pin were at (0,0)
@@ -39,6 +40,7 @@ public:
   // return a map of pin names to physical pin numbers on our device
   static QString prefixForSlotCount(int); // returns a fraction like "½ ".
   int totalPinCount() const;
+  QString stats() const;
 private:
   QSharedDataPointer<class SymbolData> d;
 };
