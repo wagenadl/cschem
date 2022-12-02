@@ -29,12 +29,13 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   gridsp->setMode(Expression::Mode::Explicit);
   gridsp->hideTrailingZeros();
   gridui = new QComboBox;
-  gridui->setStyleSheet("QComboBox { margin-right: 8px; }");
+  //gridui->setStyleSheet("QComboBox { margin-right: 20px; }");
+  gridui->setMinimumContentsLength(6);
   gridui->setEditable(true);
   gridui->setInsertPolicy(QComboBox::InsertAtBottom);
   gridui->setLineEdit(gridsp);
   gridui->setToolTip("Grid spacing");
-  connect(gridui, QOverload<QString const &>::of(&QComboBox::activated),
+  connect(gridui, &QComboBox::textActivated,
           this, &Statusbar::parseGrid);
   resetGridChoices();
   addPermanentWidget(gridui);

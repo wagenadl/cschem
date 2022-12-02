@@ -49,8 +49,8 @@ public:
   QWidget *slotlengthc; // for hole
   DimSpinner *slotlength;
   QWidget *squarec;
-  QToolButton *circle; // for hole
-  QToolButton *square; // for hole
+  QAction *circle; // for hole
+  QAction *square; // for hole
 
   QWidget *textg;
   QAction *texta;
@@ -735,7 +735,7 @@ void PBData::setupUI() {
     Q_ASSERT(group->layout());
     QWidget *container = new QWidget(group);
     auto *lay = new QHBoxLayout;
-    lay->setSpacing(4);
+    lay->setSpacing(8);
     lay->setContentsMargins(0, 0, 0, 0);
     container->setLayout(lay);
     group->layout()->addWidget(container);
@@ -896,7 +896,8 @@ void PBData::setupUI() {
   ((QVBoxLayout*)(dimg->layout()))->addSpacing(8);
   
   idc = makeContainer(dimg);
-  makeLabel(idc, "⌀", "Hole diameter");
+  //makeLabel(idc, "⌀", "Hole diameter");
+  makeIcon(idc, "Diameter", "Hole diameter");
   id = makeDimSpinner(idc);
   id->setMinimumValue(Dim::fromInch(0.005));
   id->setValue(Dim::fromInch(.040));
@@ -931,27 +932,23 @@ void PBData::setupUI() {
 
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
-  circle = makeTextTool(squarec, "○", "Round");
+  circle = makeIconTool(squarec, "Round", true, true, "Round");
   circle->setChecked(true);
-  square = makeTextTool(squarec, "□", "Square");
+  square = makeIconTool(squarec, "Square", true, true, "Square");
 
-  QObject::connect(square, &QToolButton::clicked,
+  QObject::connect(square, &QAction::triggered,
 		   [this]() {
-		     square->setChecked(true);
-		     circle->setChecked(false);
 		     editor->setSquare(true);
 		   });
-  QObject::connect(circle, &QToolButton::clicked,
+  QObject::connect(circle, &QAction::triggered,
 		   [this]() {
-		     circle->setChecked(true);
-		     square->setChecked(false);
 		     editor->setSquare(false);
 		   });
 
   ((QVBoxLayout*)(dimg->layout()))->addSpacing(8);
 
   wc = makeContainer(dimg);
-  makeLabel(wc, "W", "Pad width");
+  makeLabel(wc, "Width", "Pad width");
   w = makeDimSpinner(wc);
   w->setValue(Dim::fromInch(.020));
   w->setMinimumValue(Dim::fromInch(0.005));
@@ -961,7 +958,7 @@ void PBData::setupUI() {
                    });
 
   hc = makeContainer(dimg);
-  makeLabel(hc, "H", "Pad height");
+  makeLabel(hc, "Height", "Pad height");
   h = makeDimSpinner(hc);
   h->setValue(Dim::fromInch(.040));
   h->setMinimumValue(Dim::fromInch(0.005));
@@ -981,7 +978,7 @@ void PBData::setupUI() {
 		   [this]() { editor->setRefText(text->text()); });
 
   auto *c1 = makeContainer(textg);
-  makeLabel(c1, "Fs", "Font size");
+  makeLabel(c1, "Size", "Font size");
   fs = makeDimSpinner(c1);
   fs->setValue(Dim::fromInch(.050));
   QObject::connect(fs, &DimSpinner::valueEdited,
