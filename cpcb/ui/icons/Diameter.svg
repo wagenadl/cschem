@@ -8,7 +8,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.2.1 (1:1.2.1+202210291243+9c6d41e410)"
-   sodipodi:docname="SlotLength.svg"
+   sodipodi:docname="Diameter.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -124,18 +124,18 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.671875"
-     inkscape:cx="31.700935"
-     inkscape:cy="31.700935"
+     inkscape:zoom="6.578125"
+     inkscape:cx="32"
+     inkscape:cy="31.92399"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1058"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-width="884"
+     inkscape:window-height="716"
+     inkscape:window-x="733"
+     inkscape:window-y="151"
+     inkscape:window-maximized="0"
      inkscape:showpageshadow="2"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1">
@@ -152,7 +152,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -161,15 +160,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-280.06665)">
-    <rect
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:7;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
-       id="rect855"
-       width="13.758335"
-       height="7.4083223"
-       x="1.5875"
-       y="284.82916"
-       ry="3.7041543"
-       rx="3.7041678" />
     <flowRoot
        xml:space="preserve"
        id="flowRoot5303"
@@ -183,33 +173,16 @@
            y="19.492811"
            style="stroke-width:0.79375001;stroke-miterlimit:7;stroke-dasharray:none" /></flowRegion><flowPara
          id="flowPara5309" /></flowRoot>
-    <rect
-       style="fill:#000000;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stop-color:#000000;fill-opacity:1"
-       id="rect26590"
-       width="1.0583334"
-       height="3.1750002"
-       x="11.1125"
-       y="286.94583" />
-    <rect
-       style="fill:#000000;fill-opacity:1;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stop-color:#000000"
-       id="rect26852"
-       width="3.1750004"
-       height="1.0583334"
-       x="10.054167"
-       y="288.00415" />
-    <rect
-       style="fill:#000000;fill-opacity:1;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stop-color:#000000"
-       id="rect26590-6"
-       width="1.0583334"
-       height="3.1750002"
-       x="4.7624998"
-       y="286.94583" />
-    <rect
-       style="fill:#000000;fill-opacity:1;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stop-color:#000000"
-       id="rect26852-7"
-       width="3.1750004"
-       height="1.0583334"
-       x="3.7041667"
-       y="288.00415" />
+    <ellipse
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+       id="path37562"
+       cx="8.4666672"
+       cy="288.53333"
+       rx="4.7625008"
+       ry="4.7624969" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.05833334;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="M 3.1750001,293.82498 13.758334,283.24165 v 0"
+       id="path37627" />
   </g>
 </svg>
