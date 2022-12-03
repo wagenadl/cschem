@@ -89,6 +89,7 @@ public:
   Point tentamovedelta;
   QMap<QWidget *, QSet<QToolButton *>> exclusiveGroups;
 public:
+  PBData() { xya=0; }
   void switchToMetric();
   void switchToInch();
   Dim getDim(DimSpinner *);
@@ -209,11 +210,10 @@ void PBData::fillWH(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
+  qDebug() << "filldiamandshape" << objects << circle->isChecked() << square->isChecked();
   bool got = false;
   // Set id (od, square) if we have at least one hole and their id (etc)
   // etc all same
-  square->setChecked(false);
-  circle->setChecked(false);
   for (int k: objects) {
     Object const &obj(here.object(k));
     if (obj.isHole()) {
@@ -236,10 +236,8 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
 	id->setValue(id1);
 	od->setValue(od1);
 	slotlength->setValue(sl1);
-	if (sq)
-	  square->setChecked(true);
-	else
-	  circle->setChecked(true);
+        square->setChecked(sq);
+        circle->setChecked(!sq);
 	got = true;
       }
     } else if (obj.isNPHole()) {
@@ -293,6 +291,7 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
     editor->properties().square = true;
   if (circle->isChecked())
     editor->properties().square = false;
+  qDebug() << "ischecked" << circle->isChecked() << square->isChecked();
 }
 
 void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
@@ -338,6 +337,7 @@ void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
+  qDebug() << "fillarcangle" << objects;
   bool got = false;
   int arcangle = 0; // "invalid"
   // set angle if all are same
@@ -355,13 +355,15 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
       }
     }
   }
-  arc360->setChecked(arcangle==360);
-  arc300->setChecked(arcangle==300);  
-  arc240->setChecked(arcangle==240);  
-  arc180->setChecked(arcangle==180);  
-  arc_90->setChecked(arcangle==90);
-  if (arcangle==90)
-    editor->properties().arcangle = -arcangle;
+  if (got) {
+    arc360->setChecked(arcangle==360);
+    arc300->setChecked(arcangle==300);  
+    arc240->setChecked(arcangle==240);  
+    arc180->setChecked(arcangle==180);  
+    arc_90->setChecked(arcangle==90);
+  }
+  //if (arcangle==90)
+  //  editor->properties().arcangle = -arcangle;
   if (arcangle!=0)
     editor->properties().arcangle = arcangle;
 }
@@ -509,6 +511,10 @@ void PBData::hideAndShow() {
   flipped->setVisible(true);
   rotatec->setVisible(false);
 
+  qDebug() << "top acts" << xya << dima << arca;
+  qDebug() << "group" << xyg << dimg << arcg;
+  qDebug() << "conts" << squarec << arcc;
+
   switch (mode) {
   case Mode::Invalid: case Mode::SetIncOrigin: case Mode::BoardOutline:
     break;
@@ -608,6 +614,8 @@ void PBData::hsEdit() {
   orientc->setVisible(false);
   flipped->setVisible(false);
   rotatec->setVisible(true);
+
+  getPropertiesFromSelection();
   
   QSet<int> objects(editor->selectedObjects());
   QSet<Point> points(editor->selectedPoints());
@@ -718,6 +726,7 @@ void PBData::hsEdit() {
 }
 
 void PBData::setupUI() {
+  qDebug() << "setupui" << (void*)xya << (void*)arca;
   auto makeGroup = [this](QAction **a) {
     Q_ASSERT(parent);
     Q_ASSERT(a);
@@ -864,8 +873,9 @@ void PBData::setupUI() {
   QObject::connect(notes, &QTextEdit::textChanged,
 		   [this]() { editor->setGroupNotes(notes->document()
                                                     ->toPlainText()); });
-  
+  qDebug() << "premg" << xya;
   xyg = makeGroup(&xya);
+  qDebug() << "postmg" << xya;
   xc = makeContainer(xyg);
   makeLabel(xc, "X", "Distance from left");
   x = makeDimSpinner(xc, Dim::fromInch(.050));
@@ -1096,6 +1106,7 @@ void PBData::setupUI() {
 		     });
 
   top->setChecked(true);
+  qDebug() << "post" << xya;
 }  
 
 Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) {
@@ -1112,10 +1123,10 @@ void Propertiesbar::reflectMode(Mode m) {
   d->editor->properties().text = "";
   d->text->setText("");
   if (m==Mode::PlaceHole) {
-    if (!d->square->isChecked()) {
-      d->circle->setChecked(true);
-      d->editor->setSquare(false);
-    }
+    bool sq = d->square->isChecked();
+    d->square->setChecked(sq);
+    d->circle->setChecked(!sq);
+    d->editor->setSquare(sq);
     if (d->od->value() < d->id->value() + minRingWidth)
       d->od->setValue(d->id->value() + minRingWidth);
   }
