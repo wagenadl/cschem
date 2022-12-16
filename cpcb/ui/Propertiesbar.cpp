@@ -86,7 +86,6 @@ public:
   
   Dim x0, y0;
   Point ori;
-  Point tentamovedelta;
   QMap<QWidget *, QSet<QToolButton *>> exclusiveGroups;
 public:
   PBData() { xya=0; }
@@ -104,7 +103,8 @@ public:
   bool anyLayerChecked() const;
   bool anyDirectionChecked() const;
 private:
-  void fillXY(QSet<Point> const &points);
+  bool fillXY(QSet<Point> const &points);
+  void fillXYfromText(QSet<int> const &objects, Group const &here);
   void fillLinewidth(QSet<int> const &objects, Group const &here);
   void fillWH(QSet<int> const &objects, Group const &here);
   void fillDiamAndShape(QSet<int> const &objects, Group const &here);
@@ -132,18 +132,46 @@ bool PBData::anyLayerChecked() const {
     || top->isChecked() || bottom->isChecked();
 }
 
-void PBData::fillXY(QSet<Point> const &points) {
-  tentamovedelta = Point();
-  if (points.isEmpty())
-    return;
+bool PBData::fillXY(QSet<Point> const &points) {
+  if (points.isEmpty()) {
+    x0 = ori.x;
+    y0 = ori.y;
+  } else {
+    x0 = Dim::fromInch(1000);
+    y0 = Dim::fromInch(1000);
+    for (Point const &p: points) {
+      if (p.x<x0)
+        x0 = p.x;
+      if (p.y<y0)
+        y0 = p.y;
+    }
+  }
 
+  x->setValue(x0 - ori.x);
+  y->setValue(y0 - ori.y);
+
+  return !points.isEmpty();
+}
+
+void PBData::fillXYfromText(QSet<int> const &objects,
+                                   Group const &here) {
+  bool got = false;
   x0 = Dim::fromInch(1000);
   y0 = Dim::fromInch(1000);
-  for (Point const &p: points) {
-    if (p.x<x0)
-      x0 = p.x;
-    if (p.y<y0)
-      y0 = p.y;
+  for (int k: objects) {
+    Object const &obj(here.object(k));
+    if (obj.isText()) {
+      Text const &text(obj.asText());
+      if (text.p.x < x0)
+        x0 = text.p.x;
+      if (text.p.y < y0)
+        y0 = text.p.y;
+      got = true;
+    }
+  }
+  if (!got) {
+    x0 = ori.x;
+    y0 = ori.y;
   }
   x->setValue(x0 - ori.x);
   y->setValue(y0 - ori.y);
@@ -451,7 +479,9 @@ void PBData::getPropertiesFromSelection() {
   QSet<Point> points(editor->selectedPoints());
   Group const &here(editor->currentGroup());
 
-  fillXY(points);
+  qDebug() << "getpropertiesfromselection" << objects.size() << points.size();
+  if (!fillXY(points)) 
+    fillXYfromText(objects, here);
   fillLinewidth(objects, here);
   fillWH(objects, here);
   fillDiamAndShape(objects,  here);
