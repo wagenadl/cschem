@@ -351,6 +351,10 @@ Circuit const &Scene::circuit() const {
   return d->circ();
 }
 
+void Scene::newUUID() {
+  d->circ().newUUID();
+}
+
 QSet<int> SceneData::selectedElements() const {
   QSet<int> selection;
   for (int id: elts.keys())

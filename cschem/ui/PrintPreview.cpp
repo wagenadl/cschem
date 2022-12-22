@@ -40,7 +40,7 @@ void PrintPreview::preview(QWidget *parent, Scene *scene, QString filename) {
   PrintPreview pp(parent, scene, filename);
   QPrinter prt(QPrinter::HighResolution);
   prt.setDocName(filename);
-  prt.setPaperSize(QPrinter::Letter);
+  prt.setPageSize(QPageSize(QPageSize::Letter));
   QPrintPreviewDialog dlg(&prt, parent);
   connect(&dlg, &QPrintPreviewDialog::paintRequested,
 	  &pp, &PrintPreview::paintRequest);
@@ -51,7 +51,7 @@ void PrintPreview::print(QWidget *parent, Scene *scene, QString filename) {
   PrintPreview pp(parent, scene, filename);
   QPrinter prt(QPrinter::HighResolution);
   prt.setDocName(filename);
-  prt.setPaperSize(QPrinter::Letter);
+  prt.setPageSize(QPageSize(QPageSize::Letter));
   QPrintDialog dlg(&prt, parent);
   if (dlg.exec() == QDialog::Accepted) {
     pp.paintRequest(&prt);

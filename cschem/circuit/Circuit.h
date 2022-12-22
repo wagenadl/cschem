@@ -75,10 +75,12 @@ public:
   QSet<QString> allNames() const;
   void verifyIDs() const;
   QString humanPinName(PinID pin) const;
+  void newUUID();
 public:
   SafeMap<int, Element> elements;
   SafeMap<int, Connection> connections;
   SafeMap<int, Textual> textuals;
+  QString uuid;
 private:
   bool valid;
 };
