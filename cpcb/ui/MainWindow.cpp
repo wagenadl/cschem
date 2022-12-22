@@ -20,7 +20,7 @@
 #include "ORenderer.h"
 #include "BOM.h"
 #include "BOMView.h"
-
+#include <QPushButton>
 #include <QClipboard>
 #include <QTemporaryDir>
 #include <QDesktopServices>
@@ -47,6 +47,7 @@ public:
     bomvdock = 0;
     recentfiles = 0;
   }
+  void attemptRelinkSchematic();
   void setWindowTitle();
   void resetFilename();
   void about();
@@ -98,6 +99,39 @@ public:
   QString filename;
   RecentFiles *recentfiles;
 };
+
+void MWData::attemptRelinkSchematic() {
+  QString schemfn = editor->pcbLayout().board().linkedschematic;
+  QString txt = "Could not load linked schematic “" + schemfn + "”.";
+  QString leaf = QFileInfo(schemfn).fileName();
+  QDir here = QFileInfo(filename).dir();
+  bool available = here.exists(leaf);
+  if (available) 
+    txt += " However, a file named “" + leaf + "” exists in “"
+      + here.canonicalPath() + "”."
+      + " Is that the correct file to use?"
+      + " Alternatively, would you like to browse for the correct schematic?";
+  else 
+    txt += " Would you like to browse for it?";
+
+  QMessageBox mb(QMessageBox::Question, "CPCB", txt, QMessageBox::NoButton, mw);
+  
+  QPushButton *yes = available ? mb.addButton("Yes", QMessageBox::YesRole) : 0;
+  QPushButton *browse = mb.addButton("Browse", QMessageBox::YesRole);
+  QPushButton *no = mb.addButton("No", QMessageBox::NoRole);
+
+  mb.exec();
+  
+  if (yes && mb.clickedButton()==yes) {
+    QString fn = here.filePath(leaf);
+    if (!editor->linkSchematic(fn))
+      QMessageBox::warning(mw, "Failed to link schematic",
+                           "Cannot link schematic “" + fn
+                           + "”. Could the file be damaged?");
+  } else if (mb.clickedButton()==browse) {
+    linkSchematicDialog();
+  }
+}
 
 QString MWData::getOpenFilename(QString ext, QString caption, QString desc) {
   if (pwd.isEmpty())
@@ -230,18 +264,12 @@ bool MainWindow::open(QString fn) {
   setWindowTitle(d->filename);
 
   if (!d->editor->linkedSchematic().isValid()
-      && !d->editor->pcbLayout().board().linkedschematic.isEmpty()) {
-    if (QMessageBox::warning(this, "CPCB",
-			     "Could not load linked schematic “"
-			     + d->editor->pcbLayout().board().linkedschematic
-			     + "”. Would you like to browse for it?",
-			     QMessageBox::Yes | QMessageBox::No)
-	== QMessageBox::Yes) {
-      d->linkSchematicDialog();
-    }
-  } else if (d->editor->linkedSchematic().isValid()) {
+      && !d->editor->pcbLayout().board().linkedschematic.isEmpty())
+    d->attemptRelinkSchematic();
+
+  if (d->editor->linkedSchematic().isValid()) 
     d->showParts();
-  }
+
   return true;
 }  
 
