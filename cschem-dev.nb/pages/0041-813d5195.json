@@ -1,0 +1,1630 @@
+{ "typ": "page",
+  "cre": "2022-12-21T11:23:18.984",
+  "mod": "2022-12-21T16:06:06.268",
+  "cui": "2edabb2aac00cecb",
+  "stampTime": 0,
+  "startPage": 41,
+  "unlocked": false,
+  "uuid": "813d5195",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2022-12-21T11:23:18.978",
+      "mod": "2022-12-21T16:05:58.085",
+      "uuid": "ab35219f",
+      "cc": [
+        { "typ": "res",
+          "cre": "2022-12-21T11:23:19.038",
+          "mod": "2022-12-21T11:23:19.040",
+          "archive": "40_-34f0bec3.html",
+          "desc": "",
+          "preview": "40_-34f0bec3p.png",
+          "source": "page://0.0.0.40/446e050f/0",
+          "tag": "40",
+          "title": "",
+          "uuid": "34f0bec3"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:24:35.177",
+          "mod": "2022-12-21T11:24:35.178",
+          "archive": "10_5_-3a60f444.html",
+          "desc": "",
+          "preview": "10_5_-3a60f444p.png",
+          "source": "",
+          "tag": "10^5",
+          "title": "",
+          "uuid": "3a60f444"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:25:35.317",
+          "mod": "2022-12-21T11:25:35.332",
+          "archive": "_1_-2b4bf010.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "2b4bf010"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:26:15.107",
+          "mod": "2022-12-21T11:26:15.234",
+          "archive": "_2_-3f5ca2c4.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*2",
+          "title": "",
+          "uuid": "3f5ca2c4"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:40:53.101",
+          "mod": "2022-12-21T11:40:53.109",
+          "archive": "_3_-bf65b166.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*3",
+          "title": "",
+          "uuid": "bf65b166"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:41:04.017",
+          "mod": "2022-12-21T11:41:04.025",
+          "archive": "_4_-79db0288.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*4",
+          "title": "",
+          "uuid": "79db0288"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:47:19.611",
+          "mod": "2022-12-21T11:47:23.294",
+          "archive": "support_jlcpcb_com_79_pick_place_file_for_smt_assem-e89c1b75.html.pdf",
+          "desc": "",
+          "preview": "support_jlcpcb_com_79_pick_place_file_for_smt_assem-e89c1b75p.png",
+          "source": "https://support.jlcpcb.com/article/79-pick-place-file-for-smt-assembly",
+          "tag": "https://support.jlcpcb.com/article/79-pick-place-file-for-smt-assembly",
+          "title": "Pick & Place File for PCB Assembly - JLCPCB: Help & Support",
+          "uuid": "e89c1b75"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:48:06.330",
+          "mod": "2022-12-21T11:48:06.334",
+          "archive": "_5_-8d03e67c.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*5",
+          "title": "",
+          "uuid": "8d03e67c"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:50:59.059",
+          "mod": "2022-12-21T11:50:59.103",
+          "archive": "_6_-7aff76d2.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*6",
+          "title": "",
+          "uuid": "7aff76d2"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:52:01.517",
+          "mod": "2022-12-21T11:52:01.538",
+          "archive": "_7_-ac22925f.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*7",
+          "title": "",
+          "uuid": "ac22925f"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:52:11.210",
+          "mod": "2022-12-21T11:52:13.522",
+          "archive": "support_jlcpcb_com_80_bill_of_materialsbom_file_for-10d65a9e.html.pdf",
+          "desc": "",
+          "preview": "support_jlcpcb_com_80_bill_of_materialsbom_file_for-10d65a9ep.png",
+          "source": "https://support.jlcpcb.com/article/80-bill-of-materialsbom-file-for-smt-assembly",
+          "tag": "https://support.jlcpcb.com/article/80-bill-of-materialsbom-file-for-smt-assembly",
+          "title": "Bill of Materials(BOM) File for PCB Assembly - JLCPCB: Help & Support",
+          "uuid": "10d65a9e"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:54:19.622",
+          "mod": "2022-12-21T11:54:19.730",
+          "archive": "_8_-57e58d6b.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*8",
+          "title": "",
+          "uuid": "57e58d6b"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:57:14.666",
+          "mod": "2022-12-21T11:57:14.670",
+          "archive": "_9_-45536f04.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*9",
+          "title": "",
+          "uuid": "45536f04"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T11:58:59.068",
+          "mod": "2022-12-21T11:58:59.078",
+          "archive": "_10_-93065203.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*10",
+          "title": "",
+          "uuid": "93065203"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T12:21:50.132",
+          "mod": "2022-12-21T12:21:50.247",
+          "archive": "__the_gerber_x3_specification_2020-d13f34a8.pdf",
+          "desc": "",
+          "preview": "__the_gerber_x3_specification_2020-d13f34a8p.png",
+          "source": "file:///home/wagenaar/Downloads/the-gerber-x3-specification-2020-03_en.pdf",
+          "tag": "~/Downloads/the-gerber-x3-specification-2020-03_en.pdf",
+          "title": "",
+          "uuid": "d13f34a8"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T12:23:44.267",
+          "mod": "2022-12-21T12:23:44.597",
+          "archive": "__gerber_generations_the_evolution-ced8e0a8.pdf",
+          "desc": "",
+          "preview": "__gerber_generations_the_evolution-ced8e0a8p.png",
+          "source": "file:///home/wagenaar/Downloads/gerber-generations-the-evolution-of-gerber_en.pdf",
+          "tag": "~/Downloads/gerber-generations-the-evolution-of-gerber_en.pdf",
+          "title": "",
+          "uuid": "ced8e0a8"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T12:25:38.081",
+          "mod": "2022-12-21T12:25:38.088",
+          "archive": "_11_-f580ce86.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*11",
+          "title": "",
+          "uuid": "f580ce86"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T16:03:31.677",
+          "mod": "2022-12-21T16:03:34.558",
+          "archive": "www_taiwansemi_com_BZY55C2V4_20SERIES_D1612-8148256e.pdf",
+          "desc": "",
+          "preview": "www_taiwansemi_com_BZY55C2V4_20SERIES_D1612-8148256ep.png",
+          "source": "https://www.taiwansemi.com/assets/uploads/datasheet/BZY55C2V4 SERIES_D1612.pdf",
+          "tag": "https://www.taiwansemi.com/assets/uploads/datasheet/BZY55C2V4%20SERIES_D1612.pdf",
+          "title": "",
+          "uuid": "8148256e"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T16:04:11.358",
+          "mod": "2022-12-21T16:04:11.365",
+          "archive": "_12_-b626c249.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*12",
+          "title": "",
+          "uuid": "b626c249"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T16:05:55.934",
+          "mod": "2022-12-21T16:05:58.085",
+          "archive": "www_smc_diodes_com_S1A_S1M_20N0560_20REV_B-afa5fc57.pdf",
+          "desc": "",
+          "preview": "www_smc_diodes_com_S1A_S1M_20N0560_20REV_B-afa5fc57p.png",
+          "source": "https://www.smc-diodes.com/propdf/S1A-S1M N0560 REV.B.pdf",
+          "tag": "https://www.smc-diodes.com/propdf/S1A-S1M%20N0560%20REV.B.pdf",
+          "title": "",
+          "uuid": "afa5fc57"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2022-12-21T11:23:18.985",
+      "mod": "2022-12-21T11:23:19.041",
+      "uuid": "afbf2f79",
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:23:18.985",
+          "mod": "2022-12-21T11:23:19.041",
+          "lines": [
+            0
+          ],
+          "text": "CPCB pick and place SMT (cont’d)",
+          "uuid": "8bd5f993",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2022-12-21T11:23:19.036",
+              "mod": "2022-12-21T11:23:19.041",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "a2ac6e42",
+              "x": -46.8281,
+              "y": 45.06,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2022-12-21T11:23:19.036",
+                  "mod": "2022-12-21T11:23:19.039",
+                  "lines": [
+                    0
+                  ],
+                  "text": "p. 40 >",
+                  "uuid": "9898735b",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2022-12-21T11:23:19.038",
+                      "mod": "2022-12-21T11:23:19.038",
+                      "end": 5,
+                      "res": [
+                        "40"
+                      ],
+                      "start": 3,
+                      "style": 4,
+                      "uuid": "3002da1e"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:23:20.731",
+      "mod": "2022-12-21T11:25:11.058",
+      "h": 142.996,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "e432bcaa",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:23:20.731",
+          "mod": "2022-12-21T11:25:11.058",
+          "lines": [
+            0,
+            63,
+            122,
+            180,
+            243,
+            307
+          ],
+          "text": "I was able to load the files using a python program, with some annoyance, because EasyEDA saved the pick and place as utf-16 and I was too lazy to re-educate myself on Gerber file formats. I learned that EasyEDA saves Gerber files as mm * 105 without decimal points. It saves the pick-and-place files as mm in a string format:",
+          "uuid": "d6ad4407",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2022-12-21T11:24:36.744",
+              "mod": "2022-12-21T11:24:36.744",
+              "end": 242,
+              "start": 241,
+              "style": 6,
+              "uuid": "e815bc75"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:25:35.317",
+      "mod": "2022-12-21T11:25:53.264",
+      "h": 54.1997,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "32c0a76f",
+      "xref": 0.0,
+      "y0": 214.996,
+      "yref": -12.5851,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:25:35.332",
+          "mod": "2022-12-21T11:25:53.264",
+          "cropBottom": 16.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 218.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.179206,
+          "uuid": "bfcc5aa8",
+          "width": 2842.0,
+          "x": -46.7382,
+          "y": -3.58513
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:26:00.416",
+      "mod": "2022-12-21T11:26:02.782",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "652f5d5a",
+      "y0": 269.196,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:26:00.416",
+          "mod": "2022-12-21T11:26:02.782",
+          "lines": [
+            0
+          ],
+          "text": "That renders as:",
+          "uuid": "46e74889"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:26:15.106",
+      "mod": "2022-12-21T11:27:41.422",
+      "h": 302.436,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f8046077",
+      "xref": 0.0,
+      "y0": 296.362,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:26:15.234",
+          "mod": "2022-12-21T11:27:41.422",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 1064.0,
+          "res": [
+            "*2"
+          ],
+          "resName": "*2",
+          "scale": 0.267327,
+          "uuid": "03e0ec64",
+          "width": 1616.0,
+          "x": 0.0,
+          "y": 0.0,
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2022-12-21T11:27:22.605",
+              "mod": "2022-12-21T11:27:41.422",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "01516b8a",
+              "x": 1455.39,
+              "y": 65.9426,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2022-12-21T11:27:22.605",
+                  "mod": "2022-12-21T11:27:41.422",
+                  "lines": [
+                    0,
+                    5,
+                    11,
+                    18
+                  ],
+                  "text": "0: ^\n90: <\n180: v\n270: >",
+                  "uuid": "c52434f6"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:26:18.311",
+      "mod": "2022-12-21T11:29:53.288",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "bea4b5d0",
+      "y0": 598.797,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:26:18.311",
+          "mod": "2022-12-21T11:29:53.288",
+          "lines": [
+            0,
+            67,
+            123,
+            183
+          ],
+          "text": "Here, blue is from the “top silkscreen” layer, black is from “top” layer. Red is the “Mid X, Y”, with arrowhead indicating “Rotation” as in the legend. Cyan dot is “Ref X, Y”, Yellow square is “Pad X, Y”. ",
+          "uuid": "22b62eb9"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:41:04.017",
+      "mod": "2022-12-21T11:41:04.025",
+      "h": 112.059,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "1b732296",
+      "xref": 0.0,
+      "y0": 72.0,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:41:04.025",
+          "mod": "2022-12-21T11:41:04.025",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 280.0,
+          "res": [
+            "*4"
+          ],
+          "resName": "*4",
+          "scale": 0.335925,
+          "uuid": "f02ea752",
+          "width": 1286.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:29:54.258",
+      "mod": "2022-12-21T11:41:17.343",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "ec33d0ed",
+      "y0": 184.059,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:29:54.258",
+          "mod": "2022-12-21T11:41:17.343",
+          "lines": [
+            0,
+            59,
+            121,
+            181,
+            245
+          ],
+          "text": "Comparing with the screenshot on p. 40 (which doesn’t have the last few components I placed, but see above), it is clear that “Pad X,Y” marks pin 1, whereas “Mid X,Y” and “Ref X,Y” both mark the midpoint of the pin grid, not the midpoint of the component. (See U19.) ",
+          "uuid": "4421af3d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:39:23.866",
+      "mod": "2022-12-21T11:39:38.366",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "559148d3",
+      "y0": 303.889,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:39:23.866",
+          "mod": "2022-12-21T11:39:38.366",
+          "lines": [
+            0
+          ],
+          "text": "Evidently, “Rotation” is measured in degrees, CCW.",
+          "uuid": "abf423ad"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:39:18.575",
+      "mod": "2022-12-21T11:43:26.102",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "fbc14c3c",
+      "y0": 331.055,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:39:18.575",
+          "mod": "2022-12-21T11:43:26.102",
+          "lines": [
+            0,
+            52,
+            117,
+            181
+          ],
+          "text": "Unfortunately, U1, U9, and U18 demonstrate that the concept of “0 degrees” is not predictable from first principles. Presumably the “Footprint” indications explains this, but those are external to the file and are tricky:",
+          "uuid": "631ae10a"
+        }
+      ]
+    },
+    { "typ": "tableblock",
+      "cre": "2022-12-21T11:43:27.086",
+      "mod": "2022-12-21T11:44:48.807",
+      "h": 201.328,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "d63fd112",
+      "y0": 427.719,
+      "cc": [
+        { "typ": "table",
+          "cre": "2022-12-21T11:43:27.086",
+          "mod": "2022-12-21T11:44:48.807",
+          "len": [
+            2,
+            5,
+            2,
+            31,
+            2,
+            17,
+            2,
+            32,
+            3,
+            20,
+            3,
+            33,
+            3,
+            25,
+            3,
+            24
+          ],
+          "nc": 2,
+          "nr": 8,
+          "text": "\nR1\nR1206\nU1\nSOIC-8_L4.9-W3.9-P1.27-LS6.0-BL\nU5\nCAP-SMD_L3.2-W1.6\nU9\nSOT-223_L6.5-W3.5-P2.30-LS7.0-BR\nU13\nCAP-SMD_L7.3-W4.3-FD\nU17\nSOT-89-3_L4.5-W2.5-P1.50-LS4.2-BR\nU18\nTO-92-3_L4.9-W3.7-P1.27-L\nU19\nSIP-4_L19.5-W7.0-P2.54-L\n",
+          "uuid": "4d0afbf5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:47:04.871",
+      "mod": "2022-12-21T11:47:54.310",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 1,
+      "split": [
+        69.498
+      ],
+      "uuid": "b367e671",
+      "y0": 629.047,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:47:04.871",
+          "mod": "2022-12-21T11:47:54.310",
+          "lines": [
+            0,
+            53,
+            112,
+            175
+          ],
+          "text": "Remarkably, JLCPCB doesn’t actually need any of that information. At https://support.jlcpcb.com/article/79-pick-place-file-for-smt-assembly they explain that P&P files may be .csv, .xlsx, or .xls, containing:",
+          "uuid": "ab82fdcc",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2022-12-21T11:47:11.041",
+              "mod": "2022-12-21T11:47:11.041",
+              "end": 40,
+              "start": 36,
+              "style": 1,
+              "uuid": "cee0216a"
+            },
+            { "typ": "markup",
+              "cre": "2022-12-21T11:47:19.611",
+              "mod": "2022-12-21T11:47:19.611",
+              "end": 139,
+              "res": [
+                "https://support.jlcpcb.com/article/79-pick-place-file-for-smt-assembly"
+              ],
+              "start": 69,
+              "style": 4,
+              "uuid": "cbf906c0"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:48:06.330",
+      "mod": "2022-12-21T11:48:06.334",
+      "h": 113.544,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "950b37b7",
+      "xref": 0.0,
+      "y0": 99.166,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:48:06.334",
+          "mod": "2022-12-21T11:48:06.334",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 163.0,
+          "res": [
+            "*5"
+          ],
+          "resName": "*5",
+          "scale": 0.58616,
+          "uuid": "a0c708a3",
+          "width": 737.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:48:32.608",
+      "mod": "2022-12-21T11:50:02.826",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "6fae68b5",
+      "y0": 212.71,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:48:32.608",
+          "mod": "2022-12-21T11:50:02.826",
+          "lines": [
+            0,
+            62,
+            131,
+            193,
+            256
+          ],
+          "text": "How they figure out the meaning of “Rotation” is unclear, but it seems likely that if I create files that have Pad X,Y in addition to what they need, it will be OK, because they are the makers of EasyEDA, so they surely won’t complain about the additional info.",
+          "uuid": "82079389"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:50:40.887",
+      "mod": "2022-12-21T11:50:49.314",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "01284909",
+      "y0": 332.54,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:50:40.887",
+          "mod": "2022-12-21T11:50:49.313",
+          "lines": [
+            0
+          ],
+          "text": "Oh. They also need a BOM file, which looks like this:",
+          "uuid": "8e03c928"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:50:59.058",
+      "mod": "2022-12-21T11:50:59.105",
+      "h": 127.389,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "02072a91",
+      "xref": 0.0,
+      "y0": 359.706,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:50:59.103",
+          "mod": "2022-12-21T11:50:59.103",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 256.0,
+          "res": [
+            "*6"
+          ],
+          "resName": "*6",
+          "scale": 0.4273,
+          "uuid": "65950ff4",
+          "width": 1011.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:51:59.862",
+      "mod": "2022-12-21T11:52:23.792",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "6b3ea6bd",
+      "y0": 487.095,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:51:59.862",
+          "mod": "2022-12-21T11:52:23.792",
+          "lines": [
+            0,
+            55,
+            113
+          ],
+          "text": "However, https://support.jlcpcb.com/article/80-bill-of-materialsbom-file-for-smt-assembly suggests the format is relatively loose:",
+          "uuid": "066ee190",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2022-12-21T11:52:11.210",
+              "mod": "2022-12-21T11:52:11.210",
+              "end": 89,
+              "res": [
+                "https://support.jlcpcb.com/article/80-bill-of-materialsbom-file-for-smt-assembly"
+              ],
+              "start": 9,
+              "style": 4,
+              "uuid": "cb65822c"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:52:01.517",
+      "mod": "2022-12-21T11:52:01.540",
+      "h": 145.624,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "2aa4fe25",
+      "xref": 0.0,
+      "y0": 560.593,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:52:01.538",
+          "mod": "2022-12-21T11:52:01.538",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 478.0,
+          "res": [
+            "*7"
+          ],
+          "resName": "*7",
+          "scale": 0.266996,
+          "uuid": "17ac5b6e",
+          "width": 1618.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:52:33.071",
+      "mod": "2022-12-21T11:53:07.189",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "d1a1dacf",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:52:33.071",
+          "mod": "2022-12-21T11:53:07.189",
+          "lines": [
+            0,
+            62
+          ],
+          "text": "That is, “SSOP-8” is good enough, it doesn’t need to be fully qualified as in “SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL.”",
+          "uuid": "0b89f33d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:54:08.851",
+      "mod": "2022-12-21T11:54:26.036",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "c71f0284",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:54:08.851",
+          "mod": "2022-12-21T11:54:26.036",
+          "lines": [
+            0
+          ],
+          "text": "Or perhaps it does, because their example file contains:",
+          "uuid": "974d77e2"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:54:19.622",
+      "mod": "2022-12-21T11:54:19.736",
+      "h": 139.631,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "497f0b5c",
+      "xref": 0.0,
+      "y0": 149.498,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:54:19.730",
+          "mod": "2022-12-21T11:54:19.730",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 464.0,
+          "res": [
+            "*8"
+          ],
+          "resName": "*8",
+          "scale": 0.262136,
+          "uuid": "75e3a0a3",
+          "width": 1648.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:55:22.767",
+      "mod": "2022-12-21T11:55:31.142",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "5c58860c",
+      "y0": 289.129,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:55:22.767",
+          "mod": "2022-12-21T11:55:31.142",
+          "lines": [
+            0
+          ],
+          "text": "I wonder what Frank’s favorite company needs.",
+          "uuid": "60000973"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:56:54.109",
+      "mod": "2022-12-21T11:57:28.941",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "4a878cef",
+      "y0": 316.295,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:56:54.109",
+          "mod": "2022-12-21T11:57:28.941",
+          "lines": [
+            0,
+            59,
+            119
+          ],
+          "text": "In any event, this is not trivial for CPCB to comply with. Right now, CSchem has a rather free-form “Parts List” which looks like this:",
+          "uuid": "c4ef32b8"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:57:14.666",
+      "mod": "2022-12-21T11:57:22.119",
+      "h": 96.6922,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "84032edc",
+      "xref": 0.0,
+      "y0": 389.793,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:57:14.670",
+          "mod": "2022-12-21T11:57:22.119",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 274.0,
+          "res": [
+            "*9"
+          ],
+          "resName": "*9",
+          "scale": 0.287198,
+          "uuid": "505dedf3",
+          "width": 498.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:58:50.170",
+      "mod": "2022-12-21T11:58:58.705",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "4d015f28",
+      "y0": 486.485,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:58:50.170",
+          "mod": "2022-12-21T11:58:58.705",
+          "lines": [
+            0
+          ],
+          "text": "And CPCB has a “BOM” which looks like this:",
+          "uuid": "c084a2cf"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T11:58:59.068",
+      "mod": "2022-12-21T11:59:07.223",
+      "h": 142.698,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "d60872ea",
+      "xref": 0.0,
+      "y0": 513.651,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T11:58:59.078",
+          "mod": "2022-12-21T11:59:07.223",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 392.0,
+          "res": [
+            "*10"
+          ],
+          "resName": "*10",
+          "scale": 0.318106,
+          "uuid": "8d6b64a8",
+          "width": 1100.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T11:59:37.622",
+      "mod": "2022-12-21T12:00:11.010",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 3,
+      "split": [
+        46.332
+      ],
+      "uuid": "217282b2",
+      "y0": 656.349,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T11:59:37.622",
+          "mod": "2022-12-21T12:00:11.010",
+          "lines": [
+            0,
+            66,
+            127
+          ],
+          "text": "That’s actually better than I thought. “Pkg.” can be relabeled as “Footprint” without any harm, and “Part no.” can be used for supplier part #.",
+          "uuid": "10d5113e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:00:49.905",
+      "mod": "2022-12-21T12:01:32.647",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "e09774e8",
+      "y0": 99.166,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:00:49.905",
+          "mod": "2022-12-21T12:01:32.647",
+          "lines": [
+            0
+          ],
+          "text": "Three problems remain: ",
+          "uuid": "b787c827"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:00:53.892",
+      "mod": "2022-12-21T12:04:07.354",
+      "h": 36.967,
+      "ind": 6,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "6ee80b7f",
+      "y0": 126.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:00:53.892",
+          "mod": "2022-12-21T12:01:49.833",
+          "lines": [
+            0,
+            66
+          ],
+          "text": "1. My user-friendly package names do not match official footprint names, and I am reluctant to make them less pretty.",
+          "uuid": "06e45149"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:00:53.892",
+      "mod": "2022-12-21T12:04:04.544",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "6ee80b7f",
+      "y0": 163.299,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:00:53.892",
+          "mod": "2022-12-21T12:02:05.747",
+          "lines": [
+            0
+          ],
+          "text": "2. I don’t know where to find official footprint names.",
+          "uuid": "06e45149"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:02:05.973",
+      "mod": "2022-12-21T12:04:05.582",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "40678e60",
+      "y0": 182.446,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:02:05.973",
+          "mod": "2022-12-21T12:02:16.278",
+          "lines": [
+            0
+          ],
+          "text": "3. How do I figure out rotation?",
+          "uuid": "72cf77d2"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:04:11.034",
+      "mod": "2022-12-21T14:59:10.515",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "6fc1926d",
+      "y0": 201.593,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:04:11.034",
+          "mod": "2022-12-21T14:59:10.515",
+          "lines": [
+            0,
+            57,
+            119
+          ],
+          "text": "A quick web search reveals that “DIP-28_L34.6-W7.3-P2.54-LS10.2-BL” is a JLCPCB-specific name. The same thing in KiCAD is called “DIP-28_W7.62mm”.",
+          "uuid": "ceef7f7f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:20:25.674",
+      "mod": "2022-12-21T12:24:31.791",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "48ebd481",
+      "y0": 275.091,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:20:25.674",
+          "mod": "2022-12-21T12:24:31.791",
+          "lines": [
+            0,
+            53,
+            114,
+            171,
+            231,
+            286,
+            349
+          ],
+          "text": "Other assemblers are not as clear about their needs, generally referring to which software can produce files they can work with. EuroCircuits mentions that Gerber X3* may include BOM and CPL files. Complicated as you would expect. And it needs full footprint naming. They say KiCAD has provided input. I wonder if KiCAD has a public library of part footprints.",
+          "uuid": "7b3c243d",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2022-12-21T12:21:38.560",
+              "mod": "2022-12-21T12:21:38.560",
+              "end": 166,
+              "start": 165,
+              "style": 6,
+              "uuid": "7d8e9f16"
+            },
+            { "typ": "markup",
+              "cre": "2022-12-21T12:21:38.564",
+              "mod": "2022-12-21T12:21:38.564",
+              "end": 166,
+              "start": 165,
+              "style": 5,
+              "uuid": "eec7b7dd"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2022-12-21T12:21:39.608",
+          "mod": "2022-12-21T12:23:52.269",
+          "h": 37.534,
+          "ind": 1,
+          "sheet": 4,
+          "split": [ ],
+          "tag": "*",
+          "uuid": "7a8855dd",
+          "y0": 670.466,
+          "cc": [
+            { "typ": "text",
+              "cre": "2022-12-21T12:21:39.608",
+              "mod": "2022-12-21T12:23:52.269",
+              "lines": [
+                0,
+                61
+              ],
+              "text": "~/Downloads/the-gerber-x3-specification-2020-03_en.pdf and ~/Downloads/gerber-generations-the-evolution-of-gerber_en.pdf.",
+              "uuid": "703b854c",
+              "cc": [
+                { "typ": "markup",
+                  "cre": "2022-12-21T12:21:50.132",
+                  "mod": "2022-12-21T12:21:50.133",
+                  "end": 54,
+                  "res": [
+                    "~/Downloads/the-gerber-x3-specification-2020-03_en.pdf"
+                  ],
+                  "start": 0,
+                  "style": 4,
+                  "uuid": "e6e1f52d"
+                },
+                { "typ": "markup",
+                  "cre": "2022-12-21T12:23:44.267",
+                  "mod": "2022-12-21T12:23:44.267",
+                  "end": 120,
+                  "res": [
+                    "~/Downloads/gerber-generations-the-evolution-of-gerber_en.pdf"
+                  ],
+                  "start": 59,
+                  "style": 4,
+                  "uuid": "7ccde2ef"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:25:27.220",
+      "mod": "2022-12-21T12:26:10.438",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "5c75d30d",
+      "y0": 441.253,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:25:27.220",
+          "mod": "2022-12-21T12:26:10.438",
+          "lines": [
+            0
+          ],
+          "text": "Btw, KiCAD’s schematic capture is not as pretty as CSchem:",
+          "uuid": "6db09769"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T12:25:38.081",
+      "mod": "2022-12-21T14:58:55.651",
+      "h": 197.277,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "97ec2433",
+      "xref": 0.0,
+      "y0": 468.419,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T12:25:38.088",
+          "mod": "2022-12-21T14:58:55.651",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 225.0,
+          "res": [
+            "*11"
+          ],
+          "resName": "*11",
+          "scale": 0.796789,
+          "uuid": "53ba4e7c",
+          "width": 400.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:26:12.241",
+      "mod": "2022-12-21T12:32:59.883",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "7fff3f9b",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:26:12.241",
+          "mod": "2022-12-21T12:32:59.883",
+          "lines": [
+            0,
+            62,
+            125,
+            192
+          ],
+          "text": "but it’s PCB layout system is undeniably more complete. KiCAD is in Ubuntu, so I should check it out. Perhaps CPCB should be phased out after all. I don’t recall why I didn’t interface CSchem to KiCAD in the first place.",
+          "uuid": "ffe008ff"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T12:32:51.357",
+      "mod": "2022-12-21T12:50:58.320",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "b5499b86",
+      "y0": 168.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T12:32:51.357",
+          "mod": "2022-12-21T12:50:58.320",
+          "lines": [
+            0,
+            58,
+            117,
+            179,
+            240
+          ],
+          "text": "No, KiCAD is pretty complicated to work with. One thing I really don’t like is that moving a component does not move attached tracks along unless they are selected, in which case they break in the middle. On the other hand, it has a pretty sophisticated semi-automatic router.",
+          "uuid": "75563095"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T15:00:40.794",
+      "mod": "2022-12-21T15:01:34.803",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "11230b44",
+      "y0": 288.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T15:00:40.794",
+          "mod": "2022-12-21T15:01:34.803",
+          "lines": [
+            0,
+            61,
+            122
+          ],
+          "text": "I guess I could try outputing a pickplace.csv with MidXY and PadXY and a bom.csv with highly simplified package names and see what JLCPCB makes of it.",
+          "uuid": "7fe827c3"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T15:04:15.856",
+      "mod": "2022-12-21T15:05:47.410",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "9c3f4180",
+      "y0": 361.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T15:04:15.856",
+          "mod": "2022-12-21T15:05:47.410",
+          "lines": [
+            0,
+            60,
+            120,
+            184,
+            247
+          ],
+          "text": "The other potentially attractive path is to create a way to export from CSchem to KiCAD (and potentially back!). I know that KiCAD PCB modifies the circuit file (.kicad_sch) to insert footprint info, so CSchem would have to be respectful of that. Not trivial, but not infinitely hard either.",
+          "uuid": "5c1578d5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T15:06:10.019",
+      "mod": "2022-12-21T15:07:41.129",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "1c8c104a",
+      "y0": 481.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T15:06:10.019",
+          "mod": "2022-12-21T15:07:41.128",
+          "lines": [
+            0,
+            57,
+            120
+          ],
+          "text": "Do I want to enable CPCB to export to KiCAD PCB? I don’t think that’s practical, because it would require resolving the footprint problem in order to be useful.",
+          "uuid": "26bd7cb2"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T15:57:34.155",
+      "mod": "2022-12-21T15:57:36.562",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "bbf810d8",
+      "y0": 555.32,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T15:57:34.155",
+          "mod": "2022-12-21T15:57:36.562",
+          "lines": [
+            0
+          ],
+          "text": "- − -",
+          "uuid": "5e3af218"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T15:58:00.780",
+      "mod": "2022-12-21T16:03:55.542",
+      "h": 189.328,
+      "ind": 1,
+      "sheet": 5,
+      "split": [
+        115.83
+      ],
+      "uuid": "a52160c5",
+      "y0": 582.486,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T15:58:00.780",
+          "mod": "2022-12-21T16:03:55.542",
+          "lines": [
+            0,
+            63,
+            121,
+            184,
+            241,
+            303,
+            365,
+            429
+          ],
+          "text": "Now, I don’t know if every part in CPCB has a “pin 1”. That is important and cannot be automated, because, e.g., a diode where I would name the pins “K” and “A” could easily be placed backwards if CPCB guesses the wrong convention. If there even is a convention that holds for all diodes. The datasheet for one arbitrarily picked Zener at Digikey* does not mention pin numbers at all. The drawing places the cathode on the left, but that’s all.",
+          "uuid": "d518d100",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2022-12-21T16:03:30.234",
+              "mod": "2022-12-21T16:03:30.234",
+              "end": 347,
+              "start": 346,
+              "style": 6,
+              "uuid": "ae3c4ad0"
+            },
+            { "typ": "markup",
+              "cre": "2022-12-21T16:03:30.239",
+              "mod": "2022-12-21T16:03:30.239",
+              "end": 347,
+              "start": 346,
+              "style": 5,
+              "uuid": "2a7740e0"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2022-12-21T16:03:30.424",
+          "mod": "2022-12-21T16:03:31.677",
+          "h": 37.534,
+          "ind": 1,
+          "sheet": 6,
+          "split": [ ],
+          "tag": "*",
+          "uuid": "d2146ee2",
+          "y0": 649.699,
+          "cc": [
+            { "typ": "text",
+              "cre": "2022-12-21T16:03:30.424",
+              "mod": "2022-12-21T16:03:31.677",
+              "lines": [
+                0,
+                52
+              ],
+              "text": "https://www.taiwansemi.com/assets/uploads/datasheet/BZY55C2V4%20SERIES_D1612.pdf",
+              "uuid": "64feffe9",
+              "cc": [
+                { "typ": "markup",
+                  "cre": "2022-12-21T16:03:31.677",
+                  "mod": "2022-12-21T16:03:31.677",
+                  "end": 80,
+                  "res": [
+                    "https://www.taiwansemi.com/assets/uploads/datasheet/BZY55C2V4%20SERIES_D1612.pdf"
+                  ],
+                  "start": 0,
+                  "style": 4,
+                  "uuid": "91ee0f98"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T16:04:11.358",
+      "mod": "2022-12-21T16:04:13.592",
+      "h": 188.005,
+      "sheet": 6,
+      "split": [ ],
+      "uuid": "2e7fad1a",
+      "xref": 0.0,
+      "y0": 145.498,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T16:04:11.365",
+          "mod": "2022-12-21T16:04:13.592",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 444.0,
+          "res": [
+            "*12"
+          ],
+          "resName": "*12",
+          "scale": 0.382893,
+          "uuid": "079987de",
+          "width": 658.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T16:05:40.551",
+      "mod": "2022-12-21T16:06:06.268",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 6,
+      "split": [ ],
+      "uuid": "4b64e5fc",
+      "y0": 333.503,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T16:05:40.551",
+          "mod": "2022-12-21T16:06:06.268",
+          "lines": [
+            0
+          ],
+          "text": "Same for an arbitrarily picked rectifier.† ",
+          "uuid": "5d57ad83",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2022-12-21T16:05:54.344",
+              "mod": "2022-12-21T16:05:54.344",
+              "end": 42,
+              "start": 41,
+              "style": 6,
+              "uuid": "02cd2064"
+            },
+            { "typ": "markup",
+              "cre": "2022-12-21T16:05:54.345",
+              "mod": "2022-12-21T16:05:54.345",
+              "end": 42,
+              "start": 41,
+              "style": 5,
+              "uuid": "2a437863"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2022-12-21T16:05:54.796",
+          "mod": "2022-12-21T16:05:57.226",
+          "h": 20.767,
+          "ind": 1,
+          "sheet": 6,
+          "split": [ ],
+          "tag": "†",
+          "uuid": "a5767a6b",
+          "y0": 687.233,
+          "cc": [
+            { "typ": "text",
+              "cre": "2022-12-21T16:05:54.796",
+              "mod": "2022-12-21T16:05:57.225",
+              "lines": [
+                0
+              ],
+              "text": "https://www.smc-diodes.com/propdf/S1A-S1M%20N0560%20REV.B.pdf",
+              "uuid": "e1e84026",
+              "cc": [
+                { "typ": "markup",
+                  "cre": "2022-12-21T16:05:55.934",
+                  "mod": "2022-12-21T16:05:55.934",
+                  "end": 61,
+                  "res": [
+                    "https://www.smc-diodes.com/propdf/S1A-S1M%20N0560%20REV.B.pdf"
+                  ],
+                  "start": 0,
+                  "style": 4,
+                  "uuid": "5f228815"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

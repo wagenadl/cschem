@@ -1,0 +1,291 @@
+{ "typ": "page",
+  "cre": "2022-12-21T08:22:51.456",
+  "mod": "2022-12-21T10:09:55.538",
+  "cui": "2c6ed370e1ca0e71",
+  "stampTime": 0,
+  "startPage": 40,
+  "unlocked": false,
+  "uuid": "446e050f",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2022-12-21T08:22:51.455",
+      "mod": "2022-12-21T08:27:40.160",
+      "uuid": "686db631",
+      "cc": [
+        { "typ": "res",
+          "cre": "2022-12-21T08:23:17.881",
+          "mod": "2022-12-21T08:23:18.054",
+          "archive": "_1_-c949e908.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "c949e908"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T08:25:52.490",
+          "mod": "2022-12-21T08:25:52.501",
+          "archive": "__Gerber_TopSilkscreenLayer-c7a1292b.GTO",
+          "desc": "",
+          "preview": "__Gerber_TopSilkscreenLayer-c7a1292bp.png",
+          "source": "file:///home/wagenaar/Downloads/Gerber_TopSilkscreenLayer.GTO",
+          "tag": "~/Downloads/Gerber_TopSilkscreenLayer.GTO",
+          "title": "",
+          "uuid": "c7a1292b"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T08:25:55.151",
+          "mod": "2022-12-21T08:25:55.157",
+          "archive": "__Gerber_TopLayer-6f4ab418.GTL",
+          "desc": "",
+          "preview": "__Gerber_TopLayer-6f4ab418p.png",
+          "source": "file:///home/wagenaar/Downloads/Gerber_TopLayer.GTL",
+          "tag": "~/Downloads/Gerber_TopLayer.GTL",
+          "title": "",
+          "uuid": "6f4ab418"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T08:26:00.494",
+          "mod": "2022-12-21T08:26:00.495",
+          "archive": "file__-935807e1.html",
+          "desc": "",
+          "preview": "file__-935807e1p.png",
+          "source": "",
+          "tag": "file†",
+          "title": "",
+          "uuid": "935807e1"
+        },
+        { "typ": "res",
+          "cre": "2022-12-21T08:27:40.159",
+          "mod": "2022-12-21T08:27:40.160",
+          "archive": "__Pick_and_place-cf420af1.csv",
+          "desc": "",
+          "preview": "__Pick_and_place-cf420af1p.png",
+          "source": "file:///home/wagenaar/progs/cschem/pick-and-place/Pick-and-place.csv",
+          "tag": "~/progs/cschem/pick-and-place/Pick-and-place.csv",
+          "title": "",
+          "uuid": "cf420af1"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2022-12-21T10:09:16.130",
+      "mod": "2022-12-21T10:09:55.538",
+      "uuid": "c6100091",
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T10:09:16.130",
+          "mod": "2022-12-21T10:09:55.538",
+          "lines": [
+            0
+          ],
+          "text": "CPCB pick and place SMT",
+          "uuid": "d0f12542"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T08:22:58.863",
+      "mod": "2022-12-21T08:24:07.351",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "8ac4045b",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T08:22:58.863",
+          "mod": "2022-12-21T08:24:07.351",
+          "lines": [
+            0,
+            63,
+            120
+          ],
+          "text": "To enable CPCB to export pick-and-place files, I first have to understand SMT orientation. To that end, I created a PCB design of examples in EasyEDA:",
+          "uuid": "f7c6967c"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2022-12-21T08:23:17.880",
+      "mod": "2022-12-21T08:23:24.612",
+      "h": 240.365,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5cdbe35e",
+      "xref": 0.0,
+      "y0": 145.498,
+      "yref": -16.2257,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2022-12-21T08:23:18.054",
+          "mod": "2022-12-21T08:23:24.611",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 1048.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.212181,
+          "uuid": "2583db2d",
+          "width": 2036.0,
+          "x": 9.39344,
+          "y": -7.22573
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T08:24:23.956",
+      "mod": "2022-12-21T08:27:40.159",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "3be427f2",
+      "y0": 385.863,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T08:24:23.956",
+          "mod": "2022-12-21T08:26:00.494",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "and exported the associated Gerber file* and pick-and-place file†.",
+          "uuid": "36b7e672",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2022-12-21T08:24:30.503",
+              "mod": "2022-12-21T08:24:30.503",
+              "end": 40,
+              "start": 39,
+              "style": 6,
+              "uuid": "52aad169"
+            },
+            { "typ": "markup",
+              "cre": "2022-12-21T08:24:30.549",
+              "mod": "2022-12-21T08:24:30.549",
+              "end": 40,
+              "start": 39,
+              "style": 5,
+              "uuid": "53879373"
+            },
+            { "typ": "markup",
+              "cre": "2022-12-21T08:26:04.314",
+              "mod": "2022-12-21T08:26:04.314",
+              "end": 65,
+              "start": 64,
+              "style": 5,
+              "uuid": "786c3593"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2022-12-21T08:25:51.448",
+          "mod": "2022-12-21T08:25:55.151",
+          "h": 37.534,
+          "ind": 1,
+          "sheet": 0,
+          "split": [ ],
+          "tag": "*",
+          "uuid": "c08c4751",
+          "y0": 649.699,
+          "cc": [
+            { "typ": "text",
+              "cre": "2022-12-21T08:25:51.448",
+              "mod": "2022-12-21T08:25:55.151",
+              "lines": [
+                0,
+                62
+              ],
+              "text": "in particular ~/Downloads/Gerber_TopLayer.GTL and ~/Downloads/Gerber_TopSilkscreenLayer.GTO",
+              "uuid": "ee6f6279",
+              "cc": [
+                { "typ": "markup",
+                  "cre": "2022-12-21T08:25:52.490",
+                  "mod": "2022-12-21T08:25:52.490",
+                  "end": 91,
+                  "res": [
+                    "~/Downloads/Gerber_TopSilkscreenLayer.GTO"
+                  ],
+                  "start": 50,
+                  "style": 4,
+                  "uuid": "fc4535e0"
+                },
+                { "typ": "markup",
+                  "cre": "2022-12-21T08:25:55.151",
+                  "mod": "2022-12-21T08:25:55.151",
+                  "end": 45,
+                  "res": [
+                    "~/Downloads/Gerber_TopLayer.GTL"
+                  ],
+                  "start": 14,
+                  "style": 4,
+                  "uuid": "db0cf84f"
+                }
+              ]
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2022-12-21T08:27:38.563",
+          "mod": "2022-12-21T08:27:40.159",
+          "h": 20.767,
+          "ind": 1,
+          "sheet": 0,
+          "split": [ ],
+          "tag": "†",
+          "uuid": "fe8bf4de",
+          "y0": 687.233,
+          "cc": [
+            { "typ": "text",
+              "cre": "2022-12-21T08:27:38.563",
+              "mod": "2022-12-21T08:27:40.159",
+              "lines": [
+                0
+              ],
+              "text": "~/progs/cschem/pick-and-place/Pick-and-place.csv",
+              "uuid": "d482564a",
+              "cc": [
+                { "typ": "markup",
+                  "cre": "2022-12-21T08:27:40.159",
+                  "mod": "2022-12-21T08:27:40.159",
+                  "end": 48,
+                  "res": [
+                    "~/progs/cschem/pick-and-place/Pick-and-place.csv"
+                  ],
+                  "start": 0,
+                  "style": 4,
+                  "uuid": "2c4c543d"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-21T08:24:36.546",
+      "mod": "2022-12-21T08:24:36.546",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "403b43ac",
+      "y0": 436.195,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-21T08:24:36.546",
+          "mod": "2022-12-21T08:24:36.546",
+          "text": "",
+          "uuid": "4d6d901f"
+        }
+      ]
+    }
+  ]
+}
