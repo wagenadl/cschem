@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   width="147.00012"
-   height="385.00006"
-   viewBox="0 0 147.00012 385.00007"
+   width="189"
+   height="414.50003"
+   viewBox="0 0 189 414.50004"
    version="1.1"
    id="svg852"
-   inkscape:version="1.1.2 (1:1.1+202202050950+0a00cf5339)"
+   inkscape:version="1.2.2 (1:1.2.2+202212051552+b0a8486541)"
    sodipodi:docname="raspberry-pi-pico.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -23,22 +23,22 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.9525181"
-     inkscape:cx="89.115691"
-     inkscape:cy="229.70338"
+     inkscape:zoom="5.5225552"
+     inkscape:cx="107.01568"
+     inkscape:cy="358.98238"
      inkscape:document-units="px"
-     inkscape:current-layer="g1585"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      fit-margin-top="0"
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="958"
-     inkscape:window-height="1058"
+     inkscape:window-width="1920"
+     inkscape:window-height="1056"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      showborder="false"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="false"
@@ -46,14 +46,16 @@
      inkscape:document-rotation="0"
      inkscape:pagecheckerboard="0"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid1508"
        spacingx="7.0000001"
        spacingy="7.0000001"
-       originx="140"
-       originy="385.00003"
+       originx="154"
+       originy="364.75004"
        empspacing="4" />
   </sodipodi:namedview>
   <metadata
@@ -71,7 +73,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-999.85718,-554.94818)">
+     transform="translate(-985.85718,-575.19818)">
     <circle
        r="7"
        inkscape:label="pin:34/GP28_ADC2"
@@ -250,7 +252,7 @@
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#e497e4;fill-opacity:0.470968;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     <circle
        r="7"
-       inkscape:label="pin:17/GP17_CSn"
+       inkscape:label="pin:22/GP17_CSn"
        cy="876.94818"
        cx="1167.8571"
        id="circle1720-2"
@@ -278,7 +280,7 @@
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#e497e4;fill-opacity:0.470968;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     <circle
        r="7"
-       inkscape:label="pin:23/Gnd"
+       inkscape:label="pin:Gnd"
        cy="974.94812"
        cx="1167.8572"
        id="circle1720-2-2-2"
