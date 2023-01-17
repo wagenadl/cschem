@@ -228,7 +228,7 @@ bool CircuitModData::removePointlessJunction(int id) {
   if (circ.elements[id].type != Element::Type::Junction)
     return false;
 
-  QList<int> cc = circ.connectionsOn(id, "").toList();
+  QList<int> cc = circ.connectionsOn(id, "").values();
 
   if (cc.size() > 2)
     return false;
