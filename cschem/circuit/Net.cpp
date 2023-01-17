@@ -27,7 +27,7 @@ void Net::merge(Net const &net) {
   QSet<QString> ports = QSet<QString>::fromList(d->ports);
   for (QString p: net.ports())
     ports << p;
-  d->ports = ports.toList();
+  d->ports = ports.values();
   d->ports.sort();
   if  (!d->ports.isEmpty())
     d->name = d->ports.first();

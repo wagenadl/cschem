@@ -21,6 +21,8 @@ public:
   QSet<NodeID> wronglyInNet;
   QSet<NodeID> missingFromNet;
   QSet<Nodename> missingEntirely;
+  QSet<QString> incompleteNets;
+  QSet<QString> overcompleteNets;  
 };
 
 #endif
