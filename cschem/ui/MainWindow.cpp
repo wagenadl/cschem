@@ -413,7 +413,7 @@ bool MainWindow::saveAsAction() {
   dlg.setNameFilter(tr("Schematics (*.cschem)"));
   if (!d->filename.isEmpty()) {
     QFileInfo fi(d->filename);
-    dlg.selectFile(fi.baseName() + ".cschem");
+    dlg.selectFile(fi.completeBaseName() + ".cschem");
   }
   if (!dlg.exec())
     return false;
@@ -630,7 +630,7 @@ void MainWindow::exportCircuitAction() {
   dlg.setNameFilter(tr("Scalable vector graphics (*.svg)"));
   if (!d->filename.isEmpty()) {
     QFileInfo fi(d->filename);
-    dlg.selectFile(fi.baseName() + ".svg");
+    dlg.selectFile(fi.completeBaseName() + ".svg");
   }
   if (!dlg.exec())
     return;
@@ -661,7 +661,7 @@ void MainWindow::exportPartListAction() {
   dlg.setNameFilter(tr("Comma-separated value file (*.csv)"));
   if (!d->filename.isEmpty()) {
     QFileInfo fi(d->filename);
-    dlg.selectFile(fi.baseName() + ".csv");
+    dlg.selectFile(fi.completeBaseName() + ".csv");
   }
   if (!dlg.exec())
     return;

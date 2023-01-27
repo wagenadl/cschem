@@ -666,7 +666,7 @@ bool Group::saveComponent(int id, QString fn) {
 
 
   object(id).asGroup().d->nominalrotation = 0;
-  object(id).asGroup().pkg = QFileInfo(fn).baseName();
+  object(id).asGroup().pkg = QFileInfo(fn).completeBaseName();
 
   QXmlStreamWriter sw(&file);
   sw.setAutoFormatting(true);
