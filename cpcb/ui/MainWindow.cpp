@@ -157,7 +157,7 @@ QString MWData::getSaveFilename(QString ext, QString caption) {
   if (!filename.isEmpty()) {
     if (!path.endsWith("/"))
       path += "/";
-    path += QFileInfo(filename).baseName();
+    path += QFileInfo(filename).completeBaseName();
     path += "." + ext;
   }
   
@@ -541,7 +541,7 @@ bool MWData::exportAsDialog() {
   if (fn.isEmpty())
     return false;
   
-  QString base = QFileInfo(fn).baseName();
+  QString base = QFileInfo(fn).completeBaseName();
   QTemporaryDir td;
   bool ok = false;
   if (td.isValid()) {
