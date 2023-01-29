@@ -24,7 +24,7 @@ void SymbolLibrary::merge(QString fn) {
   QXmlStreamReader sr(&file);
   while (!sr.atEnd()) {
     sr.readNext();
-    if (sr.isStartElement() && sr.qualifiedName()=="svg") 
+    if (sr.isStartElement() && sr.name()=="svg") 
       merge(sr);
   }
 }
@@ -51,7 +51,7 @@ void SymbolLibrary::insert(Symbol const &p) {
 }  
 
 void SymbolLibrary::scanSymbols(XmlElement const &src) {
-  if (src.qualifiedName()=="g") {
+  if (src.name()=="g") {
     QString label = src.label();
     if (label.startsWith("part:") || label.startsWith("port:")
         || label=="junction") {

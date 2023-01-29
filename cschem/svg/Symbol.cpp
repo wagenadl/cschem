@@ -187,12 +187,12 @@ Symbol Symbol::load(QString svgfn) {
   int groupcount = 0;
   while (!sr.atEnd()) {
     sr.readNext();
-    if (sr.isStartElement() && sr.qualifiedName()=="svg") {
+    if (sr.isStartElement() && sr.name()=="svg") {
       XmlElement svg(sr);
       for (auto &c: svg.children()) {
         if (c.type()==XmlNode::Type::Element) {
           XmlElement elt(c.element());
-          if (elt.qualifiedName()=="g") {
+          if (elt.name()=="g") {
             if (groupcount==0)
               sym = Symbol(elt, name);
             groupcount++;
@@ -228,8 +228,8 @@ void SymbolData::scanPins(XmlElement const &elt) {
      Also scans for rectangles with name matching {annotation:WHAT} where
      WHAT must be "ref" (or "name") or "value".
    */
-  //qDebug() << "scanpins" << elt.qualifiedName() << elt.title() << elt.label();
-  if (elt.qualifiedName()=="circle") {
+  //qDebug() << "scanpins" << elt.name() << elt.title() << elt.label();
+  if (elt.name()=="circle") {
     QString label = elt.title();
     if (label.isEmpty())
       label = elt.label();
@@ -262,7 +262,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
         }
       }
     }
-  } else if (elt.qualifiedName()=="rect") {
+  } else if (elt.name()=="rect") {
     QString label = elt.title();
     if (label.isEmpty())
       label = elt.label();
@@ -280,7 +280,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
       }
     }
     
-  } else if (elt.qualifiedName()=="g") {
+  } else if (elt.name()=="g") {
     groupId = elt.attributes().value("id").toString();
   }
 }
