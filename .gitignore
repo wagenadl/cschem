@@ -1,4 +1,6 @@
 .#*
+index.json
+toc.json
 *~
 build*
 release*
