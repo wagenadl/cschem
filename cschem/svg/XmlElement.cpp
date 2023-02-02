@@ -8,7 +8,7 @@ public:
   XmlElementData(): valid(false) {}
 public:
   bool valid;
-  QString qualifiedName;
+  QString name;
   QXmlStreamAttributes attributes;
   QXmlStreamNamespaceDeclarations namespaceDeclarations;
   QList<XmlNode> children;
@@ -43,13 +43,13 @@ XmlElement::~XmlElement() {
 XmlElement::XmlElement(QXmlStreamReader &src): XmlElement() {
   if (!src.isStartElement())
     return;
-  d->qualifiedName = src.qualifiedName().toString();
+  d->name = src.name().toString();
   d->attributes = src.attributes();
   d->namespaceDeclarations = src.namespaceDeclarations();
   while (!src.atEnd()) {
     src.readNext();
     if (src.isEndElement()) {
-      if (src.qualifiedName() == d->qualifiedName) {
+      if (src.name() == d->name) {
         d->valid = true;
         return;
       } else {
@@ -72,8 +72,8 @@ QList<XmlNode> const &XmlElement::children() const {
   return d->children;
 }
 
-QString XmlElement::qualifiedName() const {
-  return d->qualifiedName;
+QString XmlElement::name() const {
+  return d->name;
 }
 
 QXmlStreamAttributes XmlElement::attributes() const {
@@ -92,7 +92,7 @@ void XmlElement::write(QXmlStreamWriter &dst) const {
 }
   
 void XmlElement::writeStartElement(QXmlStreamWriter &dst) const {
-  dst.writeStartElement(d->qualifiedName);
+  dst.writeStartElement(d->name);
   dst.writeAttributes(d->attributes);
   for (auto nsd: d->namespaceDeclarations) {
     if (nsd.prefix()=="") {
@@ -116,7 +116,7 @@ QString XmlElement::title() const {
   for (auto const &c: children()) {
     if (c.type()==XmlNode::Type::Element) {
       auto const &elt = c.element();
-      if (elt.qualifiedName() == "title") {
+      if (elt.name() == "title") {
         for (auto const &c: elt.children())
           if (c.type()==XmlNode::Type::Text)
             return c.text();
@@ -139,7 +139,7 @@ void XmlElement::setTitle(QString t) {
   for (XmlNode &c: d->children) {
     if (c.type()==XmlNode::Type::Element) {
       XmlElement &elt = c.element();
-      if (elt.qualifiedName() == "title") {
+      if (elt.name() == "title") {
         for (XmlNode &c: elt.d->children) {
           if (c.type()==XmlNode::Type::Text) {
             c.setText(t);
@@ -152,7 +152,7 @@ void XmlElement::setTitle(QString t) {
     }
   }
   XmlElement ttlelt;
-  ttlelt.d->qualifiedName = "title";
+  ttlelt.d->name = "title";
   ttlelt.d->valid = true;
   ttlelt.d->children << XmlNode::textNode(t);
   XmlNode ttl(XmlNode::elementNode(ttlelt));

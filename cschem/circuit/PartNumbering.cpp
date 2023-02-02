@@ -132,7 +132,7 @@ bool PartNumbering::lessThan(QString a, QString b) {
 
   
 QString PartNumbering::compactRefs(QSet<QString> refs) {
-  QList<QString> reflist = refs.toList();
+  QList<QString> reflist = refs.values();
   std::sort(reflist.begin(), reflist.end(), PartNumbering::lessThan);
   /* I want the list [C1, C3, C5, C6, C7, C10, C11, C15] to be represented
      as "C1,3,5–7,10,11,15."

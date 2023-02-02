@@ -391,7 +391,8 @@ void MWData::verifyNets() {
     if (missinglist.size()==1) 
       msgs << missinglist[0] + " is missing a connection.";
     else if (missinglist.size()>1)
-      msgs << "Some connections are missing.";
+      msgs << "Some connections are missing, including from "
+        + missinglist[0] + ".";
 
     QSet<QString> wrongly;
     for (NodeID const &n: nm.wronglyInNet) 
@@ -402,7 +403,8 @@ void MWData::verifyNets() {
     if (wronglylist.size()==1)
       msgs << wronglylist[0] + " has a spurious connection.";
     else if (wronglylist.size()>1)
-      msgs << "There are spurious connections.";
+      msgs << "There are spurious connections, including on "
+        + wronglylist[0] + ".";
 
     QStringList missingEntirely;
     for (Nodename const &n: nm.missingEntirely)
