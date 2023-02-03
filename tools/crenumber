@@ -3,10 +3,11 @@
 import xml.etree.ElementTree as ET
 import numpy as np
 import sys
-
+import re
 
 ifn = None
 USESCHEM = False
+FINAL = False
 
 def usage():
     sys.stderr.write("Usage: crenumber --schem input.cpcb\n")
@@ -21,40 +22,55 @@ If a .cschem is specified, only that file is renumbered, which is a bad
 idea if any linked .cpcb files exist.
 
 The results are saved as "(original)-renumbered.cpcb" and
-"(original)-renumbered.cschem".
+"(original)-renumbered.cschem", unless --final is given, in which case
+the originals are overwritten.
 ''')
     sys.exit(1)
 
+argv = sys.argv[1:]
 
-if len(sys.argv)<2:
+if not argv:
     usage()
 
-if sys.argv[1]=="--schem":
-    if len(sys.argv)!=3:
+if argv[0]=="--final":
+    FINAL = True
+    argv.pop(0)
+    if not argv:
         usage()
-    USESCHEM = True
-    ifn = sys.argv[2]
-else:
-    if len(sys.argv)!=2:
-        usage()
-    ifn = sys.argv[1]
-    
 
-'''
-import matplotlib.pyplot as plt
-plt.ion()
-import time
-import qplot as qp
-import daw.colorx
-'''
-    
+if argv[0]=="--schem":
+    argv = argv[1:]
+    if not argv:
+        usage()
+    if argv[0]=="--final":
+        FINAL = True
+        argv.pop(0)
+        if not argv:
+            usage()
+    USESCHEM = True
+    ifn = argv.pop(0)
+else:
+    if not argv:
+        usage()
+    ifn = argv.pop(0)
+
+if argv:
+    usage()
+
 if ifn.endswith(".cpcb") or ifn.endswith(".pcb"):
     pcbifn = ifn
+    schemifn = None
 elif ifn.endswith(".cschem") or ifn.endswith(".schem"):
     pcbifn = None
     schemifn = ifn
 else:
     usage()
+
+
+def rename(ifn):
+    bits = ifn.split(".")
+    ext = bits[-1]
+    return ifn[:-len(ext)-1] + "-renumbered." + ext
 
 
 PCBNS = "{http://www.danielwagenaar.net/cpcb-ns.html}"
@@ -76,6 +92,19 @@ else:
         schem = None
 
 
+
+    
+if FINAL or pcbifn is None:
+    pcbofn = pcbifn
+else:
+    pcbofn = rename(pcbifn)
+
+if FINAL or schemifn is None:
+    schemofn = schemifn
+else:
+    schemofn = rename(schemifn)
+    
+        
 def pcbgroups(pcb):
     # Returns a list of (Element, ref, x, y)
     lst = []
@@ -98,6 +127,19 @@ def pcbgroups(pcb):
                 addrefs(lst, ch)
     addrefs(lst, pcb.getroot())
     return lst
+
+
+def interpretref(ref):
+    bits = re.split("(\d+)", ref)
+    ltr = bits[0]
+    val = "".join(bits[1:])
+    bits = val.split(".")
+    if len(bits)>=2:
+        sub = "." + ".".join(bits[1:])
+        val = bits[0]
+    else:
+        sub = ""
+    return ltr, val, sub
 
 
 def schemgroups(schem):
@@ -185,14 +227,7 @@ def remap(gr):
     typcnt = {}
     for row in lsts:
         for r in row:
-            ref = refs[r]
-            ltr = ref[0]
-            val = ref[1:].split('.', 1)
-            if len(val)>1:
-                sub = "." + val[1]
-            else:
-                sub = ''
-            val = val[0]
+            ltr, val, sub = interpretref(refs[r])
             if ltr not in typcnt:
                 typcnt[ltr] = 0
             if ltr + val in valmap:
@@ -208,13 +243,7 @@ def getrefmap(pcbgr, valmap):
     refmap = {}
     for row in pcbgr:
         ref = row[1]
-        ltr = ref[0]
-        val = ref[1:].split('.', 1)
-        if len(val)>1:
-            sub = "." + val[1]
-        else:
-            sub = ""
-        val = val[0]
+        ltr, val, sub = interpretref(ref)
         newval = valmap[ltr + val]
         refmap[ref] = ltr + newval + sub
     return refmap
@@ -235,12 +264,6 @@ def renumberpcb(pcbgr, refmap):
         newref = refmap[oldref]
         elt.find(f"{PCBNS}group").attrib["ref"] = newref
         elt.find(f"{PCBNS}text").attrib["text"] = newref
-
-
-def rename(ifn):
-    bits = ifn.split(".")
-    ext = bits[-1]
-    return ifn[:-len(ext)-1] + "-renumbered." + ext
 
 
 def relink(pcb):
@@ -266,9 +289,9 @@ if pcb is not None:
         root = pcb.getroot()
         board = root.find(f"{PCBNS}board")
         links = board.find(f"{PCBNS}links")
-        links.attrib["schem"] = rename(schemifn)
-    ET.register_namespace("", PCBNS[1:-1])        
-    pcb.write(rename(pcbifn), xml_declaration=True, encoding="utf8")
+        links.attrib["schem"] = schemofn
+    ET.register_namespace("", PCBNS[1:-1])
+    pcb.write(pcbofn, xml_declaration=True, encoding="UTF-8")
         
 if schem is not None:
     renumberschem(schemgr, getrefmap(schemgr, valmap))
@@ -276,58 +299,6 @@ if schem is not None:
     ET.register_namespace("svg", "http://www.w3.org/2000/svg")
     ET.register_namespace("inkscape", "http://www.inkscape.org/namespaces/inkscape")
     ET.register_namespace("sodipodi", "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd")
-    schem.write(rename(schemifn), xml_declaration=True, encoding="utf8")
+    schem.write(schemofn, xml_declaration=True, encoding="UTF-8")
 
     
-'''    
-plt.figure(2)
-plt.clf()
-cc = 1 - .5 * (1-qp.luts.get('qpjet',len(lsts)))
-for k, row in enumerate(lsts.values()):
-    #plt.plot(xx[row], -yy[row], '.', markersize=20, color=cc[k])
-    #plt.plot(xx[row[0]], -yy[row[0]], '.', markersize=30, color=cc[k])
-    plt.plot(xx[row], -yy[row], color=cc[k])
-    plt.text(xx[row[0]] - scl, -yy[row[0]], f"{list(lsts.keys())[k]}",
-             horizontalalignment='right',
-             verticalalignment='center')
-    for q in row:
-        plt.text(xx[q], -yy[q], refs[q],
-                 horizontalalignment='center',
-                 verticalalignment='center')
-
-refmap = {}
-valmap = {}
-typcnt = {}
-for row in lsts:
-    for r in row:
-        ref = refs[r]
-        ltr = ref[0]
-        val = ref[1:].split('.', 1)
-        if len(val)>1:
-            sub = "." + val[1]
-        else:
-            sub = ''
-        val = val[0]
-        if ltr not in typcnt:
-            typcnt[ltr] = 0
-        if ltr + val in valmap:
-            newval = valmap[ltr + val]
-        else:
-            typcnt[ltr] += 1
-            newval = f"{typcnt[ltr]}"
-        valmap[ltr + val] = newval
-        refmap[ref] = ltr + newval + sub
-
-
-
-
-plt.figure(3)
-plt.clf()
-for k, row in enumerate(lsts):
-    plt.plot(xx[row], -yy[row], color='w')#cc[k])
-    for q in row:
-        plt.text(xx[q], -yy[q], refmap[refs[q]],
-                 horizontalalignment='center',
-                 verticalalignment='center')
-        
-'''
