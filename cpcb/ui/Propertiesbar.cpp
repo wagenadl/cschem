@@ -883,16 +883,24 @@ void PBData::setupUI() {
   makeLabel(cnt, "Pkg.", "Package");
   pkg = makeEdit(cnt);
   QObject::connect(pkg, &QLineEdit::textEdited,
-		   [this](QString txt) { editor->setGroupPackage(txt); });
+		   editor, [this](QString txt) {
+                     editor->setCurrentGroupPackage(txt);
+                   });
   QObject::connect(pkg, &QLineEdit::returnPressed,
-		   [this]() { editor->setGroupPackage(pkg->text()); });
+		   editor,[this]() {
+                     editor->setCurrentGroupPackage(pkg->text());
+                   });
   cnt = makeContainer(grouppropg);
   makeLabel(cnt, "Part", "Part number");
   partno = makeEdit(cnt);
   QObject::connect(partno, &QLineEdit::textEdited,
-		   [this](QString txt) { editor->setGroupPartno(txt); });
+                   editor, [this](QString txt) {
+                     editor->setCurrentGroupPartno(txt);
+                   });
   QObject::connect(partno, &QLineEdit::returnPressed,
-		   [this]() { editor->setGroupPartno(partno->text()); });
+		   editor, [this]() {
+                     editor->setCurrentGroupPartno(partno->text());
+                   });
   cnt = makeContainer(grouppropg);
   makeLabel(cnt, "Notes", "Part notes");
   notes = makeTEdit(cnt);
@@ -901,8 +909,10 @@ void PBData::setupUI() {
   line->setFrameShadow(QFrame::Sunken);
   grouppropg->layout()->addWidget(line);
   QObject::connect(notes, &QTextEdit::textChanged,
-		   [this]() { editor->setGroupNotes(notes->document()
-                                                    ->toPlainText()); });
+		   editor, [this]() {
+                     editor->setCurrentGroupNotes(notes->document()
+                                                  ->toPlainText());
+                   });
   qDebug() << "premg" << xya;
   xyg = makeGroup(&xya);
   qDebug() << "postmg" << xya;

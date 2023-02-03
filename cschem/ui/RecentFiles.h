@@ -14,6 +14,7 @@ public:
   RecentFiles(QString varname="recentfiles", QWidget *parent=0);
   void mark(QString fn);
   QStringList list() const;
+  void showEvent(QShowEvent *) override;
 signals:
   void selected(QString);
 private:
