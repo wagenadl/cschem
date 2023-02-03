@@ -39,10 +39,23 @@ QStringList RecentFiles::list() const {
 
 void RecentFiles::updateItems() {
   QStringList files = list();
+  QSet<QString> leaves;
+  QSet<QString> dups;
   for (int n=0; n<MAXFILES; n++) {
     if (n<files.size()) {
       QString leaf = QFileInfo(files[n]).fileName();
-      QString text = tr("&%1 %2").arg(n + 1).arg(leaf);
+      if (leaves.contains(leaf))
+        dups << leaf;
+      else
+        leaves << leaf;
+    }
+  }
+  for (int n=0; n<MAXFILES; n++) {
+    if (n<files.size()) {
+      QFileInfo fi(files[n]);
+      QString leaf = fi.fileName();
+      QString fn = dups.contains(leaf) ? fi.canonicalFilePath() : leaf; 
+      QString text = tr("&%1 %2").arg(n + 1).arg(fn);
       actions[n]->setText(text);
       actions[n]->setData(files[n]);
       actions[n]->setVisible(true);
@@ -52,4 +65,8 @@ void RecentFiles::updateItems() {
       actions[n]->setVisible(false);
     }
   }
+}
+
+void RecentFiles::showEvent(QShowEvent *) {
+  updateItems();
 }

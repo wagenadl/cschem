@@ -110,6 +110,7 @@ bool BOM::setData(QModelIndex const &index, QVariant const &value,
   switch (Column(c)) {
   case Column::Ref:
     row.ref = txt;
+    d->editor->setGroupRef(node, txt);
     break;
   case Column::Package:
     row.pkg = txt;
@@ -134,6 +135,7 @@ Qt::ItemFlags BOM::flags(QModelIndex const &index) const {
   int c = index.column();
   Qt::ItemFlags f = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
   switch (Column(c)) {
+  case Column::Ref:
   case Column::Package:
   case Column::PartNo:
   case Column::Notes:
@@ -191,6 +193,7 @@ void BOM::rebuild() {
   d->reloadData();
   qDebug() << "BOM rebuild" << d->elements.size();
   endResetModel();
+  emit hasLinkedSchematic(d->editor->linkedSchematic().isValid());
 }
 
 QList<QStringList> BOM::asTable() const {

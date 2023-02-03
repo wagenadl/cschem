@@ -1474,7 +1474,31 @@ void Editor::selectTrace(bool wholenet) {
   }
 }
 
-void Editor::setGroupPackage(QString t) {
+
+void Editor::setCurrentGroupRef(QString t) {
+  NodeID nodeid = breadcrumbs();
+  if (nodeid.size()==1)
+    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
+                                  int(BOM::Column::Ref)), t);
+  setGroupRef(breadcrumbs(), t);
+}
+
+void Editor::setGroupRef(NodeID path, QString t) {
+  if (t != d->layout.root().subgroup(path).ref) {
+    UndoCreator uc(d, true);
+    Group &here = d->layout.root().subgroup(path.parent());
+    Group &grp = d->layout.root().subgroup(path);
+    int tid = grp.refTextId();
+    grp.ref = t;
+    qDebug() << "setgroupref" << t << tid;
+    if (tid>0 && here.contains(tid)) {
+      here.object(tid).asText().text = t;
+    }
+    emit componentsChanged(); //?
+  }
+}
+
+void Editor::setCurrentGroupPackage(QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
     d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
@@ -1489,7 +1513,7 @@ void Editor::setGroupPackage(NodeID path, QString t) {
   }
 }
 
-void Editor::setGroupPartno(QString t) {
+void Editor::setCurrentGroupPartno(QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
     d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
@@ -1504,7 +1528,7 @@ void Editor::setGroupPartno(NodeID path, QString t) {
   }
 }
 
-void Editor::setGroupNotes(QString t) {
+void Editor::setCurrentGroupNotes(QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
     d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),

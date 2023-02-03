@@ -217,6 +217,10 @@ void MWData::showParts() {
     mcvdock->show();
     mw->addDockWidget(Qt::LeftDockWidgetArea, mcvdock);
     mcv->setSchem(editor->linkedSchematic().schematic());
+    QObject::connect(&editor->linkedSchematic(), &LinkedSchematic::reloaded,
+                     mcv, [this]() {
+                       mcv->setSchem(editor->linkedSchematic().schematic());
+                     });
     mcv->setRoot(editor->pcbLayout().root());
   }
 }
@@ -378,7 +382,7 @@ void MWData::verifyNets() {
   statusbar->setMissing(names);
   if (nm.wronglyInNet.isEmpty() && nm.missingFromNet.isEmpty()
       && nm.missingEntirely.isEmpty()) {
-    QMessageBox::information(0, "cpcb", "All nets verified OK.");
+    QMessageBox::information(mw, "cpcb", "All nets verified OK.");
   } else {
     QStringList msgs;
     msgs << "Verification unsuccessful:";
@@ -418,7 +422,7 @@ void MWData::verifyNets() {
       msgs << "One affected net has been highlighted.";
     if (nm.missingEntirely.size()>1)
       msgs << "See status bar for details.";
-    QMessageBox::warning(0, "cpcb", msgs.join("\n"));
+    QMessageBox::warning(mw, "cpcb", msgs.join("\n"));
   }
 }
 
@@ -596,7 +600,7 @@ bool MWData::saveAsDialog() {
 void MWData::about() {
   QString me = "<b>cpcb</b>";
   QString vsn = Version::toString();
-  QMessageBox::about(0, "About " + me,
+  QMessageBox::about(mw, "About " + me,
 		     me + " " + vsn
 		     + "<p>" + "(C) 2018–2022 Daniel A. Wagenaar\n"
 		     + "<p>" + me + " is a program for printed circuit board  layout. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
@@ -612,7 +616,9 @@ void MWData::makeParts() {
   mcv->setScale(editor->pixelsPerMil());
   mcv->linkEditor(editor);
   QObject::connect(editor, &Editor::componentsChanged,
-		   [this]() { mcv->setRoot(editor->pcbLayout().root()); });
+		   mcv, [this]() {
+                     mcv->setRoot(editor->pcbLayout().root());
+                   });
   QObject::connect(editor, &Editor::scaleChanged,
 		   [this]() { mcv->setScale(editor->pixelsPerMil()); });
   mcvdock->setWidget(mcv);
@@ -625,6 +631,14 @@ void MWData::makeBOM() {
   bomv = new BOMView;
   bomvdock->setWidget(bomv);
   bomv->setModel(editor->bom());
+  QObject::connect(&editor->linkedSchematic(), &LinkedSchematic::reloaded,
+                   bomv, [this]() {
+                     bomv->model()->rebuild();
+                   });
+  QObject::connect(editor, &Editor::componentsChanged,
+		   bomv, [this]() {
+                     bomv->model()->rebuild();
+                   });
   bomvdock->hide();
   //  showBOM();
 }  
@@ -979,6 +993,7 @@ void MWData::fillBars() {
 }
 
 MainWindow::MainWindow(): QMainWindow() {
+  setAttribute(Qt::WA_DeleteOnClose);
   setWindowIcon(QIcon(":/cpcb.png"));
   d = new MWData(this);
   d->makeEditor();

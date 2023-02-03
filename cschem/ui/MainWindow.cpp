@@ -98,6 +98,7 @@ void MWData::fitView() {
 }
 
 MainWindow::MainWindow(): d(new MWData()) {
+  setAttribute(Qt::WA_DeleteOnClose);
   setWindowIcon(QIcon(":/cschem.png"));
   createView();
   createDocks();
