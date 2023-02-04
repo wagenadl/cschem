@@ -43,10 +43,19 @@ void BOMView::setModel(BOM *pl0) {
   sortProxy->setSourceModel(pl);
   QTableView::setModel(sortProxy);
   sortByColumn(int(BOM::Column::Ref), Qt::AscendingOrder);
+  connect(pl0, &BOM::hasLinkedSchematic,
+          this, &BOMView::showValueColumn);
 }
 
 BOM *BOMView::model() const {
   return pl;
+}
+
+void BOMView::showValueColumn(bool x) {
+  if (x)
+    showColumn(int(BOM::Column::Value));
+  else
+    hideColumn(int(BOM::Column::Value));
 }
 
 void BOMView::showEvent(QShowEvent *e) {

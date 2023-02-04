@@ -175,7 +175,7 @@ Symbol::~Symbol() {
 Symbol Symbol::load(QString svgfn) {
   Symbol sym;
   QFile file(svgfn);
-  QString name = QFileInfo(svgfn).baseName();
+  QString name = QFileInfo(svgfn).completeBaseName();
   name.replace("-", ":");
   if (!name.startsWith("port:") && !name.startsWith("part:"))
     name = "part:" + name;

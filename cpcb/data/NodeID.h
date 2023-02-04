@@ -16,6 +16,8 @@ public:
                       Point const &near=Point(), Dim margin=Dim()) const;
   NodeID plus(int x) const { NodeID res(*this); res << x; return res; }
   NodeID tail() const { NodeID res(*this); res.removeFirst(); return res; }
+  NodeID parent() const { NodeID res(*this); res.removeLast(); return res; }
+  int leaf() const { return size() ? (*this)[-1] : -1; }
 };
 
 inline uint qHash(NodeID const &id) {
