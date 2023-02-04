@@ -56,7 +56,7 @@ void VerifySchematic::run() {
     scene->selectElements(disconnectedportids);
     QMessageBox::information(parent, "CSchem: Verification Failed",
 			     "Disconnected port(s) found: "
-			     + QStringList(disconnectedportnames.toList()).join(", ")
+			     + QStringList(disconnectedportnames.values()).join(", ")
 			     + ".");
     return;
   }

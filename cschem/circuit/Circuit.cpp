@@ -6,13 +6,19 @@
 #include "PartNumbering.h"
 #include <QRegularExpression>
 #include "IDFactory.h"
+#include <QUuid>
 
 Circuit::Circuit() {
+  newUUID();
   valid = true;
 }
 
 Circuit::Circuit(Connection const &con): Circuit() {
   insert(con);
+}
+
+void Circuit::newUUID() {
+  uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
 }
 
 int Circuit::elementByName(QString name) const {
@@ -25,6 +31,10 @@ int Circuit::elementByName(QString name) const {
 }
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
+  auto a = sr.attributes();
+  c.uuid = a.value("uuid").toString();
+  if (c.uuid.isEmpty())
+    c.newUUID();
   while (!sr.atEnd()) {
     sr.readNext();
     if (sr.isStartElement()) {
@@ -58,17 +68,18 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
   return sr;
 }
   
-QXmlStreamWriter &operator<<(QXmlStreamWriter &sr, Circuit const &c) {
-  sr.writeStartElement("circuit");
+QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Circuit const &c) {
+  sw.writeStartElement("circuit");
+  sw.writeAttribute("uuid", c.uuid);
   for (auto const &c: c.elements)
-    sr << c;
+    sw << c;
   for (auto const &c: c.connections)
-    sr << c;
+    sw << c;
   for (auto const &c: c.textuals)
     if (!c.text.isEmpty())
-      sr << c;
-  sr.writeEndElement();
-  return sr;
+      sw << c;
+  sw.writeEndElement();
+  return sw;
 }
 
 void Circuit::insert(Element const &e) {

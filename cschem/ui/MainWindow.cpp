@@ -422,7 +422,7 @@ bool MainWindow::saveAsAction() {
     return false;
 
   d->lastdir = dlg.directory().absolutePath();
-  
+  d->scene->newUUID();
   return saveAs(fns.first());
 }
 

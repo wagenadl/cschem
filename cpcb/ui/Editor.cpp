@@ -1254,6 +1254,7 @@ bool Editor::linkSchematic(QString fn) {
   d->linkedschematic.link(fn);
   if (d->linkedschematic.isValid()) {
     d->layout.board().linkedschematic = fn;
+    d->bom->rebuild();
     emit schematicLinked(true);
     return true;
   } else {

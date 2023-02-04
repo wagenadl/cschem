@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="64"
    height="64"
    viewBox="0 0 16.933333 16.933334"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="SlotLength.svg">
+   inkscape:version="1.2.1 (1:1.2.1+202210291243+9c6d41e410)"
+   sodipodi:docname="SlotLength.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2">
     <marker
@@ -124,18 +124,21 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="11.953125"
-     inkscape:cx="-16.773856"
-     inkscape:cy="33.505883"
+     inkscape:zoom="1.671875"
+     inkscape:cx="31.700935"
+     inkscape:cy="31.700935"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     showgrid="false"
+     showgrid="true"
      units="px"
-     inkscape:window-width="3840"
-     inkscape:window-height="2116"
+     inkscape:window-width="1920"
+     inkscape:window-height="1058"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid815"
@@ -159,48 +162,54 @@
      id="layer1"
      transform="translate(0,-280.06665)">
     <rect
-       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.79375001;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:7;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:7;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="rect855"
-       width="12.700001"
-       height="6.3500004"
-       x="2.1166663"
-       y="285.35831"
-       ry="3.1750002"
-       rx="3.1750002" />
-    <g
-       id="g5315"
-       transform="translate(0.19292598,0.17742754)"
-       style="stroke-width:0.26458334;stroke-miterlimit:7;stroke-dasharray:none;stroke:#000000;stroke-opacity:1">
-      <g
-         aria-label="+"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444447px;line-height:125%;font-family:Helvetica;-inkscape-font-specification:'Helvetica, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.26458334;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:7;stroke-dasharray:none;stroke-opacity:1"
-         id="text1559">
-        <path
-           d="M 4.7813609,288.56259 H 3.5604191 v -0.41341 h 1.2209418 v -1.22094 h 0.4134115 v 1.22094 h 1.2209418 v 0.41341 H 5.1947724 v 1.22095 H 4.7813609 Z"
-           style="font-size:5.64444447px;text-align:center;text-anchor:middle;stroke-width:0.26458334;stroke-miterlimit:7;stroke-dasharray:none;stroke:#000000;stroke-opacity:1"
-           id="path8696" />
-      </g>
-      <g
-         aria-label="+"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444447px;line-height:125%;font-family:Helvetica;-inkscape-font-specification:'Helvetica, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:0.26458334;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:7;stroke-dasharray:none;stroke-opacity:1"
-         id="text1559-6">
-        <path
-           d="m 11.352709,288.56259 h -1.220942 v -0.41341 h 1.220942 v -1.22094 h 0.413412 v 1.22094 h 1.220941 v 0.41341 h -1.220941 v 1.22095 h -0.413412 z"
-           style="font-size:5.64444447px;text-align:center;text-anchor:middle;stroke-width:0.26458334;stroke-miterlimit:7;stroke-dasharray:none;stroke:#000000;stroke-opacity:1"
-           id="path8699" />
-      </g>
-    </g>
+       width="13.758335"
+       height="7.4083223"
+       x="1.5875"
+       y="284.82916"
+       ry="3.7041543"
+       rx="3.7041678" />
     <flowRoot
        xml:space="preserve"
        id="flowRoot5303"
-       style="fill:black;stroke:none;stroke-opacity:1;stroke-width:0.79375001;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Helvetica;font-style:normal;font-weight:normal;font-size:21.33333333px;line-height:125%;letter-spacing:0px;word-spacing:0px;-inkscape-font-specification:'Helvetica, Normal';font-stretch:normal;font-variant:normal;text-anchor:start;text-align:start;writing-mode:lr;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;stroke-miterlimit:7;stroke-dasharray:none"><flowRegion
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.3333px;line-height:125%;font-family:Helvetica;-inkscape-font-specification:'Helvetica, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.79375;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:7;stroke-dasharray:none;stroke-opacity:1"><flowRegion
          id="flowRegion5305"
-         style="stroke-width:0.79375001;stroke-miterlimit:7;stroke-dasharray:none"><rect
+         style="stroke-width:0.79375;stroke-miterlimit:7;stroke-dasharray:none"><rect
            id="rect5307"
            width="51.701962"
            height="26.771242"
            x="1.1712419"
            y="19.492811"
            style="stroke-width:0.79375001;stroke-miterlimit:7;stroke-dasharray:none" /></flowRegion><flowPara
-         id="flowPara5309" /></flowRoot>  </g>
+         id="flowPara5309" /></flowRoot>
+    <rect
+       style="fill:#000000;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stop-color:#000000;fill-opacity:1"
+       id="rect26590"
+       width="1.0583334"
+       height="3.1750002"
+       x="11.1125"
+       y="286.94583" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stop-color:#000000"
+       id="rect26852"
+       width="3.1750004"
+       height="1.0583334"
+       x="10.054167"
+       y="288.00415" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stop-color:#000000"
+       id="rect26590-6"
+       width="1.0583334"
+       height="3.1750002"
+       x="4.7624998"
+       y="286.94583" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke-width:1.05833;stroke-linecap:square;stroke-dasharray:none;stop-color:#000000"
+       id="rect26852-7"
+       width="3.1750004"
+       height="1.0583334"
+       x="3.7041667"
+       y="288.00415" />
+  </g>
 </svg>
