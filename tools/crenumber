@@ -1,0 +1,304 @@
+#!/usr/bin/python3
+
+import xml.etree.ElementTree as ET
+import numpy as np
+import sys
+import re
+
+ifn = None
+USESCHEM = False
+FINAL = False
+
+def usage():
+    sys.stderr.write("Usage: crenumber --schem input.cpcb\n")
+    sys.stderr.write("Usage: crenumber input.cschem\n")
+    sys.stderr.write(''' 
+If a .cpcb is specified, that file and the linked schematic are
+renumbered. By default, renumbering is based on the PCB layout.
+Optional argument "--schem" causes renumbering based on the geometry
+of the schematic.
+
+If a .cschem is specified, only that file is renumbered, which is a bad
+idea if any linked .cpcb files exist.
+
+The results are saved as "(original)-renumbered.cpcb" and
+"(original)-renumbered.cschem", unless --final is given, in which case
+the originals are overwritten.
+''')
+    sys.exit(1)
+
+argv = sys.argv[1:]
+
+if not argv:
+    usage()
+
+if argv[0]=="--final":
+    FINAL = True
+    argv.pop(0)
+    if not argv:
+        usage()
+
+if argv[0]=="--schem":
+    argv = argv[1:]
+    if not argv:
+        usage()
+    if argv[0]=="--final":
+        FINAL = True
+        argv.pop(0)
+        if not argv:
+            usage()
+    USESCHEM = True
+    ifn = argv.pop(0)
+else:
+    if not argv:
+        usage()
+    ifn = argv.pop(0)
+
+if argv:
+    usage()
+
+if ifn.endswith(".cpcb") or ifn.endswith(".pcb"):
+    pcbifn = ifn
+    schemifn = None
+elif ifn.endswith(".cschem") or ifn.endswith(".schem"):
+    pcbifn = None
+    schemifn = ifn
+else:
+    usage()
+
+
+def rename(ifn):
+    bits = ifn.split(".")
+    ext = bits[-1]
+    return ifn[:-len(ext)-1] + "-renumbered." + ext
+
+
+PCBNS = "{http://www.danielwagenaar.net/cpcb-ns.html}"
+SCHEMNS = "{http://www.danielwagenaar.net/cschem-ns.html}"
+
+
+if pcbifn is None:
+    pcb = None
+    schem = ET.parse(schemifn)
+else:
+    pcb = ET.parse(pcbifn)
+    root = pcb.getroot()
+    board = root.find(f"{PCBNS}board")
+    links = board.find(f"{PCBNS}links")
+    if "schem" in links.attrib:
+        schemifn = links.attrib["schem"]
+        schem = ET.parse(schemifn)
+    else:
+        schem = None
+
+
+
+    
+if FINAL or pcbifn is None:
+    pcbofn = pcbifn
+else:
+    pcbofn = rename(pcbifn)
+
+if FINAL or schemifn is None:
+    schemofn = schemifn
+else:
+    schemofn = rename(schemifn)
+    
+        
+def pcbgroups(pcb):
+    # Returns a list of (Element, ref, x, y)
+    lst = []
+    def addrefs(lst, elt):
+        if elt.tag==f"{PCBNS}gr":
+            x = 0
+            y = 0
+            n = 0
+            grp = elt.find(f"{PCBNS}group")
+            ref = grp.attrib["ref"]
+            for ch in grp:
+                if ch.tag==f"{PCBNS}pad" or ch.tag==f"{PCBNS}hole":
+                    p = ch.attrib["p"].split(" ")
+                    x += float(p[0])
+                    y += float(p[1])
+                    n += 1
+            lst.append((elt, ref, x/n, y/n))
+        else:
+            for ch in elt:
+                addrefs(lst, ch)
+    addrefs(lst, pcb.getroot())
+    return lst
+
+
+def interpretref(ref):
+    bits = re.split("(\d+)", ref)
+    ltr = bits[0]
+    val = "".join(bits[1:])
+    bits = val.split(".")
+    if len(bits)>=2:
+        sub = "." + ".".join(bits[1:])
+        val = bits[0]
+    else:
+        sub = ""
+    return ltr, val, sub
+
+
+def schemgroups(schem):
+    # Returns a list of (Element, ref, x, y)
+    root = schem.getroot()
+    circuit = root.find(f"{SCHEMNS}circuit")
+    lst = []
+    for elt in circuit.findall(f"{SCHEMNS}component"):
+        if "name" in elt.attrib:
+            ref = elt.attrib["name"]
+            x = float(elt.attrib["x"])
+            y = float(elt.attrib["y"])
+            lst.append((elt, ref, x, y))
+    return lst
+
+
+def remap(gr):
+    refs = [ elt[1] for elt in gr]
+    xx =  np.array([ elt[2] for elt in gr])
+    yy =  np.array([ elt[3] for elt in gr])
+    K = len(xx)
+    d0 = []
+    for k in range(K):
+        dd = (xx-xx[k])**2 + (yy-yy[k])**2
+        dd[k] = np.inf
+        d0.append(np.min(dd))
+    scl = np.mean(np.sqrt(d0))
+
+    def cost(lst):
+        xx1 = xx[lst]/scl
+        yy1 = yy[lst]/scl
+        N = len(yy1)
+        dx = np.diff(xx1)
+        dy = np.diff(yy1)
+        return np.sum(dx**2) + np.sum(dy**2) + 10*N*np.var(yy1) + 10**2
+
+    def merge(lst1, lst2):
+        lst = lst1 + lst2
+        ordr = np.argsort(xx[lst] + 1e-6*yy[lst])
+        return [lst[k] for k in ordr]
+
+    THR = scl*3 #?
+    csts = {}
+    mrgs = {}
+    lsts = { k: [k] for k in range(K) }
+    yymin = { k: np.min(yy[lst]) for k, lst in lsts.items() }
+    yymax = { k: np.max(yy[lst]) for k, lst in lsts.items() }
+    costs = { k: cost(lst) for k, lst in lsts.items() }
+
+    while True:
+        dEbest = 0
+        kbest = None
+        lbest = None
+        for k in lsts:
+            for l in lsts:
+                if l>=k:
+                    continue
+                if yymin[l] - yymax[k] > THR or yymin[k] - yymax[l] > THR:
+                    continue
+                if (k,l) not in mrgs:
+                    mrgs[k,l] = merge(lsts[k], lsts[l])
+                    csts[k,l] = cost(mrgs[k,l])
+                dE = csts[k,l] - costs[k] - costs[l]
+                if dE<dEbest:
+                    dEbest = dE
+                    kbest = k
+                    lbest = l
+        if dEbest>=0:
+            break
+
+        mrgbest = mrgs[kbest, lbest]
+        cstbest = csts[kbest, lbest]
+        lsts[K] = mrgbest
+        yymin[K] = np.min(yy[mrgbest])
+        yymax[K] = np.max(yy[mrgbest])
+        costs[K] = cstbest
+        del lsts[kbest]
+        del lsts[lbest]
+        K = K + 1
+
+    lsts = list(lsts.values())
+    lsts.sort(key=lambda lst: np.mean(yy[lst]))
+
+    valmap = {}
+    typcnt = {}
+    for row in lsts:
+        for r in row:
+            ltr, val, sub = interpretref(refs[r])
+            if ltr not in typcnt:
+                typcnt[ltr] = 0
+            if ltr + val in valmap:
+                newval = valmap[ltr + val]
+            else:
+                typcnt[ltr] += 1
+                newval = f"{typcnt[ltr]}"
+            valmap[ltr + val] = newval
+    return valmap
+
+
+def getrefmap(pcbgr, valmap):
+    refmap = {}
+    for row in pcbgr:
+        ref = row[1]
+        ltr, val, sub = interpretref(ref)
+        newval = valmap[ltr + val]
+        refmap[ref] = ltr + newval + sub
+    return refmap
+
+
+def renumberschem(schemgr, refmap):
+    for row in schemgr:
+        elt = row[0]
+        oldref = row[1]
+        newref = refmap[oldref]
+        elt.attrib["name"] = newref
+
+
+def renumberpcb(pcbgr, refmap):
+    for row in pcbgr:
+        elt = row[0]
+        oldref = row[1]
+        newref = refmap[oldref]
+        elt.find(f"{PCBNS}group").attrib["ref"] = newref
+        elt.find(f"{PCBNS}text").attrib["text"] = newref
+
+
+def relink(pcb):
+    root = pcb.getroot()
+    board = root.find(f"{PCBNS}board")
+    links = board.find(f"{PCBNS}links")
+    
+
+if pcb is not None:
+    pcbgr = pcbgroups(pcb)
+
+if schem is not None:
+    schemgr = schemgroups(schem)
+
+if pcb is None or USESCHEM:
+    valmap = remap(schemgr)
+else:
+    valmap = remap(pcbgr)
+
+if pcb is not None:
+    renumberpcb(pcbgr, getrefmap(pcbgr, valmap))
+    if schem is not None:
+        root = pcb.getroot()
+        board = root.find(f"{PCBNS}board")
+        links = board.find(f"{PCBNS}links")
+        links.attrib["schem"] = schemofn
+    ET.register_namespace("", PCBNS[1:-1])
+    pcb.write(pcbofn, xml_declaration=True, encoding="UTF-8")
+        
+if schem is not None:
+    renumberschem(schemgr, getrefmap(schemgr, valmap))
+    ET.register_namespace("", SCHEMNS[1:-1])        
+    ET.register_namespace("svg", "http://www.w3.org/2000/svg")
+    ET.register_namespace("inkscape", "http://www.inkscape.org/namespaces/inkscape")
+    ET.register_namespace("sodipodi", "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd")
+    schem.write(schemofn, xml_declaration=True, encoding="UTF-8")
+
+    

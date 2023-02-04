@@ -19,6 +19,8 @@ public:
   bool isQuiet() const;
   void resetWidth();
   void resizeEvent(QResizeEvent *) override;
+public slots:
+  void showValueColumn(bool);
 private:
   class QSortFilterProxyModel *sortProxy;
   class BOM *pl;

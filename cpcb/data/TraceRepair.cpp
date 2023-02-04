@@ -180,7 +180,7 @@ bool TraceRepair::dropDanglingTraces() {
       PCBNet net(d->grp, seed);
       Object obj(d->grp.object(id));
       d->grp.remove(id);
-      QList<NodeID> nodes(net.nodes().toList());
+      QList<NodeID> nodes(net.nodes().values());
       if (nodes.size()>=2) {
         NodeID alt = nodes.takeFirst();
         if (alt==seed)

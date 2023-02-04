@@ -1,0 +1,548 @@
+{ "typ": "page",
+  "cre": "2023-02-03T09:23:13.486",
+  "mod": "2023-02-03T11:53:43.627",
+  "cui": "18accd3399e286b5",
+  "stampTime": 0,
+  "startPage": 54,
+  "unlocked": false,
+  "uuid": "b6f90254",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2023-02-03T09:23:13.485",
+      "mod": "2023-02-03T09:23:13.485",
+      "uuid": "2d76ef8d"
+    },
+    { "typ": "title",
+      "cre": "2023-02-03T09:23:16.103",
+      "mod": "2023-02-03T09:23:17.932",
+      "uuid": "6c66e309",
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:23:16.103",
+          "mod": "2023-02-03T09:23:17.932",
+          "lines": [
+            0
+          ],
+          "text": "CPCB bugs",
+          "uuid": "1ea7fa80"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:23:20.949",
+      "mod": "2023-02-03T09:39:16.004",
+      "h": 50.332,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0189720f",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:23:20.949",
+          "mod": "2023-02-03T09:39:16.004",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "“Parts to be placed” doesn’t update when “reloaded linked schematic”.",
+          "uuid": "d45b7bb5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:39:18.155",
+      "mod": "2023-02-03T09:46:19.976",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "c14e9971",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:39:18.155",
+          "mod": "2023-02-03T09:46:19.976",
+          "lines": [
+            0,
+            68
+          ],
+          "text": "There is nothing responding to LinkedSchematic’s “reloaded” signal. Fixed.",
+          "uuid": "d4e354b0"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:25:15.829",
+      "mod": "2023-02-03T09:28:53.354",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "fb4e7625",
+      "y0": 159.299,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:25:15.829",
+          "mod": "2023-02-03T09:25:23.107",
+          "lines": [
+            0
+          ],
+          "text": "“BOM” doesn’t update when new part placed.",
+          "uuid": "8c75f9fd"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T10:07:05.692",
+      "mod": "2023-02-03T11:29:20.678",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "cd2581b8",
+      "y0": 186.465,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T10:07:05.692",
+          "mod": "2023-02-03T11:29:20.678",
+          "lines": [
+            0
+          ],
+          "text": "Fixed",
+          "uuid": "0ae2ab7e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:26:19.095",
+      "mod": "2023-02-03T11:25:55.052",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5e36bbd4",
+      "y0": 205.612,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:26:19.095",
+          "mod": "2023-02-03T11:25:55.052",
+          "lines": [
+            0
+          ],
+          "text": "Floating “BOM” doesn’t close when main window closed.",
+          "uuid": "9dc380a0"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T11:27:52.135",
+      "mod": "2023-02-03T11:29:30.163",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "30d63e66",
+      "y0": 232.778,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T11:27:52.135",
+          "mod": "2023-02-03T11:29:30.163",
+          "lines": [
+            0
+          ],
+          "text": "Fixed by way of “DeleteOnClose,” also in cschem.",
+          "uuid": "d887a914"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:26:37.031",
+      "mod": "2023-02-03T09:28:54.602",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "61b2b3d6",
+      "y0": 251.925,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:26:37.031",
+          "mod": "2023-02-03T09:26:46.711",
+          "lines": [
+            0
+          ],
+          "text": "“Recent files” doesn’t update on “Save as”.",
+          "uuid": "5842ced3"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:30:59.032",
+      "mod": "2023-02-03T09:36:36.289",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "73ac5f45",
+      "y0": 279.091,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:30:59.032",
+          "mod": "2023-02-03T09:36:35.334",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "Actually, “Recent files” on other windows do not recompute. Solved.!",
+          "uuid": "f41d068c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:27:07.342",
+      "mod": "2023-02-03T09:28:55.051",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "52684559",
+      "y0": 316.058,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:27:07.342",
+          "mod": "2023-02-03T09:27:14.351",
+          "lines": [
+            0
+          ],
+          "text": "“BOM” “Value” cannot be edited.",
+          "uuid": "ca397992"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T10:55:58.124",
+      "mod": "2023-02-03T10:56:09.280",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f0a2a7a1",
+      "y0": 343.224,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T10:55:58.124",
+          "mod": "2023-02-03T10:56:09.280",
+          "lines": [
+            0
+          ],
+          "text": "Won’t fix. This comes from CSchem. Must document, though.",
+          "uuid": "0cfe8f34"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:27:38.042",
+      "mod": "2023-02-03T09:28:55.541",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "880cf791",
+      "y0": 362.371,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:27:38.042",
+          "mod": "2023-02-03T09:28:00.761",
+          "lines": [
+            0
+          ],
+          "text": "“BOM” “Ref.” cannot be edited.",
+          "uuid": "83fa0bff"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T10:55:25.545",
+      "mod": "2023-02-03T10:55:37.677",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "bdf5ff5a",
+      "y0": 389.537,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T10:55:25.545",
+          "mod": "2023-02-03T10:55:37.677",
+          "lines": [
+            0
+          ],
+          "text": "Fixed, although I am not sure this is what we want.",
+          "uuid": "766e70db"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:27:57.048",
+      "mod": "2023-02-03T09:28:55.995",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a1911f9a",
+      "y0": 408.684,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:27:57.048",
+          "mod": "2023-02-03T09:28:30.879",
+          "lines": [
+            0
+          ],
+          "text": "“BOM” “Ref.” does not update when changing in sidebar.",
+          "uuid": "c47dd4ff"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T10:07:44.849",
+      "mod": "2023-02-03T10:07:46.546",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7fe7547d",
+      "y0": 435.85,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T10:07:44.849",
+          "mod": "2023-02-03T10:07:45.590",
+          "lines": [
+            0
+          ],
+          "text": "Fixed.",
+          "uuid": "9536d1df"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:27:57.048",
+      "mod": "2023-02-03T09:28:56.433",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a1911f9a",
+      "y0": 454.997,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:27:57.048",
+          "mod": "2023-02-03T09:28:39.197",
+          "lines": [
+            0
+          ],
+          "text": "“BOM” “Ref.” does not update when changing in schematic.",
+          "uuid": "c47dd4ff"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T10:07:17.849",
+      "mod": "2023-02-03T10:07:19.451",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "fe95afb9",
+      "y0": 482.163,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T10:07:17.849",
+          "mod": "2023-02-03T10:07:18.671",
+          "lines": [
+            0
+          ],
+          "text": "Fixed.",
+          "uuid": "0a951213"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T11:53:35.182",
+      "mod": "2023-02-03T11:53:43.627",
+      "h": 50.332,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0e6d6036",
+      "y0": 501.31,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T11:53:35.182",
+          "mod": "2023-02-03T11:53:43.627",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "Menu entry “Show &parts to be placed” should perhaps flip to “Hide…” or have a check mark.",
+          "uuid": "0d508b06"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:40:40.473",
+      "mod": "2023-02-03T09:40:46.926",
+      "h": 50.332,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f6ff9a39",
+      "y0": 551.642,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:40:40.473",
+          "mod": "2023-02-03T09:40:46.926",
+          "lines": [
+            0,
+            57
+          ],
+          "text": "Menu entry “Show &BOM” should perhaps flip to “Hide…” or have a check mark.",
+          "uuid": "45326580"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:43:37.314",
+      "mod": "2023-02-03T09:55:45.242",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "d59a7c19",
+      "y0": 601.974,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:43:37.314",
+          "mod": "2023-02-03T09:55:45.241",
+          "lines": [
+            0
+          ],
+          "text": "“All nets verified OK” pops up over wrong raised main window.",
+          "uuid": "01217d05"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:58:19.729",
+      "mod": "2023-02-03T09:58:20.776",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "8644bed2",
+      "y0": 629.14,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:58:19.729",
+          "mod": "2023-02-03T09:58:20.776",
+          "lines": [
+            0
+          ],
+          "text": "Fixed.",
+          "uuid": "2a8f7fe8"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:46:37.528",
+      "mod": "2023-02-03T09:47:17.979",
+      "h": 50.332,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b6e491d6",
+      "y0": 648.287,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:46:37.528",
+          "mod": "2023-02-03T09:47:13.538",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "Linked schematic is silently used from old location when we ourselves have been copied to new location. ",
+          "uuid": "d8ecc31c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:49:36.870",
+      "mod": "2023-02-03T09:51:29.684",
+      "h": 108.247,
+      "ind": 2,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "9c57edda",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:49:36.870",
+          "mod": "2023-02-03T09:51:29.684",
+          "lines": [
+            0,
+            61,
+            103,
+            170,
+            232,
+            275
+          ],
+          "text": "Perhaps a “Linked schematic” submenu with “Link”, “Replace”, “Unlink”, “Open”, “Info” would be useful.\nAlso, the cpcb→board→links should contain a “self” link, which can be checked when loading a file. If not the same as upon save, heuristically worry about linked location.\nShould linked schematic filename be displayed somewhere?",
+          "uuid": "5d4df270"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:52:02.203",
+      "mod": "2023-02-03T09:52:18.539",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "607e8af8",
+      "y0": 180.247,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:52:02.203",
+          "mod": "2023-02-03T09:52:18.539",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "“Open recent” list should show pathnames if duplicate leaves occur.",
+          "uuid": "7199a27d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-03T09:55:28.052",
+      "mod": "2023-02-03T09:55:30.563",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "d6cbd4d2",
+      "y0": 230.579,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-03T09:55:28.052",
+          "mod": "2023-02-03T09:55:28.621",
+          "lines": [
+            0
+          ],
+          "text": "Fixed.",
+          "uuid": "d5a8e2b0"
+        }
+      ]
+    }
+  ]
+}
