@@ -40,7 +40,15 @@ int main(int argc, char **argv) {
   Paths::setExecutablePath(argv[0]);
   
   app.setStyleSheet("QToolButton:!checked { border: none; }\n"
-                    "QToolButton:checked { border: 3px inset #666666; border-radius: 2; background-color: white;}\n");
+                    "QToolButton:checked { border: 3px inset #666666;"
+                    "  border-radius: 2; background-color: white;}\n"
+                    //"QWidget { font-family: Verdana, Helvetica, Sans;"
+                    //"  font-size: 10pt; }\n"
+                    );
+  QFont font = app.font();
+  font.setPointSizeF(11.0);
+  qDebug() << "CPCB FONT" << font;
+  app.setFont(font);
 
   ensureOutlineLibrary();
   

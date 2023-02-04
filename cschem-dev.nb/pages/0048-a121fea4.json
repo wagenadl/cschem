@@ -1,0 +1,100 @@
+{ "typ": "page",
+  "cre": "2022-12-22T12:19:35.355",
+  "mod": "2022-12-22T12:21:47.285",
+  "cui": "2edabb2aac00cecb",
+  "stampTime": 0,
+  "startPage": 48,
+  "unlocked": false,
+  "uuid": "a121fea4",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2022-12-22T12:19:35.350",
+      "mod": "2022-12-22T12:19:35.350",
+      "uuid": "1e6136db"
+    },
+    { "typ": "title",
+      "cre": "2022-12-22T12:19:36.268",
+      "mod": "2022-12-22T12:19:39.479",
+      "uuid": "3bbb4235",
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-22T12:19:36.268",
+          "mod": "2022-12-22T12:19:39.478",
+          "lines": [
+            0
+          ],
+          "text": "CSchem circuit UUID",
+          "uuid": "aed3b4f9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-22T12:19:40.247",
+      "mod": "2022-12-22T12:20:08.202",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9ecf4d6b",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-22T12:19:40.247",
+          "mod": "2022-12-22T12:20:08.202",
+          "lines": [
+            0,
+            56
+          ],
+          "text": "I added a UUID to the <circuit> element in CSchem. This property is renewed at “Save As” but not at regular saves. ",
+          "uuid": "deee2838"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-22T12:20:10.501",
+      "mod": "2022-12-22T12:20:40.511",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0c39c82a",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-22T12:20:10.501",
+          "mod": "2022-12-22T12:20:40.511",
+          "lines": [
+            0,
+            59,
+            121
+          ],
+          "text": "The intention is that CPCB can verify this when attempting to relink to a schematic when locations have changed. Not yet implemented.",
+          "uuid": "3c90b249"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2022-12-22T12:20:51.524",
+      "mod": "2022-12-22T12:21:47.285",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7d1c1ff4",
+      "y0": 195.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2022-12-22T12:20:51.524",
+          "mod": "2022-12-22T12:21:47.285",
+          "lines": [
+            0,
+            56,
+            107
+          ],
+          "text": "I am considering whether a “versionid” should be added, and whether something should be done about forking schematics outside of CSchem, e.g., through “cp”.",
+          "uuid": "9ee0f2c1"
+        }
+      ]
+    }
+  ]
+}

@@ -14,6 +14,8 @@ void NetMismatch::reset() {
   wronglyInNet.clear();
   missingFromNet.clear();
   missingEntirely.clear();
+  incompleteNets.clear();
+  overcompleteNets.clear();
 }
 
 void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
@@ -42,7 +44,7 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
     // a net with one named node is not bad. By definition.
   }
 
- qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
+  // qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
 
   for (Nodename const &name: linkednet.nodes) {
     if (pcbnames.contains(name))
@@ -56,7 +58,7 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
     }
     if (!got) {
       NodeID id = root.findNodeByName(name);
-       qDebug() << "looking for" << name << "gave" << id;
+      qDebug() << "looking for" << name << "gave" << id;
       if (!id.isEmpty())
 	missingFromNet << id;
       else
@@ -66,7 +68,11 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
 
   //  if (!missingEntirely.isEmpty())
   //    wronglyInNet << net.seed(); // trick to make it colored
-    
+
+  if (!missingFromNet.isEmpty())
+    incompleteNets << linkednet.name;
+  if (!wronglyInNet.isEmpty())
+    overcompleteNets << linkednet.name;
 }
 
 void NetMismatch::report(Group const &root) {
@@ -80,9 +86,17 @@ void NetMismatch::report(Group const &root) {
   QStringList missing;
   for (Nodename const &n: missingEntirely)
     missing << n.toString();
+  QStringList incomplete;
+  for (QString net: incompleteNets)
+    incomplete << net;
+  QStringList overcomplete;
+  for (QString net: overcompleteNets)
+    overcomplete << net;
   qDebug() << "  wrongly in" << wronglyin.join(", ");
   qDebug() << "  wrongly out" << wronglyout.join(", ");
   qDebug() << "  missing" << missing.join(", ");
+  qDebug() << "  incomplete" << incomplete.join(", ");
+  qDebug() << "  overcomplete" << overcomplete.join(", ");
 }
 
 void NetMismatch::recalculateAll(LinkedSchematic const &ls,
@@ -93,15 +107,17 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
   QMap<NodeID, PCBNet> seed2net;
   QSet<NodeID> allids;
   for (NodeID id: root.allPins()) {
-    if (!allids.contains(id)) {
-      Nodename n = root.nodeName(id);
-      if (n.pin()!="") { // only use pins with a name or number as seed
-        PCBNet net = PCBNet(root, id);
-        allids |= net.nodes();
-        seed2net[id] = net;
-      }
-    }
+    if (allids.contains(id))
+      continue;
+    Nodename n = root.nodeName(id);
+    if (n.pin()=="")
+      continue;
+    // only use pins with a name or number as seed
+    PCBNet net = PCBNet(root, id);
+    allids |= net.nodes();
+    seed2net[id] = net;
   }
+  qDebug() << "Collected" << allids;
 
   // For each linked schematic net, find corresponding pcb net
   QSet<NodeID> donenets;
@@ -109,31 +125,40 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
     bool got = false;
     for (NodeID const &node: seed2net.keys()) {
       Nodename seed = seed2net[node].someNode();
-      if (lnet.containsMatch(seed)) {
-	// schematic net "lnet" matches pcb net for "seed"
-	if (donenets.contains(node)) {
-	  // we've already studied this pcb net!?
-	  qDebug() << "Double match";
-	} else {
-	  NetMismatch nm1;
-	  nm1.recalculate(seed2net[node], lnet, root);
-	  wronglyInNet |= nm1.wronglyInNet;
-	  missingFromNet |= nm1.missingFromNet;
-	  missingEntirely |= nm1.missingEntirely;
-	  donenets << node;
-	  got = true;
-	  if (!nm1.wronglyInNet.isEmpty()
-	      || !nm1.missingFromNet.isEmpty()
-	      || !nm1.missingEntirely.isEmpty()) {
-	    qDebug() << "linked net" << lnet;
-            qDebug() << "  node" << node ;
-            qDebug() << "  seed" << seed ;
-            qDebug() << "=== pcbnet report:";
-            seed2net[node].report();
-            qDebug() << "=== netmismatch report:";
-	    nm1.report(root);
-	  }
-	}
+      if (!lnet.containsMatch(seed))
+        continue;
+      // schematic net "lnet" matches pcb net for "seed"
+      if (donenets.contains(node)) {
+        // we've already studied this pcb net!?
+        qDebug() << "Double match";
+        continue;
+      }
+      if (got) {
+        qDebug() << "lnet already taken";
+        missingFromNet |= seed2net[node].nodes();
+        incompleteNets << lnet.name;
+        donenets << node;
+      } else {
+        NetMismatch nm1;
+        nm1.recalculate(seed2net[node], lnet, root);
+        wronglyInNet |= nm1.wronglyInNet;
+        missingFromNet |= nm1.missingFromNet;
+        missingEntirely |= nm1.missingEntirely;
+        incompleteNets |= nm1.incompleteNets;
+        overcompleteNets |= nm1.overcompleteNets;
+        donenets << node;
+        got = true;
+        if (!nm1.wronglyInNet.isEmpty()
+            || !nm1.missingFromNet.isEmpty()
+            || !nm1.missingEntirely.isEmpty()) {
+          qDebug() << "problematic linked net" << lnet;
+          qDebug() << "  node" << node ;
+          qDebug() << "  seed" << seed ;
+          qDebug() << "=== pcbnet report:";
+          seed2net[node].report();
+          qDebug() << "=== netmismatch report:";
+          nm1.report(root);
+        }
       }
     }
     if (!got) {

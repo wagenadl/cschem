@@ -22,7 +22,7 @@ public:
   ~XmlElement();
   bool isValid() const;
   QList<XmlNode> const &children() const;
-  QString qualifiedName() const;
+  QString name() const;
   QXmlStreamAttributes attributes() const;
   QXmlStreamNamespaceDeclarations namespaceDeclarations() const;
   void write(QXmlStreamWriter &dst) const;

@@ -49,8 +49,8 @@ public:
   QWidget *slotlengthc; // for hole
   DimSpinner *slotlength;
   QWidget *squarec;
-  QToolButton *circle; // for hole
-  QToolButton *square; // for hole
+  QAction *circle; // for hole
+  QAction *square; // for hole
 
   QWidget *textg;
   QAction *texta;
@@ -86,9 +86,9 @@ public:
   
   Dim x0, y0;
   Point ori;
-  Point tentamovedelta;
   QMap<QWidget *, QSet<QToolButton *>> exclusiveGroups;
 public:
+  PBData() { xya=0; }
   void switchToMetric();
   void switchToInch();
   Dim getDim(DimSpinner *);
@@ -103,7 +103,8 @@ public:
   bool anyLayerChecked() const;
   bool anyDirectionChecked() const;
 private:
-  void fillXY(QSet<Point> const &points);
+  bool fillXY(QSet<Point> const &points);
+  void fillXYfromText(QSet<int> const &objects, Group const &here);
   void fillLinewidth(QSet<int> const &objects, Group const &here);
   void fillWH(QSet<int> const &objects, Group const &here);
   void fillDiamAndShape(QSet<int> const &objects, Group const &here);
@@ -131,18 +132,46 @@ bool PBData::anyLayerChecked() const {
     || top->isChecked() || bottom->isChecked();
 }
 
-void PBData::fillXY(QSet<Point> const &points) {
-  tentamovedelta = Point();
-  if (points.isEmpty())
-    return;
+bool PBData::fillXY(QSet<Point> const &points) {
+  if (points.isEmpty()) {
+    x0 = ori.x;
+    y0 = ori.y;
+  } else {
+    x0 = Dim::fromInch(1000);
+    y0 = Dim::fromInch(1000);
+    for (Point const &p: points) {
+      if (p.x<x0)
+        x0 = p.x;
+      if (p.y<y0)
+        y0 = p.y;
+    }
+  }
 
+  x->setValue(x0 - ori.x);
+  y->setValue(y0 - ori.y);
+
+  return !points.isEmpty();
+}
+
+void PBData::fillXYfromText(QSet<int> const &objects,
+                                   Group const &here) {
+  bool got = false;
   x0 = Dim::fromInch(1000);
   y0 = Dim::fromInch(1000);
-  for (Point const &p: points) {
-    if (p.x<x0)
-      x0 = p.x;
-    if (p.y<y0)
-      y0 = p.y;
+  for (int k: objects) {
+    Object const &obj(here.object(k));
+    if (obj.isText()) {
+      Text const &text(obj.asText());
+      if (text.p.x < x0)
+        x0 = text.p.x;
+      if (text.p.y < y0)
+        y0 = text.p.y;
+      got = true;
+    }
+  }
+  if (!got) {
+    x0 = ori.x;
+    y0 = ori.y;
   }
   x->setValue(x0 - ori.x);
   y->setValue(y0 - ori.y);
@@ -209,11 +238,10 @@ void PBData::fillWH(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
+  qDebug() << "filldiamandshape" << objects << circle->isChecked() << square->isChecked();
   bool got = false;
   // Set id (od, square) if we have at least one hole and their id (etc)
   // etc all same
-  square->setChecked(false);
-  circle->setChecked(false);
   for (int k: objects) {
     Object const &obj(here.object(k));
     if (obj.isHole()) {
@@ -236,10 +264,8 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
 	id->setValue(id1);
 	od->setValue(od1);
 	slotlength->setValue(sl1);
-	if (sq)
-	  square->setChecked(true);
-	else
-	  circle->setChecked(true);
+        square->setChecked(sq);
+        circle->setChecked(!sq);
 	got = true;
       }
     } else if (obj.isNPHole()) {
@@ -293,6 +319,7 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
     editor->properties().square = true;
   if (circle->isChecked())
     editor->properties().square = false;
+  qDebug() << "ischecked" << circle->isChecked() << square->isChecked();
 }
 
 void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
@@ -338,6 +365,7 @@ void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
+  qDebug() << "fillarcangle" << objects;
   bool got = false;
   int arcangle = 0; // "invalid"
   // set angle if all are same
@@ -355,13 +383,15 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
       }
     }
   }
-  arc360->setChecked(arcangle==360);
-  arc300->setChecked(arcangle==300);  
-  arc240->setChecked(arcangle==240);  
-  arc180->setChecked(arcangle==180);  
-  arc_90->setChecked(arcangle==90);
-  if (arcangle==90)
-    editor->properties().arcangle = -arcangle;
+  if (got) {
+    arc360->setChecked(arcangle==360);
+    arc300->setChecked(arcangle==300);  
+    arc240->setChecked(arcangle==240);  
+    arc180->setChecked(arcangle==180);  
+    arc_90->setChecked(arcangle==90);
+  }
+  //if (arcangle==90)
+  //  editor->properties().arcangle = -arcangle;
   if (arcangle!=0)
     editor->properties().arcangle = arcangle;
 }
@@ -449,7 +479,9 @@ void PBData::getPropertiesFromSelection() {
   QSet<Point> points(editor->selectedPoints());
   Group const &here(editor->currentGroup());
 
-  fillXY(points);
+  qDebug() << "getpropertiesfromselection" << objects.size() << points.size();
+  if (!fillXY(points)) 
+    fillXYfromText(objects, here);
   fillLinewidth(objects, here);
   fillWH(objects, here);
   fillDiamAndShape(objects,  here);
@@ -508,6 +540,10 @@ void PBData::hideAndShow() {
   orientc->setVisible(true);
   flipped->setVisible(true);
   rotatec->setVisible(false);
+
+  qDebug() << "top acts" << xya << dima << arca;
+  qDebug() << "group" << xyg << dimg << arcg;
+  qDebug() << "conts" << squarec << arcc;
 
   switch (mode) {
   case Mode::Invalid: case Mode::SetIncOrigin: case Mode::BoardOutline:
@@ -608,6 +644,8 @@ void PBData::hsEdit() {
   orientc->setVisible(false);
   flipped->setVisible(false);
   rotatec->setVisible(true);
+
+  getPropertiesFromSelection();
   
   QSet<int> objects(editor->selectedObjects());
   QSet<Point> points(editor->selectedPoints());
@@ -718,6 +756,7 @@ void PBData::hsEdit() {
 }
 
 void PBData::setupUI() {
+  qDebug() << "setupui" << (void*)xya << (void*)arca;
   auto makeGroup = [this](QAction **a) {
     Q_ASSERT(parent);
     Q_ASSERT(a);
@@ -735,7 +774,7 @@ void PBData::setupUI() {
     Q_ASSERT(group->layout());
     QWidget *container = new QWidget(group);
     auto *lay = new QHBoxLayout;
-    lay->setSpacing(4);
+    lay->setSpacing(8);
     lay->setContentsMargins(0, 0, 0, 0);
     container->setLayout(lay);
     group->layout()->addWidget(container);
@@ -864,8 +903,9 @@ void PBData::setupUI() {
   QObject::connect(notes, &QTextEdit::textChanged,
 		   [this]() { editor->setGroupNotes(notes->document()
                                                     ->toPlainText()); });
-  
+  qDebug() << "premg" << xya;
   xyg = makeGroup(&xya);
+  qDebug() << "postmg" << xya;
   xc = makeContainer(xyg);
   makeLabel(xc, "X", "Distance from left");
   x = makeDimSpinner(xc, Dim::fromInch(.050));
@@ -896,7 +936,8 @@ void PBData::setupUI() {
   ((QVBoxLayout*)(dimg->layout()))->addSpacing(8);
   
   idc = makeContainer(dimg);
-  makeLabel(idc, "⌀", "Hole diameter");
+  //makeLabel(idc, "⌀", "Hole diameter");
+  makeIcon(idc, "Diameter", "Hole diameter");
   id = makeDimSpinner(idc);
   id->setMinimumValue(Dim::fromInch(0.005));
   id->setValue(Dim::fromInch(.040));
@@ -931,27 +972,23 @@ void PBData::setupUI() {
 
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
-  circle = makeTextTool(squarec, "○", "Round");
+  circle = makeIconTool(squarec, "Round", true, true, "Round");
   circle->setChecked(true);
-  square = makeTextTool(squarec, "□", "Square");
+  square = makeIconTool(squarec, "Square", true, true, "Square");
 
-  QObject::connect(square, &QToolButton::clicked,
+  QObject::connect(square, &QAction::triggered,
 		   [this]() {
-		     square->setChecked(true);
-		     circle->setChecked(false);
 		     editor->setSquare(true);
 		   });
-  QObject::connect(circle, &QToolButton::clicked,
+  QObject::connect(circle, &QAction::triggered,
 		   [this]() {
-		     circle->setChecked(true);
-		     square->setChecked(false);
 		     editor->setSquare(false);
 		   });
 
   ((QVBoxLayout*)(dimg->layout()))->addSpacing(8);
 
   wc = makeContainer(dimg);
-  makeLabel(wc, "W", "Pad width");
+  makeLabel(wc, "Width", "Pad width");
   w = makeDimSpinner(wc);
   w->setValue(Dim::fromInch(.020));
   w->setMinimumValue(Dim::fromInch(0.005));
@@ -961,7 +998,7 @@ void PBData::setupUI() {
                    });
 
   hc = makeContainer(dimg);
-  makeLabel(hc, "H", "Pad height");
+  makeLabel(hc, "Height", "Pad height");
   h = makeDimSpinner(hc);
   h->setValue(Dim::fromInch(.040));
   h->setMinimumValue(Dim::fromInch(0.005));
@@ -981,7 +1018,7 @@ void PBData::setupUI() {
 		   [this]() { editor->setRefText(text->text()); });
 
   auto *c1 = makeContainer(textg);
-  makeLabel(c1, "Fs", "Font size");
+  makeLabel(c1, "Size", "Font size");
   fs = makeDimSpinner(c1);
   fs->setValue(Dim::fromInch(.050));
   QObject::connect(fs, &DimSpinner::valueEdited,
@@ -1099,6 +1136,7 @@ void PBData::setupUI() {
 		     });
 
   top->setChecked(true);
+  qDebug() << "post" << xya;
 }  
 
 Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) {
@@ -1115,10 +1153,10 @@ void Propertiesbar::reflectMode(Mode m) {
   d->editor->properties().text = "";
   d->text->setText("");
   if (m==Mode::PlaceHole) {
-    if (!d->square->isChecked()) {
-      d->circle->setChecked(true);
-      d->editor->setSquare(false);
-    }
+    bool sq = d->square->isChecked();
+    d->square->setChecked(sq);
+    d->circle->setChecked(!sq);
+    d->editor->setSquare(sq);
     if (d->od->value() < d->id->value() + minRingWidth)
       d->od->setValue(d->id->value() + minRingWidth);
   }

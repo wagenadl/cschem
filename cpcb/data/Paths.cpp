@@ -11,7 +11,7 @@ namespace Paths {
 
   void setExecutablePath(QString s) {
     QFileInfo exe(s);
-    qDebug() << "exe" << exe;
+    //qDebug() << "exe" << exe;
     QDir dir = exe.dir();
     dir.makeAbsolute();
     qDebug() << "dir" << dir;
