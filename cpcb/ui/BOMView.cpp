@@ -26,7 +26,7 @@ BOMView::BOMView(QWidget *parent): QTableView(parent) {
   HtmlDelegate *delegate = new HtmlDelegate(this);
   setItemDelegateForColumn(int(BOM::Column::Ref), delegate);
   setSelectionBehavior(SelectRows);
-  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  //  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   sortProxy = new SortProxy(this);
   pl = 0;
 }
@@ -67,14 +67,14 @@ void BOMView::showEvent(QShowEvent *e) {
 void BOMView::resetWidth() {
   resizeColumnToContents(int(BOM::Column::Ref));
   resizeColumnToContents(int(BOM::Column::Value));
-  resizeColumnToContents(int(BOM::Column::Package));
-  resizeColumnToContents(int(BOM::Column::PartNo));
-  setColumnWidth(int(BOM::Column::Notes),
-                 viewport()->width()
-                 - columnWidth(int(BOM::Column::Ref))
-                 - columnWidth(int(BOM::Column::Package))
-                 - columnWidth(int(BOM::Column::PartNo))
-                 - columnWidth(int(BOM::Column::Value)));
+//  resizeColumnToContents(int(BOM::Column::Package));
+//  resizeColumnToContents(int(BOM::Column::PartNo));
+//  setColumnWidth(int(BOM::Column::Notes),
+//                 viewport()->width()
+//                 - columnWidth(int(BOM::Column::Ref))
+//                 - columnWidth(int(BOM::Column::Package))
+//                 - columnWidth(int(BOM::Column::PartNo))
+//                 - columnWidth(int(BOM::Column::Value)));
 }
 
 QSet<int> BOMView::selectedElements() const {

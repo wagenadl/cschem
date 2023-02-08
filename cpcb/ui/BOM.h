@@ -5,14 +5,13 @@
 #define BOM_H
 
 #include <QAbstractTableModel>
+#include "data/Group.h"
 
 struct BOMRow {
   int id;
   QString ref;
   QString value;
-  QString pkg;
-  QString partno;
-  QString notes;
+  QMap<Group::Attribute, QString> attributes;
 };
 
 class BOM: public QAbstractTableModel {
@@ -22,8 +21,11 @@ public:
     Id=0,
     Ref,
     Value,
-    Package,
+    Footprint,
+    Manufacturer,
     PartNo,
+    Vendor,
+    CatNo,
     Notes,
     N
   };
@@ -34,6 +36,7 @@ public:
                 int role=Qt::DisplayRole) const override;
   bool setData(QModelIndex const &index, QVariant const &value,
                int role=Qt::EditRole) override;
+  bool setAttributeData(int rowindex, Group::Attribute attr, QVariant const &value);
   Qt::ItemFlags flags(QModelIndex const &index) const override;
   QVariant headerData(int section, Qt::Orientation orientation,
                       int role=Qt::DisplayRole) const override;
