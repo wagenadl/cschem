@@ -36,6 +36,7 @@ public:
   QMap<Layer, bool> layervisible;
   bool planesvisible;
   QString linkedschematic;
+  QString pcbfilename;
 };
 
 QDebug operator<<(QDebug, Board const &);

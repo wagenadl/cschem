@@ -42,6 +42,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Board const &t) {
   s.writeStartElement("links");
   if (!t.linkedschematic.isEmpty())
     s.writeAttribute("schem", t.linkedschematic);
+  s.writeAttribute("pcbfn", t.pcbfilename);
   s.writeEndElement(); // links
   s.writeEndElement(); // board
   return s;
@@ -75,6 +76,10 @@ static void readOptions(QXmlStreamReader &s, Board &t) {
 static void readLinks(QXmlStreamReader &s, Board &t) {
   auto a = s.attributes();
   t.linkedschematic = a.value("schem").toString();
+  if (a.hasAttribute("pcbfn"))
+    t.pcbfilename = a.value("pcbfn").toString();
+  else
+    t.pcbfilename = "";
 }  
 
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Board &t) {

@@ -16,6 +16,7 @@ struct BOMRow {
 };
 
 class BOM: public QAbstractTableModel {
+  Q_OBJECT;
 public:
   enum class Column {
     Id=0,
@@ -45,6 +46,8 @@ public:
   bool saveShoppingListAsCSV(QString fn) const;
   QList<BOMRow> readAndVerifyCSV(QString fn) const; // does not store data,
   // ... merely returns it
+signals:
+  void hasLinkedSchematic(bool);
 private:
   class BOMData *d;
 };
