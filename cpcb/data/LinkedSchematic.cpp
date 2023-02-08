@@ -102,16 +102,18 @@ void LSData::validateNets() {
 LinkedSchematic::LinkedSchematic(QObject *parent):
   QObject(parent), d(new LSData(this)) {
   connect(d->watcher, &QFileSystemWatcher::fileChanged,
-	  [this]() {
-            qDebug() << "filechanged";
-	    d->invalidateNets();
-            Schem s = FileIO::loadSchematic(d->fn);
-            if (!s.isEmpty()) {
-              d->schem = s;
-              qDebug() << "Reloaded linked schematic";
-              reloaded();
-            }
-	  });
+          this, &LinkedSchematic::reload);
+}
+
+void LinkedSchematic::reload() {
+  qDebug() << "filechanged";
+  d->invalidateNets();
+  Schem s = FileIO::loadSchematic(d->fn);
+  if (!s.isEmpty()) {
+    d->schem = s;
+    qDebug() << "Reloaded linked schematic";
+    emit reloaded();
+  }
 }
 
 

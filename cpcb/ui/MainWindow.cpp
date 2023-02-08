@@ -14,6 +14,8 @@
 #include <QDesktopServices>
 #include <QSettings>
 #include "BoardSizeDialog.h"
+#include <QLabel>
+#include <QWidgetAction>
 #include "data/NetMismatch.h"
 #include "Version.h"
 #include "gerber/FrontPanelWriter.h"
@@ -46,8 +48,10 @@ public:
     bomv = 0;
     bomvdock = 0;
     recentfiles = 0;
+    linklabel = 0;
   }
-  void attemptRelinkSchematic();
+  void attemptRelinkSchematic(); 
+  void discussRelinkingSchematic(); 
   void setWindowTitle();
   void resetFilename();
   void about();
@@ -98,9 +102,14 @@ public:
   QString compwd;
   QString filename;
   RecentFiles *recentfiles;
+  QLabel *linklabel;
 };
 
 void MWData::attemptRelinkSchematic() {
+  /* If the linked schematic could not be found at original location,
+     check whether a file with the same name exists locally, and offer
+     to load it. Alternatively, suggest that the user browse for it.
+   */
   QString schemfn = editor->pcbLayout().board().linkedschematic;
   QString txt = "Could not load linked schematic “" + schemfn + "”.";
   QString leaf = QFileInfo(schemfn).fileName();
@@ -133,6 +142,17 @@ void MWData::attemptRelinkSchematic() {
   }
 }
 
+void MWData::discussRelinkingSchematic() {
+  /* If our file got moved (i.e., loaded from a different location
+     than the "pcbfilename" in Board), determine whether the
+     difference affects the path and whether it affects the
+     leaf. Depending on which parts differ, check for the existence of
+     circuit files with updated path and/or leaf. Offer to load one of
+     those instead.
+     NYI
+   */
+}
+
 QString MWData::getOpenFilename(QString ext, QString caption, QString desc) {
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
@@ -157,7 +177,7 @@ QString MWData::getSaveFilename(QString ext, QString caption) {
   if (!filename.isEmpty()) {
     if (!path.endsWith("/"))
       path += "/";
-    path += QFileInfo(filename).baseName();
+    path += QFileInfo(filename).completeBaseName();
     path += "." + ext;
   }
   
@@ -217,6 +237,10 @@ void MWData::showParts() {
     mcvdock->show();
     mw->addDockWidget(Qt::LeftDockWidgetArea, mcvdock);
     mcv->setSchem(editor->linkedSchematic().schematic());
+    QObject::connect(&editor->linkedSchematic(), &LinkedSchematic::reloaded,
+                     mcv, [this]() {
+                       mcv->setSchem(editor->linkedSchematic().schematic());
+                     });
     mcv->setRoot(editor->pcbLayout().root());
   }
 }
@@ -263,10 +287,12 @@ bool MainWindow::open(QString fn) {
   d->pwd = fi.dir().absolutePath();
   setWindowTitle(d->filename);
 
-  if (!d->editor->linkedSchematic().isValid()
-      && !d->editor->pcbLayout().board().linkedschematic.isEmpty())
-    d->attemptRelinkSchematic();
-
+  if (!d->editor->pcbLayout().board().linkedschematic.isEmpty()) {
+    if (!d->editor->linkedSchematic().isValid())
+      d->attemptRelinkSchematic();
+    else if (d->filename !=  d->editor->pcbLayout().board().pcbfilename)
+      d->discussRelinkingSchematic();
+  }
   if (d->editor->linkedSchematic().isValid()) 
     d->showParts();
 
@@ -378,7 +404,7 @@ void MWData::verifyNets() {
   statusbar->setMissing(names);
   if (nm.wronglyInNet.isEmpty() && nm.missingFromNet.isEmpty()
       && nm.missingEntirely.isEmpty()) {
-    QMessageBox::information(0, "cpcb", "All nets verified OK.");
+    QMessageBox::information(mw, "cpcb", "All nets verified OK.");
   } else {
     QStringList msgs;
     msgs << "Verification unsuccessful:";
@@ -418,7 +444,7 @@ void MWData::verifyNets() {
       msgs << "One affected net has been highlighted.";
     if (nm.missingEntirely.size()>1)
       msgs << "See status bar for details.";
-    QMessageBox::warning(0, "cpcb", msgs.join("\n"));
+    QMessageBox::warning(mw, "cpcb", msgs.join("\n"));
   }
 }
 
@@ -543,7 +569,7 @@ bool MWData::exportAsDialog() {
   if (fn.isEmpty())
     return false;
   
-  QString base = QFileInfo(fn).baseName();
+  QString base = QFileInfo(fn).completeBaseName();
   QTemporaryDir td;
   bool ok = false;
   if (td.isValid()) {
@@ -596,7 +622,7 @@ bool MWData::saveAsDialog() {
 void MWData::about() {
   QString me = "<b>cpcb</b>";
   QString vsn = Version::toString();
-  QMessageBox::about(0, "About " + me,
+  QMessageBox::about(mw, "About " + me,
 		     me + " " + vsn
 		     + "<p>" + "(C) 2018–2022 Daniel A. Wagenaar\n"
 		     + "<p>" + me + " is a program for printed circuit board  layout. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
@@ -612,7 +638,9 @@ void MWData::makeParts() {
   mcv->setScale(editor->pixelsPerMil());
   mcv->linkEditor(editor);
   QObject::connect(editor, &Editor::componentsChanged,
-		   [this]() { mcv->setRoot(editor->pcbLayout().root()); });
+		   mcv, [this]() {
+                     mcv->setRoot(editor->pcbLayout().root());
+                   });
   QObject::connect(editor, &Editor::scaleChanged,
 		   [this]() { mcv->setScale(editor->pixelsPerMil()); });
   mcvdock->setWidget(mcv);
@@ -625,6 +653,14 @@ void MWData::makeBOM() {
   bomv = new BOMView;
   bomvdock->setWidget(bomv);
   bomv->setModel(editor->bom());
+  QObject::connect(&editor->linkedSchematic(), &LinkedSchematic::reloaded,
+                   bomv, [this]() {
+                     bomv->model()->rebuild();
+                   });
+  QObject::connect(editor, &Editor::componentsChanged,
+		   bomv, [this]() {
+                     bomv->model()->rebuild();
+                   });
   bomvdock->hide();
   //  showBOM();
 }  
@@ -834,20 +870,34 @@ void MWData::makeMenus() {
   tools->addAction("Cleanup &trace intersections",
 		   [this]() { editor->cleanupIntersections(); });
   
-  tools->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
+  a = tools->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::Key_L));
+  QObject::connect(editor, &Editor::schematicLinked,
+		   a, &QAction::setDisabled);
 
-  a = tools->addAction("&Unlink schematic",
-		      [this]() { editor->unlinkSchematic(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+  auto *links = tools->addMenu("Linked &schematic");
   QObject::connect(editor, &Editor::schematicLinked,
-		   a, &QAction::setEnabled);
-  a->setEnabled(false);
-  a = tools->addAction("Open linked &schematic",
-		       [this]() { openLinkedSchematic(); });
+		   links, &QMenu::setEnabled);
+  links->setEnabled(false);
+  links->addAction("&Open",
+                   [this]() { openLinkedSchematic(); });
+  links->addAction("&Unlink",
+                   [this]() { editor->unlinkSchematic(); },
+                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+  auto *linkinfo = links->addMenu("&Info");
+
+  linklabel = new QLabel(editor->pcbLayout().board().linkedschematic);
+  linklabel->setAlignment(Qt::AlignCenter);
+  linklabel->setMargin(4);
   QObject::connect(editor, &Editor::schematicLinked,
-		   a, &QAction::setEnabled);
-  a->setEnabled(false);
+                   linklabel, [this]() {
+                     linklabel->setText(editor->pcbLayout().board()
+                                        .linkedschematic);
+                   });
+  QWidgetAction *wa = new QWidgetAction(linkinfo);
+  wa->setDefaultWidget(linklabel);
+  linkinfo->addAction(wa);
+  
   
   a = tools->addAction("&Verify nets",
 		      [this]() { verifyNets(); },
@@ -979,6 +1029,7 @@ void MWData::fillBars() {
 }
 
 MainWindow::MainWindow(): QMainWindow() {
+  setAttribute(Qt::WA_DeleteOnClose);
   setWindowIcon(QIcon(":/cpcb.png"));
   d = new MWData(this);
   d->makeEditor();

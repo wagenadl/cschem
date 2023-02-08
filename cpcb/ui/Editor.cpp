@@ -77,11 +77,14 @@ bool Editor::load(QString fn) {
 }
 
 bool Editor::save(QString fn) {
+  QString oldfn = d->layout.board().pcbfilename;
+  d->layout.board().pcbfilename = fn;
   if (FileIO::saveLayout(fn, d->layout)) {
     d->stepsfromsaved = 0;
     emit changedFromSaved(false);
     return true;
   } else {
+    d->layout.board().pcbfilename = oldfn;
     return false;
   }
 }
@@ -1251,6 +1254,7 @@ QString Editor::linkedSchematicFilename() const {
 }
 
 bool Editor::linkSchematic(QString fn) {
+  UndoCreator uc(d, true);
   d->linkedschematic.link(fn);
   if (d->linkedschematic.isValid()) {
     d->layout.board().linkedschematic = fn;
@@ -1265,6 +1269,7 @@ bool Editor::linkSchematic(QString fn) {
 }
 
 void Editor::unlinkSchematic() {
+  UndoCreator uc(d, true);
   d->linkedschematic.unlink();
   d->layout.board().linkedschematic = "";
   emit schematicLinked(false);
@@ -1275,6 +1280,7 @@ LinkedSchematic const &Editor::linkedSchematic() const {
 }
 
 void Editor::undo() {
+  QString linkfn = d->layout.board().linkedschematic;
   if (d->undostack.isEmpty())
     return;
   { UndoStep s;
@@ -1294,6 +1300,12 @@ void Editor::undo() {
   d->undostack.removeLast();
   d->stepsfromsaved--;
   emit changedFromSaved(d->stepsfromsaved != 0);
+
+  if (d->layout.board().linkedschematic != linkfn) {
+    d->linkedschematic.link(d->layout.board().linkedschematic);
+    emit schematicLinked(d->linkedschematic.isValid());
+  }
+  
   d->emitSelectionStatus();
   emit componentsChanged();
   emit boardChanged(d->layout.board());
@@ -1303,6 +1315,7 @@ void Editor::undo() {
 }
 
 void Editor::redo() {
+  QString linkfn = d->layout.board().linkedschematic;
   if (d->redostack.isEmpty())
     return;
   { UndoStep s;
@@ -1322,6 +1335,12 @@ void Editor::redo() {
   d->redostack.removeLast();
   d->stepsfromsaved++;
   emit changedFromSaved(d->stepsfromsaved != 0);
+
+  if (d->layout.board().linkedschematic != linkfn) {
+    d->linkedschematic.link(d->layout.board().linkedschematic);
+    emit schematicLinked(d->linkedschematic.isValid());
+  }
+
   d->emitSelectionStatus();
   emit componentsChanged();
   emit boardChanged(d->layout.board());
@@ -1474,7 +1493,31 @@ void Editor::selectTrace(bool wholenet) {
   }
 }
 
-void Editor::setGroupPackage(QString t) {
+
+void Editor::setCurrentGroupRef(QString t) {
+  NodeID nodeid = breadcrumbs();
+  if (nodeid.size()==1)
+    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
+                                  int(BOM::Column::Ref)), t);
+  setGroupRef(breadcrumbs(), t);
+}
+
+void Editor::setGroupRef(NodeID path, QString t) {
+  if (t != d->layout.root().subgroup(path).ref) {
+    UndoCreator uc(d, true);
+    Group &here = d->layout.root().subgroup(path.parent());
+    Group &grp = d->layout.root().subgroup(path);
+    int tid = grp.refTextId();
+    grp.ref = t;
+    qDebug() << "setgroupref" << t << tid;
+    if (tid>0 && here.contains(tid)) {
+      here.object(tid).asText().text = t;
+    }
+    emit componentsChanged(); //?
+  }
+}
+
+void Editor::setCurrentGroupPackage(QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
     d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
@@ -1489,7 +1532,7 @@ void Editor::setGroupPackage(NodeID path, QString t) {
   }
 }
 
-void Editor::setGroupPartno(QString t) {
+void Editor::setCurrentGroupPartno(QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
     d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
@@ -1504,7 +1547,7 @@ void Editor::setGroupPartno(NodeID path, QString t) {
   }
 }
 
-void Editor::setGroupNotes(QString t) {
+void Editor::setCurrentGroupNotes(QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
     d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),

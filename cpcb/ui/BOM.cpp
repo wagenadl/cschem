@@ -11,6 +11,7 @@
 #include <QTextStream>
 #include "data/CSV.h"
 #include <QFile>
+#include <algorithm>
 
 class BOMData {
 public:
@@ -109,6 +110,7 @@ bool BOM::setData(QModelIndex const &index, QVariant const &value,
   switch (Column(c)) {
   case Column::Ref:
     row.ref = txt;
+    d->editor->setGroupRef(node, txt);
     break;
   case Column::Package:
     row.pkg = txt;
@@ -133,6 +135,7 @@ Qt::ItemFlags BOM::flags(QModelIndex const &index) const {
   int c = index.column();
   Qt::ItemFlags f = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
   switch (Column(c)) {
+  case Column::Ref:
   case Column::Package:
   case Column::PartNo:
   case Column::Notes:
@@ -190,6 +193,7 @@ void BOM::rebuild() {
   d->reloadData();
   qDebug() << "BOM rebuild" << d->elements.size();
   endResetModel();
+  emit hasLinkedSchematic(d->editor->linkedSchematic().isValid());
 }
 
 QList<QStringList> BOM::asTable() const {
@@ -216,6 +220,7 @@ bool BOM::saveAsCSV(QString fn) const {
   }
 }
 
+
 bool BOM::saveShoppingListAsCSV(QString fn) const {
   QMap<QString, QStringList> partno2refs;
   for (BOMRow const &elt: d->elements) 
@@ -228,12 +233,14 @@ bool BOM::saveShoppingListAsCSV(QString fn) const {
     ts << "\"Qty\",\"Part no\",\"Refs\"\n";
     for (QString partno: partno2refs.keys()) {
       QStringList refs = partno2refs[partno];
+      QString crefs
+        = PartNumbering::compactRefs(refs);
       int n = refs.size();
       ts << n;
       ts << ",";
       ts << CSV::quote(partno);
       ts << ",";
-      ts << CSV::quote(refs.join(", "));
+      ts << CSV::quote(crefs);
       ts << "\n";
     }
     return true;

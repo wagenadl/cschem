@@ -23,6 +23,8 @@ public:
   Circuit circuit() const;
   QList<LinkedNet> nets() const;
   Nodename pinAlias(Nodename const &) const;
+public slots:
+  void reload();
 signals:
   void reloaded();
 private:
