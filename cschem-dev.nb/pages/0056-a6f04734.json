@@ -1,0 +1,227 @@
+{ "typ": "page",
+  "cre": "2023-02-06T19:03:23.918",
+  "mod": "2023-02-07T08:07:12.621",
+  "cui": "2edabb2aac00cecb",
+  "stampTime": 0,
+  "startPage": 56,
+  "unlocked": false,
+  "uuid": "a6f04734",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2023-02-06T19:03:23.917",
+      "mod": "2023-02-06T19:03:23.927",
+      "uuid": "8364e74c",
+      "cc": [
+        { "typ": "res",
+          "cre": "2023-02-06T19:03:23.926",
+          "mod": "2023-02-06T19:03:23.927",
+          "archive": "47_-d5618ce5.html",
+          "desc": "",
+          "preview": "47_-d5618ce5p.png",
+          "source": "page://0.0.0.47/813d5195/6",
+          "tag": "47",
+          "title": "",
+          "uuid": "d5618ce5"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2023-02-06T19:03:23.919",
+      "mod": "2023-02-06T19:03:23.927",
+      "uuid": "484df93a",
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-06T19:03:23.919",
+          "mod": "2023-02-06T19:03:23.927",
+          "lines": [
+            0
+          ],
+          "text": "CPCB pick and place SMT (cont’d)",
+          "uuid": "9e85d707",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2023-02-06T19:03:23.926",
+              "mod": "2023-02-06T19:03:23.927",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "8d190714",
+              "x": -46.8281,
+              "y": 45.06,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2023-02-06T19:03:23.926",
+                  "mod": "2023-02-06T19:03:23.926",
+                  "lines": [
+                    0
+                  ],
+                  "text": "p. 47 >",
+                  "uuid": "3b6760bd",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2023-02-06T19:03:23.926",
+                      "mod": "2023-02-06T19:03:23.926",
+                      "end": 5,
+                      "res": [
+                        "47"
+                      ],
+                      "start": 3,
+                      "style": 4,
+                      "uuid": "b168c716"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-06T19:03:27.849",
+      "mod": "2023-02-06T19:04:04.438",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "7d62e17a",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-06T19:03:27.849",
+          "mod": "2023-02-06T19:04:04.438",
+          "lines": [
+            0,
+            59,
+            121
+          ],
+          "text": "In summary, 2-pin resistors and capacitors are horizontal, capacitor – on the left. Same for diodes: cathode on the left (not shown in e.g., but verified today).",
+          "uuid": "32a38254"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-06T19:04:10.580",
+      "mod": "2023-02-06T19:04:22.468",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "830eb58c",
+      "y0": 145.498,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-06T19:04:10.580",
+          "mod": "2023-02-06T19:04:22.468",
+          "lines": [
+            0
+          ],
+          "text": "SOICs are in horizontal orientation, pin 1 bottom left.",
+          "uuid": "4a2b719e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-06T19:04:23.573",
+      "mod": "2023-02-06T19:07:24.857",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ae631854",
+      "y0": 172.664,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-06T19:04:23.573",
+          "mod": "2023-02-06T19:07:24.857",
+          "lines": [
+            0,
+            55
+          ],
+          "text": "SOT223 and SOT89 are vertically oriented, pin 1 bottom right.",
+          "uuid": "95d24946"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-06T19:07:39.407",
+      "mod": "2023-02-06T19:07:50.463",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "d5160cc6",
+      "y0": 222.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-06T19:07:39.407",
+          "mod": "2023-02-06T19:07:50.463",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "Regular SIPs and TO92 are horizontally oriented, pin 1 on the left.",
+          "uuid": "bff69c7d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-07T08:04:50.438",
+      "mod": "2023-02-07T08:06:09.020",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9a06ba93",
+      "y0": 273.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-07T08:04:50.438",
+          "mod": "2023-02-07T08:06:09.020",
+          "lines": [
+            0,
+            65,
+            125,
+            183
+          ],
+          "text": "Although this is all quite confusing, it is helpful to note that the “Pad XY” and “Rotation” columns are mutually redundant, so a discrepancy there would hopefully be detected by the placer.",
+          "uuid": "9d5e380d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-07T08:06:13.339",
+      "mod": "2023-02-07T08:07:12.621",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b2d4c7f6",
+      "y0": 369.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-07T08:06:13.339",
+          "mod": "2023-02-07T08:07:12.621",
+          "lines": [
+            0,
+            61,
+            123
+          ],
+          "text": "One point: It is now important that all placeable parts have a pin 1, even diodes and capacitors that may not have had one before. I guess 1/–, 1/K will work.",
+          "uuid": "d51a9d9b",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-02-07T08:06:33.854",
+              "mod": "2023-02-07T08:06:33.854",
+              "end": 60,
+              "start": 56,
+              "style": 1,
+              "uuid": "6c7c6ee7"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
