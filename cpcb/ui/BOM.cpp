@@ -24,6 +24,15 @@ public:
   QList<BOMRow> elements; // list elements are rows of the model
 };
 
+QMap<BOM::Column, Group::Attribute> col2attr{
+  { BOM::Column::Footprint, Group::Attribute::Footprint },
+  { BOM::Column::Manufacturer, Group::Attribute::Manufacturer },
+  { BOM::Column::PartNo, Group::Attribute::PartNo },
+  { BOM::Column::Vendor, Group::Attribute::Vendor },
+  { BOM::Column::CatNo, Group::Attribute::CatNo },
+  { BOM::Column::Notes, Group::Attribute::Notes },
+};
+
 void BOMData::reloadData() {
   elements.clear();
   Group const &root(editor->pcbLayout().root());
@@ -35,16 +44,14 @@ void BOMData::reloadData() {
       BOMRow row;
       row.id = k;
       row.ref = g.ref;
-      row.pkg = g.pkg;
-      row.partno = g.partno;
-      row.notes = g.notes;
+      row.attributes = g.attributes;
       int elt = circuit.elementByName(g.ref);
       if (elt>0) {
         row.value = circuit.elements[elt].value;
         if (row.value=="")
           row.value = circuit.elements[elt].subtype;
-        if (row.notes=="")
-          row.notes = circuit.elements[elt].notes;
+        if (row.attributes.value(Group::Attribute::Notes)=="")
+          row.attributes[Group::Attribute::Notes] = circuit.elements[elt].notes;
       }
       elements << row;
     }
@@ -75,7 +82,8 @@ QVariant BOM::data(QModelIndex const &index,
   if (!iseditdisp || r<0 || c<0 || r>=d->elements.size() || c>=int(Column::N))
     return QVariant();
   BOMRow const &row = d->elements[r];
-  switch (Column(c)) {
+  Column col = Column(c);
+  switch (col) {
   case Column::Id:
     return row.id;
   case Column::Ref:
@@ -85,15 +93,20 @@ QVariant BOM::data(QModelIndex const &index,
       return row.ref;
   case Column::Value:
     return row.value;
-  case Column::Package:
-    return row.pkg;
-  case Column::PartNo:
-    return row.partno;
-  case Column::Notes:
-    return row.notes;
   default:
-    return QVariant();
+    if (col2attr.contains(col))
+      return row.attributes.value(col2attr[col]);
+    else
+      return QVariant();
   }
+}
+
+bool BOM::setAttributeData(int r, Group::Attribute attr, QVariant const &value) {
+  BOMRow &row(d->elements[r]);
+  for (int c=0; c!=int(Column::N); c++) 
+    if (col2attr.contains(Column(c)) && col2attr[Column(c)]==attr) 
+      return setData(index(r, c), value);
+  return false;
 }
 
 bool BOM::setData(QModelIndex const &index, QVariant const &value,
@@ -105,6 +118,7 @@ bool BOM::setData(QModelIndex const &index, QVariant const &value,
     return false;
 
   BOMRow &row(d->elements[r]);
+  Column col = Column(c);
   QString txt = value.toString().trimmed();
   NodeID node; node << row.id;
   switch (Column(c)) {
@@ -112,20 +126,13 @@ bool BOM::setData(QModelIndex const &index, QVariant const &value,
     row.ref = txt;
     d->editor->setGroupRef(node, txt);
     break;
-  case Column::Package:
-    row.pkg = txt;
-    d->editor->setGroupPackage(node, txt);
-    break;
-  case Column::PartNo:
-    row.partno = txt;
-    d->editor->setGroupPartno(node, txt);
-    break;
-  case Column::Notes: 
-    row.notes = txt;
-    d->editor->setGroupNotes(node, txt);
-    break;
   default:
-    return false;
+    if (col2attr.contains(col)) {
+      row.attributes[col2attr[col]] = txt;
+      d->editor->setGroupAttribute(node, col2attr[col], txt);
+    } else {
+      return false;
+    }
   }
   emit dataChanged(index, index);
   return true;
@@ -134,18 +141,30 @@ bool BOM::setData(QModelIndex const &index, QVariant const &value,
 Qt::ItemFlags BOM::flags(QModelIndex const &index) const {
   int c = index.column();
   Qt::ItemFlags f = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-  switch (Column(c)) {
+  Column col = Column(c);
+  switch (col) {
   case Column::Ref:
-  case Column::Package:
-  case Column::PartNo:
-  case Column::Notes:
     f |= Qt::ItemIsEditable;
     break;
   default:
+    if (col2attr.contains(col))
+      f |= Qt::ItemIsEditable;
     break;
   }
   return f;
 }
+
+QMap<BOM::Column, QString> columnnames{
+  {BOM::Column::Id, "Id"},
+  {BOM::Column::Ref, "Ref."},
+  {BOM::Column::Value, "Value"},
+  {BOM::Column::Footprint, "Pkg."},
+  {BOM::Column::Manufacturer, "Mfg."},
+  {BOM::Column::PartNo, "Part#"},
+  {BOM::Column::Vendor, "Vend."},
+  {BOM::Column::CatNo, "Cat#"},
+  {BOM::Column::Notes, "Notes"},
+};
 
 QVariant BOM::headerData(int section, Qt::Orientation orientation,
                     int role) const {
@@ -153,22 +172,7 @@ QVariant BOM::headerData(int section, Qt::Orientation orientation,
     return QVariant();
   if (orientation==Qt::Horizontal) {
     // working on columns
-    switch (Column(section)) {
-    case Column::Id:
-      return QString("Id");
-    case Column::Ref:
-      return QString("Ref.");
-    case Column::Value:
-      return QString("Value");
-    case Column::Package:
-      return QString("Pkg.");
-    case Column::PartNo:
-      return QString("Part no.");
-    case Column::Notes:
-      return QString("Notes");
-    default:
-      return QVariant();
-    }
+    return QVariant(columnnames.value(Column(section)));
   } else {
     // working on rows
     return ""; // this should never be shown
@@ -196,15 +200,39 @@ void BOM::rebuild() {
   emit hasLinkedSchematic(d->editor->linkedSchematic().isValid());
 }
 
+
+static QList<Group::Attribute> csvattrs{
+  Group::Attribute::Footprint,
+  Group::Attribute::Manufacturer,
+  Group::Attribute::PartNo,
+  Group::Attribute::Vendor,
+  Group::Attribute::CatNo,
+  Group::Attribute::Notes
+};
+  
+static QStringList headernames{"Ref.",
+                              "Value",
+                              "Pkg.",
+                              "Mfg.",
+                              "Part#",
+                              "Vend.",
+                              "Cat#",
+                              "Notes"};
+
 QList<QStringList> BOM::asTable() const {
   QList<QStringList> table;
-
-  for (BOMRow const &elt: d->elements) 
-    table << QStringList{elt.ref, elt.value, elt.pkg, elt.partno, elt.notes};
+  
+  for (BOMRow const &elt: d->elements) {
+    QStringList row{elt.ref, elt.value};
+    for (auto attr: csvattrs)
+      row << elt.attributes[attr];
+    table << row;
+  }
+   
   std::sort(table.begin(), table.end(),
             [](QStringList a, QStringList b) {
               return PartNumbering::lessThan(a[0], b[0]); });
-  table.insert(0, QStringList{"Ref.", "Value", "Pkg.", "Part no.", "Notes"});
+  table.insert(0, headernames);
   return table;
 }
 
@@ -220,26 +248,35 @@ bool BOM::saveAsCSV(QString fn) const {
   }
 }
 
+QStringList mfgvendor(BOMRow const &row) {
+  return QStringList{
+    row.attributes.value(Group::Attribute::Manufacturer),
+    row.attributes.value(Group::Attribute::PartNo),
+    row.attributes.value(Group::Attribute::Vendor),
+    row.attributes.value(Group::Attribute::CatNo),
+  };
+}
 
 bool BOM::saveShoppingListAsCSV(QString fn) const {
-  QMap<QString, QStringList> partno2refs;
+  QMap<QStringList, QStringList> partno2refs;
   for (BOMRow const &elt: d->elements) 
-    partno2refs[elt.partno] << elt.ref;
-  partno2refs.remove("");
+    partno2refs[mfgvendor(elt)] << elt.ref;
   
   QFile f(fn);
   if (f.open(QFile::WriteOnly)) {
     QTextStream ts(&f);
-    ts << "\"Qty\",\"Part no\",\"Refs\"\n";
-    for (QString partno: partno2refs.keys()) {
+    ts << "\"Qty\",\"Mfg.\",\"Part no\",\"Vendor\",\"Cat#\",\"Refs\"\n";
+    for (QStringList partno: partno2refs.keys()) {
       QStringList refs = partno2refs[partno];
       QString crefs
         = PartNumbering::compactRefs(refs);
       int n = refs.size();
       ts << n;
       ts << ",";
-      ts << CSV::quote(partno);
-      ts << ",";
+      for (QString bit: partno) {
+        ts << CSV::quote(bit);
+        ts << ",";
+      }
       ts << CSV::quote(crefs);
       ts << "\n";
     }
@@ -257,7 +294,7 @@ QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
   QList<QStringList> table = CSV::decode(csv);
   if (table.isEmpty())
     return QList<BOMRow>();
-  if (table[0] == QStringList{"Ref.", "Value", "Pkg.", "Part no.", "Notes"})
+  if (table[0] == headernames)
     table.removeAt(0); // drop header
 
   QSet<QString> allrefs;
@@ -277,12 +314,14 @@ QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
     b.ref = row[0];
     if (row.size()>=2)
       b.value = row[1];
-    if (row.size()>=3)
-      b.pkg = row[2];
-    if (row.size()>=4)
-      b.partno = row[3];
-    if (row.size()>=5)
-      b.notes = row[4];
+    int k = 2;
+    for (auto attr: csvattrs) {
+      if (row.size()>k)
+        b.attributes[attr] = row[k];
+      else
+        break;
+      k++;
+    }
     result << b;
   }
   return result;

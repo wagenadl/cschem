@@ -17,10 +17,17 @@
 class Group {
   /* Empty groups are not saved, even if they do have a ref or notes. */
 public:
+  enum class Attribute {
+    Footprint,
+    Manufacturer,
+    PartNo,
+    Vendor,
+    CatNo,
+    Notes,
+  };
+public:
   QString ref;
-  QString notes;
-  QString pkg;
-  QString partno;
+  QMap<Attribute, QString> attributes;
 public:
   Group();
   ~Group();
