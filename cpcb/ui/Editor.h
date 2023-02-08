@@ -52,8 +52,8 @@ public slots:
   bool enterGroup(int sub); // sub is from current level; returns true if OK
   bool leaveGroup(); // returns true unless already at top
   bool leaveAllGroups();
-  void select(int, bool add=false); // emits signal if selection changed
-  void select(QSet<int>);
+  void select(int id, bool add=false, bool withreftext=false); // emits signal if selection changed
+  void select(QSet<int> ids, bool withreftext=false);
   void selectPoint(Point, bool add=false);
   void deselectPoint(Point);
   void selectTrace(bool wholetree);
