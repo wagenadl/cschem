@@ -1091,5 +1091,5 @@ void MWData::selectionFromBOM() {
   if (bomv->isQuiet())
     return;
   QSet<int> sel = bomv->selectedElements();
-  editor->select(sel);
+  editor->select(sel, true);
 }

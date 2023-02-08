@@ -737,9 +737,7 @@ void EData::newSelectionUnless(int id, Point p, Dim mrg, bool add) {
       ed->select(id, add);
     }
   } else {
-    ed->select(id, add);
-    if (obj.isGroup())
-      ed->select(obj.asGroup().refTextId(), true);
+    ed->select(id, add, true);
   }
 }
 

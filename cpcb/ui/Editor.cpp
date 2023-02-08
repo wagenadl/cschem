@@ -476,7 +476,7 @@ bool Editor::leaveAllGroups() {
   return true;
 }
 
-void Editor::select(int id, bool add) {
+void Editor::select(int id, bool add, bool withreftext) {
   d->invalidateStuckPoints();
   Group &here(d->currentGroup());
   if (!add) {
@@ -487,12 +487,17 @@ void Editor::select(int id, bool add) {
   if (here.contains(id)) {
     d->selection.insert(id);
     d->selectPointsOf(id);
+    if (withreftext) {
+      Object &obj = here.object(id);
+      if (obj.isGroup())
+        d->selection.insert(obj.asGroup().refTextId());
+    }
   }
   update();
   d->emitSelectionStatus();
 }
 
-void Editor::select(QSet<int> ids) {
+void Editor::select(QSet<int> ids, bool withreftext) {
   d->invalidateStuckPoints();
   Group &here(d->currentGroup());
 
@@ -504,6 +509,11 @@ void Editor::select(QSet<int> ids) {
     if (here.contains(id)) {
       d->selection.insert(id);
       d->selectPointsOf(id);
+      if (withreftext) {
+        Object &obj = here.object(id);
+        if (obj.isGroup())
+          d->selection.insert(obj.asGroup().refTextId());
+      }
     }
   }
   update();
