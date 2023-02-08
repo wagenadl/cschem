@@ -8,6 +8,15 @@
 #include <QFileInfo>
 #include <QRegularExpression>
 
+static QMap<Group::Attribute, QString> xmlnames{
+  { Group::Attribute::Footprint, "pkg" },
+  { Group::Attribute::Manufacturer, "mfg" },
+  { Group::Attribute::PartNo, "partno" },
+  { Group::Attribute::Vendor, "vendor" },
+  { Group::Attribute::CatNo, "catno" },
+  { Group::Attribute::Notes, "notes" },
+};
+
 class GData: public QSharedData {
 public:
   QMap<int, Object> obj;
@@ -32,9 +41,7 @@ Group::~Group() {
 Group::Group(Group const &o) {
   d = o.d;
   ref = o.ref;
-  notes = o.notes;
-  pkg = o.pkg;
-  partno = o.partno;
+  attributes = o.attributes;
 }
 
 Group &Group::operator=(Group const &o) {
@@ -42,9 +49,7 @@ Group &Group::operator=(Group const &o) {
     return *this;
   d = o.d;
   ref = o.ref;
-  notes = o.notes;
-  pkg = o.pkg;
-  partno = o.partno;
+  attributes = o.attributes;
   return *this;
 }
 
@@ -613,7 +618,6 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace) const {
   }
   return ids;
 }
-  
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   if (t.isEmpty()) {
@@ -622,14 +626,9 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   }
   s.writeStartElement("group");
   s.writeAttribute("ref", t.ref);
-  if (!t.notes.isEmpty())
-    s.writeAttribute("notes", t.notes);
-  if (!t.pkg.isEmpty())
-    s.writeAttribute("pkg", t.pkg);
-  if (!t.partno.isEmpty())
-    s.writeAttribute("partno", t.partno);
-  if (t.d->nominalrotation!=0)
-    s.writeAttribute("nomrot", QString::number(t.d->nominalrotation));
+  for (Group::Attribute attr: t.attributes.keys())
+        s.writeAttribute(xmlnames[attr], t.attributes[attr]);
+  s.writeAttribute("nomrot", QString::number(t.d->nominalrotation));
   for (Object const &o: t.d->obj) {
     if (o.isGroup()) {
       s.writeStartElement("gr");
@@ -664,9 +663,9 @@ bool Group::saveComponent(int id, QString fn) {
     return false;
   }
 
-
   object(id).asGroup().d->nominalrotation = 0;
-  object(id).asGroup().pkg = QFileInfo(fn).completeBaseName();
+  object(id).asGroup().attributes[Attribute::Footprint]
+    = QFileInfo(fn).completeBaseName();
 
   QXmlStreamWriter sw(&file);
   sw.setAutoFormatting(true);
@@ -684,18 +683,16 @@ bool Group::saveComponent(int id, QString fn) {
       sw.writeStartElement("svg");
       sw.writeAttributes(sr.attributes());
       for (auto ns: sr.namespaceDeclarations())
-	sw.writeNamespace(ns.namespaceUri().toString(), ns.prefix().toString());
+	sw.writeNamespace(ns.namespaceUri().toString(),
+                          ns.prefix().toString());
 
       sw.writeNamespace("http://www.danielwagenaar.net/cpcb-ns.html", "cpcb");
       sw.writeStartElement("cpcb:part");
 
       Group const &grp(obj.asGroup());
       
-      sw.writeAttribute("pkg", grp.pkg);
-      if (grp.partno!="")
-        sw.writeAttribute("partno", grp.partno);
-      if (grp.notes!="")
-        sw.writeAttribute("notes", grp.notes);
+      for (Attribute attr: grp.attributes.keys())
+        sw.writeAttribute(xmlnames[attr], grp.attributes[attr]);
       sw.writeDefaultNamespace("http://www.danielwagenaar.net/cpcb-ns.html");
   
       int refid = grp.refTextId();
@@ -730,8 +727,8 @@ static int readGroupAndRef(QXmlStreamReader &s, Group &t) {
       if (s.name()=="group") {
         Object o;
         s >> o;
-	if (o.asGroup().pkg=="")
-	  o.asGroup().pkg = pkg;
+	if (o.asGroup().attributes[Group::Attribute::Footprint]=="")
+	  o.asGroup().attributes[Group::Attribute::Footprint] = pkg;
         gid = t.insert(o);
       } else if (s.name()=="text") {
         Object o;
@@ -779,9 +776,9 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   t = Group();
   auto a = s.attributes();
   t.ref = a.value("ref").toString();
-  t.notes = a.value("notes").toString();
-  t.pkg = a.value("pkg").toString();
-  t.partno = a.value("partno").toString();
+  for (auto it=xmlnames.begin(); it!=xmlnames.end(); ++it) 
+    if (a.hasAttribute(it.value()))
+      t.attributes[it.key()] = a.value(it.value()).toString();
   t.d->nominalrotation = a.value("nomrot").toInt();
   while (!s.atEnd()) {
     s.readNext();
@@ -811,8 +808,10 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
 }
 
 QDebug operator<<(QDebug d, Group const &t) {
-  d << "Group(" << t.ref << t.pkg << t.partno << t.notes
-    << t.d->nominalrotation;
+  QStringList attribs;
+  for (auto attr: t.attributes.keys())
+    attribs << xmlnames[attr] + "=" + t.attributes[attr];
+  d << "Group(" << t.ref << "["+attribs.join(", ")+"]" << t.d->nominalrotation;
   for (Object const &o: t.d->obj)
     d << "    " << o << "\n";
   d << ")";

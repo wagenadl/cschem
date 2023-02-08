@@ -8,7 +8,7 @@
 BoardSizeDialog::BoardSizeDialog(QWidget *parent): QDialog(parent) {
   ui = new  Ui_BoardSizeDialog;
   ui->setupUi(this);
-  connect(ui->shrink, &QToolButton::clicked,
+  connect(ui->shrink, &QPushButton::clicked,
 	  [this]() {
 	    ui->width->setValue(minrect.right());
 	    ui->height->setValue(minrect.bottom());

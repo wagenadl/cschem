@@ -47,7 +47,8 @@ void Builder::insertRecursively(NodeID nid) {
 void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
   bool toplevel = grpid.isEmpty();
   Group const &univ(toplevel ? root : root.object(grpid).asGroup());
-  bool discountwire = univ.pkg.contains("trace");
+  bool discountwire = univ.attributes[Group::Attribute::Footprint]
+    .contains("trace");
   for (int id: univ.keys()) {
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
@@ -81,7 +82,8 @@ void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
 void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
   bool toplevel = grpid.isEmpty();
   Group const &univ(toplevel ? root : root.object(grpid).asGroup());
-  bool discountwire = univ.pkg.contains("trace");
+  bool discountwire = univ.attributes[Group::Attribute::Footprint]
+    .contains("trace");
   for (int id: univ.keys()) {
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
@@ -116,7 +118,8 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
 void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
   bool toplevel = grpid.isEmpty();
   Group const &univ(toplevel ? root : root.object(grpid).asGroup());
-  bool discountwire = univ.pkg.contains("trace");
+  bool discountwire = univ.attributes[Group::Attribute::Footprint]
+    .contains("trace");
   for (int id: univ.keys()) {
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))

@@ -79,7 +79,7 @@ public:
   QWidget *grouppropg;
   QAction *grouppropa;
   QLineEdit *pkg;
-  QLineEdit *partno;
+  //  QLineEdit *partno;
   QTextEdit *notes;
   
   bool metric;
@@ -469,9 +469,9 @@ void PBData::fillFontSize(QSet<int> const &objects, Group const &here) {
 
 void PBData::fillGroupProps(QSet<int> const &/*objects*/, Group const &here) {
   //qDebug() << "fillgroupprops";
-  pkg->setText(here.pkg);
-  partno->setText(here.partno);
-  notes->document()->setPlainText(here.notes);
+  pkg->setText(here.attributes.value(Group::Attribute::Footprint));
+  //  partno->setText(here.partno);
+  notes->document()->setPlainText(here.attributes.value(Group::Attribute::Notes));
 }
 
 void PBData::getPropertiesFromSelection() {
@@ -884,23 +884,23 @@ void PBData::setupUI() {
   pkg = makeEdit(cnt);
   QObject::connect(pkg, &QLineEdit::textEdited,
 		   editor, [this](QString txt) {
-                     editor->setCurrentGroupPackage(txt);
+                     editor->setCurrentGroupAttribute(Group::Attribute::Footprint, txt);
                    });
   QObject::connect(pkg, &QLineEdit::returnPressed,
 		   editor,[this]() {
-                     editor->setCurrentGroupPackage(pkg->text());
+                     editor->setCurrentGroupAttribute(Group::Attribute::Footprint, pkg->text());
                    });
-  cnt = makeContainer(grouppropg);
-  makeLabel(cnt, "Part", "Part number");
-  partno = makeEdit(cnt);
-  QObject::connect(partno, &QLineEdit::textEdited,
-                   editor, [this](QString txt) {
-                     editor->setCurrentGroupPartno(txt);
-                   });
-  QObject::connect(partno, &QLineEdit::returnPressed,
-		   editor, [this]() {
-                     editor->setCurrentGroupPartno(partno->text());
-                   });
+  // cnt = makeContainer(grouppropg);
+  // makeLabel(cnt, "Part", "Part number");
+  //  partno = makeEdit(cnt);
+  // QObject::connect(partno, &QLineEdit::textEdited,
+  //                  editor, [this](QString txt) {
+  //                    editor->setCurrentGroupPartno(txt);
+  //                  });
+  // QObject::connect(partno, &QLineEdit::returnPressed,
+  //       	   editor, [this]() {
+  //                    editor->setCurrentGroupPartno(partno->text());
+  //                  });
   cnt = makeContainer(grouppropg);
   makeLabel(cnt, "Notes", "Part notes");
   notes = makeTEdit(cnt);
@@ -910,8 +910,8 @@ void PBData::setupUI() {
   grouppropg->layout()->addWidget(line);
   QObject::connect(notes, &QTextEdit::textChanged,
 		   editor, [this]() {
-                     editor->setCurrentGroupNotes(notes->document()
-                                                  ->toPlainText());
+                     editor->setCurrentGroupAttribute(Group::Attribute::Notes,
+                                           notes->document()->toPlainText());
                    });
   qDebug() << "premg" << xya;
   xyg = makeGroup(&xya);
