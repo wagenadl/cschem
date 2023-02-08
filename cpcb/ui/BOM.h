@@ -21,11 +21,11 @@ public:
     Id=0,
     Ref,
     Value,
-    Footprint,
     Manufacturer,
     PartNo,
     Vendor,
     CatNo,
+    Footprint,
     Notes,
     N
   };
@@ -49,6 +49,7 @@ public:
   bool saveShoppingListAsCSV(QString fn) const;
   QList<BOMRow> readAndVerifyCSV(QString fn) const; // does not store data,
   // ... merely returns it
+  Qt::DropActions supportedDropActions() const override;
 signals:
   void hasLinkedSchematic(bool);
 private:

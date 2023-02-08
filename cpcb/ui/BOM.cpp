@@ -123,9 +123,8 @@ bool BOM::setData(QModelIndex const &index, QVariant const &value,
   NodeID node; node << row.id;
   switch (Column(c)) {
   case Column::Ref:
-    row.ref = txt;
-    d->editor->setGroupRef(node, txt);
-    break;
+  case Column::Value:
+    return false;
   default:
     if (col2attr.contains(col)) {
       row.attributes[col2attr[col]] = txt;
@@ -144,7 +143,7 @@ Qt::ItemFlags BOM::flags(QModelIndex const &index) const {
   Column col = Column(c);
   switch (col) {
   case Column::Ref:
-    f |= Qt::ItemIsEditable;
+  case Column::Value:
     break;
   default:
     if (col2attr.contains(col))
@@ -161,7 +160,7 @@ QMap<BOM::Column, QString> columnnames{
   {BOM::Column::Footprint, "Pkg."},
   {BOM::Column::Manufacturer, "Mfg."},
   {BOM::Column::PartNo, "Part#"},
-  {BOM::Column::Vendor, "Vend."},
+  {BOM::Column::Vendor, "Vendor"},
   {BOM::Column::CatNo, "Cat#"},
   {BOM::Column::Notes, "Notes"},
 };
@@ -173,10 +172,19 @@ QVariant BOM::headerData(int section, Qt::Orientation orientation,
   if (orientation==Qt::Horizontal) {
     // working on columns
     return QVariant(columnnames.value(Column(section)));
-  } else {
+  } else if (orientation==Qt::Vertical) {
     // working on rows
-    return ""; // this should never be shown
+    if (section>=0 && section<d->elements.size()) {
+      QString ref = d->elements[section].ref;
+      QString val = d->elements[section].value;
+      if (val=="")
+        return ref;
+      else
+        return ref + ": " + val;
+    }
+    //return QVariant(PartNumbering::nameToHtml(d->elements[section].ref));
   }
+  return QVariant(); // this should never be shown
 }
 
 int BOM::columnCount(QModelIndex const &) const {
@@ -215,7 +223,7 @@ static QStringList headernames{"Ref.",
                               "Pkg.",
                               "Mfg.",
                               "Part#",
-                              "Vend.",
+                              "Vendor",
                               "Cat#",
                               "Notes"};
 
@@ -325,4 +333,8 @@ QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
     result << b;
   }
   return result;
+}
+
+Qt::DropActions BOM::supportedDropActions() const {
+  return Qt::CopyAction;
 }
