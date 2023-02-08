@@ -7,7 +7,7 @@
 #include "PlaneEditor.h"
 #include "data/TraceRepair.h"
 #include "ORenderer.h"
-
+#include <QApplication>
 #include <QInputDialog>
 #include <QResizeEvent>
 #include <QTimer>
@@ -1361,6 +1361,7 @@ void Editor::cut() {
 }
 
 void Editor::copy() {
+  qDebug() << "copy" << qApp->focusWidget();
   Clipboard &clp(Clipboard::instance());
   Group const &here(d->currentGroup());
   clp.store(here, d->selection);

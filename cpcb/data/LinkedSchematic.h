@@ -23,10 +23,6 @@ public:
   Circuit circuit() const;
   QList<LinkedNet> nets() const;
   Nodename pinAlias(Nodename const &) const;
-<<<<<<< HEAD
-=======
-  QString filename() const;
->>>>>>> 3dcb3512f852ac76b771147b4e3549732a34b1f9
 public slots:
   void reload();
 signals:

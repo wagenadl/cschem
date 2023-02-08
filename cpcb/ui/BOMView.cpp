@@ -6,8 +6,12 @@
 #include <QItemSelectionModel>
 #include <QSet>
 #include <QDebug>
+#include <QHeaderView>
 #include <QSortFilterProxyModel>
 #include "circuit/PartNumbering.h"
+#include <QPainter>
+#include <QTextDocument>
+#include <QStaticText>
 
 class SortProxy: public QSortFilterProxyModel {
 public:
@@ -20,15 +24,68 @@ bool SortProxy::lessThan(QModelIndex const &a, QModelIndex const &b) const {
   return PartNumbering::lessThan(a.data().toString(), b.data().toString());
 }
 
+class RefHeaderView: public QHeaderView {
+public:
+  RefHeaderView(Qt::Orientation orientation, QWidget *parent=nullptr);
+  QSize sectionSizeFromContents(int logicalIndex) const override;
+  void paintSection(QPainter *painter, const QRect &rect,
+                    int logicalIndex) const override;
+};
+
+RefHeaderView::RefHeaderView(Qt::Orientation orientation,
+                                 QWidget *parent):
+  QHeaderView(orientation, parent) {
+}
+
+QSize RefHeaderView::sectionSizeFromContents(int logicalIndex) const {
+  QTextDocument doc;
+  doc.setHtml(model()->headerData(logicalIndex, this->orientation(),
+                                  Qt::DisplayRole).toString());
+  qDebug() << "size" << logicalIndex << doc.size();
+  return doc.size().toSize();
+}
+
+void RefHeaderView::paintSection(QPainter *painter, const QRect &rect,
+                                   int logicalIndex) const {
+  /* From https://forum.qt.io/topic/30598 */
+painter->save();
+QHeaderView::paintSection(painter, rect, logicalIndex);
+painter->restore();
+
+//  QStyleOptionHeader opt;
+//  initStyleOption(&opt);
+//  opt.text = ""; 
+//  style()->drawControl(QStyle::CE_Header, &opt, painter, this);
+  painter->save();
+  // QRect textRect = style()->subElementRect(QStyle::SE_HeaderLabel, &opt, this);
+  painter->translate(rect.topLeft());
+  QTextDocument doc;
+  doc.setHtml(model()->headerData(logicalIndex, this->orientation(),
+                                  Qt::DisplayRole).toString());
+  //  doc.setDocumentMargin(0);
+  qDebug() << "paintsection" << logicalIndex<< rect<<  doc.toPlainText();
+  doc.drawContents(painter); // QRect(QPoint(0,0), textRect.size()));
+  painter->restore();
+}
+
 
 BOMView::BOMView(QWidget *parent): QTableView(parent) {
   quiet = 0;
   HtmlDelegate *delegate = new HtmlDelegate(this);
   setItemDelegateForColumn(int(BOM::Column::Ref), delegate);
-  setSelectionBehavior(SelectRows);
+  // setSelectionBehavior(SelectRows);
   //  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  setSelectionBehavior(SelectItems);
+  setSelectionMode(ExtendedSelection);
   sortProxy = new SortProxy(this);
   pl = 0;
+  //auto *hdr = new RefHeaderView(Qt::Vertical, this);
+  //setVerticalHeader(hdr);
+
+  setDragEnabled(true);
+  setAcceptDrops(true);
+  setDropIndicatorShown(true);
+  
 }
 
 BOMView::~BOMView() {
@@ -52,6 +109,7 @@ BOM *BOMView::model() const {
 }
 
 void BOMView::showValueColumn(bool x) {
+  x = false;
   if (x)
     showColumn(int(BOM::Column::Value));
   else
@@ -61,28 +119,30 @@ void BOMView::showValueColumn(bool x) {
 void BOMView::showEvent(QShowEvent *e) {
   QTableView::showEvent(e);
   hideColumn(int(BOM::Column::Id));
+  hideColumn(int(BOM::Column::Ref));
   resetWidth();
 }
 
 void BOMView::resetWidth() {
-  resizeColumnToContents(int(BOM::Column::Ref));
+  //  resizeColumnToContents(int(BOM::Column::Ref));
   resizeColumnToContents(int(BOM::Column::Value));
-//  resizeColumnToContents(int(BOM::Column::Package));
-//  resizeColumnToContents(int(BOM::Column::PartNo));
-//  setColumnWidth(int(BOM::Column::Notes),
-//                 viewport()->width()
-//                 - columnWidth(int(BOM::Column::Ref))
-//                 - columnWidth(int(BOM::Column::Package))
-//                 - columnWidth(int(BOM::Column::PartNo))
-//                 - columnWidth(int(BOM::Column::Value)));
+  resizeColumnToContents(int(BOM::Column::Footprint));
+  resizeColumnToContents(int(BOM::Column::Manufacturer));
+  resizeColumnToContents(int(BOM::Column::PartNo));
+  resizeColumnToContents(int(BOM::Column::Vendor));
+  resizeColumnToContents(int(BOM::Column::CatNo));
+  resizeColumnToContents(int(BOM::Column::Notes));
 }
 
 QSet<int> BOMView::selectedElements() const {
-  QModelIndexList rows
-    = selectionModel()->selectedRows(int(BOM::Column::Id));
+  QModelIndexList cells = selectionModel()->selectedIndexes();
   QSet<int> res;
-  for (auto const &idx: rows)
-    res << idx.data().toInt();
+  for (auto const &idx: cells) {
+    int row = idx.row();
+    int id = sortProxy->data(sortProxy
+                             ->index(row, int(BOM::Column::Id))).toInt();
+    res << id;
+  }
   return res;
 }
 

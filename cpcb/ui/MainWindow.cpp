@@ -252,7 +252,7 @@ void MWData::showBOM() {
     bomvdock->hide();
   } else {
     bomvdock->show();
-    mw->addDockWidget(Qt::RightDockWidgetArea, bomvdock);
+    mw->addDockWidget(Qt::BottomDockWidgetArea, bomvdock);
   }
 }
 
