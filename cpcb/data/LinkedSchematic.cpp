@@ -170,3 +170,4 @@ Nodename LinkedSchematic::pinAlias(Nodename const &nn) const {
     return Nodename(nn.component() + "." + nn.pin().mid(sidx+1, didx-sidx-1),
 		    nn.pin().mid(didx+1));
 }
+

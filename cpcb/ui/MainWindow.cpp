@@ -327,7 +327,7 @@ void MWData::saveComponentDialog() {
      compwd = Paths::userComponentRoot();
      QDir::home().mkpath(compwd);
   }
-  QString gname = editor->selectedComponentGroup().pkg;
+  QString gname = editor->selectedComponentGroup().attributes.value(Group::Attribute::Footprint);
   QString sug = compwd;
   if (gname!="")
     sug += "/" + gname + ".svg";

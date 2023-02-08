@@ -1133,7 +1133,7 @@ bool Editor::saveComponent(int id, QString fn) {
     return false;
   Group const &grp(obj.asGroup());
   int oldrot = grp.nominalRotation();
-  QString oldpkg = grp.pkg;
+  QString oldpkg = grp.attributes.value(Group::Attribute::Footprint);
   UndoCreator uc(d);
   if (oldrot || oldpkg=="")
     uc.realize(); // the rotation and/or pkg name is about to change
@@ -1517,48 +1517,17 @@ void Editor::setGroupRef(NodeID path, QString t) {
   }
 }
 
-void Editor::setCurrentGroupPackage(QString t) {
+void Editor::setCurrentGroupAttribute(Group::Attribute attr, QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
-    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
-                                  int(BOM::Column::Package)), t);
-  setGroupPackage(breadcrumbs(), t);
+    d->bom->setAttributeData(d->bom->findElement(nodeid[0]), attr, t);   
+  setGroupAttribute(breadcrumbs(), attr, t);
 }
 
-void Editor::setGroupPackage(NodeID path, QString t) {
-  if (t != d->layout.root().subgroup(path).pkg) {
+void Editor::setGroupAttribute(NodeID path, Group::Attribute attr, QString t) {
+  if (t != d->layout.root().subgroup(path).attributes.value(attr)) {
     UndoCreator uc(d, true);
-    d->layout.root().subgroup(path).pkg = t;
-  }
-}
-
-void Editor::setCurrentGroupPartno(QString t) {
-  NodeID nodeid = breadcrumbs();
-  if (nodeid.size()==1)
-    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
-                                  int(BOM::Column::PartNo)), t);
-  setGroupPartno(breadcrumbs(), t);
-}
-
-void Editor::setGroupPartno(NodeID path, QString t) {
-  if (t != d->layout.root().subgroup(path).partno) {
-    UndoCreator uc(d, true);
-    d->layout.root().subgroup(path).partno = t;
-  }
-}
-
-void Editor::setCurrentGroupNotes(QString t) {
-  NodeID nodeid = breadcrumbs();
-  if (nodeid.size()==1)
-    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
-                                  int(BOM::Column::Notes)), t);
-  setGroupNotes(breadcrumbs(), t);
-}
-
-void Editor::setGroupNotes(NodeID path, QString t) {
-  if (t != d->layout.root().subgroup(path).notes) {
-    UndoCreator uc(d, true);
-    d->layout.root().subgroup(path).notes = t;
+    d->layout.root().subgroup(path).attributes[attr] = t;
   }
 }
 
@@ -1585,9 +1554,7 @@ bool Editor::loadBOM(QString fn) {
       Group &grp(obj.asGroup());
       if (byref.contains(grp.ref)) {
         BOMRow row = byref[grp.ref];
-        grp.notes = row.notes;
-        grp.pkg = row.pkg;
-        grp.partno = row.partno;
+        grp.attributes = row.attributes;
       }
     }
   }
