@@ -23,7 +23,7 @@ QString PartNumbering::abbreviation(QString symbol) {
   };
   
   QStringList bits = symbol.split(":");
-  QSet<QString> set = QSet<QString>::fromList(bits);
+  QSet<QString> set = QSet<QString>(bits.begin(), bits.end());
   for (int k=0; k<map.size(); k+=2)
     if (set.contains(map[k]))
       return map[k+1];
@@ -130,7 +130,10 @@ bool PartNumbering::lessThan(QString a, QString b) {
   return unpack(a) < unpack(b);
 }
 
-  
+QString PartNumbering::compactRefs(QStringList refs) {
+  return compactRefs(QSet<QString>(refs.begin(), refs.end()));
+}
+
 QString PartNumbering::compactRefs(QSet<QString> refs) {
   QList<QString> reflist = refs.values();
   std::sort(reflist.begin(), reflist.end(), PartNumbering::lessThan);

@@ -25,6 +25,7 @@ public:
   // more digits.
   static bool lessThan(QString a, QString b);
   static QString compactRefs(QSet<QString> refs);
+  static QString compactRefs(QStringList refs);
   static QList<QStringList> compressPartList(QList<QStringList> symbols);
 };
 
