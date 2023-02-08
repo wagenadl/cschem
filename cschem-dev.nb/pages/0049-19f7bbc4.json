@@ -1,0 +1,1523 @@
+{ "typ": "page",
+  "cre": "2023-01-16T08:30:31.728",
+  "mod": "2023-01-16T10:41:31.330",
+  "cui": "3f6429affcd93222",
+  "stampTime": 0,
+  "startPage": 49,
+  "unlocked": false,
+  "uuid": "19f7bbc4",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2023-01-16T08:30:31.726",
+      "mod": "2023-01-16T10:39:53.876",
+      "uuid": "280e9ad8",
+      "cc": [
+        { "typ": "res",
+          "cre": "2023-01-16T08:48:35.728",
+          "mod": "2023-01-16T08:48:35.728",
+          "archive": "_1_-84538c62.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "84538c62"
+        },
+        { "typ": "res",
+          "cre": "2023-01-16T08:49:03.989",
+          "mod": "2023-01-16T08:49:03.989",
+          "archive": "_2_-76e701ab.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*2",
+          "title": "",
+          "uuid": "76e701ab"
+        },
+        { "typ": "res",
+          "cre": "2023-01-16T08:49:28.901",
+          "mod": "2023-01-16T08:49:28.903",
+          "archive": "_3_-8a6a8875.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*3",
+          "title": "",
+          "uuid": "8a6a8875"
+        },
+        { "typ": "res",
+          "cre": "2023-01-16T10:37:55.182",
+          "mod": "2023-01-16T10:37:55.185",
+          "archive": "_4_-0a954ba3.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*4",
+          "title": "",
+          "uuid": "0a954ba3"
+        },
+        { "typ": "res",
+          "cre": "2023-01-16T10:39:26.170",
+          "mod": "2023-01-16T10:39:26.171",
+          "archive": "_5_-18cc4ddd.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*5",
+          "title": "",
+          "uuid": "18cc4ddd"
+        },
+        { "typ": "res",
+          "cre": "2023-01-16T10:39:37.074",
+          "mod": "2023-01-16T10:39:37.075",
+          "archive": "_6_-3a9171f7.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*6",
+          "title": "",
+          "uuid": "3a9171f7"
+        },
+        { "typ": "res",
+          "cre": "2023-01-16T10:39:53.873",
+          "mod": "2023-01-16T10:39:53.876",
+          "archive": "_7_-7e3142fc.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*7",
+          "title": "",
+          "uuid": "7e3142fc"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2023-01-16T08:30:37.852",
+      "mod": "2023-01-16T10:41:31.330",
+      "uuid": "c349903d",
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:30:37.852",
+          "mod": "2023-01-16T10:41:31.330",
+          "lines": [
+            0
+          ],
+          "text": "Pin numbering in cschem and cpcb",
+          "uuid": "c66028f2",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2023-01-16T10:41:23.418",
+              "mod": "2023-01-16T10:41:31.330",
+              "dx": 22.1869,
+              "dy": -10.6111,
+              "sheet": 4,
+              "textWidth": 52.6553,
+              "uuid": "fffda5d6",
+              "x": 115.328,
+              "y": 412.656,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2023-01-16T10:41:23.418",
+                  "mod": "2023-01-16T10:41:28.160",
+                  "lines": [
+                    0,
+                    9,
+                    18,
+                    24
+                  ],
+                  "text": "I should flip the order here!",
+                  "uuid": "750f6220"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:30:45.841",
+      "mod": "2023-01-16T08:33:42.322",
+      "h": 189.328,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "b75503d2",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:30:45.841",
+          "mod": "2023-01-16T08:33:42.322",
+          "lines": [
+            0,
+            64,
+            122,
+            182,
+            248,
+            307,
+            364,
+            424
+          ],
+          "text": "… is rather a mess. The short version is that in both programs, pins may be named as “number/name” and that cpcb tries to match these names up heuristically. I read in my 2018 notes that “it should be considered an error” if a part in cpcb has the same name associated to more than one pin. But in reality, SMT components often have more than one pin connected to ground or some other power plane. I am going to try to sort this out by first documenting the current reality.",
+          "uuid": "034f4a1d",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T08:31:13.034",
+              "mod": "2023-01-16T08:31:13.034",
+              "end": 92,
+              "start": 86,
+              "style": 1,
+              "uuid": "e177d68e"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T08:31:14.865",
+              "mod": "2023-01-16T08:31:14.865",
+              "end": 97,
+              "start": 93,
+              "style": 1,
+              "uuid": "2d18a73d"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T08:32:22.157",
+              "mod": "2023-01-16T08:32:22.157",
+              "end": 257,
+              "start": 253,
+              "style": 1,
+              "uuid": "2aa34cd8"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:33:48.750",
+      "mod": "2023-01-16T10:24:15.350",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "30064d3d",
+      "y0": 261.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:33:48.750",
+          "mod": "2023-01-16T10:24:15.350",
+          "lines": [
+            0
+          ],
+          "text": "",
+          "uuid": "2602fdd9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:33:48.750",
+      "mod": "2023-01-16T10:24:19.238",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "30064d3d",
+      "y0": 288.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:33:48.750",
+          "mod": "2023-01-16T08:33:49.795",
+          "lines": [
+            0
+          ],
+          "text": "CSchem",
+          "uuid": "2602fdd9",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T08:33:55.188",
+              "mod": "2023-01-16T08:33:55.188",
+              "end": 6,
+              "start": 0,
+              "style": 2,
+              "uuid": "31dbf752"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:33:58.966",
+      "mod": "2023-01-16T10:24:21.294",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a1b18884",
+      "y0": 315.66,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:33:58.966",
+          "mod": "2023-01-16T08:36:55.731",
+          "lines": [
+            0,
+            54,
+            113,
+            170,
+            220
+          ],
+          "text": "Components in CSchem are formally known as “symbols.” CSchem does not have an internal symbol editor. Rather, it relies on inkscape, a reliance that poses its own set of problems. There are two kinds of symbols: regular components, and “containers.” More on this in a moment.",
+          "uuid": "9abcaebe"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:37:20.974",
+      "mod": "2023-01-16T09:05:41.840",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "9de0b0e0",
+      "y0": 435.49,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:37:20.974",
+          "mod": "2023-01-16T09:05:41.840",
+          "lines": [
+            0,
+            55,
+            118,
+            179,
+            244
+          ],
+          "text": "There is hardly any CSchem-specific metadata in symbol svgs. That is, any svg can be dragged into CSchem, provided it defines one or more “pins.” Pins may be defined either by an “inkscape:label” attribute in “circle” elements in the top group of the svg, as in:",
+          "uuid": "52c63255"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:38:51.619",
+      "mod": "2023-01-16T10:24:44.789",
+      "h": 143.887,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "06219767",
+      "y0": 555.32,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:38:51.619",
+          "mod": "2023-01-16T10:24:44.789",
+          "lines": [
+            0,
+            43,
+            73,
+            116,
+            151,
+            164,
+            185,
+            201
+          ],
+          "text": " <g inkscape:groupmode=\"layer\" id=\"layer2\"\n     inkscape:label=\"Layer 1\"\n     transform=\"translate(49.000,7.0001)\">\n    <circle inkscape:label=\"pin:2\"\n       r=\"7\"\n       cy=\"54.49987\"\n       cx=\"-10\"\n       …",
+          "uuid": "bd4ff275",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T08:39:00.720",
+              "mod": "2023-01-16T08:39:00.720",
+              "end": 150,
+              "start": 128,
+              "style": 2,
+              "uuid": "ed7bb94a"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:39:10.040",
+      "mod": "2023-01-16T09:05:52.545",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "8b24e144",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:39:10.040",
+          "mod": "2023-01-16T09:05:52.545",
+          "lines": [
+            0,
+            57
+          ],
+          "text": "or, more preferred, using “title” elements inside circle elements, as in:",
+          "uuid": "0a9f8d52"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:40:12.439",
+      "mod": "2023-01-16T08:40:51.450",
+      "h": 161.707,
+      "ind": 3,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "df2724f3",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:40:12.439",
+          "mod": "2023-01-16T08:40:51.450",
+          "lines": [
+            0,
+            8,
+            17,
+            30,
+            45,
+            60,
+            80,
+            98,
+            140
+          ],
+          "text": "<circle\n       …\n       r=\"7\"\n       cy=\"32\"\n       cx=\"91\"\n       id=\"pin:K-3\"\n       style=\"…\">\n      <title id=\"title1631\">pin:G</title>\n    </circle>",
+          "uuid": "bdd8dbbe",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T08:40:37.513",
+              "mod": "2023-01-16T08:40:37.513",
+              "end": 139,
+              "start": 98,
+              "style": 2,
+              "uuid": "0972dcf8"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:40:40.357",
+      "mod": "2023-01-16T09:06:01.664",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "78653b6e",
+      "y0": 284.039,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:40:40.357",
+          "mod": "2023-01-16T09:06:01.664",
+          "lines": [
+            0,
+            66,
+            121,
+            182
+          ],
+          "text": "(I have elided some “circle” attributes for clarity.) The “title” form is preferred because it conforms to SVG standard, whereas the “label” form is an inkscape extension. Note that the “id” of the element is irrelevant.",
+          "uuid": "8a774ad3"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:43:49.773",
+      "mod": "2023-01-16T09:22:07.783",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "4f22f740",
+      "y0": 380.703,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:43:49.773",
+          "mod": "2023-01-16T09:22:07.783",
+          "lines": [
+            0,
+            60,
+            124,
+            183,
+            244
+          ],
+          "text": "As these examples show, a pin may be identified either by a number (“2”) or by a function (“G”). In my library, I also have many cases of “function/number” and “number/function”, for instance: “NO3B/11” in an analog switch, or “2/A” in a Zener diode.",
+          "uuid": "9c7656c9",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T08:44:07.151",
+              "mod": "2023-01-16T08:44:07.151",
+              "end": 66,
+              "start": 60,
+              "style": 1,
+              "uuid": "ff92f755"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T08:45:32.769",
+              "mod": "2023-01-16T08:45:32.769",
+              "end": 154,
+              "start": 148,
+              "style": 1,
+              "uuid": "5a0e2363"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T08:45:37.540",
+              "mod": "2023-01-16T08:45:37.540",
+              "end": 167,
+              "start": 161,
+              "style": 1,
+              "uuid": "62b983a8"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:21:59.846",
+              "mod": "2023-01-16T09:21:59.846",
+              "end": 89,
+              "start": 81,
+              "style": 1,
+              "uuid": "29cc2a09"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:22:03.724",
+              "mod": "2023-01-16T09:22:03.724",
+              "end": 147,
+              "start": 139,
+              "style": 1,
+              "uuid": "d3599faf"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:22:08.133",
+              "mod": "2023-01-16T09:22:08.133",
+              "end": 176,
+              "start": 168,
+              "style": 1,
+              "uuid": "b6d301e3"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:47:40.905",
+      "mod": "2023-01-16T08:48:14.404",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "cf8369eb",
+      "y0": 500.533,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:47:40.905",
+          "mod": "2023-01-16T08:48:14.404",
+          "lines": [
+            0,
+            59
+          ],
+          "text": "Finally, “containers” are meta-symbols that package one or more regular symbols, as in",
+          "uuid": "fb587cd8"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-01-16T08:48:35.727",
+      "mod": "2023-01-16T08:49:36.865",
+      "h": 115.192,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "b38fde9b",
+      "xref": 0.0,
+      "y0": 550.865,
+      "yref": -19.9293,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-01-16T08:49:03.989",
+          "mod": "2023-01-16T08:49:08.217",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 86.0,
+          "res": [
+            "*2"
+          ],
+          "resName": "*2",
+          "scale": 0.610166,
+          "uuid": "d8471a7e",
+          "width": 82.0,
+          "x": 112.224,
+          "y": 4.50505
+        },
+        { "typ": "gfximage",
+          "cre": "2023-01-16T08:49:28.903",
+          "mod": "2023-01-16T08:49:36.865",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 206.0,
+          "res": [
+            "*3"
+          ],
+          "resName": "*3",
+          "scale": 0.471805,
+          "uuid": "2b10304c",
+          "width": 148.0,
+          "x": 9.64646,
+          "y": -10.9293
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:49:42.595",
+      "mod": "2023-01-16T08:54:10.337",
+      "h": 189.328,
+      "ind": 0,
+      "sheet": 1,
+      "split": [
+        23.166
+      ],
+      "uuid": "a1790456",
+      "y0": 666.057,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:49:42.595",
+          "mod": "2023-01-16T08:54:10.337",
+          "lines": [
+            0,
+            63,
+            122,
+            187,
+            254,
+            317,
+            377,
+            433
+          ],
+          "text": "The idea was to separate the function of circuit elements like opamps and logic gates from implementation details such as power supply lines, for didactic purposes. I have mixed feelings about this now, but this is the situation. Practically, containers and their contents are linked simply by sharing a part number. In this example, the container is “A4” and the contents are “A4.1” and “A4.2”. When only one item is contained, the contents may be named with or without a “.k” suffix.",
+          "uuid": "0835c318",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T08:54:07.931",
+              "mod": "2023-01-16T08:54:07.932",
+              "end": 476,
+              "start": 475,
+              "style": 1,
+              "uuid": "8defb5c1"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T08:55:30.908",
+      "mod": "2023-01-16T09:22:57.398",
+      "h": 258.826,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "0411587f",
+      "y0": 238.162,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T08:55:30.908",
+          "mod": "2023-01-16T09:22:57.398",
+          "lines": [
+            0,
+            64,
+            129,
+            188,
+            249,
+            307,
+            363,
+            428,
+            490,
+            552,
+            601
+          ],
+          "text": "At file level, container symbols are also plain svg files, with “pin:” identifiers for their regular pins. (For instance, “pin:5/Vcc” in a container for a single logic gate.) The pins for contained items are tagged with “cp:number/k.function” where k enumerates the contained items. k=1 is not omitted when only one item is contained. Typically, function repeats identically when several items are included, as in “cp:1/1.Vout” and “cp:7/2.Vout” for a standard 2-element opamp container. I have not seen cp tags where the number follows the k.function part. Some containers use “cp:number/nc” to mark nonconnected pins.",
+          "uuid": "b8aaacbe",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T08:58:40.118",
+              "mod": "2023-01-16T08:58:40.118",
+              "end": 232,
+              "start": 231,
+              "style": 1,
+              "uuid": "3e488537"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T08:58:49.842",
+              "mod": "2023-01-16T08:58:49.842",
+              "end": 230,
+              "start": 224,
+              "style": 1,
+              "uuid": "9699a91d"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T08:58:52.178",
+              "mod": "2023-01-16T08:58:52.178",
+              "end": 250,
+              "start": 249,
+              "style": 1,
+              "uuid": "b377cb9c"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T08:59:02.427",
+              "mod": "2023-01-16T08:59:02.427",
+              "end": 284,
+              "start": 283,
+              "style": 1,
+              "uuid": "fc78253a"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:01:12.733",
+              "mod": "2023-01-16T09:01:12.733",
+              "end": 528,
+              "start": 522,
+              "style": 1,
+              "uuid": "05e55887"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:01:27.473",
+              "mod": "2023-01-16T09:01:27.473",
+              "end": 542,
+              "start": 541,
+              "style": 1,
+              "uuid": "ae434821"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:08:01.939",
+              "mod": "2023-01-16T09:08:01.939",
+              "end": 588,
+              "start": 582,
+              "style": 1,
+              "uuid": "82d298d5"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:22:44.416",
+              "mod": "2023-01-16T09:22:44.416",
+              "end": 241,
+              "start": 233,
+              "style": 1,
+              "uuid": "6baae567"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:22:49.048",
+              "mod": "2023-01-16T09:22:49.048",
+              "end": 354,
+              "start": 346,
+              "style": 1,
+              "uuid": "0e8861c4"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:22:57.696",
+              "mod": "2023-01-16T09:22:57.696",
+              "end": 551,
+              "start": 543,
+              "style": 1,
+              "uuid": "97d16cab"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T09:02:43.701",
+      "mod": "2023-01-16T09:06:24.216",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "5a95669e",
+      "y0": 496.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T09:02:43.701",
+          "mod": "2023-01-16T09:06:24.216",
+          "lines": [
+            0,
+            58,
+            126,
+            188,
+            253
+          ],
+          "text": "At C++ level, “XmlElement” defines title() and setTitle() functions to access the “title” elements. It also defines a label() function that looks if a “title” element is present, which it returns if non-empty. Otherwise, it returns the “inkscape:label” attribute.",
+          "uuid": "88d39729",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T09:03:50.011",
+              "mod": "2023-01-16T09:03:50.011",
+              "end": 40,
+              "start": 35,
+              "style": 1,
+              "uuid": "0f487f1a"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:03:57.819",
+              "mod": "2023-01-16T09:03:57.819",
+              "end": 55,
+              "start": 47,
+              "style": 1,
+              "uuid": "d2e62c81"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:04:13.483",
+              "mod": "2023-01-16T09:04:13.483",
+              "end": 123,
+              "start": 118,
+              "style": 1,
+              "uuid": "7474920b"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T09:08:25.606",
+      "mod": "2023-01-16T09:23:13.209",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 2,
+      "split": [
+        69.498
+      ],
+      "uuid": "13e1e112",
+      "y0": 616.818,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T09:08:25.606",
+          "mod": "2023-01-16T09:23:13.209",
+          "lines": [
+            0,
+            60,
+            121,
+            179,
+            243
+          ],
+          "text": "Pin names are interpreted by “SymbolData” in its scanPins() function. It uses the term “name” for the entire “number” or “function” or “number/function” or “function/number” form that follows “pin:”. It stores a mapping from those “pin names” to the (x,y)-position of the pin (in a member called “pins”)*.",
+          "uuid": "c76e493e",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T09:08:53.398",
+              "mod": "2023-01-16T09:08:53.398",
+              "end": 57,
+              "start": 49,
+              "style": 1,
+              "uuid": "5371b478"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:10:38.406",
+              "mod": "2023-01-16T09:10:38.406",
+              "end": 142,
+              "start": 136,
+              "style": 1,
+              "uuid": "c6e6f4bf"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:10:43.108",
+              "mod": "2023-01-16T09:10:43.108",
+              "end": 172,
+              "start": 166,
+              "style": 1,
+              "uuid": "679e0b92"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:10:50.431",
+              "mod": "2023-01-16T09:10:50.431",
+              "end": 116,
+              "start": 110,
+              "style": 1,
+              "uuid": "f420ce60"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:15:54.181",
+              "mod": "2023-01-16T09:15:54.181",
+              "end": 304,
+              "start": 303,
+              "style": 6,
+              "uuid": "d9e10645"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:15:54.184",
+              "mod": "2023-01-16T09:15:54.184",
+              "end": 304,
+              "start": 303,
+              "style": 5,
+              "uuid": "2849240f"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:23:06.259",
+              "mod": "2023-01-16T09:23:06.259",
+              "end": 130,
+              "start": 122,
+              "style": 1,
+              "uuid": "11aaf1d6"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:23:10.097",
+              "mod": "2023-01-16T09:23:10.097",
+              "end": 151,
+              "start": 143,
+              "style": 1,
+              "uuid": "85016292"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:23:13.487",
+              "mod": "2023-01-16T09:23:13.487",
+              "end": 165,
+              "start": 157,
+              "style": 1,
+              "uuid": "021f9a52"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2023-01-16T09:15:54.699",
+          "mod": "2023-01-16T09:17:12.639",
+          "h": 37.534,
+          "ind": 1,
+          "sheet": 3,
+          "split": [ ],
+          "tag": "*",
+          "uuid": "5a1a2c8f",
+          "y0": 649.699,
+          "cc": [
+            { "typ": "text",
+              "cre": "2023-01-16T09:15:54.699",
+              "mod": "2023-01-16T09:17:12.639",
+              "lines": [
+                0,
+                81
+              ],
+              "text": "It also stores the svg id in a member called “pinIds,” and uses this to find the svg element for graphical rendering.",
+              "uuid": "777908e6"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T09:08:25.606",
+      "mod": "2023-01-16T09:23:27.839",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "13e1e112",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T09:08:25.606",
+          "mod": "2023-01-16T09:23:27.839",
+          "lines": [
+            0,
+            63,
+            123,
+            188,
+            246
+          ],
+          "text": "For “cp:” pins, it treats “n/nc” specially (counting them in a member called “ncpins,” but otherwise ignoring them). Apart from that, it strictly demands “cp:n/k.function”, constructing a two-level mapping of k → function → n (in a member called “cpins”).",
+          "uuid": "c76e493e",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T09:14:26.704",
+              "mod": "2023-01-16T09:14:26.704",
+              "end": 28,
+              "start": 27,
+              "style": 1,
+              "uuid": "9015c3df"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:14:41.523",
+              "mod": "2023-01-16T09:14:41.523",
+              "end": 159,
+              "start": 158,
+              "style": 1,
+              "uuid": "ab1137ed"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:14:42.655",
+              "mod": "2023-01-16T09:14:42.655",
+              "end": 161,
+              "start": 160,
+              "style": 1,
+              "uuid": "e67fbc00"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:15:09.830",
+              "mod": "2023-01-16T09:15:09.830",
+              "end": 210,
+              "start": 209,
+              "style": 1,
+              "uuid": "bbc120ce"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:15:13.246",
+              "mod": "2023-01-16T09:15:13.246",
+              "end": 225,
+              "start": 224,
+              "style": 1,
+              "uuid": "7f2bd1bf"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:23:24.083",
+              "mod": "2023-01-16T09:23:24.083",
+              "end": 170,
+              "start": 162,
+              "style": 1,
+              "uuid": "5993554a"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:23:28.103",
+              "mod": "2023-01-16T09:23:28.103",
+              "end": 221,
+              "start": 213,
+              "style": 1,
+              "uuid": "e822a045"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T09:18:46.354",
+      "mod": "2023-01-16T09:24:28.529",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "84341c45",
+      "y0": 242.162,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T09:18:46.354",
+          "mod": "2023-01-16T09:24:18.141",
+          "lines": [
+            0,
+            58,
+            116,
+            177
+          ],
+          "text": "“Symbol” also scans for “<rect>” elements with “<title>”† matching “annotation:tag”. The tag “ref” is replaced with “name”, and a mapping of tags to their (x,y,w,h)-position is stored (in a member called “annotationBBox”).",
+          "uuid": "ebbf2216",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T09:19:57.460",
+              "mod": "2023-01-16T09:19:57.460",
+              "end": 82,
+              "start": 79,
+              "style": 1,
+              "uuid": "661221de"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:24:18.141",
+              "mod": "2023-01-16T09:24:18.141",
+              "end": 57,
+              "start": 56,
+              "style": 6,
+              "uuid": "5a14e2b9"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T09:24:18.143",
+              "mod": "2023-01-16T09:24:18.143",
+              "end": 57,
+              "start": 56,
+              "style": 5,
+              "uuid": "60bfcd02"
+            }
+          ]
+        },
+        { "typ": "footnote",
+          "cre": "2023-01-16T09:24:19.056",
+          "mod": "2023-01-16T09:24:28.529",
+          "h": 20.767,
+          "ind": 1,
+          "sheet": 3,
+          "split": [ ],
+          "tag": "†",
+          "uuid": "d03dc657",
+          "y0": 687.233,
+          "cc": [
+            { "typ": "text",
+              "cre": "2023-01-16T09:24:19.056",
+              "mod": "2023-01-16T09:24:28.529",
+              "lines": [
+                0
+              ],
+              "text": "or “inkscape:label” attribute",
+              "uuid": "5a4b3e21"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T09:24:55.497",
+      "mod": "2023-01-16T09:30:34.142",
+      "h": 142.996,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "a4017450",
+      "y0": 338.826,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T09:24:55.497",
+          "mod": "2023-01-16T09:30:34.142",
+          "lines": [
+            0,
+            55,
+            112,
+            166,
+            224,
+            279
+          ],
+          "text": "I don’t think CSchem does anything more with pin names than that, other than checking that containers and their contents match in terms of their k numbers, which the program refers to as “slots.” I don’t immediately see any verification that contained elements have the same pin functions mandated by the container.",
+          "uuid": "c3004bd0",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T09:27:23.472",
+              "mod": "2023-01-16T09:27:23.472",
+              "end": 146,
+              "start": 145,
+              "style": 1,
+              "uuid": "209a50d5"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T10:24:05.964",
+      "mod": "2023-01-16T10:24:05.964",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "2fa27968",
+      "y0": 481.822,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T10:24:05.964",
+          "mod": "2023-01-16T10:24:05.964",
+          "text": "",
+          "uuid": "45ffebcd"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T10:24:06.955",
+      "mod": "2023-01-16T10:24:07.290",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "ebef7c55",
+      "y0": 508.988,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T10:24:06.955",
+          "mod": "2023-01-16T10:24:07.290",
+          "lines": [
+            0
+          ],
+          "text": "CPCB",
+          "uuid": "4cee3a58",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T10:24:08.188",
+              "mod": "2023-01-16T10:24:08.188",
+              "end": 4,
+              "start": 0,
+              "style": 2,
+              "uuid": "2859d425"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T10:25:03.267",
+      "mod": "2023-01-16T10:36:09.315",
+      "h": 305.158,
+      "ind": 0,
+      "sheet": 3,
+      "split": [
+        92.664
+      ],
+      "uuid": "67d53587",
+      "y0": 536.154,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T10:25:03.267",
+          "mod": "2023-01-16T10:36:09.315",
+          "lines": [
+            0,
+            56,
+            117,
+            181,
+            242,
+            301,
+            367,
+            428,
+            488,
+            545,
+            605,
+            662,
+            723
+          ],
+          "text": "CPCB started out with a concept of nesting “groups.” In practice, groups are never nested more than two levels deep, i.e., the “root” and the “footprints.” Footprints get stored in svg files that do have metadata, in a “<cpcb:part>” element. That metadata comprises a “<group>” element and a “<text>” element that might be stored in a “.cpcb” file. The “text” is the reference name of the package, e.g., “U?”. The “<group>” may contain “<trace>”, “<arc>”, “<text>” etc. elements that get added to the layout when loaded, and “<pad>” or “<hole>” elements that create identified connections by way of their “ref” attribute. Those refs may be of the form “number”, “function”, or  “number/function”. I do not see instances of “function/number”.",
+          "uuid": "fdd4d87f",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T10:30:23.119",
+              "mod": "2023-01-16T10:30:23.119",
+              "end": 659,
+              "start": 653,
+              "style": 1,
+              "uuid": "07dff2d7"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T10:30:51.263",
+              "mod": "2023-01-16T10:30:51.263",
+              "end": 694,
+              "start": 686,
+              "style": 1,
+              "uuid": "8ceba65a"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T10:30:53.092",
+              "mod": "2023-01-16T10:30:53.092",
+              "end": 685,
+              "start": 679,
+              "style": 1,
+              "uuid": "e62d47fe"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T10:36:01.644",
+              "mod": "2023-01-16T10:36:01.644",
+              "end": 671,
+              "start": 663,
+              "style": 1,
+              "uuid": "96443879"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T10:33:22.133",
+              "mod": "2023-01-16T10:36:08.841",
+              "end": 739,
+              "start": 733,
+              "style": 1,
+              "uuid": "75f09f64"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T10:33:23.784",
+              "mod": "2023-01-16T10:36:08.841",
+              "end": 732,
+              "start": 724,
+              "style": 1,
+              "uuid": "39cef50b"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T10:36:11.600",
+      "mod": "2023-01-16T10:37:14.212",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "b5972712",
+      "y0": 284.494,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T10:36:11.600",
+          "mod": "2023-01-16T10:37:14.212",
+          "lines": [
+            0,
+            61,
+            125
+          ],
+          "text": "In one case, a DPDT switch, I see “number/k:function”, but I don’t know if that k is special and has anything to do with the “slots” in CSchem.",
+          "uuid": "552607c1",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-01-16T10:36:37.610",
+              "mod": "2023-01-16T10:36:37.610",
+              "end": 41,
+              "start": 35,
+              "style": 1,
+              "uuid": "f17607f0"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T10:36:39.134",
+              "mod": "2023-01-16T10:36:39.134",
+              "end": 43,
+              "start": 42,
+              "style": 1,
+              "uuid": "332ddba3"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T10:36:40.020",
+              "mod": "2023-01-16T10:36:40.020",
+              "end": 52,
+              "start": 44,
+              "style": 1,
+              "uuid": "036787d8"
+            },
+            { "typ": "markup",
+              "cre": "2023-01-16T10:37:02.277",
+              "mod": "2023-01-16T10:37:02.277",
+              "end": 81,
+              "start": 80,
+              "style": 1,
+              "uuid": "c2ff8a91"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T10:37:16.897",
+      "mod": "2023-01-16T10:37:41.007",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "6118c8e6",
+      "y0": 357.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T10:37:16.897",
+          "mod": "2023-01-16T10:37:41.007",
+          "lines": [
+            0,
+            63
+          ],
+          "text": "When no circuit is “linked,” clicking on a pad or hole opens a dialog that allows editing its name:",
+          "uuid": "4d403c32"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-01-16T10:37:55.182",
+      "mod": "2023-01-16T10:41:18.147",
+      "h": 109.633,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "8ec6cb2e",
+      "xref": 0.0,
+      "y0": 408.324,
+      "yref": -6.8165,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-01-16T10:37:55.185",
+          "mod": "2023-01-16T10:41:18.147",
+          "cropBottom": 0.0,
+          "cropLeft": 4.0,
+          "cropRight": 0.0,
+          "cropTop": 6.0,
+          "height": 236.0,
+          "res": [
+            "*4"
+          ],
+          "resName": "*4",
+          "scale": 0.395116,
+          "uuid": "96c4f641",
+          "width": 344.0,
+          "x": 0.379676,
+          "y": 0.569514,
+          "cc": [
+            { "typ": "gfxsketch",
+              "cre": "2023-01-16T10:41:16.109",
+              "mod": "2023-01-16T10:41:18.147",
+              "color": "#ee2200",
+              "lineWidth": 1.5,
+              "uuid": "6acbbde0",
+              "x": 308.371,
+              "xx": [
+                0.0,
+                -3.85859,
+                -6.75253,
+                -10.6111,
+                -14.4697,
+                -18.3283,
+                -22.1869,
+                -27.0101,
+                -32.798,
+                -37.6212,
+                -41.4798,
+                -45.3384,
+                -50.1616,
+                -54.0202,
+                -58.8434,
+                -62.702,
+                -67.5253,
+                -71.3838,
+                -75.2424,
+                -78.1364,
+                -81.9949,
+                -84.8889,
+                -87.7828,
+                -90.6768,
+                -93.5707,
+                -90.6768,
+                -87.7828,
+                -83.9242,
+                -80.0657,
+                -76.2071,
+                -72.3485,
+                -68.4899,
+                -64.6313,
+                -60.7727,
+                -56.9141,
+                -53.0556,
+                -49.197,
+                -45.3384,
+                -41.4798,
+                -38.5859,
+                -34.7273,
+                -30.8687,
+                -26.0455,
+                -23.1515,
+                -20.2576,
+                -16.399,
+                -12.5404,
+                -9.64646,
+                -6.75253,
+                -3.85859,
+                -0.964646
+              ],
+              "y": 85.583,
+              "yy": [
+                0.0,
+                -1.92929,
+                -3.85859,
+                -4.82323,
+                -4.82323,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -5.78788,
+                -4.82323,
+                -2.89394,
+                -1.92929,
+                -0.964646,
+                5.68434e-14,
+                1.92929,
+                2.89394,
+                3.85859,
+                4.82323,
+                5.78788,
+                6.75253,
+                7.71717,
+                7.71717,
+                7.71717,
+                8.68182,
+                8.68182,
+                9.64646,
+                10.6111,
+                10.6111,
+                10.6111,
+                11.5758,
+                11.5758,
+                11.5758,
+                11.5758,
+                10.6111,
+                9.64646,
+                8.68182,
+                6.75253,
+                4.82323,
+                3.85859,
+                2.89394,
+                0.964646
+              ]
+            }
+          ]
+        },
+        { "typ": "gfximage",
+          "cre": "2023-01-16T10:39:37.075",
+          "mod": "2023-01-16T10:40:05.657",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 210.0,
+          "res": [
+            "*6"
+          ],
+          "resName": "*6",
+          "scale": 0.433129,
+          "uuid": "af134dbe",
+          "width": 190.0,
+          "x": 197.894,
+          "y": 2.1835
+        },
+        { "typ": "gfximage",
+          "cre": "2023-01-16T10:39:53.876",
+          "mod": "2023-01-16T10:40:06.545",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 266.0,
+          "res": [
+            "*7"
+          ],
+          "resName": "*7",
+          "scale": 0.317023,
+          "uuid": "613df9a7",
+          "width": 372.0,
+          "x": 304.401,
+          "y": 7.21455
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T10:38:21.982",
+      "mod": "2023-01-16T10:38:43.149",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "b746b18f",
+      "y0": 517.957,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T10:38:21.982",
+          "mod": "2023-01-16T10:38:43.149",
+          "lines": [
+            0
+          ],
+          "text": "(This is true regardless of whether the pin is inside a group.)",
+          "uuid": "63c987ca"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-01-16T10:40:10.263",
+      "mod": "2023-01-16T10:40:53.401",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "6a1e7576",
+      "y0": 545.123,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-01-16T10:40:10.263",
+          "mod": "2023-01-16T10:40:53.401",
+          "lines": [
+            0,
+            63,
+            126
+          ],
+          "text": "When a hole or pad is selected that is not part of a group (or if its group has been “entered”), the “pin” can also be edited through the sidebar.",
+          "uuid": "8411e991"
+        }
+      ]
+    }
+  ]
+}
