@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <iostream>
+#include <QTransform>
 
 static QMap<QString, QSharedPointer<QSvgRenderer> > &symbolRenderers() {
   static QMap<QString, QSharedPointer<QSvgRenderer> > rnd;
@@ -121,15 +122,15 @@ void SymbolData::ensureBBox() {
   QByteArray svg = toSvg(false, true);
   QSvgRenderer renderer(svg);
   QString id = groupId;
-  bbox = renderer.matrixForElement(id).mapRect(renderer.boundsOnElement(id))
+  bbox = renderer.transformForElement(id).mapRect(renderer.boundsOnElement(id))
     .toAlignedRect();
   for (QString pin: pins.keys())
     pins[pin]
-      = renderer.matrixForElement(id)
+      = renderer.transformForElement(id)
       .map(renderer.boundsOnElement(pinIds[pin]).center());
   for (QString ann: annotationBBox.keys())
     annotationBBox[ann]
-      = renderer.matrixForElement(id)
+      = renderer.transformForElement(id)
       .mapRect(annotationBBox[ann]);
       
   newshift();
@@ -175,7 +176,7 @@ Symbol::~Symbol() {
 Symbol Symbol::load(QString svgfn) {
   Symbol sym;
   QFile file(svgfn);
-  QString name = QFileInfo(svgfn).baseName();
+  QString name = QFileInfo(svgfn).completeBaseName();
   name.replace("-", ":");
   if (!name.startsWith("port:") && !name.startsWith("part:"))
     name = "part:" + name;
