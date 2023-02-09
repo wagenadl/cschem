@@ -37,7 +37,7 @@
 #include <QBitmap>
 #include <QPainter>
 #include "ui/RecentFiles.h"
- 
+#include <QMetaMethod> 
 
 class MWData {
 public:
@@ -88,6 +88,7 @@ public:
   QString getSaveFilename(QString ext, QString caption); // updates pwd
   QString getOpenFilename(QString ext, QString caption, QString desc="");
   // updates pwd
+  void passthroughSignal(QString sig);
 public:
   MainWindow *mw;
   Modebar *modebar;
@@ -104,6 +105,19 @@ public:
   RecentFiles *recentfiles;
   QLabel *linklabel;
 };
+
+void MWData::passthroughSignal(QString sig) {
+  /* This technique based on
+     https://srivatsp.com/ostinato/qt-cut-copy-paste/
+  */
+  QWidget *dest = qApp->focusWidget();
+  if (!dest)
+    return;
+  QMetaObject const *meta = dest->metaObject();
+  int idx = meta->indexOfSlot(qPrintable(sig + "()"));
+  if (idx>=0)
+    meta->method(idx).invoke(dest, Qt::AutoConnection);
+}
 
 void MWData::attemptRelinkSchematic() {
   /* If the linked schematic could not be found at original location,
@@ -726,19 +740,19 @@ void MWData::makeMenus() {
 
   auto *edit = mb->addMenu("&Edit");
 
-  a = edit->addAction("&Cut", [this]() { editor->cut(); },
+  a = edit->addAction("&Cut", [this]() { passthroughSignal("cut"); },
 		      QKeySequence(Qt::CTRL + Qt::Key_X));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = edit->addAction("Cop&y", [this]() { editor->copy(); },
+  a = edit->addAction("Cop&y", [this]() { passthroughSignal("copy"); },
 		      QKeySequence(Qt::CTRL + Qt::Key_C));
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  edit->addAction("&Paste", [this]() { editor->paste(); },
+  edit->addAction("&Paste", [this]() { passthroughSignal("paste"); },
 		  QKeySequence(Qt::CTRL + Qt::Key_V));
 
   a = edit->addAction("Select attached &trace",
@@ -820,11 +834,11 @@ void MWData::makeMenus() {
   a->setEnabled(false);
   
   a = edit->addAction("&Delete selected",
-		      [this]() { editor->deleteSelected(); },
+		      [this]() { passthroughSignal("deleet"); },
 		      QKeySequence(Qt::Key_Delete));
-  //QObject::connect(editor, &Editor::selectionChanged,
-  //a, &QAction::setEnabled);
-  //a->setEnabled(false);
+  QObject::connect(editor, &Editor::selectionChanged,
+                   a, &QAction::setEnabled);
+  a->setEnabled(false);
   
   a = edit->addAction("&Undo", [this]() { editor->undo(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_Z));

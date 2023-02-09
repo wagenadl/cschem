@@ -180,7 +180,7 @@ QVariant BOM::headerData(int section, Qt::Orientation orientation,
       if (val=="")
         return ref;
       else
-        return ref + ": " + val;
+        return ref + " / " + val;
     }
     //return QVariant(PartNumbering::nameToHtml(d->elements[section].ref));
   }
@@ -337,4 +337,8 @@ QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
 
 Qt::DropActions BOM::supportedDropActions() const {
   return Qt::CopyAction;
+}
+
+Editor *BOM::editor() {
+  return d->editor;
 }

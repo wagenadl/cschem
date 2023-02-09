@@ -20,6 +20,10 @@ public:
   void resetWidth();
   void resizeEvent(QResizeEvent *) override;
 public slots:
+  void cut();
+  void copy();
+  void paste();
+  void deleet();
   void showValueColumn(bool);
 private:
   class QSortFilterProxyModel *sortProxy;

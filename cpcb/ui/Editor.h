@@ -95,6 +95,7 @@ public slots:
   void cut();
   void copy();
   void paste();
+  void deleet();
   void translate(Point);
   void updateOnNet();
   void pretendOnNet(NodeID);
@@ -143,6 +144,7 @@ private:
   void selectPointsOfComponent(Group const &);
   // SELECTPOINTSOFCOMPONENT adds points of holes and pads in group, but
   // not of contained traces and subgroups.
+  friend class UndoCreator;
 private:
   class EData *d;
 };

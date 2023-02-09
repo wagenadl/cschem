@@ -1419,6 +1419,10 @@ void Editor::paste() {
   emit componentsChanged();
 }
 
+void Editor::deleet() {
+  deleteSelected();
+}
+
 void Editor::deleteDanglingTraces() {
   Group here = currentGroup();
   TraceRepair tr(here);
