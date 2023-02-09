@@ -130,6 +130,7 @@ public:
   class PlaneEditor *planeeditor;
   Point userorigin;
   class BOM *bom;
+  int undocreatorstackdepth;
 };
 
 

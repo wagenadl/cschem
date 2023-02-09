@@ -12,6 +12,8 @@
 #include <QPainter>
 #include <QTextDocument>
 #include <QStaticText>
+#include "data/BOMClip.h"
+#include "UndoCreator.h"
 
 class SortProxy: public QSortFilterProxyModel {
 public:
@@ -180,4 +182,79 @@ void BOMView::selectElements(QSet<int> const &set) {
 void BOMView::resizeEvent(QResizeEvent *e) {
   QTableView::resizeEvent(e);
   resetWidth();
+}
+
+void BOMView::cut() {
+  copy();
+  deleet();
+  qDebug() << "BOMView::cut";
+}
+
+static QPoint topleftOfSelection(QModelIndexList const &cells) {
+  int c0 = -1;
+  int r0 = -1;
+  for (auto const &idx: cells) {
+    int row = idx.row();
+    int col = idx.column();
+    if (c0<0 || col<c0)
+      c0 = col;
+    if (r0<0 || row<r0)
+      r0 = row;
+  }
+  return QPoint(c0, r0);
+}
+
+void BOMView::copy() {
+  qDebug() << "BOMView::copy";
+  QModelIndexList cells = selectionModel()->selectedIndexes();
+  QPoint topleft = topleftOfSelection(cells);
+  BOMClip::CellList data;
+  for (auto const &idx: cells) {
+    int row = idx.row();
+    int col = idx.column();
+    data << BOMClip::Cell(col - topleft.x(), row - topleft.y(),
+                          sortProxy->data(sortProxy->index(row, col))
+                          .toString());
+    qDebug() << col - topleft.x() << row - topleft.y()
+             << sortProxy->data(sortProxy->index(row, col))
+      .toString();
+  }
+  BOMClip::instance().store(data);
+}
+
+void BOMView::paste() {
+  qDebug() << "BOMView::paste";
+  if (!BOMClip::instance().isValid()) {
+    qDebug() << "not valid";
+    return;
+  }
+  BOMClip::CellList data = BOMClip::instance().retrieve();
+  if (data.size()==0) {
+    qDebug() << "no data";
+    return;
+  }
+  QModelIndexList cells = selectionModel()->selectedIndexes();
+  QPoint topleft = topleftOfSelection(cells);
+  if (topleft.x()<0) {
+    qDebug() << "no cursor";
+    return;
+  }
+  UndoCreator uc(model()->editor(), true);
+  for (BOMClip::Cell const &cell: data) 
+    sortProxy->setData(sortProxy->index(cell.dy + topleft.y(),
+                                        cell.dx + topleft.x()),
+                       cell.text);
+}
+
+void BOMView::deleet() {
+  qDebug() << "BOMView::deleet";
+  QModelIndexList cells = selectionModel()->selectedIndexes();
+  if (cells.size()<=0)
+    return;
+  UndoCreator uc(model()->editor(), true);
+  for (auto const &idx: cells) {
+    int row = idx.row();
+    int col = idx.column();
+    sortProxy->setData(sortProxy->index(row, col), "");
+  }
 }

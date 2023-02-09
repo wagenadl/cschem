@@ -20,8 +20,8 @@ Clipboard::Clipboard() {
 
 bool Clipboard::isValid() const {
   QClipboard *cb = QApplication::clipboard();
-  QMimeData const *md = cb->mimeData();
-  return md->hasFormat(dndformat);
+  QMimeData const *md = cb ? cb->mimeData() : 0;
+  return md ? md->hasFormat(dndformat) : false;
 }
 
 QMimeData *Clipboard::createMimeData(Group const &g) {
