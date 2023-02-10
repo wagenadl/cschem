@@ -341,7 +341,8 @@ void MWData::saveComponentDialog() {
      compwd = Paths::userComponentRoot();
      QDir::home().mkpath(compwd);
   }
-  QString gname = editor->selectedComponentGroup().attributes.value(Group::Attribute::Footprint);
+  QString gname = editor->selectedComponentGroup()
+    .attributes.value(Group::Attribute::Footprint);
   QString sug = compwd;
   if (gname!="")
     sug += "/" + gname + ".svg";
@@ -869,7 +870,7 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
   tools->addAction("&Insert component…", [this]() { insertComponentDialog(); },
 		   QKeySequence(Qt::CTRL + Qt::Key_I));
-  a = tools->addAction("Save &component…", [this]() { saveComponentDialog(); },
+  a = tools->addAction("&Save component…", [this]() { saveComponentDialog(); },
 		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
   QObject::connect(editor, &Editor::selectionIsGroup,
 		   a, &QAction::setEnabled);
