@@ -671,8 +671,10 @@ bool Group::saveComponent(int id, QString fn) {
   sw.setAutoFormatting(true);
   sw.setAutoFormattingIndent(2);
   
-  QByteArray svg = ORenderer::objectToSvg(obj, Dim::fromMils(50),
-					  Dim::fromMils(500));
+  QByteArray svg = ORenderer::objectToSvg(obj,
+                                          Dim::fromMils(50),
+					  Dim::fromMils(300),
+                                          10);
   QBuffer svgbuf(&svg);
   svgbuf.open(QBuffer::ReadOnly);
   QXmlStreamReader sr(&svgbuf);

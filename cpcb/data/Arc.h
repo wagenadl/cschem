@@ -29,7 +29,11 @@ public:
   Dim radius; 
   Dim linewidth;
   int angle; // span, degrees
-  FreeRotation rota;
+  FreeRotation rota; /*  0: centered around +ve x (right)
+                        90: centered around +ve y (down)
+                       180: centered around -ve x (left)
+                       270: centered around -ve y (up)
+                     */ 
   Layer layer;
 public:
   Arc();
@@ -45,7 +49,7 @@ public:
   void setLayer(Layer);
   Rect boundingRect() const;
   bool onEdge(Point p, Dim mrg) const;
-  void setExtent(Extent);
+  void setExtent(Extent); // deprecated: use angle and rota instead
 };
 
 QDebug operator<<(QDebug, Arc const &);

@@ -34,9 +34,9 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Arc &t) {
   } else {
     t.angle = a.value("ang").toInt(&ok);
     if (a.hasAttribute("rot")) {
-      /* In older versions, if rot=0, arc was centred around 12 o'clock,
-         unless angle was negative,
-         in which case arc ran clockwise from 12 o'clock. */
+      /* In older versions, if rot=0, arc was centered around 12
+         o'clock, unless angle was negative, in which case arc ran
+         clockwise from 12 o'clock. */
       t.rota = FreeRotation(a.value("rot").toInt(&ok) * 90);
       if (t.angle<0) 
         t.angle = -t.angle;
