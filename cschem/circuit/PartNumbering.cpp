@@ -130,6 +130,26 @@ bool PartNumbering::lessThan(QString a, QString b) {
   return unpack(a) < unpack(b);
 }
 
+QStringList PartNumbering::unpackRefs(QString crefs) {
+  QStringList bits = crefs.split(", ");
+  QStringList refs;
+  for (QString bit: bits) {
+    QStringList xx = bit.split("–");
+    if (xx.size()>=2) {
+      // range
+      QString pfx = prefix(xx[0]);
+      int n0 = number(xx[0]);
+      int n1 = xx[1].toInt();
+      for (int n=n0; n<=n0; n++) 
+        refs << QString("%1%2").arg(pfx).arg(n);
+    } else {
+      refs << bit;
+    }
+  }
+  return refs;
+}
+      
+
 QString PartNumbering::compactRefs(QStringList refs) {
   return compactRefs(QSet<QString>(refs.begin(), refs.end()));
 }

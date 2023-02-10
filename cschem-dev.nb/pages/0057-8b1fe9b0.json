@@ -1,0 +1,55 @@
+{ "typ": "page",
+  "cre": "2023-02-10T08:41:07.260",
+  "mod": "2023-02-10T08:42:37.111",
+  "cui": "3a07c28d0c09bccf",
+  "stampTime": 0,
+  "startPage": 57,
+  "unlocked": false,
+  "uuid": "8b1fe9b0",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2023-02-10T08:41:07.250",
+      "mod": "2023-02-10T08:41:07.250",
+      "uuid": "ff7db868"
+    },
+    { "typ": "title",
+      "cre": "2023-02-10T08:41:08.890",
+      "mod": "2023-02-10T08:41:25.912",
+      "uuid": "9f8461d5",
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-10T08:41:08.890",
+          "mod": "2023-02-10T08:41:25.911",
+          "lines": [
+            0
+          ],
+          "text": "New “Comment” tag in CSchem?",
+          "uuid": "d0946319"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-02-10T08:41:26.604",
+      "mod": "2023-02-10T08:42:37.111",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "e11044b4",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-02-10T08:41:26.604",
+          "mod": "2023-02-10T08:42:37.111",
+          "lines": [
+            0,
+            54,
+            111
+          ],
+          "text": "I’ve been abusing the “Value” field in CSchem to name connectors. This is bad practice. Add a “Comment” field? Context menu?",
+          "uuid": "99d5fb0f"
+        }
+      ]
+    }
+  ]
+}

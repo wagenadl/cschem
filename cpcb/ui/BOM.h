@@ -44,8 +44,8 @@ public:
   int rowCount(QModelIndex const &parent=QModelIndex()) const override;
   int findElement(int id) const; // returns row number or -1
   void rebuild(); // regrab circuit from editor, update rows as needed.
-  QList<QStringList> asTable() const;
-  bool saveAsCSV(QString fn) const;
+  QList<QStringList> asTable(bool compact) const;
+  bool saveAsCSV(QString fn, bool compact) const;
   bool saveShoppingListAsCSV(QString fn) const;
   QList<BOMRow> readAndVerifyCSV(QString fn) const; // does not store data,
   // ... merely returns it
