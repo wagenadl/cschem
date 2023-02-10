@@ -540,17 +540,17 @@ bool MWData::exportPasteMaskDialog() {
 }
 
 bool MWData::exportShoppingListDialog() {
-  QString fn = getSaveFilename("csv", "Export shopping list as…");
+  QString fn = getSaveFilename("csv", "Export compact BOM as…");
   if (fn.isEmpty())
     return false;
-  return editor->bom()->saveShoppingListAsCSV(fn);
+  return editor->bom()->saveAsCSV(fn, true);
 }
 
 bool MWData::exportBOMDialog() {
   QString fn = getSaveFilename("csv", "Export BOM as…");
   if (fn.isEmpty())
     return false;
-  return editor->bom()->saveAsCSV(fn);
+  return editor->bom()->saveAsCSV(fn, false);
 }
 
 bool MWData::importBOMDialog() {
@@ -731,10 +731,8 @@ void MWData::makeMenus() {
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
 		  
   file->addAction("Export &BOM as CSV…",  [this]() { exportBOMDialog(); });
-  file->addAction("Export shopping &list as CSV…",  [this]() {
-                           exportShoppingListDialog();
-                                                    });
-  file->addAction("&Import BOM from CSV…",  [this]() { importBOMDialog(); });
+  file->addAction("Export &compact BOM as CSV…",  [this]() { exportShoppingListDialog(); });
+  file->addAction("I&mport BOM from CSV…",  [this]() { importBOMDialog(); });
   
   file->addAction("&Quit", []() { QApplication::quit(); });
 
