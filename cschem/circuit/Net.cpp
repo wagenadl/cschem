@@ -24,7 +24,9 @@ public:
 void Net::merge(Net const &net) {
   d->connections |= net.d->connections;
   d->pins |= net.d->pins;
-  QSet<QString> ports = QSet<QString>::fromList(d->ports);
+  QSet<QString> ports;
+  for (QString p: d->ports)
+    ports << p;
   for (QString p: net.ports())
     ports << p;
   d->ports = ports.values();
