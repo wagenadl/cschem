@@ -22,7 +22,7 @@ public:
   void reloadData();
 public:
   Editor *editor;
-  QList<BOMRow> elements; // list elements are rows of the model
+  BOMTable elements; // list elements are rows of the model
 };
 
 BOMRow::BOMRow(): id(-1) {
@@ -57,42 +57,11 @@ QList<Group::Attribute> BOMRow::attributeOrder() {
   return attrs;
 }
   
-QStringList BOM::toStringList() const {
+QStringList BOMRow::toStringList() const {
   QStringList lst{value, ref};
   for (auto attr: attributeOrder())
     lst << attributes[attr];
   return lst;
-}
-
-BOMTable::BOMTable() {
-}
-
-BOMTable::BOMTable(Group const &root) {
-  for (int k: root.keys()) {
-    Object const &o(root.object(k));
-    if (o.isGroup())
-      *this << BOMRow(k, o.asGroup());
-  }
-}
-
-void BOMTable::augment(Circuit const &circuit) {
-  for (BOMRow &row: *this)
-    row.augment(circuit);
-}
-
-QList<QStringList> BOMRow::pack(QList<QStringList> table) {
-  QMap<QStringList, QStringList> refs;
-  for (QStringList row: table) {
-    QString ref = row[1];
-    row.removeAt(1);
-    refs[row] << ref;
-  }
-  table.clear();
-  for (QStringList row: refs.keys()) {
-    row.insert(1, PartNumbering::compactRefs(refs[row]));
-    table << row;
-  }
-  return table;
 }
 
 BOMRow BOMRow::fromStringList(QStringList const &lst) {
@@ -109,11 +78,9 @@ BOMRow BOMRow::fromStringList(QStringList const &lst) {
   }
   return row;
 }
-  
-  
 
 void BOMRow::augment(Circuit const &circuit) {
-  int elt = circuit.elementByName(g.ref);
+  int elt = circuit.elementByName(ref);
   if (elt<=0)
     return;
   value = circuit.elements[elt].value;
@@ -122,6 +89,109 @@ void BOMRow::augment(Circuit const &circuit) {
   if (attributes.value(Group::Attribute::Notes)=="")
     attributes[Group::Attribute::Notes] = circuit.elements[elt].notes;
 }
+
+//////////////////////////////////////////////////////////////////////
+BOMTable::BOMTable() {
+}
+
+BOMTable::BOMTable(Group const &root) {
+  for (int k: root.keys()) {
+    Object const &o(root.object(k));
+    if (o.isGroup())
+      *this << BOMRow(k, o.asGroup());
+  }
+}
+
+void BOMTable::augment(Circuit const &circuit) {
+  for (BOMRow &row: *this)
+    row.augment(circuit);
+}
+
+static QList<QStringList> packtable(QList<QStringList> table) {
+  QMap<QStringList, QStringList> refs;
+  for (QStringList row: table) {
+    QString ref = row[1];
+    row.removeAt(1);
+    refs[row] << ref;
+  }
+  table.clear();
+  for (QStringList row: refs.keys()) {
+    row.insert(1, PartNumbering::compactRefs(refs[row]));
+    table << row;
+  }
+  return table;
+}
+
+
+QList<QStringList> BOMTable::toList(bool compact) const {
+  QList<QStringList> table;
+  for (BOMRow const &row: *this)
+    table << row.toStringList();
+  if (compact) 
+    table = packtable(table);
+  std::sort(table.begin(), table.end(),
+            [](QStringList a, QStringList b) {
+              return PartNumbering::lessThan(a[1], b[1]); });
+  return table;
+}
+
+bool BOMTable::saveCSV(QString fn, bool compact) const {
+  QList<QStringList> table = toList(compact);
+  table.insert(0, BOMRow::header());
+  QFile f(fn);
+  if (f.open(QFile::WriteOnly)) {
+    QTextStream(&f) << CSV::encode(table);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+BOMTable BOMTable::fromList(QList<QStringList> list) {
+  BOMTable table;
+  for (QStringList row: list) {
+    if (row.size() != BOMRow::header().size())
+      return BOMTable(); // error
+    QStringList refs = PartNumbering::unpackRefs(row[1]);
+    for (QString ref: refs) {
+      row[1] = ref;
+      table << BOMRow::fromStringList(row);
+    }
+  }
+  return table;
+}
+
+BOMTable BOMTable::fromCSV(QString fn) {
+  QFile f(fn);
+  if (!f.open(QFile::ReadOnly))
+    return BOMTable();
+  QString csv = QTextStream(&f).readAll();
+  QList<QStringList> table = CSV::decode(csv);
+  if (table.isEmpty())
+    return BOMTable();
+  if (table[0] == BOMRow::header())
+    table.removeAt(0); // drop header
+  return fromList(table);
+}
+
+bool BOMTable::verify(Group const &root) const {
+  QSet<QString> allrefs;
+  for (int k: root.keys()) {
+    Object const &o(root.object(k));
+    if (o.isGroup())
+      allrefs << o.asGroup().ref;
+  }
+
+  for (BOMRow const &row: *this) {
+    if (!allrefs.contains(row.ref)) {
+      qDebug() << "BOMTable::verify: Surprise ref" << row.ref;
+      return false;
+    }
+  }
+
+  return true;
+}
+  
 
 QMap<BOM::Column, Group::Attribute> col2attr{
   { BOM::Column::Footprint, Group::Attribute::Footprint },
@@ -134,7 +204,7 @@ QMap<BOM::Column, Group::Attribute> col2attr{
 
 void BOMData::reloadData() {
   elements = BOMTable(editor->pcbLayout().root());
-  elements.augment(circuit);
+  elements.augment(editor->linkedSchematic().circuit());
 }
 
 
@@ -181,7 +251,8 @@ QVariant BOM::data(QModelIndex const &index,
   }
 }
 
-bool BOM::setAttributeData(int r, Group::Attribute attr, QVariant const &value) {
+bool BOM::setAttributeData(int r, Group::Attribute attr,
+                           QVariant const &value) {
   BOMRow &row(d->elements[r]);
   for (int c=0; c!=int(Column::N); c++) 
     if (col2attr.contains(Column(c)) && col2attr[Column(c)]==attr) 
@@ -262,7 +333,6 @@ QVariant BOM::headerData(int section, Qt::Orientation orientation,
       else
         return ref + " / " + val;
     }
-    //return QVariant(PartNumbering::nameToHtml(d->elements[section].ref));
   }
   return QVariant(); // this should never be shown
 }
@@ -288,79 +358,6 @@ void BOM::rebuild() {
   emit hasLinkedSchematic(d->editor->linkedSchematic().isValid());
 }
 
-  
- 
-
-QList<QStringList> BOM::asTable(bool compact) const {
-  QList<QStringList> table;
-  for (BOMRow const &elt: d->elements)
-    table << row.toStringList();
-  if (compact)
-    table = BOMRow::pack(table);
-  std::sort(table.begin(), table.end(),
-            [](QStringList a, QStringList b) {
-              return PartNumbering::lessThan(a[1], b[1]); });
-  table.insert(0, BOMRow::header());
-  return table;
-}
-
-
-bool BOM::saveAsCSV(QString fn, bool compact) const {
-  QList<QStringList> tbl = asTable(compact);
-  QFile f(fn);
-  if (f.open(QFile::WriteOnly)) {
-    QTextStream(&f) << CSV::encode(tbl);
-    return true;
-  } else {
-    return false;
-  }
-}
-
-
-QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
-  QFile f(fn);
-  if (!f.open(QFile::ReadOnly))
-    return QList<BOMRow>();
-  QString csv = QTextStream(&f).readAll();
-  QList<QStringList> table = CSV::decode(csv);
-  if (table.isEmpty())
-    return QList<BOMRow>();
-  if (table[0] == csvheadernames)
-    table.removeAt(0); // drop header
-
-  QSet<QString> allrefs;
-  for (BOMRow const &row: d->elements)
-    allrefs << row.ref;
-  
-  QList<BOMRow> result;
-  for (QStringList row: table) {
-    if (row.size()<2)
-      continue;
-    QStringList refs = PartNumbering::unpackRefs(row[1]);
-    for (QString ref: refs) {
-      if (!allrefs.contains(ref)) {
-        qDebug() << "readcsv: Surprise ref" << ref;
-        return QList<BOMRow>();
-      }
-    }
-    for (QString ref: refs) {
-      BOMRow b;
-      b.id = -1; // not stored
-      b.ref = ref;
-      b.value = row[0];
-      int k = 2;
-      for (auto attr: csvattrs) {
-        if (row.size()>k)
-          b.attributes[attr] = row[k];
-        else
-          break;
-        k++;
-      }
-      result << b;
-    }
-  }
-  return result;
-}
 
 Qt::DropActions BOM::supportedDropActions() const {
   return Qt::CopyAction;

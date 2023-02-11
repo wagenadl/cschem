@@ -1553,8 +1553,8 @@ BOM *Editor::bom() const {
 bool Editor::loadBOM(QString fn) {
   leaveAllGroups();
   
-  QList<BOMRow> rows(bom()->readAndVerifyCSV(fn));
-  if (rows.isEmpty())
+  BOMTable rows = BOMTable::fromCSV(fn);
+  if (rows.isEmpty() || !rows.verify(d->layout.root()))
     return false;
 
   UndoCreator uc(d, true);
