@@ -48,7 +48,7 @@ void BOMData::reloadData() {
       int elt = circuit.elementByName(g.ref);
       if (elt>0) {
         row.value = circuit.elements[elt].value;
-        if (row.value=="")
+        if (row.value=="" && !circuit.elements[elt].subtype.contains(":"))
           row.value = circuit.elements[elt].subtype;
         if (row.attributes.value(Group::Attribute::Notes)=="")
           row.attributes[Group::Attribute::Notes] = circuit.elements[elt].notes;
@@ -215,38 +215,53 @@ static QList<Group::Attribute> csvattrs{
   Group::Attribute::PartNo,
   Group::Attribute::Vendor,
   Group::Attribute::CatNo,
-  Group::Attribute::Notes
 };
   
-static QStringList headernames{"Ref.",
-                              "Value",
-                              "Pkg.",
-                              "Mfg.",
-                              "Part#",
-                              "Vendor",
-                              "Cat#",
-                              "Notes"};
+static QStringList csvheadernames{
+  "Comment",
+  "Designator",
+  "Footprint",
+  "Mfg.",
+  "Mfg. Part No.",
+  "Vendor",
+  "Vendor Cat. No."
+};
+ 
 
-QList<QStringList> BOM::asTable() const {
+QList<QStringList> BOM::asTable(bool compact) const {
   QList<QStringList> table;
   
   for (BOMRow const &elt: d->elements) {
-    QStringList row{elt.ref, elt.value};
+    QStringList row{elt.value, elt.ref};
     for (auto attr: csvattrs)
       row << elt.attributes[attr];
     table << row;
   }
+
+  if (compact) {
+    QMap<QStringList, QStringList> refs;
+    for (QStringList row: table) {
+      QString ref = row[1];
+      row.removeAt(1);
+      refs[row] << ref;
+    }
+    table.clear();
+    for (QStringList row: refs.keys()) {
+      row.insert(1, PartNumbering::compactRefs(refs[row]));
+      table << row;
+    }
+  }
    
   std::sort(table.begin(), table.end(),
             [](QStringList a, QStringList b) {
-              return PartNumbering::lessThan(a[0], b[0]); });
-  table.insert(0, headernames);
+              return PartNumbering::lessThan(a[1], b[1]); });
+  table.insert(0, csvheadernames);
   return table;
 }
 
 
-bool BOM::saveAsCSV(QString fn) const {
-  QList<QStringList> tbl = asTable();
+bool BOM::saveAsCSV(QString fn, bool compact) const {
+  QList<QStringList> tbl = asTable(compact);
   QFile f(fn);
   if (f.open(QFile::WriteOnly)) {
     QTextStream(&f) << CSV::encode(tbl);
@@ -258,11 +273,19 @@ bool BOM::saveAsCSV(QString fn) const {
 
 QStringList mfgvendor(BOMRow const &row) {
   return QStringList{
+    row.value,
     row.attributes.value(Group::Attribute::Manufacturer),
     row.attributes.value(Group::Attribute::PartNo),
     row.attributes.value(Group::Attribute::Vendor),
     row.attributes.value(Group::Attribute::CatNo),
   };
+}
+
+bool allempty(QStringList lst) {
+  for (auto s: lst)
+    if (s!="")
+      return false;
+  return true;
 }
 
 bool BOM::saveShoppingListAsCSV(QString fn) const {
@@ -273,8 +296,10 @@ bool BOM::saveShoppingListAsCSV(QString fn) const {
   QFile f(fn);
   if (f.open(QFile::WriteOnly)) {
     QTextStream ts(&f);
-    ts << "\"Qty\",\"Mfg.\",\"Part no\",\"Vendor\",\"Cat#\",\"Refs\"\n";
+    ts << "\"Qty\",\"Value\",\"Mfg.\",\"Part no\",\"Vendor\",\"Cat#\",\"Refs\"\n";
     for (QStringList partno: partno2refs.keys()) {
+      if (allempty(partno))
+        continue;
       QStringList refs = partno2refs[partno];
       QString crefs
         = PartNumbering::compactRefs(refs);
@@ -302,7 +327,7 @@ QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
   QList<QStringList> table = CSV::decode(csv);
   if (table.isEmpty())
     return QList<BOMRow>();
-  if (table[0] == headernames)
+  if (table[0] == csvheadernames)
     table.removeAt(0); // drop header
 
   QSet<QString> allrefs;
@@ -311,26 +336,30 @@ QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
   
   QList<BOMRow> result;
   for (QStringList row: table) {
-    if (row.isEmpty())
+    if (row.size()<2)
       continue;
-    if (!allrefs.contains(row[0])) {
-      qDebug() << "readcsv: Surprise ref" << row[0];
-      return QList<BOMRow>();
+    QStringList refs = PartNumbering::unpackRefs(row[1]);
+    for (QString ref: refs) {
+      if (!allrefs.contains(ref)) {
+        qDebug() << "readcsv: Surprise ref" << ref;
+        return QList<BOMRow>();
+      }
     }
-    BOMRow b;
-    b.id = -1; // not stored
-    b.ref = row[0];
-    if (row.size()>=2)
-      b.value = row[1];
-    int k = 2;
-    for (auto attr: csvattrs) {
-      if (row.size()>k)
-        b.attributes[attr] = row[k];
-      else
-        break;
-      k++;
+    for (QString ref: refs) {
+      BOMRow b;
+      b.id = -1; // not stored
+      b.ref = ref;
+      b.value = row[0];
+      int k = 2;
+      for (auto attr: csvattrs) {
+        if (row.size()>k)
+          b.attributes[attr] = row[k];
+        else
+          break;
+        k++;
+      }
+      result << b;
     }
-    result << b;
   }
   return result;
 }
