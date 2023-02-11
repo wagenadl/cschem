@@ -7,11 +7,31 @@
 #include <QAbstractTableModel>
 #include "data/Group.h"
 
-struct BOMRow {
+class BOMRow {
+public:
+  BOMRow();
+  BOMRow(int id, Group const &g);
+  void augment(Circuit const &circuit);
+  QStringList toStringList() const;
+  static QStringList header();
+  static QList<Group::Attribute> attributeOrder();
+  static BOMRow fromStringList(QStringList);
+  static QList<QStringList> packList(QList<QStringList>);
+  static QList<QStringList> unpackList(QList<QStringList>);
+public:
   int id;
   QString ref;
   QString value;
   QMap<Group::Attribute, QString> attributes;
+};
+
+class BOMTable: public QList<BOMRow> {
+public:
+  BOMTable();
+  BOMTable(Group const &root);
+  void augment(Circuit const &circuit);
+  QList<QStringList> toList(bool compact) const;
+  static BOMTable fromList() const;
 };
 
 class BOM: public QAbstractTableModel {
@@ -46,9 +66,7 @@ public:
   void rebuild(); // regrab circuit from editor, update rows as needed.
   QList<QStringList> asTable(bool compact) const;
   bool saveAsCSV(QString fn, bool compact) const;
-  bool saveShoppingListAsCSV(QString fn) const;
-  QList<BOMRow> readAndVerifyCSV(QString fn) const; // does not store data,
-  // ... merely returns it
+  static QList<BOMRow> readAndVerifyCSV(QString fn) const;
   Qt::DropActions supportedDropActions() const override;
   class Editor *editor();
 signals:
