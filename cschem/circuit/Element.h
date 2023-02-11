@@ -53,6 +53,7 @@ public:
   void autoSetVisibility();
   void copyAnnotationsFrom(Element const &);
   bool operator==(Element const &) const;
+  bool operator!=(Element const &) const;
 public:
   Element::Type type;
   QPoint position;

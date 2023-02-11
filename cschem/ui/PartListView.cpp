@@ -39,6 +39,7 @@ void PartListView::setModel(PartList *pl0) {
   QTableView::setModel(sortProxy);
   sortByColumn(int(PartList::Column::Name), Qt::AscendingOrder);
   // setSortingEnabled(true); // this enables user choice in sorting behavior
+  hideColumn(int(PartList::Column::Id));
 }
 
 PartList *PartListView::model() const {

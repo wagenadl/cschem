@@ -84,10 +84,10 @@ void BOMRow::augment(Circuit const &circuit) {
   if (elt<=0)
     return;
   value = circuit.elements[elt].value;
-  if (value=="" && !circuit.elements[elt].subtype.contains(":"))
+  if (value.startsWith('"') || value.startsWith("“"))
+    value = "";
+  else if (value=="" && !circuit.elements[elt].subtype.contains(":"))
     value = circuit.elements[elt].subtype;
-  if (attributes.value(Group::Attribute::Notes)=="")
-    attributes[Group::Attribute::Notes] = circuit.elements[elt].notes;
 }
 
 //////////////////////////////////////////////////////////////////////
