@@ -13,6 +13,7 @@
 #include <QFile>
 #include <algorithm>
 
+
 class BOMData {
 public:
   BOMData(Editor *editor): editor(editor) {
@@ -24,6 +25,104 @@ public:
   QList<BOMRow> elements; // list elements are rows of the model
 };
 
+BOMRow::BOMRow(): id(-1) {
+}
+
+BOMRow::BOMRow(int id, Group const &g): id(id) {
+  ref = g.ref;
+  attributes = g.attributes;
+}
+
+QStringList BOMRow::header() {
+  static QStringList hdr{
+    "Comment",
+    "Designator",
+    "Footprint",
+    "Mfg.",
+    "Mfg. Part No.",
+    "Vendor",
+    "Vendor Cat. No."
+  };
+  return hdr;
+}
+
+QList<Group::Attribute> BOMRow::attributeOrder() {
+  static QList<Group::Attribute> attrs{
+    Group::Attribute::Footprint,
+    Group::Attribute::Manufacturer,
+    Group::Attribute::PartNo,
+    Group::Attribute::Vendor,
+    Group::Attribute::CatNo,
+  };
+  return attrs;
+}
+  
+QStringList BOM::toStringList() const {
+  QStringList lst{value, ref};
+  for (auto attr: attributeOrder())
+    lst << attributes[attr];
+  return lst;
+}
+
+BOMTable::BOMTable() {
+}
+
+BOMTable::BOMTable(Group const &root) {
+  for (int k: root.keys()) {
+    Object const &o(root.object(k));
+    if (o.isGroup())
+      *this << BOMRow(k, o.asGroup());
+  }
+}
+
+void BOMTable::augment(Circuit const &circuit) {
+  for (BOMRow &row: *this)
+    row.augment(circuit);
+}
+
+QList<QStringList> BOMRow::pack(QList<QStringList> table) {
+  QMap<QStringList, QStringList> refs;
+  for (QStringList row: table) {
+    QString ref = row[1];
+    row.removeAt(1);
+    refs[row] << ref;
+  }
+  table.clear();
+  for (QStringList row: refs.keys()) {
+    row.insert(1, PartNumbering::compactRefs(refs[row]));
+    table << row;
+  }
+  return table;
+}
+
+BOMRow BOMRow::fromStringList(QStringList const &lst) {
+  BOMRow row;
+  row.value = lst[0];
+  row.ref = lst[1];
+  int k = 2;
+  for (auto attr: attributeOrder()) {
+    if (lst.size()>k)
+      row.attributes[attr] = lst[k];
+    else
+      break;
+    k++;
+  }
+  return row;
+}
+  
+  
+
+void BOMRow::augment(Circuit const &circuit) {
+  int elt = circuit.elementByName(g.ref);
+  if (elt<=0)
+    return;
+  value = circuit.elements[elt].value;
+  if (value=="" && !circuit.elements[elt].subtype.contains(":"))
+    value = circuit.elements[elt].subtype;
+  if (attributes.value(Group::Attribute::Notes)=="")
+    attributes[Group::Attribute::Notes] = circuit.elements[elt].notes;
+}
+
 QMap<BOM::Column, Group::Attribute> col2attr{
   { BOM::Column::Footprint, Group::Attribute::Footprint },
   { BOM::Column::Manufacturer, Group::Attribute::Manufacturer },
@@ -34,29 +133,10 @@ QMap<BOM::Column, Group::Attribute> col2attr{
 };
 
 void BOMData::reloadData() {
-  elements.clear();
-  Group const &root(editor->pcbLayout().root());
-  Circuit const &circuit(editor->linkedSchematic().circuit());
-  for (int k: root.keys()) {
-    Object const &o(root.object(k));
-    if (o.isGroup()) {
-      Group const &g(o.asGroup());
-      BOMRow row;
-      row.id = k;
-      row.ref = g.ref;
-      row.attributes = g.attributes;
-      int elt = circuit.elementByName(g.ref);
-      if (elt>0) {
-        row.value = circuit.elements[elt].value;
-        if (row.value=="" && !circuit.elements[elt].subtype.contains(":"))
-          row.value = circuit.elements[elt].subtype;
-        if (row.attributes.value(Group::Attribute::Notes)=="")
-          row.attributes[Group::Attribute::Notes] = circuit.elements[elt].notes;
-      }
-      elements << row;
-    }
-  }
+  elements = BOMTable(editor->pcbLayout().root());
+  elements.augment(circuit);
 }
+
 
 int BOM::findElement(int id) const {
   for (int r=0; r<d->elements.size(); r++)
@@ -208,54 +288,19 @@ void BOM::rebuild() {
   emit hasLinkedSchematic(d->editor->linkedSchematic().isValid());
 }
 
-
-static QList<Group::Attribute> csvattrs{
-  Group::Attribute::Footprint,
-  Group::Attribute::Manufacturer,
-  Group::Attribute::PartNo,
-  Group::Attribute::Vendor,
-  Group::Attribute::CatNo,
-};
   
-static QStringList csvheadernames{
-  "Comment",
-  "Designator",
-  "Footprint",
-  "Mfg.",
-  "Mfg. Part No.",
-  "Vendor",
-  "Vendor Cat. No."
-};
  
 
 QList<QStringList> BOM::asTable(bool compact) const {
   QList<QStringList> table;
-  
-  for (BOMRow const &elt: d->elements) {
-    QStringList row{elt.value, elt.ref};
-    for (auto attr: csvattrs)
-      row << elt.attributes[attr];
-    table << row;
-  }
-
-  if (compact) {
-    QMap<QStringList, QStringList> refs;
-    for (QStringList row: table) {
-      QString ref = row[1];
-      row.removeAt(1);
-      refs[row] << ref;
-    }
-    table.clear();
-    for (QStringList row: refs.keys()) {
-      row.insert(1, PartNumbering::compactRefs(refs[row]));
-      table << row;
-    }
-  }
-   
+  for (BOMRow const &elt: d->elements)
+    table << row.toStringList();
+  if (compact)
+    table = BOMRow::pack(table);
   std::sort(table.begin(), table.end(),
             [](QStringList a, QStringList b) {
               return PartNumbering::lessThan(a[1], b[1]); });
-  table.insert(0, csvheadernames);
+  table.insert(0, BOMRow::header());
   return table;
 }
 
@@ -271,54 +316,7 @@ bool BOM::saveAsCSV(QString fn, bool compact) const {
   }
 }
 
-QStringList mfgvendor(BOMRow const &row) {
-  return QStringList{
-    row.value,
-    row.attributes.value(Group::Attribute::Manufacturer),
-    row.attributes.value(Group::Attribute::PartNo),
-    row.attributes.value(Group::Attribute::Vendor),
-    row.attributes.value(Group::Attribute::CatNo),
-  };
-}
 
-bool allempty(QStringList lst) {
-  for (auto s: lst)
-    if (s!="")
-      return false;
-  return true;
-}
-
-bool BOM::saveShoppingListAsCSV(QString fn) const {
-  QMap<QStringList, QStringList> partno2refs;
-  for (BOMRow const &elt: d->elements) 
-    partno2refs[mfgvendor(elt)] << elt.ref;
-  
-  QFile f(fn);
-  if (f.open(QFile::WriteOnly)) {
-    QTextStream ts(&f);
-    ts << "\"Qty\",\"Value\",\"Mfg.\",\"Part no\",\"Vendor\",\"Cat#\",\"Refs\"\n";
-    for (QStringList partno: partno2refs.keys()) {
-      if (allempty(partno))
-        continue;
-      QStringList refs = partno2refs[partno];
-      QString crefs
-        = PartNumbering::compactRefs(refs);
-      int n = refs.size();
-      ts << n;
-      ts << ",";
-      for (QString bit: partno) {
-        ts << CSV::quote(bit);
-        ts << ",";
-      }
-      ts << CSV::quote(crefs);
-      ts << "\n";
-    }
-    return true;
-  } else {
-    return false;
-  }
-}
-  
 QList<BOMRow> BOM::readAndVerifyCSV(QString fn) const {
   QFile f(fn);
   if (!f.open(QFile::ReadOnly))
