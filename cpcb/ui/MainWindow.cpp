@@ -71,8 +71,7 @@ public:
   bool exportAsDialog();
   bool exportPasteMaskDialog();
   bool exportFrontPanelDialog();
-  bool exportShoppingListDialog();
-  bool exportBOMDialog();
+  bool exportBOMDialog(bool compact);
   bool importBOMDialog();
   bool saveAsDialog();
   bool saveImmediately();
@@ -540,18 +539,16 @@ bool MWData::exportPasteMaskDialog() {
   return false;
 }
 
-bool MWData::exportShoppingListDialog() {
-  QString fn = getSaveFilename("csv", "Export compact BOM as…");
-  if (fn.isEmpty())
-    return false;
-  return editor->bom()->saveAsCSV(fn, true);
-}
 
-bool MWData::exportBOMDialog() {
-  QString fn = getSaveFilename("csv", "Export BOM as…");
+bool MWData::exportBOMDialog(bool compact) {
+  QString fn = compact
+    ? getSaveFilename("csv", "Export compact BOM as…")
+    : getSaveFilename("csv", "Export BOM as…");
   if (fn.isEmpty())
     return false;
-  return editor->bom()->saveAsCSV(fn, false);
+  BOMTable table(editor->pcbLayout().root());
+  table.augment(editor->linkedSchematic().circuit());
+  return table.saveCSV(fn, compact);
 }
 
 bool MWData::importBOMDialog() {
@@ -731,9 +728,12 @@ void MWData::makeMenus() {
   file->addAction("Copy PCB &image to clipboard", [this]() { copyPCBImage(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
 		  
-  file->addAction("Export &BOM as CSV…",  [this]() { exportBOMDialog(); });
-  file->addAction("Export &compact BOM as CSV…",  [this]() { exportShoppingListDialog(); });
-  file->addAction("I&mport BOM from CSV…",  [this]() { importBOMDialog(); });
+  file->addAction("Export &BOM as CSV…",
+                  [this]() { exportBOMDialog(false); });
+  file->addAction("Export &compact BOM as CSV…",
+                  [this]() { exportBOMDialog(true); });
+  file->addAction("I&mport BOM from CSV…",
+                  [this]() { importBOMDialog(); });
   
   file->addAction("&Quit", []() { QApplication::quit(); });
 

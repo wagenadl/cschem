@@ -11,13 +11,11 @@ class BOMRow {
 public:
   BOMRow();
   BOMRow(int id, Group const &g);
-  void augment(Circuit const &circuit);
+  void augment(class Circuit const &circuit);
   QStringList toStringList() const;
   static QStringList header();
   static QList<Group::Attribute> attributeOrder();
-  static BOMRow fromStringList(QStringList);
-  static QList<QStringList> packList(QList<QStringList>);
-  static QList<QStringList> unpackList(QList<QStringList>);
+  static BOMRow fromStringList(QStringList const &);
 public:
   int id;
   QString ref;
@@ -31,7 +29,10 @@ public:
   BOMTable(Group const &root);
   void augment(Circuit const &circuit);
   QList<QStringList> toList(bool compact) const;
-  static BOMTable fromList() const;
+  bool saveCSV(QString fn, bool compact) const;
+  static BOMTable fromList(QList<QStringList>);
+  static BOMTable fromCSV(QString fn);
+  bool verify(Group const &root) const; // true iff all refs in table exist in root
 };
 
 class BOM: public QAbstractTableModel {
@@ -64,11 +65,9 @@ public:
   int rowCount(QModelIndex const &parent=QModelIndex()) const override;
   int findElement(int id) const; // returns row number or -1
   void rebuild(); // regrab circuit from editor, update rows as needed.
-  QList<QStringList> asTable(bool compact) const;
-  bool saveAsCSV(QString fn, bool compact) const;
-  static QList<BOMRow> readAndVerifyCSV(QString fn) const;
   Qt::DropActions supportedDropActions() const override;
   class Editor *editor();
+  BOMTable table() const;
 signals:
   void hasLinkedSchematic(bool);
 private:
