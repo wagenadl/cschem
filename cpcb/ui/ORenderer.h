@@ -51,7 +51,8 @@ public:
   void drawNPHole(NPHole const &g, bool selected=false, bool innet=false);
 public:
   static QByteArray objectToSvg(Object const &,
-				  Dim margin=Dim(), Dim minSize=Dim());
+                                Dim margin=Dim(), Dim minSize=Dim(),
+                                float scale=1.0);
   static void render(Group const &, QPainter *); // all layers
   static void render(Object const &, QPainter *); // all layers
 private:

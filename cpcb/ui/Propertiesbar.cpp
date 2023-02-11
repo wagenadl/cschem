@@ -61,7 +61,7 @@ public:
   QWidget *arcg;
   QAction *arca;
   QWidget *arcc;
-  QAction *arc360, *arc300, *arc240, *arc180, *arc_90;
+  QAction *arc360, *arc300, *arc240, *arc180, *arc120, *arc_90;
   
   QWidget *layerg;
   QAction *layera;
@@ -388,6 +388,7 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
     arc300->setChecked(arcangle==300);  
     arc240->setChecked(arcangle==240);  
     arc180->setChecked(arcangle==180);  
+    arc120->setChecked(arcangle==120);  
     arc_90->setChecked(arcangle==90);
   }
   //if (arcangle==90)
@@ -501,6 +502,8 @@ int PBData::arcAngle() const {
    return 240;
  else if (arc180->isChecked())
    return 180;
+ else if (arc120->isChecked())
+   return 120;
  else if (arc_90->isChecked())
    return -90;
  else
@@ -1042,6 +1045,7 @@ void PBData::setupUI() {
   arc300 = makeIconTool(arcc, "Arc300a", true, true, "300° arc");
   arc240 = makeIconTool(arcc, "Arc240a", true, true, "240° arc");
   arc180 = makeIconTool(arcc, "Arc180a", true, true, "Half circle");
+  arc120 = makeIconTool(arcc, "Arc120a", true, true, "120° arc");
   arc_90 = makeIconTool(arcc, "Arc-90a", true, true, "Quarter circle");
   
   QObject::connect(arc360, &QAction::triggered,
@@ -1052,6 +1056,8 @@ void PBData::setupUI() {
 		   [this]() { editor->setArcAngle(240); });
   QObject::connect(arc180, &QAction::triggered,
 		   [this]() { editor->setArcAngle(180); });
+  QObject::connect(arc120, &QAction::triggered,
+		   [this]() { editor->setArcAngle(120); });
   QObject::connect(arc_90, &QAction::triggered,
 		   [this]() { editor->setArcAngle(-90); });
 
