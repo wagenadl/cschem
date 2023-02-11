@@ -208,7 +208,10 @@ bool Element::operator==(Element const &o) const {
     && valueVisible==o.valueVisible && nameVisible==o.nameVisible;
 }
 
-    
+bool Element::operator!=(Element const &o) const {
+  return !(*this == o);
+}
+
 QString Element::humanPinName(QString pin) const {
   QString en = name;
   switch (type) {

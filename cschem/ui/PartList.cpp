@@ -193,8 +193,10 @@ void PartList::rebuild() {
     if (oldmap.contains(id)) {
       // modify existing row
       int n = oldmap[id];
-      d->elements[n] = newmap[id];
-      emit dataChanged(index(n, 0), index(n, int(Column::N)));
+      if (d->elements[n] != newmap[id]) {
+        d->elements[n] = newmap[id];
+        emit dataChanged(index(n, 0), index(n, int(Column::N)));
+      }
       newmap.remove(id);
     }
   }
@@ -214,7 +216,6 @@ void PartList::rebuild() {
 QList<QStringList> PartList::asTable() const {
   QList<QStringList> table;
   
-
   for (Element const &elt: d->elements) 
     table << QStringList{elt.name, elt.value, elt.notes};
   std::sort(table.begin(), table.end(),
