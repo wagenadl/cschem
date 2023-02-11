@@ -54,10 +54,8 @@ PMData::PMData(QString ref, QStringList cc, QStringList pp):
     pcbav << s;
 
   // First, grab exact mappings.
-  for (QString s: circav.toList()) { /* The slightly odd "toList()" call
-					ensures that we are iterating over
-					a copy of the set so that removing
-					items is not a problem. */
+  QList<QString> universe(circav.begin(), circav.end());
+  for (QString s: universe) {
     if (pcbav.contains(s)) {
       circ2pcb[s] = s;
       pcb2circ[s] = s;
