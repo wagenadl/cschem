@@ -10,13 +10,16 @@
 #include <QDialog>
 
 class BoardSizeDialog: public QDialog {
+  Q_OBJECT;
 public:
   BoardSizeDialog(QWidget *parent=0);
-  ~BoardSizeDialog();
+  virtual ~BoardSizeDialog();
   void setLayout(class Layout const &);
   Dim boardWidth() const;
   Dim boardHeight() const;
   Board::Shape boardShape() const;
+public slots:
+  void shrink();
 private:
   class Ui_BoardSizeDialog *ui;
   Rect minrect;

@@ -6,20 +6,18 @@
 #include "data/Layout.h"
 
 BoardSizeDialog::BoardSizeDialog(QWidget *parent): QDialog(parent) {
-  ui = new  Ui_BoardSizeDialog;
+  ui = new Ui_BoardSizeDialog;
   ui->setupUi(this);
   ui->margin->setValue(Dim::fromInch(0.050));
-  connect(ui->shrink, &QPushButton::clicked,
-          this,
-	  [this]() {
-	    ui->width->setValue(minrect.right() + ui->margin->value());
-	    ui->height->setValue(minrect.bottom() + ui->margin->value());
-	  });
-  //  connect(ui->buttonBox, ...
 }
   
 BoardSizeDialog::~BoardSizeDialog() {
   delete ui;
+}
+
+void BoardSizeDialog::shrink() {
+  ui->width->setValue(minrect.right() + ui->margin->value());
+  ui->height->setValue(minrect.bottom() + ui->margin->value());
 }
 
 void BoardSizeDialog::setLayout(class Layout const &lay) {
