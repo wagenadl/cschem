@@ -168,7 +168,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="shrink">
+          <widget class="QPushButton" name="shrunkb">
            <property name="text">
             <string>Shrink</string>
            </property>
@@ -221,8 +221,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>335</y>
+     <x>204</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -237,8 +237,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>325</x>
-     <y>335</y>
+     <x>204</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -246,5 +246,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>shrunkb</sender>
+   <signal>clicked()</signal>
+   <receiver>BoardSizeDialog</receiver>
+   <slot>shrink()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>146</x>
+     <y>193</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>108</x>
+     <y>215</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>shrink()</slot>
+ </slots>
 </ui>
