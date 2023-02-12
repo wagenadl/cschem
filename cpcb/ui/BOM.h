@@ -28,8 +28,9 @@ public:
   BOMTable();
   BOMTable(Group const &root);
   void augment(Circuit const &circuit);
-  QList<QStringList> toList(bool compact) const;
-  bool saveCSV(QString fn, bool compact) const;
+  QList<QStringList> toList(bool compact, QStringList *universe=0) const;
+  // if universe is given, only refs in universe are exported
+  bool saveCSV(QString fn, bool compact, QStringList *universe=0) const;
   static BOMTable fromList(QList<QStringList>);
   static BOMTable fromCSV(QString fn);
   bool verify(Group const &root) const; // true iff all refs in table exist in root

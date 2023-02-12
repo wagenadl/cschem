@@ -1131,3 +1131,10 @@ Group Group::subset(QSet<int> selection) const {
 int Group::nominalRotation() const {
   return d->nominalrotation;
 }
+
+bool Group::hasHoles() const {
+  for (int id: keys()) 
+    if (object(id).isHole() && object(id).asHole().ref!="")
+      return true;
+  return false;
+}

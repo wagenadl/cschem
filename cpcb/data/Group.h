@@ -104,6 +104,7 @@ public:
   QSet<QString> badlyNamedGroupRefs() const; // names that end in "?"
   QSet<QString> duplicatedPinRefs() const; // refs that occur more than once
   QMap<QString, QSet<QString>> groupsWithDuplicatedPins() const;
+  bool hasHoles() const;
 private:
   QSharedDataPointer<class GData> d;
   friend QDebug operator<<(QDebug, Group const &);  
