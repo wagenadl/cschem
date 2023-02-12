@@ -19,6 +19,14 @@ public:
   static Point fromMils(QPointF const &p) {
     return Point(Dim::fromMils(p.x()), Dim::fromMils(p.y()));
   }
+  QPointF toMM() const { return QPointF(x.toMM(), y.toMM()); }
+  static Point fromMM(QPointF const &p) {
+    return Point(Dim::fromMM(p.x()), Dim::fromMM(p.y()));
+  }
+  QPointF toInch() const { return QPointF(x.toInch(), y.toInch()); }
+  static Point fromInch(QPointF const &p) {
+    return Point(Dim::fromInch(p.x()), Dim::fromInch(p.y()));
+  }
   Point roundedTo(Dim o) const { return Point(x.roundedTo(o),
 					      y.roundedTo(o)); }
   Dim distance(Point const &o) const { return Dim::quadrature(o.x-x, o.y-y); }

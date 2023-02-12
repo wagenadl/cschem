@@ -123,10 +123,12 @@ static QList<QStringList> packtable(QList<QStringList> table) {
 }
 
 
-QList<QStringList> BOMTable::toList(bool compact) const {
+QList<QStringList> BOMTable::toList(bool compact, QStringList *universe) const {
   QList<QStringList> table;
   for (BOMRow const &row: *this)
-    table << row.toStringList();
+    if (!universe || universe->contains(row.ref))
+      table << row.toStringList();
+
   if (compact) 
     table = packtable(table);
   std::sort(table.begin(), table.end(),
@@ -135,8 +137,8 @@ QList<QStringList> BOMTable::toList(bool compact) const {
   return table;
 }
 
-bool BOMTable::saveCSV(QString fn, bool compact) const {
-  QList<QStringList> table = toList(compact);
+bool BOMTable::saveCSV(QString fn, bool compact, QStringList *universe) const {
+  QList<QStringList> table = toList(compact, universe);
   table.insert(0, BOMRow::header());
   QFile f(fn);
   if (f.open(QFile::WriteOnly)) {
