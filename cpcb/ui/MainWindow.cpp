@@ -1,6 +1,7 @@
 // MainWindow.cpp
 
 #include "MainWindow.h"
+#include "PNPDialog.h"
 #include "Modebar.h"
 #include "Propertiesbar.h"
 #include "Statusbar.h"
@@ -71,6 +72,7 @@ public:
   bool exportAsDialog();
   bool exportPasteMaskDialog();
   bool exportFrontPanelDialog();
+  bool exportPNPDialog();
   bool exportBOMDialog(bool compact);
   bool importBOMDialog();
   bool saveAsDialog();
@@ -504,6 +506,19 @@ void MWData::copyPCBImage(bool forprinting) {
   QApplication::clipboard()->setPixmap(img);
 }
 
+bool MWData::exportPNPDialog() {
+  PNPDialog dlg(mw);
+  if (pwd.isEmpty())
+    pwd = Paths::defaultLocation();
+  dlg.setPNPFilename(filename);
+  dlg.setFolder(pwd);
+  if (!dlg.exec())
+    return false;
+  qDebug() << "exportpnp" << dlg.pnpFilename()
+           << dlg.bomChecked() << dlg.compactChecked() << dlg.imageChecked();
+  return true;
+}
+
 bool MWData::exportPasteMaskDialog() {
   QString fn = getSaveFilename("svg", "Export paste mask as…");
   if (fn.isEmpty())
@@ -716,24 +731,22 @@ void MWData::makeMenus() {
   file->addAction("Save &as…", [this]() { saveAsDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
 
-  file->addAction("&Export Gerber…", [this]() { exportAsDialog(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_E));
+  auto *fexport = file->addMenu("&Export");
+  fexport->addAction("&Gerber…", [this]() { exportAsDialog(); });
+  fexport->addAction("&Pick n Place…",
+                     [this]() { exportPNPDialog(); });
+  fexport->addAction("&BOM as CSV…",
+                  [this]() { exportBOMDialog(false); });
+  fexport->addAction("&Compact BOM as CSV…",
+                  [this]() { exportBOMDialog(true); });
+  fexport->addAction("Paste &Mask…", [this]() { exportPasteMaskDialog(); });
+  fexport->addAction("&Front panel…", [this]() { exportFrontPanelDialog(); });
 
-  file->addAction("Export &paste mask…", [this]() { exportPasteMaskDialog(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_E));
-
-  file->addAction("Export &front panel…", [this]() { exportFrontPanelDialog(); },
-		  QKeySequence(Qt::ALT + Qt::CTRL + Qt::Key_E));
-
-  file->addAction("Copy PCB &image to clipboard", [this]() { copyPCBImage(); },
+  file->addAction("&Import BOM from CSV…",
+                  [this]() { importBOMDialog(); });
+  file->addAction("&Copy PCB image to clipboard", [this]() { copyPCBImage(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
 		  
-  file->addAction("Export &BOM as CSV…",
-                  [this]() { exportBOMDialog(false); });
-  file->addAction("Export &compact BOM as CSV…",
-                  [this]() { exportBOMDialog(true); });
-  file->addAction("I&mport BOM from CSV…",
-                  [this]() { importBOMDialog(); });
   
   file->addAction("&Quit", []() { QApplication::quit(); });
 

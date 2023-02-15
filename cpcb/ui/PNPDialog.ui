@@ -47,12 +47,15 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="bb">
+       <widget class="QPushButton" name="bb">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Browse</string>
         </property>
         <property name="text">
          <string>...</string>
@@ -192,22 +195,6 @@
     <hint type="destinationlabel">
      <x>72</x>
      <y>88</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>bb</sender>
-   <signal>clicked()</signal>
-   <receiver>PNPDialog</receiver>
-   <slot>browse()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>377</x>
-     <y>30</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>355</x>
-     <y>196</y>
     </hint>
    </hints>
   </connection>
