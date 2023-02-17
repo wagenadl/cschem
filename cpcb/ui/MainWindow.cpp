@@ -1,7 +1,7 @@
 // MainWindow.cpp
 
 #include "MainWindow.h"
-#include "PNPDialog.h"
+#include "ExportDialog.h"
 #include "Modebar.h"
 #include "Propertiesbar.h"
 #include "Statusbar.h"
@@ -69,10 +69,10 @@ public:
   void openDialog();
   void newWindow();
   void arbitraryRotation();
-  bool exportAsDialog();
+  //  bool exportAsDialog();
   bool exportPasteMaskDialog();
   bool exportFrontPanelDialog();
-  bool exportPNPDialog();
+  bool exportGerberDialog();
   bool exportBOMDialog(bool compact);
   bool importBOMDialog();
   bool saveAsDialog();
@@ -506,17 +506,13 @@ void MWData::copyPCBImage(bool forprinting) {
   QApplication::clipboard()->setPixmap(img);
 }
 
-bool MWData::exportPNPDialog() {
-  PNPDialog dlg(mw);
+bool MWData::exportDialog() {
+  ExportDialog dlg(mw);
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
-  dlg.setPNPFilename(filename);
-  dlg.setFolder(pwd);
-  if (!dlg.exec())
+  if (!dlg.runDialog(filename, pwd))
     return false;
-  qDebug() << "exportpnp" << dlg.pnpFilename()
-           << dlg.bomChecked() << dlg.compactChecked() << dlg.imageChecked();
-  return true;
+  return dlg.saveAccordingly(editor->layout(), editor->linkedSchematic());
 }
 
 bool MWData::exportPasteMaskDialog() {
@@ -590,34 +586,6 @@ bool MWData::exportFrontPanelDialog() {
   return false;
 }
 
-
-bool MWData::exportAsDialog() {
-  QString fn = getSaveFilename("zip", "Export as Gerber…");
-  if (fn.isEmpty())
-    return false;
-  
-  QString base = QFileInfo(fn).completeBaseName();
-  QTemporaryDir td;
-  bool ok = false;
-  if (td.isValid()) {
-    if (GerberWriter::write(editor->pcbLayout(), td.filePath(base))) {
-      QDir cwd = QDir::current();
-      QDir::setCurrent(td.path());
-      QStringList args;
-      args << "-r" << fn << base;
-      QDir::root().remove(fn);
-      ok = QProcess::execute("zip", args)==0;
-      QDir::setCurrent(cwd.absolutePath());
-    }
-  }
-  QDir(td.filePath(base)).removeRecursively();
-  if (!ok)
-    QMessageBox::warning(mw, "cpcb",
-                         "Could not export pcb as “"
-                         + fn + "”",
-                         QMessageBox::Ok);
-  return ok;
-}
 
 bool MWData::saveAsDialog() {
   if (pwd.isEmpty())
