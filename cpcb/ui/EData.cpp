@@ -49,7 +49,7 @@ bool EData::updateOnWhat(bool force) {
   if (isnew || force) {
     Nodename nn(currentGroup().nodeName(ids));
     Nodename alias(linkedschematic.pinAlias(nn));
-    qDebug () << "updateonwhat" << ids << nn.toString() << alias.toString();
+    //qDebug () << "updateonwhat" << ids << nn.toString() << alias.toString();
     if (alias.isValid())
       onobject = alias.humanName();
     else
@@ -67,10 +67,10 @@ void EData::updateNet(NodeID seed) {
   if (linkedschematic.isValid() && !net.nodes().isEmpty()
       && crumbs.isEmpty()) {
     Nodename seed = net.someNode();
-    qDebug() << "updatenet" << seed;
+    //qDebug() << "updatenet" << seed;
     for (LinkedNet const &lnet: linkedschematic.nets()) {
       if (lnet.containsMatch(seed)) {
-        qDebug() << "  matched against" << lnet;
+        //  qDebug() << "  matched against" << lnet;
 	linkednet = lnet;
 	break;
       }
@@ -477,7 +477,7 @@ void EData::moveMoving(Point p) {
     Dim mrg = pressMargin();
     int fave = visibleObjectAt(p, mrg);
     movingdelta = p.roundedTo(layout.board().grid) - movingstart;
-    qDebug() << "EData::moveMoving" << p << movingdelta << fave;
+    //qDebug() << "EData::moveMoving" << p << movingdelta << fave;
     if (fave>0) {
       Point altpt = movingstart;
       // perhaps snap
@@ -498,7 +498,7 @@ void EData::moveMoving(Point p) {
           }
         }
       } else if (obj.isTrace()) {
-        qDebug() << "move trace";
+        //qDebug() << "move trace";
         Trace const &trc(obj.asTrace());
         Dim mrg = pressMargin();
         if (trc.onP1(p, mrg))
@@ -703,7 +703,7 @@ void EData::startMoveSelection(int fave) {
 	}
       }
     } else if (obj.isTrace()) {
-      qDebug() << "move trace";
+      //qDebug() << "move trace";
       Trace const &trc(obj.asTrace());
       if (trc.onP1(presspoint, 1.1*pressMargin()))
         movingstart = trc.p1;
@@ -920,7 +920,7 @@ void EData::editPinName(int groupid, int hole_pad_id) {
   bool ok = false;
   Symbol const &sym(linkedschematic.schematic()
 		    .symbolForNamedElement(group_ref));
-  qDebug() << "editpinname" << pin_ref << sym.isValid();
+  //qDebug() << "editpinname" << pin_ref << sym.isValid();
   if (sym.isValid()) {
     PinNameEditor pne(group_ref, pin_ref, sym, ed, grp.allPins().size());
     ok = pne.exec();
@@ -932,7 +932,7 @@ void EData::editPinName(int groupid, int hole_pad_id) {
 				    QLineEdit::Normal,
 				    pin_ref, &ok);
   }
-  qDebug() << "editpinname ->" << pin_ref;
+  //  qDebug() << "editpinname ->" << pin_ref;
   if (ok) {
     UndoCreator uc(this, true);
     Group &group(currentGroup().object(groupid).asGroup());

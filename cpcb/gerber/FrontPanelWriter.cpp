@@ -124,18 +124,13 @@ void FPWData::writeSvgFooter() {
 void FPWData::writeGroup(Group const &g, Point /*offset*/, Point const &masteroff) {
   // the offset is subtracted from all objects
   Point off = masteroff - inferredOffset(g).flippedLeftRight();
-  qDebug() << "  off = " << off;
   for (int id: g.keys()) {
     Object const &obj(g.object(id));
     switch (obj.type()) {
     case Object::Type::Group:
-      qDebug() << "subgroup";
       writeGroup(obj.asGroup(), off, masteroff);
-      qDebug() << "]subgroup";
       break;
     case Object::Type::Trace:
-      if (obj.asTrace().layer==Layer::Panel)
-	qDebug() << "  trace" << obj.asTrace();
       writeTrace(obj.asTrace(), off);
       break;
     case Object::Type::Text:
@@ -207,10 +202,8 @@ FrontPanelWriter::~FrontPanelWriter() {
 bool FrontPanelWriter::write(Layout const &layout, QString filename) {
   d->layout = layout;
   QFile file(filename);
-  qDebug() << "pmw: " << filename;
   if (!file.open(QFile::WriteOnly)) 
     return false;
-  qDebug() << "opened";
 
   d->out.setDevice(&file);
   

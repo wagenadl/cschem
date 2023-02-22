@@ -26,7 +26,7 @@ PNPLine::PNPLine(Group const &g) {
     pinbox |= g.pinPosition(pin);
   }
   center = pinbox.center();
-  orient = -(g.nominalRotation() % 360);
+  orient = (g.nominalRotation() % 360 + 360) % 360;
   footprint = g.attributes.value(Group::Attribute::Footprint);
   comment = g.attributes.value(Group::Attribute::Notes);
   if (footprint=="")
@@ -132,3 +132,6 @@ QStringList PickNPlace::unplacedRefs() const {
 }
 
   
+QList<PNPLine> const &PickNPlace::placed() const {
+  return lines;
+}

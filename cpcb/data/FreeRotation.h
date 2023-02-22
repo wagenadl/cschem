@@ -4,6 +4,8 @@
 
 #define FREEROTATION_H
 
+#include <QString>
+
 class FreeRotation {
 public:
   FreeRotation();
@@ -16,6 +18,7 @@ public:
   double sin() const;
   void flipLeftRight();
   void flipUpDown();
+  QString toString() const;
 private:
   void normalize();
   int r;

@@ -65,10 +65,10 @@ void LSData::validateNets() {
   }
 
   // now, combine all aliases
-  qDebug() << "netaliases" << netaliases;
+  //  qDebug() << "netaliases" << netaliases;
   for (QString a: netaliases.keys()) {
     QString v = netalias(a, netaliases);
-    qDebug() << "  alias" << a << v;
+    //    qDebug() << "  alias" << a << v;
     if (v!=a) {
       netmap[v].merge(netmap[a]);
       netmap.remove(a);
@@ -79,9 +79,9 @@ void LSData::validateNets() {
     nets << LinkedNet(schem, net);
 
   for (LinkedNet const &lnet: nets) {
-    qDebug() << "LINKED NET" << lnet.name;
+    //    qDebug() << "LINKED NET" << lnet.name;
     for (Nodename const  &nn: lnet.nodes) {
-      qDebug() << "  node" << nn.component() << nn.pinNumber() << nn.pinName();
+      //qDebug() << "  node" << nn.component() << nn.pinNumber() << nn.pinName();
       if (nn.hasPinNumber() && nn.hasPinName()) {
 	QString num(QString::number(nn.pinNumber()));
 	QString name(nn.pinName());

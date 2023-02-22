@@ -48,6 +48,7 @@ public:
   // Caution: Do NOT change the empty group that may be returned.
   Group const &parentOf(NodeID) const;
   Group &parentOf(NodeID);
+  Group const &subByRef(QString ref) const; // empty if none
   Rect boundingRect() const; // relative to parent
   bool touches(Point p, Dim mrg=Dim()) const;
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
@@ -67,6 +68,7 @@ public:
   void rotateCW(Point p);
   void freeRotate(int degcw, Point const &p);
   int nominalRotation() const;
+  void setNominalRotation(int degccw);
   void flipLeftRight(Dim x);
   void flipUpDown(Dim y);
   void translate(Point p);

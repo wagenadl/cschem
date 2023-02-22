@@ -1,89 +1,34 @@
 // PasteMaskWriter.cpp
 
 #include "PasteMaskWriter.h"
+#include "SvgWriter.h"
 #include "data/Layout.h"
 #include "data/Object.h"
 #include <QFile>
 #include <QTextStream>
 
-class PMWData {
+class PMWHelper {
 public:
-  PMWData() { }
-  bool writeSvgHeader();
-  bool writeSvgOutline();
-  bool writeSvgPads();
-  bool writePad(Pad const &);
-  bool writeGroup(Group const &);
-  bool writeSvgFooter();
-  QString coord(Dim x) {
-    return QString::number(x.toInch()*96, 'f', 5);
+  PMWHelper(QFile *file, Board const &board, Dim shrink):
+    board(board),
+    writer(file, board.width, board.height),
+    shrinkage(shrink) {
   }
-  QString prop(QString name, Dim x) {
-    return QString(" " + name + "=\"" + coord(x) + "\"");
-  }  
+  void writeSvgOutline();
+  void writeGroup(Group const &);
+  void writePad(Pad const &);
 public:
-  Layout layout;
-  QTextStream out;
+  Board board;
+  SvgWriter writer;
   Dim shrinkage;
 };
-
-bool PMWData::writeSvgHeader() {
-  out << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n";
-  out << "<svg\n";
-  out << "   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n";
-  out << "   xmlns:cc=\"http://creativecommons.org/ns#\"\n";
-  out << "   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n";
-  out << "   xmlns:svg=\"http://www.w3.org/2000/svg\"\n";
-  out << "   xmlns=\"http://www.w3.org/2000/svg\"\n";
-  out << "   id=\"svg8\"\n";
-  out << "   version=\"1.1\"\n";
-
-  out << "   viewBox=\"0 0 "
-      << coord(layout.board().width)
-      << " "
-      << coord(layout.board().height)
-      << "\"\n";
-  out << "  " << prop("width", layout.board().width) << "\n";
-  out << "  " << prop("height", layout.board().height) << ">\n";
-
-  out << "  <defs\n";
-  out << "     id=\"defs2\" />\n";
-  out << "  <metadata\n";
-  out << "     id=\"metadata5\">\n";
-  out << "    <rdf:RDF>\n";
-  out << "      <cc:Work\n";
-  out << "         rdf:about=\"\">\n";
-  out << "        <dc:format>image/svg+xml</dc:format>\n";
-  out << "        <dc:type "
-      << "rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\" />\n";
-  out << "        <dc:title></dc:title>\n";
-  out << "      </cc:Work>\n";
-  out << "    </rdf:RDF>\n";
-  out << "  </metadata>\n";
-  out << "  <g\n";
-  out << "     id=\"layer1\">\n";
   
-  return true;
+void PMWHelper::writeSvgOutline() {
+  writer.drawRect(Rect(Point(), Point(board.width, board.height)),
+                  QColor(255,0,0));
 }
 
-bool PMWData::writeSvgFooter() {
-  out << "  </g>\n";
-  out << "</svg>\n";
-  return true;
-}
-  
-bool PMWData::writeSvgOutline() {
-  out << "   <rect"
-      << prop("x", Dim::fromInch(0))
-      << prop("y", Dim::fromInch(0))
-      << prop("width", layout.board().width) 
-      << prop("height", layout.board().height)
-      << " style=\"opacity:1;fill:none;stroke:#ff0000;stroke-width:0.2\""
-      << " />\n";    
-  return true;
-}
-
-bool PMWData::writeGroup(Group const &g) {
+void PMWHelper::writeGroup(Group const &g) {
   for (int id: g.keys()) {
     Object const &obj(g.object(id));
     if (obj.isGroup())
@@ -91,64 +36,41 @@ bool PMWData::writeGroup(Group const &g) {
     else if (obj.isPad())
       writePad(obj.asPad());
   }
-  return true;
 }
 
-bool PMWData::writePad(Pad const &pad) {
+void PMWHelper::writePad(Pad const &pad) {
   if (pad.layer != Layer::Top)
-    return true; // don't do anything
-  Point p0 = pad.p.rotatedFreely(-pad.rota);
-  Dim x0 = p0.x - pad.width/2 + shrinkage;
-  Dim y0 = p0.y - pad.height/2 + shrinkage;
-  Dim w = pad.width - 2*shrinkage;
-  Dim h = pad.height - 2*shrinkage;
-  out << "    <rect"
-      << prop("x", x0)
-      << prop("y", y0)
-      << prop("width", w)
-      << prop("height", h)
-      << QString(" transform=\"rotate(%1)\"").arg(pad.rota)
-      << " style=\"opacity:1;fill:#000000;stroke:none\""
-      << " />\n";
-  return true;
-}
-  
-bool PMWData::writeSvgPads() {
-  return writeGroup(layout.root());
+    return; // don't do anything
+  writer << "<g transform=\"translate("
+         << writer.coord(pad.p.x) << "," << writer.coord(pad.p.y) << "),"
+         << "rotate(" << pad.rota.toString() << ")\">";
+  Dim x0 = -pad.width/2 + shrinkage;
+  Dim y0 = -pad.height/2 + shrinkage;
+  Dim x1 = pad.width/2 - shrinkage;
+  Dim y1 = pad.height/2 - shrinkage;
+  writer.fillRect(Rect(Point(x0,y0), Point(x1,y1)), QColor(0,0,0));
+  writer << "</g>\n";
 }
 
-PasteMaskWriter::PasteMaskWriter(): d(new PMWData) {
-}
-
-PasteMaskWriter::~PasteMaskWriter() {
-  delete d;
+PasteMaskWriter::PasteMaskWriter(): shrinkage(Dim::fromInch(0.005)) {
 }
 
 void PasteMaskWriter::setShrinkage(Dim s) {
-  d->shrinkage = s;
+  shrinkage = s;
 }
 
 bool PasteMaskWriter::write(Layout const &layout, QString filename) {
-  d->layout = layout;
   QFile file(filename);
-  qDebug() << "pmw: " << filename;
-  if (!file.open(QFile::WriteOnly)) 
+  if (!file.open(QFile::WriteOnly | QFile::Text))
     return false;
-  qDebug() << "opened";
-
-  d->out.setDevice(&file);
   
-  if (!d->writeSvgHeader())
-    return false;
-  if (!d->writeSvgOutline())
-    return false;
-  if (!d->writeSvgPads())
-    return false;
-  if (!d->writeSvgFooter())
-    return false;
+  PMWHelper *d = new PMWHelper(&file, layout.board(), shrinkage);
+  d->writeSvgOutline();
+  d->writeGroup(layout.root());
+  delete d;
 
-  d->out.setDevice(0);
+  if (file.error() != QFile::NoError)
+    return false;
   file.close();
-
   return true;
 }

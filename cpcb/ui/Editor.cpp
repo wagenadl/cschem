@@ -1532,6 +1532,27 @@ void Editor::setGroupRef(NodeID path, QString t) {
   }
 }
 
+void Editor::setCurrentGroupRotation(int degccw) {
+  NodeID nodeid = breadcrumbs();
+  //if (nodeid.size()==1)
+  //  d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
+  //                                int(BOM::Column::Ref)), t);
+  setGroupRotation(breadcrumbs(), degccw);
+}
+
+void Editor::setGroupRotation(NodeID path, int degccw) {
+  degccw = (degccw % 360 + 360) % 360;
+  if (degccw != d->layout.root().subgroup(path).nominalRotation()) {
+    UndoCreator uc(d, true);
+    Group &here = d->layout.root().subgroup(path.parent());
+    Group &grp = d->layout.root().subgroup(path);
+    grp.setNominalRotation(degccw);
+    emit componentsChanged(); //?
+  }
+}
+
+
+
 void Editor::setCurrentGroupAttribute(Group::Attribute attr, QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)

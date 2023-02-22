@@ -59,3 +59,7 @@ void FreeRotation::flipUpDown() {
   r = 180-r;
   normalize();
 }
+
+QString FreeRotation::toString() const {
+  return QString::number(r);
+}

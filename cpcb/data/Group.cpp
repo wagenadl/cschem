@@ -298,6 +298,17 @@ Group &Group::parentOf(NodeID path) {
   return subgroup(path);
 }
 
+Group const &Group::subByRef(QString ref) const {
+  static Group nil;
+  for (auto it=d->obj.begin(); it!=d->obj.end(); ++it) {
+    Object const &obj(it.value());
+    if (obj.isGroup() && obj.asGroup().ref==ref) {
+      return obj.asGroup();
+    }
+  }
+  return nil;
+}
+
 Group const &Group::subgroup(NodeID path) const {
   static Group nil;
   if (path.isEmpty())
@@ -1129,7 +1140,11 @@ Group Group::subset(QSet<int> selection) const {
 }
   
 int Group::nominalRotation() const {
-  return d->nominalrotation;
+  return (d->nominalrotation % 360 + 360) % 360;
+}
+
+void Group::setNominalRotation(int degccw) {
+  d->nominalrotation = (degccw % 360 + 360) % 360;
 }
 
 bool Group::hasHoles() const {
