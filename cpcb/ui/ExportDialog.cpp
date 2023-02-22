@@ -10,6 +10,7 @@
 #include "gerber/GerberWriter.h"
 #include "gerber/PasteMaskWriter.h"
 #include "gerber/FrontPanelWriter.h"
+#include "gerber/PNPImageWriter.h"
 #include "data/PickNPlace.h"
 #include "data/BOMTable.h"
 #include "data/LinkedSchematic.h"
@@ -235,6 +236,13 @@ bool ExportDialog::saveUnplaced(PickNPlace const &pnp, BOMTable const &bom) {
 }
 
 bool ExportDialog::saveImage(Layout const &pcblayout, PickNPlace const &pnp) {
-    qDebug() << "PNP Image NYI";
-    return false;
+  PNPImageWriter writer;
+  QString ofn = filename("-pnpimage.svg");
+  if (writer.write(pcblayout, pnp, ofn))
+    return true;
+    QMessageBox::warning(parentWidget(), "cpcb",
+                         "Could not export PnP image as “"
+                         + ofn + "”",
+                         QMessageBox::Ok);
+  return false;
 }

@@ -2,20 +2,12 @@
 
 #include "SvgWriter.h"
 
-SvgWriter::SvgWriter(QString filename, Dim width, Dim height): file(filename) {
-  file.open(QFile::WriteOnly | QFile::Text);
-  stream = QTextStream(&file);
+SvgWriter::SvgWriter(QFile *file, Dim width, Dim height): stream(file) {
   writeHeader(width, height);
 }
 
 SvgWriter::~SvgWriter() {
   writeFooter();
-  stream = QTextStream(); // call the stream's destructor first
-  file = QFile(); // then the file's destructor
-}
-
-bool SvgWriter::isValid() const {
-  return file.error() == QFile::NoError;
 }
 
 SvgWriter &SvgWriter::operator<<(QString s) {
@@ -70,10 +62,10 @@ void SvgWriter::writeFooter() {
 }
 
 QString hexbyte(int x) {
-  return QString::number(x, 2, 16, '0');
+  return QString("%1").arg(x, 2, 16, QChar('0'));
 }
 
-QString SvgWriter::color(QColor c) {
+QString SvgWriter::color(QColor const &c) {
   return "#" + hexbyte(c.red()) + hexbyte(c.green()) + hexbyte(c.blue());
 }
 
@@ -88,11 +80,11 @@ void SvgWriter::drawRect(Rect const &rect, QColor const &c,
          << "opacity:1;"
          << "fill:none;"
          << "stroke:" << color(c) << ";"
-         << "stroke-width:" << dim(width)
+         << "stroke-width:" << coord(width)
          << '"' << " />\n";    
 }
 
-void SvgWriter::fillRect(Rect const &rect, QColor color) {
+void SvgWriter::fillRect(Rect const &rect, QColor c) {
   stream << "   <rect"
          << prop("x", rect.left)
          << prop("y", rect.top)
@@ -106,9 +98,9 @@ void SvgWriter::fillRect(Rect const &rect, QColor color) {
 }
 
 void SvgWriter::fillRing(Point const &center, Dim inner, Dim outer,
-                        QColor const &color) {
-  QString ro = coord(outer);
-  QString ri = coord(inner);
+                        QColor const &c) {
+  QString ro = coord(outer/2);
+  QString ri = coord(inner/2);
   stream << "    <path"
          << " style=" << '"'
          << "opacity:1;"
@@ -131,7 +123,7 @@ void SvgWriter::fillRing(Point const &center, Dim inner, Dim outer,
          << " "  << ri << "," << ri << " 0 0 1 " << ri << ",-" << ri
          << " z"
          << '"';
-    stream << "/>";
+    stream << "/>\n";
 }
 
 QString quote(QString text) {
@@ -141,22 +133,22 @@ QString quote(QString text) {
     .replace("\"", "&quot;");
 }  
 
-void SvgWriter::drawText(QString text, Point const &anchor, QColor const &color,
+void SvgWriter::drawText(QString text, Point const &anchor, QColor const &c,
                          Dim fontsize, int angle_degcw) {
-  stream << "    <g transform=\""
+  stream << "<g transform=\""
          << "translate(" << coord(anchor.x) << "," << coord(anchor.y) << "),"
          << "rotate(" << angle_degcw << "),"
-         << "translate(0,-" << coord(fontsize/3) << ")\">";
-  stream << "    <text"
+         << "translate(" << coord(-fontsize/3) << ","
+         << coord(fontsize/3) << ")\">\n";
+  stream << "      <text"
          << " style=" << '"'
          << "font-size:" << coord(fontsize) << "px;"
          << "font-family:Helvetica;"
-         << "text-align:center;text-anchor:middle;"
          << "opacity:1;"
          << "fill:" << color(c) << ";"
          << "stroke:none;"
          << "\">";
   stream << quote(text);
-  stream << "</text>";
-  stream << "</g>";
+  stream << "</text>\n";
+  stream << "</g>\n";
 }

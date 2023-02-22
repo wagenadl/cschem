@@ -13,6 +13,7 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include "data/Object.h"
+#include <QSpinBox>
 
 const Dim minRingWidth(Dim::fromInch(0.015));
 
@@ -80,6 +81,7 @@ public:
   QAction *grouppropa;
   QLineEdit *pkg;
   //  QLineEdit *partno;
+  QSpinBox *rot;
   QTextEdit *notes;
   
   bool metric;
@@ -469,8 +471,9 @@ void PBData::fillFontSize(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillGroupProps(QSet<int> const &/*objects*/, Group const &here) {
-  //qDebug() << "fillgroupprops";
+  qDebug() << "fillgroupprops" << here.nominalRotation();
   pkg->setText(here.attributes.value(Group::Attribute::Footprint));
+  rot->setValue(here.nominalRotation());
   //  partno->setText(here.partno);
   notes->document()->setPlainText(here.attributes.value(Group::Attribute::Notes));
 }
@@ -794,6 +797,17 @@ void PBData::setupUI() {
     return s;
   };
 
+  auto makeRotSpinner = [](QWidget *container) {
+    Q_ASSERT(container);
+    Q_ASSERT(container->layout());
+    QSpinBox *s = new QSpinBox(container);
+    s->setRange(0, 360);
+    s->setSuffix("°");
+    s->setSingleStep(90);
+    container->layout()->addWidget(s);
+    return s;
+  };
+
   auto makeEdit = [](QWidget *container) {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
@@ -883,7 +897,7 @@ void PBData::setupUI() {
 
   grouppropg = makeGroup(&grouppropa);
   auto *cnt = makeContainer(grouppropg);
-  makeLabel(cnt, "Pkg.", "Package");
+  makeLabel(cnt, "Pkg.", "Footprint");
   pkg = makeEdit(cnt);
   QObject::connect(pkg, &QLineEdit::textEdited,
 		   editor, [this](QString txt) {
@@ -893,6 +907,15 @@ void PBData::setupUI() {
 		   editor,[this]() {
                      editor->setCurrentGroupAttribute(Group::Attribute::Footprint, pkg->text());
                    });
+
+  cnt = makeContainer(grouppropg);
+  makeLabel(cnt, "Nominal rotation", "Nominal rotation (deg. CCW; used only for PnP export)");
+  rot = makeRotSpinner(cnt);
+  QObject::connect(rot, QOverload<int>::of(&QSpinBox::valueChanged),
+		   editor, [this](int val) {
+                     editor->setCurrentGroupRotation(val);
+                   });
+  
   // cnt = makeContainer(grouppropg);
   // makeLabel(cnt, "Part", "Part number");
   //  partno = makeEdit(cnt);

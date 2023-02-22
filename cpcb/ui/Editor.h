@@ -80,8 +80,10 @@ public slots:
   void setFlipped(bool); // this is not the way to rotate or flip things
   void setMode(Mode);
   void setCurrentGroupRef(QString);
+  void setCurrentGroupRotation(int nomrot);
   void setCurrentGroupAttribute(Group::Attribute, QString);
   void setGroupRef(NodeID, QString);
+  void setGroupRotation(NodeID, int nomrot);
   void setGroupAttribute(NodeID, Group::Attribute, QString);
   void formGroup();
   void dissolveGroup();

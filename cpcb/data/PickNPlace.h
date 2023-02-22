@@ -42,6 +42,7 @@ public:
   bool saveCSV(QString fn) const;
   QStringList placedRefs() const;
   QStringList unplacedRefs() const;
+  QList<PNPLine> const &placed() const;
 private:
   QList<PNPLine> lines;
   QStringList unrefs;
