@@ -29,6 +29,7 @@ public:
 };
 
 class PickNPlace {
+public:
   enum class Scope {
     SMTOnly,
     SMTAndThruHole,

@@ -15,13 +15,21 @@ public:
   bool saveAccordingly(class Layout const &pcblayout,
                        class LinkedSchematic const &schematic);
   QString filename() const;
-private slots:
+public slots:
   void browse();
   void gerbernamechange();
 private:
   bool saveGerber(class Layout const &pcblayout);
+  bool saveBOM(class BOMTable const &bom);
+  bool savePnP(class PickNPlace const &pnp);
+  bool saveUnplaced(class PickNPlace const &pnp,
+                    class BOMTable const &bom);     
+  bool saveImage(class Layout const &pcblayout, class PickNPlace const &pnp);
+  bool savePasteMask(class Layout const &pcblayout);
+  bool saveFrontPanel(class Layout const &pcblayout);
+  QString filename(QString ext) const;
 private:
-  class Ui_PNPDialog *ui;
+  class Ui_ExportDialog *ui;
   QString pwd;
 };
 

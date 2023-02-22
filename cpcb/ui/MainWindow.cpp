@@ -9,8 +9,6 @@
 #include "MultiCompView.h"
 #include <QCloseEvent>
 #include "data/Paths.h"
-#include "gerber/GerberWriter.h"
-#include "gerber/PasteMaskWriter.h"
 #include "Find.h"
 #include <QDesktopServices>
 #include <QSettings>
@@ -19,7 +17,6 @@
 #include <QWidgetAction>
 #include "data/NetMismatch.h"
 #include "Version.h"
-#include "gerber/FrontPanelWriter.h"
 #include "ORenderer.h"
 #include "BOM.h"
 #include "BOMView.h"
@@ -69,11 +66,7 @@ public:
   void openDialog();
   void newWindow();
   void arbitraryRotation();
-  //  bool exportAsDialog();
-  bool exportPasteMaskDialog();
-  bool exportFrontPanelDialog();
-  bool exportGerberDialog();
-  bool exportBOMDialog(bool compact);
+  bool exportDialog();
   bool importBOMDialog();
   bool saveAsDialog();
   bool saveImmediately();
@@ -512,54 +505,7 @@ bool MWData::exportDialog() {
     pwd = Paths::defaultLocation();
   if (!dlg.runDialog(filename, pwd))
     return false;
-  return dlg.saveAccordingly(editor->layout(), editor->linkedSchematic());
-}
-
-bool MWData::exportPasteMaskDialog() {
-  QString fn = getSaveFilename("svg", "Export paste mask as…");
-  if (fn.isEmpty())
-    return false;
-
-  bool metric = editor->pcbLayout().board().isEffectivelyMetric();
-  QString unit = metric ? "mm" : "inch";
-  int decimals = metric ? 2 : 3;
-  double max = metric ? 1 : .05;
-  QSettings stg;
-  Dim dflt = Dim::fromString(stg.value("shrinkage",
-                                       Dim::fromInch(0.005).toString())
-                             .toString());
-  double shrinkage = QInputDialog::getDouble(mw, "Export paste mark",
-					     "Shrinkage for cutouts ("
-					     + unit + "):",
-					     metric ? dflt.toMM()
-                                             : dflt.toInch(),
-                                             0, max, decimals);
-  Dim shrnk = metric ? Dim::fromMM(shrinkage)
-    : Dim::fromInch(shrinkage);
-  stg.setValue("shrinkage", shrnk.toString());
-  
-  PasteMaskWriter pmw;
-  pmw.setShrinkage(shrnk);
-  if (pmw.write(editor->pcbLayout(), fn))
-    return true;
-
-  QMessageBox::warning(mw, "cpcb",
-		       "Could not export paste mask as “"
-		       + fn + "”",
-		       QMessageBox::Ok);
-  return false;
-}
-
-
-bool MWData::exportBOMDialog(bool compact) {
-  QString fn = compact
-    ? getSaveFilename("csv", "Export compact BOM as…")
-    : getSaveFilename("csv", "Export BOM as…");
-  if (fn.isEmpty())
-    return false;
-  BOMTable table(editor->pcbLayout().root());
-  table.augment(editor->linkedSchematic().circuit());
-  return table.saveCSV(fn, compact);
+  return dlg.saveAccordingly(editor->pcbLayout(), editor->linkedSchematic());
 }
 
 bool MWData::importBOMDialog() {
@@ -569,22 +515,6 @@ bool MWData::importBOMDialog() {
   return editor->loadBOM(fn);
 }
   
-
-bool MWData::exportFrontPanelDialog() {
-  QString fn = getSaveFilename("svg", "Export front panel as…");
-  if (fn.isEmpty())
-    return false;
-
-  FrontPanelWriter pmw;
-  if (pmw.write(editor->pcbLayout(), fn))
-    return true;
-
-  QMessageBox::warning(mw, "cpcb",
-		       "Could not export front panel as “"
-		       + fn + "”",
-		       QMessageBox::Ok);
-  return false;
-}
 
 
 bool MWData::saveAsDialog() {
@@ -699,20 +629,14 @@ void MWData::makeMenus() {
   file->addAction("Save &as…", [this]() { saveAsDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
 
-  auto *fexport = file->addMenu("&Export");
-  fexport->addAction("&Gerber…", [this]() { exportAsDialog(); });
-  fexport->addAction("&Pick n Place…",
-                     [this]() { exportPNPDialog(); });
-  fexport->addAction("&BOM as CSV…",
-                  [this]() { exportBOMDialog(false); });
-  fexport->addAction("&Compact BOM as CSV…",
-                  [this]() { exportBOMDialog(true); });
-  fexport->addAction("Paste &Mask…", [this]() { exportPasteMaskDialog(); });
-  fexport->addAction("&Front panel…", [this]() { exportFrontPanelDialog(); });
+  //  auto *fexport = file->addMenu("&Export");
+  file->addAction("&Export fabrication files…",
+                  [this]() { exportDialog(); });
 
   file->addAction("&Import BOM from CSV…",
                   [this]() { importBOMDialog(); });
-  file->addAction("&Copy PCB image to clipboard", [this]() { copyPCBImage(); },
+  file->addAction("&Copy PCB image to clipboard",
+                  [this]() { copyPCBImage(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
 		  
   
