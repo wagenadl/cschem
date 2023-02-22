@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>490</width>
-    <height>267</height>
+    <height>336</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,8 +88,8 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="2">
-       <widget class="QLineEdit" name="pnpfilename">
+      <item row="7" column="2">
+       <widget class="QLineEdit" name="pastemaskfilename">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -104,23 +104,8 @@
           <italic>false</italic>
          </font>
         </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QCheckBox" name="saveunplaced">
-        <property name="font">
-         <font>
-          <italic>false</italic>
-         </font>
-        </property>
         <property name="toolTip">
-         <string>Create list of items not included in Pick &amp; Place table</string>
-        </property>
-        <property name="text">
-         <string>Unplaced</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
+         <string/>
         </property>
        </widget>
       </item>
@@ -142,36 +127,18 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="2">
-       <widget class="QLineEdit" name="unplacedfilename">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>10</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <italic>false</italic>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QCheckBox" name="compactbom">
+      <item row="2" column="4">
+       <widget class="QCheckBox" name="smtonly">
         <property name="font">
          <font>
           <italic>false</italic>
          </font>
         </property>
         <property name="toolTip">
-         <string>Combine instances of the same component type on one line</string>
+         <string>Only place SMT components (and not thru hole)</string>
         </property>
         <property name="text">
-         <string>Compact</string>
+         <string>SMT only</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -180,42 +147,6 @@
       </item>
       <item row="0" column="2">
        <widget class="QLineEdit" name="bomfilename">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-          <horstretch>10</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <italic>false</italic>
-         </font>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="savepnp">
-        <property name="font">
-         <font>
-          <italic>false</italic>
-         </font>
-        </property>
-        <property name="toolTip">
-         <string>Save Pick &amp; Place table in CSV format</string>
-        </property>
-        <property name="text">
-         <string>P&amp;&amp;P table</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="2">
-       <widget class="QLineEdit" name="imagefilename">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -250,6 +181,180 @@
         </property>
        </widget>
       </item>
+      <item row="5" column="2">
+       <widget class="QLineEdit" name="unplacedfilename">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>10</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="pnpfilename">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>10</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QLineEdit" name="frontpanelfilename">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>10</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="4">
+       <widget class="DimSpinner" name="shrinkage">
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Allowance for paste mask shrinkage</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="compactbom">
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Combine instances of the same component type on one line</string>
+        </property>
+        <property name="text">
+         <string>Compact</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QLineEdit" name="imagefilename">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>10</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QCheckBox" name="savemask">
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Save paste mask as SVG</string>
+        </property>
+        <property name="text">
+         <string>Paste mask</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QCheckBox" name="savefrontpanel">
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Save front panel layout as SVG</string>
+        </property>
+        <property name="text">
+         <string>Front panel</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="savepnp">
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Save Pick &amp; Place table in CSV format</string>
+        </property>
+        <property name="text">
+         <string>P&amp;&amp;P table</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="saveunplaced">
+        <property name="font">
+         <font>
+          <italic>false</italic>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Create list of items not included in Pick &amp; Place table</string>
+        </property>
+        <property name="text">
+         <string>Unplaced</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -278,6 +383,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DimSpinner</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>ui/DimSpinner.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -288,7 +400,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>236</x>
-     <y>257</y>
+     <y>326</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -304,7 +416,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>304</x>
-     <y>257</y>
+     <y>326</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -325,6 +437,38 @@
     <hint type="destinationlabel">
      <x>475</x>
      <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bb</sender>
+   <signal>clicked()</signal>
+   <receiver>ExportDialog</receiver>
+   <slot>browse()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>447</x>
+     <y>30</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>428</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>savemask</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>shrinkage</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>74</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>202</y>
     </hint>
    </hints>
   </connection>

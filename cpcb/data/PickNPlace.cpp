@@ -5,6 +5,8 @@
 #include "Object.h"
 #include "data/CSV.h"
 #include <QFile>
+#include "BOMTable.h"
+#include <QTextStream>
 
 PNPLine::PNPLine() {
   valid = false;
@@ -84,9 +86,7 @@ PickNPlace::PickNPlace(Group const &root, PickNPlace::Scope scope) {
     if (!obj.isGroup())
       continue;
     Group const &g(obj.asGroup());
-    if (scope==Scope::SMTOnly && g.hasHoles()) {
-      unrefs << g.ref;
-    } else {
+    if (scope==Scope::SMTAndThruHole || !g.hasHoles()) {
       PNPLine line(g);
       if (line.isValid())
         lines << line;
@@ -130,3 +130,5 @@ QStringList PickNPlace::placedRefs() const {
 QStringList PickNPlace::unplacedRefs() const {
   return unrefs;
 }
+
+  

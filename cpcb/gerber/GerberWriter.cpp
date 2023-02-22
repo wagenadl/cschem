@@ -413,9 +413,9 @@ void GWData::collectNonCopperApertures(GerberFile &out, Gerber::Layer layer) {
   Gerber::Apertures
     &aps(out.newApertures(Gerber::Apertures::Func::Material));
 
-  qDebug() << "cnca" << int(layer);
-  for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys())
-    qDebug() << " fs " << spec;
+  //  qDebug() << "cnca" << int(layer);
+  //for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys())
+  //  qDebug() << " fs " << spec;
   for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys()) 
     out.ensureFont(spec);
 
@@ -512,9 +512,9 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
     out.writeApertures(aps);
   }
 
-  qDebug() << "cca" << int(layer);
-  for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys())
-    qDebug() << " fs " << spec;
+  //  qDebug() << "cca" << int(layer);
+  // for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys())
+  //   qDebug() << " fs " << spec;
   for (Gerber::FontSpec spec: collector.texts(mapLayer(layer)).keys()) 
     out.ensureFont(spec);
   out.writeApertures(Gerber::Apertures::Func::Material);
@@ -549,13 +549,13 @@ bool GWData::writeText(GerberFile &out, Gerber::Layer layer) {
   { // Output all text
     out << "G01*\n"; // linear
     out << "%LPD*%\n"; // positive
-    qDebug() << "writetext" << int(layer);
+    // qDebug() << "writetext" << int(layer);
     auto const &txts = collector.texts(mapLayer(layer));
     for (Gerber::FontSpec spec: txts.keys()) {
-      qDebug() << " fs" << spec;
+      // qDebug() << " fs" << spec;
       Gerber::Font const &font(out.font(spec));
       for (Text const &txt: txts[spec]) {
-        qDebug() << "txt " << txt;
+        // qDebug() << "txt " << txt;
         out << "G04 text " << txt.text << "*\n";
 	font.writeText(out, txt);
       }
@@ -859,9 +859,13 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
 
 bool GerberWriter::write(Layout const &layout, QString odir) {
   GerberWriter writer(layout, odir);
+  qDebug() << "gerberwriter" << odir;
   if (!writer.prepareFolder())
     return false;
-  return writer.writeAllLayers();
+  qDebug() << "gerberwriter: folder prepd";
+  bool res = writer.writeAllLayers();
+  qDebug() << "gerberwriter: layers written" << res;
+  return res;
 }
 
 bool GerberWriter::writeAllLayers() {
