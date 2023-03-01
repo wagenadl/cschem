@@ -1571,12 +1571,17 @@ BOM *Editor::bom() const {
   return d->bom;
 }
 
-bool Editor::loadBOM(QString fn) {
+QString Editor::loadBOM(QString fn) {
   leaveAllGroups();
+
+  QString error;
+  BOMTable rows = BOMTable::fromCSV(fn, error);
+  if (rows.isEmpty())
+    return error;
   
-  BOMTable rows = BOMTable::fromCSV(fn);
-  if (rows.isEmpty() || !rows.verify(d->layout.root()))
-    return false;
+  error = rows.verify(d->layout.root());
+  if (!error.isEmpty())
+    return error;
 
   UndoCreator uc(d, true);
 
@@ -1595,5 +1600,5 @@ bool Editor::loadBOM(QString fn) {
     }
   }
   bom()->rebuild();
-  return true;    
+  return QString();    
 }

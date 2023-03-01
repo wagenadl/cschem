@@ -140,7 +140,7 @@ QStringList PartNumbering::unpackRefs(QString crefs) {
       QString pfx = prefix(xx[0]);
       int n0 = number(xx[0]);
       int n1 = xx[1].toInt();
-      for (int n=n0; n<=n0; n++) 
+      for (int n=n0; n<=n1; n++) 
         refs << QString("%1%2").arg(pfx).arg(n);
     } else {
       refs << bit;

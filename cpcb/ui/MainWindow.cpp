@@ -512,7 +512,14 @@ bool MWData::importBOMDialog() {
   QString fn = getOpenFilename("csv", "Import BOM…");
   if (fn.isEmpty())
     return false;
-  return editor->loadBOM(fn);
+  QString error = editor->loadBOM(fn);
+  if (error.isEmpty())
+    return true;
+  QMessageBox::warning(mw, "cpcb",
+		       "Could not load BOM from “"
+		       + fn + "”: " + error,
+		       QMessageBox::Ok);
+  return false;
 }
   
 

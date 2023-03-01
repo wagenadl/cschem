@@ -38,7 +38,7 @@ public:
   double pixelsPerMil() const;
   Point userOrigin() const;
   class BOM *bom() const;
-  bool loadBOM(QString fn);
+  QString loadBOM(QString fn); // returns "" if OK, else error string
 public slots:
   void setAngleConstraint(bool);
   void setGrid(Dim);
