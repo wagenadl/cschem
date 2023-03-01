@@ -120,31 +120,58 @@ bool ExportDialog::saveAccordingly(Layout const &pcblayout,
   return true;
 }
 
+// powershell Compress-Archive -Path 'C:\mypath\testfolder' -DestinationPath "C:\mypath\testfolder.zip"
+
 bool ExportDialog::saveGerber(class Layout const &pcblayout) {
   QFileInfo fi(ui->gerberfilename->text());
   QString fn = fi.absoluteFilePath();
   QString base = fi.completeBaseName();
   QTemporaryDir td;
-  bool ok = false;
-  qDebug() << "savegerber" << td.isValid() << base;
-  if (td.isValid()) {
-    if (GerberWriter::write(pcblayout, td.filePath(base))) {
-      QDir cwd = QDir::current();
-      QDir::setCurrent(td.path());
-      QStringList args;
-      args << "-r" << fn << base;
-      QDir::root().remove(fn);
-      ok = QProcess::execute("zip", args)==0;
-      QDir::setCurrent(cwd.absolutePath());
-    }
-  }
-  QDir(td.filePath(base)).removeRecursively();
-  if (!ok)
+  if (!td.isValid()) {
     QMessageBox::warning(parentWidget(), "cpcb",
                          "Could not export Gerber as “"
-                         + fn + "”",
+                         + fn + "”: Unable to access temporary folder",
                          QMessageBox::Ok);
-  return ok;
+    return false;
+  }
+
+  if (!GerberWriter::write(pcblayout, td.filePath(base))) {
+    QMessageBox::warning(parentWidget(), "cpcb",
+                         "Could not export Gerber as “"
+                         + fn + "”: Unable to write to temporary folder",
+                         QMessageBox::Ok);
+    QDir(td.filePath(base)).removeRecursively();
+    return false;
+  }
+
+  if (QProcess::execute("zip", QStringList{"-h"})==0) {
+    // use zip
+    QDir cwd = QDir::current();
+    QDir::setCurrent(td.path());
+    QStringList args{"-r", fn, base};
+    QDir::root().remove(fn);
+    bool ok = QProcess::execute("zip", args)==0;
+    QDir::setCurrent(cwd.absolutePath());
+    QDir(td.filePath(base)).removeRecursively();
+    if (!ok)
+      QMessageBox::warning(parentWidget(), "cpcb",
+                           "Could not export Gerber as “"
+                           + fn + "”: Zip failed",
+                           QMessageBox::Ok);
+    return ok;
+  } else {
+    // try windows trickery
+    // powershell Compress-Archive -Path 'C:\mypath\testfolder' -DestinationPath "C:\mypath\testfolder.zip"
+    QStringList args{"Compress-Archive", "-Path", '"' + base + '"',
+      "-DestinationPath", '"' + fn + '"'};
+    bool ok = QProcess::execute("powershell", args) == 0;
+    if (!ok) 
+      QMessageBox::warning(parentWidget(), "cpcb",
+                           "Could not export Gerber as “"
+                           + fn + "”: PowerShell Zip failed",
+                           QMessageBox::Ok);
+      return ok;
+  }
 }
 
 QString ExportDialog::filename(QString ext) const {
