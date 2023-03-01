@@ -30,8 +30,8 @@ public:
   // if universe is given, only refs in universe are exported
   bool saveCSV(QString fn, bool compact, QStringList *universe=0) const;
   static BOMTable fromList(QList<QStringList>);
-  static BOMTable fromCSV(QString fn);
-  bool verify(Group const &root) const; // true iff all refs in table exist in root
+  static BOMTable fromCSV(QString fn, QString &error);
+  QString verify(Group const &root) const; // null if ok, else error string
 };
 
 #endif

@@ -58,6 +58,8 @@ namespace CSV {
           table << row;
           cell = "";
           row = QStringList();
+        } else {
+          cell += c;
         }
       }
     }

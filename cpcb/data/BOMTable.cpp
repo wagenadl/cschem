@@ -151,20 +151,33 @@ BOMTable BOMTable::fromList(QList<QStringList> list) {
   return table;
 }
 
-BOMTable BOMTable::fromCSV(QString fn) {
+BOMTable BOMTable::fromCSV(QString fn, QString &error) {
   QFile f(fn);
-  if (!f.open(QFile::ReadOnly))
+  error = "";
+  if (!f.open(QFile::ReadOnly)) {
+    error = "Cannot open file";
     return BOMTable();
+  }
   QString csv = QTextStream(&f).readAll();
   QList<QStringList> table = CSV::decode(csv);
-  if (table.isEmpty())
+  if (table.isEmpty()) {
+    error = "Empty CSV"; 
     return BOMTable();
-  if (table[0] == BOMRow::header())
-    table.removeAt(0); // drop header
+  }
+  qDebug() << "Read: ";
+  for (QStringList row: table)
+    qDebug() << "  Row: " << row;
+  if (table[0] != BOMRow::header()) {
+    error = "Mismatched header";
+    qDebug() << "Expected: " << BOMRow::header();
+    qDebug() << "Got:      " << table[0];
+    return BOMTable();
+  }
+  table.removeAt(0); // drop header
   return fromList(table);
 }
 
-bool BOMTable::verify(Group const &root) const {
+QString BOMTable::verify(Group const &root) const {
   QSet<QString> allrefs;
   for (int k: root.keys()) {
     Object const &o(root.object(k));
@@ -172,13 +185,13 @@ bool BOMTable::verify(Group const &root) const {
       allrefs << o.asGroup().ref;
   }
 
-  for (BOMRow const &row: *this) {
-    if (!allrefs.contains(row.ref)) {
-      qDebug() << "BOMTable::verify: Surprise ref" << row.ref;
-      return false;
-    }
-  }
-
-  return true;
+  QList<QString> surprises;
+  for (BOMRow const &row: *this) 
+    if (!allrefs.contains(row.ref))
+      surprises << row.ref;
+  if (surprises.isEmpty())
+    return QString();
+  else
+    return "Unexpected refs: " + surprises.join(", ");
 }
   
