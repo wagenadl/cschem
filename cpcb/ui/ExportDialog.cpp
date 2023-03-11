@@ -10,7 +10,6 @@
 #include "gerber/GerberWriter.h"
 #include "gerber/PasteMaskWriter.h"
 #include "gerber/FrontPanelWriter.h"
-#include "gerber/PNPImageWriter.h"
 #include "data/PickNPlace.h"
 #include "data/BOMTable.h"
 #include "data/LinkedSchematic.h"
@@ -23,7 +22,6 @@ ExportDialog::ExportDialog(QWidget *parent): QDialog(parent) {
   connect(ui->savepnp, &QCheckBox::toggled,
           this, [this](bool x) {
             ui->saveunplaced->setEnabled(x);
-            ui->saveimage->setEnabled(x);
           });
   QSettings stg;
   Dim dflt = Dim::fromString(stg.value("shrinkage",
@@ -70,13 +68,11 @@ void ExportDialog::gerbernamechange() {
     ui->bomfilename->setText("");
     ui->pnpfilename->setText("");
     ui->unplacedfilename->setText("");
-    ui->imagefilename->setText("");
   } else {
     QString base = fi.completeBaseName();
     ui->bomfilename->setText(".../" + base + "-bom.csv");
     ui->pnpfilename->setText(".../" + base + "-pnp.csv");
     ui->unplacedfilename->setText(".../" + base + "unplaced.csv");
-    ui->imagefilename->setText(".../" + base + "-pnpimage.png");
   }
 }
 
@@ -114,9 +110,6 @@ bool ExportDialog::saveAccordingly(Layout const &pcblayout,
     if (!saveFrontPanel(pcblayout))
       return false;
 
-  if (ui->saveimage->isChecked())
-    if (!saveImage(pcblayout, pnp))
-      return false;
   return true;
 }
 
@@ -262,14 +255,3 @@ bool ExportDialog::saveUnplaced(PickNPlace const &pnp, BOMTable const &bom) {
   return true;
 }
 
-bool ExportDialog::saveImage(Layout const &pcblayout, PickNPlace const &pnp) {
-  PNPImageWriter writer;
-  QString ofn = filename("-pnpimage.svg");
-  if (writer.write(pcblayout, pnp, ofn))
-    return true;
-    QMessageBox::warning(parentWidget(), "cpcb",
-                         "Could not export PnP image as “"
-                         + ofn + "”",
-                         QMessageBox::Ok);
-  return false;
-}

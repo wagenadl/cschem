@@ -24,7 +24,6 @@ private:
   bool savePnP(class PickNPlace const &pnp);
   bool saveUnplaced(class PickNPlace const &pnp,
                     class BOMTable const &bom);     
-  bool saveImage(class Layout const &pcblayout, class PickNPlace const &pnp);
   bool savePasteMask(class Layout const &pcblayout);
   bool saveFrontPanel(class Layout const &pcblayout);
   QString filename(QString ext) const;
