@@ -67,7 +67,7 @@ public:
   void rotateCCW(Point p);
   void rotateCW(Point p);
   void freeRotate(int degcw, Point const &p);
-  int nominalRotation() const;
+  int nominalRotation() const; // 0, 90, 180, or 260
   void setNominalRotation(int degccw);
   void flipLeftRight(Dim x);
   void flipUpDown(Dim y);

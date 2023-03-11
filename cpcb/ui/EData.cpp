@@ -208,7 +208,7 @@ void EData::drawObjects(QPainter &p) const {
   validateStuckPoints();  
 
   Board const &brd = layout.board();
-  ORenderer rndr(&p);
+  ORenderer rndr(&p, Point(), mode==Mode::PNPOrient);
   rndr.setInNetMils(2/mils2px);
   rndr.setBoard(brd);
   if (moving)
@@ -221,16 +221,18 @@ void EData::drawObjects(QPainter &p) const {
     rndr.setLayer(l, s);
     for (int id: here.keys()) {
       QSet<NodeID> subnet;
-      if (netsvisible)
+      if (netsvisible && mode!=Mode::PNPOrient)
 	for (NodeID nid: net.nodes())
 	  if (!nid.isEmpty() && nid.first()==id)
 	    subnet << nid.tail();
-      rndr.drawObject(here.object(id), selection.contains(id) && !planeeditor,
-                      subnet);
+      if (mode!=Mode::PNPOrient || here.object(id).isGroup())
+        rndr.drawObject(here.object(id),
+                        selection.contains(id) && !planeeditor,
+                        subnet);
     }
   };
   auto onelayer = [&](Layer l) {
-    if (brd.planesvisible) {
+    if (brd.planesvisible && mode!=Mode::PNPOrient) {
       if (l==Layer::Top) {
         QPixmap pm(ed->size());
         pm.fill(QColor(0, 0, 0, 0));
@@ -271,7 +273,7 @@ void EData::drawObjects(QPainter &p) const {
   if (brd.layervisible[Layer::Panel])
     onelayer(Layer::Panel);
 
-  if (netsvisible && crumbs.isEmpty())
+  if (netsvisible && mode!=Mode::PNPOrient && crumbs.isEmpty())
     drawNetMismatch(rndr);
 
   onelayer(Layer::Invalid); // magic to punch holes
@@ -631,6 +633,19 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
   }
   return fave;
 }
+
+void EData::pressPNPOrient(Point p, Qt::KeyboardModifiers m) {
+  Dim mrg = pressMargin();
+  int fave = visibleObjectAt(p, mrg);
+  qDebug() << "presspnp" << fave;
+  if (currentGroup().object(fave).isGroup()) {
+    UndoCreator uc(this, true);
+    Group &g = currentGroup().object(fave).asGroup();
+    g.setNominalRotation(g.nominalRotation()
+                         + ((m & Qt::ShiftModifier) ? 90 : -90));
+  }
+}
+
 
 void EData::pressEdit(Point p, Qt::KeyboardModifiers m) {
   Dim mrg = pressMargin();

@@ -162,6 +162,8 @@ void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
 	leaveGroup();
       else 
 	doubleClickOn(p, fave);
+    } else if (d->mode == Mode::PNPOrient) {
+      d->pressPNPOrient(p, e->modifiers()); // treat as another reg. click
     } else if (d->planeeditor) {
       d->planeeditor->doubleClick(p, e->button(), e->modifiers());
     }
@@ -209,6 +211,8 @@ void Editor::mousePressEvent(QMouseEvent *e) {
       case Mode::SetIncOrigin:
 	d->pressOrigin(p);
 	break;
+      case Mode::PNPOrient:
+        d->pressPNPOrient(p, e->modifiers());
       default:
 	break;
       }

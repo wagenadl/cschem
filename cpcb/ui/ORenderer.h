@@ -25,7 +25,8 @@ public:
   static QColor boardColor();
   static QColor backgroundColor();
 public:
-  ORenderer(QPainter *painter, Point const &origin=Point());
+  ORenderer(QPainter *painter, Point const &origin=Point(),
+            bool pnporient=false);
   ~ORenderer();
   void setInNetMils(double mils);
   void setBoard(class Board const &); // needed for clearance drawing
@@ -75,6 +76,7 @@ private:
   Override overr;
   double inNetMils;
   double overrideMils;
+  bool pnporient;
 };
 
 #endif

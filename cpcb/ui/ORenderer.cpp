@@ -10,9 +10,12 @@
 #include <QBuffer>
 
 
+static QColor grayPadColor() {
+  return QColor(150,150,150);
+}
 
-
-ORenderer::ORenderer(QPainter *p, Point const &o): p(p), origin(o) {
+ORenderer::ORenderer(QPainter *p, Point const &o, bool pnporient):
+  p(p), origin(o), pnporient(pnporient) {
   toplevel = true;
   overr = Override::None;
   subl = Sublayer::Main;
@@ -192,18 +195,23 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
     }
   } else {
     // draw surrounding pad
+    QColor c = (pnporient &&
+                !(t.ref=="1" || t.ref.startsWith("1/") || t.ref.endsWith("/1")))
+      ? grayPadColor()
+      : brushColor(selected, innet);
+    
     double od = t.od.toMils();
     double extramils = extraMils(innet, t.od, t.od);
     if (dx>0 || t.square) {
-      p->setPen(QPen(brushColor(selected, innet), od+extramils, Qt::SolidLine,
-		     t.square ? Qt::FlatCap : Qt::RoundCap));
+      p->setPen(QPen(c, od+extramils, Qt::SolidLine,
+                     t.square ? Qt::FlatCap : Qt::RoundCap));
       if (t.square) {
 	dx += od/2 + extramils/2;
 	dxy = QPoint(dx*cos(PI*t.rota/180), dx*sin(PI*t.rota/180));
       }
       p->drawLine(p0 - dxy, p0 + dxy);
     } else {
-      QBrush b(brushColor(selected, innet));
+      QBrush b(c);
       if (t.via)
 	b.setStyle(layer==Layer::Top ? Qt::Dense5Pattern : Qt::Dense3Pattern);
       p->setBrush(b);
@@ -211,7 +219,8 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
       p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
     }
   }
-  if (subl==Sublayer::Main && layer!=Layer::Invalid && t.fpcon==layer) {
+  if (subl==Sublayer::Main && layer!=Layer::Invalid && t.fpcon==layer
+      && !pnporient) {
     double dym = (t.od/2 + brd.padClearance(t.od, t.od)
                   + brd.fpConOverlap()).toMils();
     double dxm = dym + t.slotlength.toMils()/2;
@@ -278,7 +287,11 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
   double h = t.height.toMils();
 
   double extramils = extraMils(innet, t.width, t.height);
-  p->setBrush(brushColor(selected, innet));
+  if (pnporient &&
+      !(t.ref=="1" || t.ref.startsWith("1/") || t.ref.endsWith("/1")))
+    p->setBrush(grayPadColor());
+  else
+    p->setBrush(brushColor(selected, innet));
   QPointF dp(w+extramils, h+extramils);
   QRectF r(-dp/2, dp/2);
   if (t.rota) {
@@ -288,7 +301,7 @@ void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
     p->drawRect(r.translated(p0));
   }
 
-  if (subl==Sublayer::Main && t.fpcon) {
+  if (subl==Sublayer::Main && t.fpcon && !pnporient) {
     Dim pc = brd.padClearance(t.width, t.height);
     double dxm = w/2 + pc.toMils();
     double dym = h/2 + pc.toMils();
@@ -333,6 +346,36 @@ void ORenderer::drawGroup(Group const &g, bool selected,
     drawObject(g.object(id), selected, subnet);
   }
   popOrigin();
+  
+  if (pnporient) {
+    Rect r = g.boundingRect();
+    int ori = g.nominalRotation();
+    Point p0;
+    switch (ori) {
+    case 0:
+      p0 = Point(r.left + r.width/2, r.top);
+      break;
+    case 90:
+      p0 = Point(r.left, r.top + r.height/2);
+      break;
+    case 180:
+      p0 = Point(r.left + r.width/2, r.top + r.height);
+      break;
+    case 270:
+      p0 = Point(r.left + r.width, r.top + r.height/2);
+      break;
+    default:
+      qDebug() << "Noncanonical orientation";
+      return;
+    }
+    p->setBrush(QColor(0,255,255));
+    p->setPen(Qt::NoPen);
+    QPolygonF pp;
+    pp << (p0+Point(Dim::fromMM(-1.5), Dim::fromMM(.5)).rotatedFreely(-ori)).toMils();
+    pp << (p0+Point(Dim::fromMM(1.5), Dim::fromMM(.5)).rotatedFreely(-ori)).toMils();
+    pp << (p0+Point(Dim(), Dim::fromMM(-1.5)).rotatedFreely(-ori)).toMils();
+    p->drawPolygon(pp);
+  }
 }
 
 void ORenderer::drawText(Text const &t, bool selected) {

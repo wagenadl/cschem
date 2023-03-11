@@ -27,6 +27,8 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   addAct2(Mode::PickupTrace, "Disconnect", "Pickup trace", Qt::Key_F8);
   addAct2(Mode::PlaceNPHole, "NPHole", "Nonplated hole", Qt::Key_F9);
   //  addAct2(Mode::BoardOutline, "BoardOutline", "Board outline", Qt::Key_F10);
+  addAct2(Mode::PNPOrient, "PNPOrient", "Pick ’n’ place component orientation",
+          Qt::Key_F10);
 
   addSeparator();
   a_origin = addAct(Mode::SetIncOrigin, "AbsOrigin", Qt::Key_F11);
@@ -35,6 +37,7 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
 		       [this]() { setConstraint(!isconstr); });
   QKeySequence ks(Qt::Key_F12);
   a_constr->setShortcut(ks);
+
   
   setMode(Mode::Edit);
   isconstr = true; // force actual change

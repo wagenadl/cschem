@@ -17,6 +17,7 @@ enum class Mode {
   SetIncOrigin,
   PlaceNPHole,
   BoardOutline,
+  PNPOrient,
 };
 
 #endif

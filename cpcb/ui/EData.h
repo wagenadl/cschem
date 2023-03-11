@@ -55,6 +55,7 @@ public:
   void pressTracing(Point, Qt::KeyboardModifiers m=Qt::NoModifier);
   void pressTracingWithShift(Point);
   void pressPickingUp(Point, Qt::KeyboardModifiers m=Qt::NoModifier);
+  void pressPNPOrient(Point, Qt::KeyboardModifiers m=Qt::NoModifier);
   void moveTracing(Point);
   void abortTracing();
   void moveBanding(Point);

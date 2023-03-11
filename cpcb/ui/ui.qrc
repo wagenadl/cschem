@@ -46,5 +46,6 @@
 <file>icons/BoardOutline.svg</file>
 <file>icons/NPHole.svg</file>
 <file>icons/CursorCross.svg</file>
+<file>icons/PNPOrient.svg</file>
 </qresource>
 </RCC>

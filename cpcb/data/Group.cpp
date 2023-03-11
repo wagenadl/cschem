@@ -1138,13 +1138,19 @@ Group Group::subset(QSet<int> selection) const {
   }
   return g;
 }
+
+static int normalizedrotation(int rot) {
+  rot /= 90;
+  rot &= 3;
+  return 90*rot;
+}
   
 int Group::nominalRotation() const {
-  return (d->nominalrotation % 360 + 360) % 360;
+  return normalizedrotation(d->nominalrotation);
 }
 
 void Group::setNominalRotation(int degccw) {
-  d->nominalrotation = (degccw % 360 + 360) % 360;
+  d->nominalrotation = normalizedrotation(degccw);
 }
 
 bool Group::hasHoles() const {
