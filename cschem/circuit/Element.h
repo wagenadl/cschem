@@ -29,8 +29,8 @@ public:
 public:
   Element();
   static Element junction(QPoint);
-  static Element component(QString type, QPoint);
-  static Element port(QString type, QPoint);
+  static Element component(QString type, QPoint, QString popupname="");
+  static Element port(QString type, QPoint, QString popupname="");
 public:
   QString report() const;
 public:
@@ -57,7 +57,8 @@ public:
 public:
   Element::Type type;
   QPoint position;
-  QString subtype;
+  QString subtype; // e.g, "diode:PD" or "transistor:JFET:n"
+  QString popuptype; // e.g., "Photodiode" or "n-type JFET"
   QString value;
   QString name;
   QString notes;

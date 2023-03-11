@@ -975,8 +975,10 @@ void Scene::pasteFromClipboard() {
   d->circ().merge(pp);
   qDebug() << "check circuit after merge";
   d->circ().verifyIDs();
-  d->rebuildAsNeeded(QSet<int>::fromList(pp.elements.keys()),
-                     QSet<int>::fromList(pp.connections.keys()));
+  QList<int> eltids = pp.elements.keys();
+  QList<int> conids = pp.connections.keys();
+  d->rebuildAsNeeded(QSet<int>(eltids.begin(), eltids.end()),
+                     QSet<int>(conids.begin(), conids.end()));
   qDebug() << "check circuit after rebuild";
   d->circ().verifyIDs();
   clearSelection();
@@ -1022,8 +1024,8 @@ void SceneData::hideDragIn() {
 bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
   Symbol symbol = Symbol::load(filename);
   qDebug() << "startSvgDragIn" << filename << pos << symbol.isValid();
-  //  if (!symbol.isValid())
-  //return false;
+  if (!symbol.isValid())
+    return false;
 
   if (dragin)
     delete dragin;
@@ -1042,14 +1044,15 @@ bool SceneData::importAndPlonk(Symbol const &symbol, QPointF pos, bool merge) {
     return false;
   lib().insert(symbol);
 
-  QString name = symbol.name();
+  QString typ = symbol.typeName();
+  QString pop = symbol.popupName();
   
   QPoint pt = lib().downscale(pos);
   Element elt;
-  if (name.startsWith("part:"))
-    elt = Element::component(name.mid(5), pt);
-  else if (name.startsWith("port:"))
-    elt = Element::port(name.mid(5), pt);
+  if (typ.startsWith("part:"))
+    elt = Element::component(typ.mid(5), pt, pop);
+  else if (typ.startsWith("port:"))
+    elt = Element::port(typ.mid(5), pt, pop);
 
   if (elt.isValid()) {
     CircuitMod cm(circ(), lib());
@@ -1060,7 +1063,7 @@ bool SceneData::importAndPlonk(Symbol const &symbol, QPointF pos, bool merge) {
       cm.mergeSelection(ee);
     }
     for (Element const &elt: circ().elements)
-      if (elt.symbol()==name)
+      if (elt.symbol()==typ)
 	cm.forceRebuildElement(elt.id);
     
     rebuildAsNeeded(cm);
@@ -1069,14 +1072,16 @@ bool SceneData::importAndPlonk(Symbol const &symbol, QPointF pos, bool merge) {
   return true;
 }
 
-void Scene::plonk(QString symbol, QPointF scenepos, bool merge) {
+void Scene::plonk(QString symbol, QPointF scenepos, bool merge, QString pop) {
+  qDebug() << "plonk" << symbol << scenepos << merge << pop;
+    
   clearSelection();
   QPoint pt = d->lib().downscale(scenepos);
   Element elt;
   if (symbol.startsWith("part:"))
-    elt = Element::component(symbol.mid(5), pt);
+    elt = Element::component(symbol.mid(5), pt, pop);
   else if (symbol.startsWith("port:"))
-    elt = Element::port(symbol.mid(5), pt);
+    elt = Element::port(symbol.mid(5), pt, pop);
 
   if (elt.isValid()) {
     elt.name = circuit().autoName(elt.symbol());
@@ -1149,7 +1154,12 @@ void Scene::dropEvent(QGraphicsSceneDragDropEvent *e) {
   QMimeData const *md = e->mimeData();
 
   if (md->hasFormat("application/x-dnd-cschem")) {
-    plonk(QString(md->data("application/x-dnd-cschem")), droppos, true);
+    QString smb = QString(md->data("application/x-dnd-cschem"));
+    int idx = smb.indexOf("::");
+    if (idx>=0) 
+      plonk(smb.left(idx), droppos, true, smb.mid(idx+2));
+    else
+      plonk(smb, droppos, true);      
     d->hideDragIn();
     e->accept();
     return;

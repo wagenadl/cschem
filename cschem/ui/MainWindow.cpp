@@ -118,8 +118,12 @@ MainWindow::MainWindow(): d(new MWData()) {
 
 void MainWindow::createDocks() {
   d->libview = new LibView();
-  connect(d->libview, SIGNAL(activated(QString)),
-          this, SLOT(plonk(QString)));
+  connect(d->libview, &LibView::activated,
+          this, &MainWindow::plonk);
+  connect(d->libview, &LibView::hoveron,
+          this, &MainWindow::lvhover);
+  connect(d->libview, &LibView::hoveroff,
+          this, &MainWindow::lvunhover);
   d->libviewdock = new QDockWidget("Library", this);
   d->libviewdock->setWidget(d->libview);
   showLibrary();
@@ -532,7 +536,7 @@ void MainWindow::setStatusMessage(QString msg) {
 void MainWindow::aboutAction() {
   QString me = "<b>" + Style::programName() + "</b>";
   QString vsn = Style::versionName();
-  QMessageBox::about(0, "About " + me,
+  QMessageBox::about(0, "About " + Style::programName(),
                      me + " " + vsn
                      + "<p>" + "(C) 2018–2022 Daniel A. Wagenaar\n"
                      + "<p>" + me + " is a program for electronic circuit layout with high-quality SVG export. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
@@ -565,9 +569,13 @@ void MainWindow::removeDanglingAction() {
   d->scene->removeDangling();
 }
 
-void MainWindow::plonk(QString sym) {
-  d->scene->plonk(sym, d->view->mapToScene(QPoint(d->view->width()/2,
-                                                  d->view->height()/2)));
+void MainWindow::plonk(QString sym, QString pop) {
+  qDebug() << "mw plink" << sym << pop;
+  d->scene->plonk(sym,
+                  d->view->mapToScene(QPoint(d->view->width()/2,
+                                                  d->view->height()/2)),
+                  false,
+                  pop);
 }
 
 void MainWindow::closeEvent(QCloseEvent *e) {
@@ -790,4 +798,19 @@ void MainWindow::printPreviewAction() {
 
 void MainWindow::printDialogAction() {
   PrintPreview::print(this, d->scene, d->filename);
+}
+
+void MainWindow::lvhover(QString typ, QString pop) {
+  if (pop.isEmpty()) {
+    QStringList bits = typ.split(":");
+    if (bits[0]=="part" || bits[0]=="port")
+      bits.takeFirst();
+    setStatusMessage(bits.join(" "));
+  } else {
+    setStatusMessage(pop);
+  }
+}
+
+void MainWindow::lvunhover() {
+  setStatusMessage("");
 }

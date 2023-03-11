@@ -21,19 +21,21 @@ Element Element::junction(QPoint p) {
   return elt;
 }
 
-Element Element::port(QString subtype, QPoint p) {
+Element Element::port(QString subtype, QPoint p, QString popuptype) {
   Element elt;
   elt.type = Type::Port;
   elt.subtype = subtype;
+  elt.popuptype = popuptype;
   elt.position = p;
   elt.autoSetVisibility();
   return elt;
 }
 
-Element Element::component(QString subtype, QPoint p) {
+Element Element::component(QString subtype, QPoint p, QString popuptype) {
   Element elt;
   elt.type = Type::Component;
   elt.subtype = subtype;
+  elt.popuptype = popuptype;
   elt.position = p;
   elt.autoSetVisibility();
   return elt;
@@ -98,6 +100,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Element &c) {
   c.id = a.value("id").toInt();
   c.position = QPoint(a.value("x").toInt(), a.value("y").toInt());
   c.subtype = a.value("type").toString();
+  c.popuptype = a.value("popuptype").toString();
   c.value = a.value("value").toString();
   c.valuePosition = QPoint(a.value("valx").toInt(), a.value("valy").toInt());
   c.valueVisible = a.value("valvis").toInt() > 0;
@@ -132,7 +135,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Element const &c) {
     sw.writeAttribute("namey", QString::number(c.namePosition.y()));
     sw.writeAttribute("namevis", QString::number(c.nameVisible ? 1 : 0));
   }
-  
+  if (!c.popuptype.isEmpty())
+    sw.writeAttribute("popuptype", c.popuptype);
   if (!c.notes.isEmpty())
     sw.writeAttribute("notes", c.notes);
   
@@ -213,31 +217,44 @@ bool Element::operator!=(Element const &o) const {
 }
 
 QString Element::humanPinName(QString pin) const {
-  QString en = name;
   switch (type) {
   case Element::Type::Invalid:
     return "invalid object";
   case Element::Type::Component: 
-    if (en.isEmpty())
-      en = "unnamed component";
-    if (pin.isEmpty())
-      return "pin of " + en;
-    else if (pin==PinID::NOPIN)
-      return en;
-    else if (pin.toInt()>0)
-      return "pin " + pin + " of " + en;
-    else
-      return QString("pin “%1” of %2").arg(pin).arg(en);
-    
+    if (pin==PinID::NOPIN) {
+      if (name.isEmpty()) 
+        return popuptype.isEmpty() 
+          ? QString("unnamed component")
+          : popuptype;
+      else 
+        return popuptype.isEmpty()
+          ? name
+          : popuptype + " " + name;
+    } else {
+      QString res = "pin ";
+      if (pin.toInt()>0)
+        res += pin + " ";
+      else if (!pin.isEmpty())
+        res += "“" + pin + "” ";
+      res += " of ";
+      if (!name.isEmpty())
+        return res + name;
+      else if (!popuptype.isEmpty())
+        return res + "(" + popuptype + ")";
+      else
+        return res + "unnamed component";
+    }
   case Element::Type::Port:
-    if (en.isEmpty())
-      en = QString("port “%1”").arg(symbol().split(":").last());
+    if (pin!=PinID::NOPIN) 
+      return "pin of " +
+        (name.isEmpty()
+         ? QString("port “%1”").arg(subtype.split(":").last())
+         : QString("port “%1”").arg(name));
     else
-      en = QString("port “%1”").arg(en);
-    if (pin==PinID::NOPIN)
-      return en;
-    else
-      return "pin of " + en;
+      return name.isEmpty()
+        ? QString("port “%1”").arg(subtype.split(":").last())
+        : QString("port “%1”").arg(name);
+
   case Element::Type::Junction:
     return "junction";
   }

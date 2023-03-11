@@ -12,7 +12,8 @@
 
 class LibViewElement: public SvgItem {
 public:
-  LibViewElement(QString name, LibView *view): name(name), view(view) {
+  LibViewElement(QString name, QString pop, LibView *view):
+    name(name), pop(pop), view(view) {
     setAcceptHoverEvents(true);
   }
   ~LibViewElement() { }
@@ -24,6 +25,7 @@ public:
   void hoverLeaveEvent(QGraphicsSceneHoverEvent *) override;
 private:
   QString name;
+  QString pop;
   LibView *view;
   QPointF p0;
   bool drg;
@@ -48,7 +50,7 @@ public:
 };
 
 void LibViewElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
-  view->activate(name);
+  view->activate(name, pop);
 }
 
 void LibViewElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
@@ -57,7 +59,8 @@ void LibViewElement::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     drg = true;
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
-    mimeData->setData("application/x-dnd-cschem", name.toUtf8());
+    mimeData->setData("application/x-dnd-cschem",
+                      (name + "::" + pop).toUtf8());
     drag->setMimeData(mimeData);
     if (drag->exec(Qt::CopyAction, Qt::CopyAction))
       setGraphicsEffect(0);
@@ -78,10 +81,12 @@ void LibViewElement::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
   auto *ef = new QGraphicsColorizeEffect;
   ef->setColor(Style::hoverColor());
   setGraphicsEffect(ef);
+  view->hover(name, pop);
 }
   
 void LibViewElement::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
   setGraphicsEffect(0);
+  view->unhover();
 }
 
 double LibViewData::nextY() const {
@@ -90,8 +95,9 @@ double LibViewData::nextY() const {
 }
     
 void LibViewData::addSymbol(QString symbol) {
-  SvgItem *item = new LibViewElement(symbol, view);
-  item->setRenderer(lib->symbol(symbol).renderer());
+  Symbol const &smb = lib->symbol(symbol);
+  SvgItem *item = new LibViewElement(symbol, smb.popupName(), view);
+  item->setRenderer(smb.renderer());
   scene->addItem(item);
   items[symbol] = item;
   item->setPos(QPointF(0, nextY()));
@@ -164,7 +170,7 @@ void LibView::rebuild() {
     else if (s.contains(":connector"))
       header = "Connectors";
     else if (s.contains(":jumper"))
-      header = "Jumper";
+      header = "Jumpers";
     else if (s.contains(":diode"))
       header = "Diodes";
     else if (s.contains(":ic"))
@@ -218,6 +224,17 @@ LibView::~LibView() {
   delete d;
 }
 
-void LibView::activate(QString symbol) {
-  emit activated(symbol);
+void LibView::activate(QString symbol, QString pop) {
+  qDebug () <<"libview act" << symbol << pop;
+  emit activated(symbol, pop);
+}
+
+void LibView::hover(QString symbol, QString pop) {
+  qDebug () <<"libview hover" << symbol << pop;
+  emit hoveron(symbol, pop);
+}
+
+void LibView::unhover() {
+  qDebug () <<"libview unhover";
+  emit hoveroff();
 }

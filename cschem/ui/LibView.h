@@ -13,14 +13,18 @@ public:
   void scale(double);
   ~LibView();
 signals:
-  void activated(QString);
+  void activated(QString, QString);
+  void hoveron(QString, QString);
+  void hoveroff();
 public slots:
   void clear();
   void rebuild();
   void setLibrary(class SymbolLibrary const *lib);
 public:
   void resizeEvent(QResizeEvent *e) override;
-  void activate(QString); // causes the signal to be emitted
+  void activate(QString, QString); // causes the signal to be emitted
+  void hover(QString, QString);
+  void unhover();
   friend class LibViewData;
 private:
   class LibViewData *d;

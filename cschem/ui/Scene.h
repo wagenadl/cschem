@@ -43,7 +43,8 @@ public:
   void key_delete();
   void key_backspace();
   void removeDangling();
-  void plonk(QString symbol, QPointF scenepos, bool merge=false);
+  void plonk(QString symbol, QPointF scenepos, bool merge=false,
+             QString pop="");
   void rotate(int dir=1);
   void flipx();
   void simplifySegment(int con, int eg);

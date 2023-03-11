@@ -54,7 +54,9 @@ private:
   void createView();
   void createDocks();
 private slots:
-  void plonk(QString);
+  void plonk(QString typ, QString pop);
+  void lvhover(QString typ, QString pop);
+  void lvunhover();
   void selectionToPartList();
   void selectionFromPartList();
 protected:

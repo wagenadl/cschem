@@ -47,7 +47,7 @@ SymbolLibrary::~SymbolLibrary() {
 }
 
 void SymbolLibrary::insert(Symbol const &p) {
-  symbols_[p.name()] = p;
+  symbols_[p.typeName()] = p;
 }  
 
 void SymbolLibrary::scanSymbols(XmlElement const &src) {
@@ -74,6 +74,9 @@ bool SymbolLibrary::contains(QString name) const {
 }
 
 Symbol const &SymbolLibrary::symbol(QString name) const {
+  int idx = name.indexOf("::");
+  if (idx>=0)
+    name = name.left(idx); // strip popup name
   static Symbol nil;
   auto it = symbols_.find(name);
   if (it == symbols_.end())

@@ -173,6 +173,27 @@ Symbol::Symbol(XmlElement const &elt, QString name) {
 Symbol::~Symbol() {
 }
 
+static int tryGetGroup(XmlElement const &svg, Symbol &dst, QString &name) {
+  int groupcount = 0;
+  for (auto &c: svg.children()) {
+    if (c.type()==XmlNode::Type::Element) {
+      XmlElement elt(c.element());
+      if (elt.name()=="g") {
+        groupcount++;
+        if (groupcount>1)
+          continue;
+        QString lbl = elt.label();
+        if (lbl.startsWith("part:") || lbl.startsWith("port:"))
+          name = lbl;
+        dst = Symbol(elt, name);
+        if (!dst.isValid())
+          tryGetGroup(elt, dst, name);
+      }
+    }
+  }
+  return groupcount;
+}
+    
 Symbol Symbol::load(QString svgfn) {
   Symbol sym;
   QFile file(svgfn);
@@ -190,22 +211,9 @@ Symbol Symbol::load(QString svgfn) {
     sr.readNext();
     if (sr.isStartElement() && sr.name()=="svg") {
       XmlElement svg(sr);
-      for (auto &c: svg.children()) {
-        if (c.type()==XmlNode::Type::Element) {
-          XmlElement elt(c.element());
-          if (elt.name()=="g") {
-            if (groupcount==0)
-              sym = Symbol(elt, name);
-            groupcount++;
-          }
-        }
-      }
+      groupcount = tryGetGroup(svg, sym, name);
     }
   }
-  //qDebug() << "Loaded symbol";
-  //for (QString s: sym.stats().split("\n"))
-  //  qDebug() << s;
-  //qDebug() << "--";
   if (groupcount>1)
     qDebug() << "Only the first group was read";
   
@@ -345,9 +353,9 @@ void Symbol::forgetRenderer(Symbol const &p) {
 QSharedPointer<QSvgRenderer> Symbol::renderer() const {
   auto &map = symbolRenderers();
   //  auto &data = symbolData();
-  if (!map.contains(d->name)) 
-    map[d->name] = QSharedPointer<QSvgRenderer>(new QSvgRenderer(toSvg()));
-  return map[d->name];
+  if (!map.contains(name())) 
+    map[name()] = QSharedPointer<QSvgRenderer>(new QSvgRenderer(toSvg()));
+  return map[name()];
 }
 
   
@@ -412,4 +420,21 @@ QString Symbol::stats() const {
 
 QStringList Symbol::problems() const {
   return d->errors;
+}
+
+QString Symbol::typeName() const {
+  int idx = d->name.indexOf("::");
+  if (idx>=0)
+    return d->name.left(idx);
+  else
+    return d->name;
+}
+  
+
+QString Symbol::popupName() const {
+  int idx = d->name.indexOf("::");
+  if (idx>=0)
+    return d->name.mid(idx+2);
+  else
+    return "";
 }

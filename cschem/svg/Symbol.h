@@ -18,7 +18,9 @@ public:
   Symbol &operator=(Symbol const &);
   static Symbol load(QString svgfn);
   XmlElement const &element() const;
-  QString name() const;
+  QString name() const; // full name, e.g., "part:diode:PD::Photodiode"
+  QString typeName() const; // e.g., "part:diode:PD" (possibly equal to name)
+  QString popupName() const; // e.g., "Photodiode" (possibly empty)
   QPointF bbPinPosition(QString pinname) const; // relative to TL of bbox
   QStringList pinNames() const; // sorted
   QPointF bbOrigin() const; // position of first pin relative to TL of bbox
