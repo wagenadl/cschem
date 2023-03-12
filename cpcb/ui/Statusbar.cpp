@@ -260,3 +260,8 @@ void Statusbar::hideCursorXY() {
   else
     cursorui->setText("X:‒.‒‒‒ Y:‒.‒‒‒");
 }
+
+void Statusbar::setMode(Mode m) {
+  planesui->setEnabled(m!=Mode::PNPOrient);
+  netsui->setEnabled(m!=Mode::PNPOrient);
+}

@@ -10,6 +10,7 @@
 #include "data/Point.h"
 #include "data/Board.h"
 #include <QMap>
+#include "Mode.h"
 
 class Statusbar: public QStatusBar {
   Q_OBJECT;
@@ -33,6 +34,7 @@ public slots:
   void toggleGrid();
   void nextGrid();
   void previousGrid();
+  void setMode(Mode);
 private slots:
   void parseGrid();
 private:

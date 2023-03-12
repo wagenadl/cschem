@@ -124,7 +124,10 @@ void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
 	p2 += movingdelta;
     }
   }
-  p->setPen(QPen(brushColor(selected, innet), t.width.toMils()
+  QColor c = (pnporient && (layer==Layer::Top || layer==Layer::Bottom))
+    ? grayPadColor()
+    : brushColor(selected, innet);
+  p->setPen(QPen(c, t.width.toMils()
                  + extraMils(innet, t.width),
                  Qt::SolidLine, Qt::RoundCap));
   p->drawLine(p1.toMils(), p2.toMils());
