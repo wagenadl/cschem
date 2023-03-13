@@ -409,6 +409,7 @@ void HoverManager::unhover() {
 }
 
 QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
+  //  qDebug() << "  SEEWHATSTICKS" << del;
   Circuit const &circ = scene->circuit();
   SymbolLibrary const &lib = scene->library();
   Geometry geom(circ, lib);
@@ -418,9 +419,11 @@ QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
     QPoint p = info.pt + del;
     QPointF pup = lib.upscale(p);
     int elt = scene->elementAt(pup, info.elt);
+    //    qDebug() << "    seewhatsticks -- " << del << p << pup << elt << info.elt;
     QString pin;
     if (elt>0) {
       pin = scene->pinAt(pup, elt);
+      //      qDebug() << "     got stick -- " << del << p << pup << elt << pin << geom.pinPosition(elt, pin);
       if (pin != PinID::NOPIN) {
         if (geom.pinPosition(elt, pin)==p)
           pts << p;
@@ -447,9 +450,9 @@ void HoverManager::doneDragging() {
 
 void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
   SymbolLibrary const &lib = scene->library();
-  int n=0;
+  int n = 0;
   for (QPoint p: pts) {
-    if (floatMarkers.size() <= n)
+    while (floatMarkers.size() <= n)
       floatMarkers << new PinMarker(scene);
     QPointF pup = lib.upscale(p);
     floatMarkers[n]->setRect(QRectF(pup - QPointF(r, r), 2 * QSizeF(r, r)));
@@ -479,8 +482,10 @@ QPoint HoverManager::tentativelyMoveSelection(QPoint del, bool nomagnet) {
   }
   
   QList<QPoint> pts = d->seeWhatSticks(del);
+  //  qDebug() << "tentamove" << del << pts << nomagnet;
   if (pts.isEmpty() && !nomagnet) 
     del = d->tryNearby(del, pts);
+  //  qDebug() << "nearby " << del << pts;
 
   if (!pts.isEmpty()) { 
     d->haveMagnet = true;

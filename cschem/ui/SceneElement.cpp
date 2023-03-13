@@ -393,6 +393,7 @@ QString SceneElement::symbol() const {
 void SceneElement::setSelected(bool s) {
   d->selected = s;
   d->scene->perhapsEmitSelectionChange();
+  setZValue(s ? 8 : 10);
   update();
 }
 

@@ -124,7 +124,7 @@ void SymbolData::ensureBBox() {
   QString id = groupId;
   bbox = renderer.transformForElement(id).mapRect(renderer.boundsOnElement(id))
     .toAlignedRect();
-  for (QString pin: pins.keys())
+  for (QString pin: pinIds.keys())
     pins[pin]
       = renderer.transformForElement(id)
       .map(renderer.boundsOnElement(pinIds[pin]).center());
@@ -201,8 +201,6 @@ Symbol Symbol::load(QString svgfn) {
   name.replace("-", ":");
   if (!name.startsWith("port:") && !name.startsWith("part:"))
     name = "part:" + name;
-  //qDebug() << "symbol load" << svgfn << " named " << name
-  //         << " exists " << file.exists();
   if (!file.open(QFile::ReadOnly)) 
     return sym;
   QXmlStreamReader sr(&file);
@@ -216,7 +214,6 @@ Symbol Symbol::load(QString svgfn) {
   }
   if (groupcount>1)
     qDebug() << "Only the first group was read";
-  
   return sym;
 }
 
@@ -237,16 +234,13 @@ void SymbolData::scanPins(XmlElement const &elt) {
      Also scans for rectangles with name matching {annotation:WHAT} where
      WHAT must be "ref" (or "name") or "value".
    */
-  //qDebug() << "scanpins" << elt.name() << elt.title() << elt.label();
   if (elt.name()=="circle") {
     QString label = elt.title();
     if (label.isEmpty())
       label = elt.label();
     if (label.startsWith("pin")) {
       QString name = label.mid(4);
-      double x = elt.attributes().value("cx").toDouble();
-      double y = elt.attributes().value("cy").toDouble();
-      pins[name] = QPointF(x, y);
+      pins[name] = QPointF(); // pin positions are determined by ensureBBox
       pinIds[name] = elt.attributes().value("id").toString();
     } else if (label.startsWith("cp")) {
       QString name = label.mid(3);
@@ -281,11 +275,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
 	QString name = bits[1];
         if (name=="ref")
           name = "name";
-	double x = elt.attributes().value("x").toDouble();
-	double y = elt.attributes().value("y").toDouble();
-	double w = elt.attributes().value("width").toDouble();
-	double h = elt.attributes().value("height").toDouble();
-	annotationBBox[name] = QRectF(QPointF(x, y), QSizeF(w, h));
+	annotationBBox[name] = QRectF();
       }
     }
     
@@ -406,7 +396,8 @@ QString Symbol::stats() const {
   res << "Pin count: " + QString::number(d->pins.size());
   res << "Pins:";
   for (auto it=d->pinIds.begin(); it!=d->pinIds.end(); ++it) 
-    res << "  " + it.key() + ": " + it.value();
+    res << "  " + it.key() + ": " + it.value() + ": "
+      + QString("%1,%2").arg(d->pins[it.key()].x()).arg(d->pins[it.key()].y());
   res << "Unconnected pin count: " + QString::number(d->ncpins);
   res << "Container slot count: " + QString::number(slotCount());
   res << "Container slots:";
