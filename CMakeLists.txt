@@ -47,6 +47,8 @@ target_link_libraries(cpcb Qt5::Svg)
 
 
 if (WIN32)
+  qt_add_executable(cschem cschem/cschem.iconset/cschem.rc)
+  qt_add_executable(cpcb cpcb/cpcb.iconset/cpcb.rc)
   target_link_libraries(cschem secur32.lib)
   target_link_libraries(cpcb secur32.lib)
 endif()
@@ -59,6 +61,9 @@ target_include_directories(cschem PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(cschem PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
 target_include_directories(cpcb PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(cpcb PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
+
+######################################################################
+add_subdirectory("docs")
 
 ######################################################################
 # Userguide

@@ -11,7 +11,6 @@ namespace Paths {
 
   void setExecutablePath(QString s) {
     QFileInfo exe(s);
-    //qDebug() << "exe" << exe;
     QDir dir = exe.dir();
     dir.makeAbsolute();
     qDebug() << "dir" << dir;
@@ -32,10 +31,11 @@ namespace Paths {
     QString userroot
       = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QStringList allroots
-      = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+      = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
     for (QString const &root: allroots) {
       if (root==userroot)
         continue;
+      qDebug() << "allroots" << root;
       if (QDir(root).exists("symbols"))
         return QDir(root).absoluteFilePath("symbols");
     }

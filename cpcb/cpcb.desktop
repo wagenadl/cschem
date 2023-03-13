@@ -6,5 +6,5 @@ Exec=cpcb %f
 Terminal=false
 Type=Application
 Categories=Scientific
-Icon=/usr/share/pixmaps/cpcb.png
+Icon=cpcb
 MimeType=application/cschem-cpcb

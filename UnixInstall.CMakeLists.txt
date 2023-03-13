@@ -1,6 +1,8 @@
+# Binaries
 install(TARGETS cschem DESTINATION bin)
 install(TARGETS cpcb DESTINATION bin)
 
+# Man pages and pdf userguides
 install(FILES doc/cschem.1 DESTINATION share/man/man1)
 install(FILES doc/cpcb.1 DESTINATION share/man/man1)
 install(FILES README.md DESTINATION share/doc/cschem)
@@ -8,6 +10,30 @@ install(FILES CHANGELOG DESTINATION share/doc/cschem)
 install(FILES ${CMAKE_BINARY_DIR}/cschem-userguide.pdf DESTINATION share/doc/cschem)
 install(FILES ${CMAKE_BINARY_DIR}/cpcb-userguide.pdf DESTINATION share/doc/cschem)
 
+# Symbol and outline libraries
+install(DIRECTORY symbols DESTINATION share/cschem/cschem)
+install(DIRECTORY pcb-outlines DESTINATION share/cschem/cpcb)
+
+# Icons
+foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256 512)
+  install(FILES cschem/cschem.iconset/cschem_${RES}x${RES}.png
+    DESTINATION share/icons/hicolor/${RES}x${RES}/apps
+    RENAME cschem.png)
+  install(FILES cschem/cschem.iconset/cschem_${RES}x${RES}.png
+    DESTINATION share/icons/hicolor/${RES}x${RES}/mimetypes
+    RENAME application-cschem-cschem.png)
+endforeach()
+
+foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256 512)
+  install(FILES cpcb/cpcb.iconset/cpcb_${RES}x${RES}.png
+    DESTINATION share/icons/hicolor/${RES}x${RES}/apps
+    RENAME cpcb.png)
+  install(FILES cpcb/cpcb.iconset/cpcb_${RES}x${RES}.png
+    DESTINATION share/icons/hicolor/${RES}x${RES}/mimetypes
+    RENAME application-cschem-cpcb.png)
+endforeach()
+
+# Desktop and mimetype files
 install(PROGRAMS cschem/cschem.desktop DESTINATION share/applications)
 install(FILES cschem/cschem.xml DESTINATION share/mime/packages)
 install(PROGRAMS cpcb/cpcb.desktop DESTINATION share/applications)

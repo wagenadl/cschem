@@ -6,5 +6,5 @@ Exec=cschem %f
 Terminal=false
 Type=Application
 Categories=Scientific
-Icon=/usr/share/pixmaps/cschem.png
+Icon=cschem
 MimeType=application/cschem-cschem

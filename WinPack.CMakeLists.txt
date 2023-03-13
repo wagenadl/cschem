@@ -16,11 +16,13 @@ set(CPACK_GENERATOR "NSIS")
 install(TARGETS cschem)
 install(TARGETS cpcb)
 install(DIRECTORY ${CMAKE_BINARY_DIR}/windeploy/ DESTINATION bin)
+install(DIRECTORY symbols DESTINATION cschem)
+install(DIRECTORY pcb-outlines DESTINATION cpcb)
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/GPL-3.0.txt")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "CSchem")
-#set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/src/App/eln.ico")
-#set(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_SOURCE_DIR}/src/App/eln.ico")
+set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/cschem/cschem.iconset/cschem.ico")
+set(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_SOURCE_DIR}/cschem/cschem.iconset/cschem.ico")
 #target_sources(cd .. PRIVATE "src/App/winicon.rc")
 
 set(CPACK_PACKAGE_EXECUTABLES

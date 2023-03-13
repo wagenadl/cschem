@@ -33,7 +33,7 @@ void ensureSymbolLibrary() {
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
-  app.setOrganizationName("Daniel Wagenaar");
+  app.setOrganizationName("cschem");
   app.setOrganizationDomain("danielwagenaar.net");
   app.setApplicationName("cschem");
   app.setApplicationDisplayName("CSchem");
