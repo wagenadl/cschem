@@ -9,6 +9,7 @@
 #include <QTextLayout>
 #include <QDebug>
 #include <QGraphicsColorizeEffect>
+#include <QPainter>
 
 class SAData {
 public:
@@ -17,7 +18,9 @@ public:
     pressing(false),
     moving(false),
     hovering(false),
-    forcedhover(false) {
+    forcedhover(false),
+    markedsel(false),
+    faint(false) {
   }
 public:
   double movestep;
@@ -26,26 +29,28 @@ public:
   QPointF p_center; // officially requested center position
   bool pressing;
   bool moving;
-  QString origtext;
   bool hovering; // real hovering
   bool forcedhover; // from parent
+  bool markedsel;
+  bool faint;
+  QString placeholdertext;
 public:
-  void updateHoverMarking(SceneElementAnnotation *);
+  void updateColor(SceneElementAnnotation *);
 };
 
-void SAData::updateHoverMarking(SceneElementAnnotation *sa) {
-  bool has = sa->graphicsEffect();
-  bool should = hovering || forcedhover;
-  if (should && !has) {
-    auto *ef = new QGraphicsColorizeEffect;
-    ef->setColor(Style::hoverColor());
-    sa->setGraphicsEffect(ef);
-  } else if (has && !should) {
-    sa->setGraphicsEffect(0);
-  }
+void SAData::updateColor(SceneElementAnnotation *sa) {
+  if ((hovering || forcedhover) && !sa->hasFocus())
+    sa->setDefaultTextColor(faint
+                            ? Style::faintHoverColor()
+                            : Style::hoverColor());
+ else 
+    sa->setDefaultTextColor(faint
+                            ? Style::faintColor()
+                            : Style::textColor());
 }
 
-SceneElementAnnotation::SceneElementAnnotation(double movestep, QGraphicsItem *parent):
+SceneElementAnnotation::SceneElementAnnotation(double movestep,
+                                               QGraphicsItem *parent):
   QGraphicsTextItem(parent), d(new SAData(movestep)) {
   setFont(Style::annotationFont());
   setTextInteractionFlags(Qt::TextEditorInteraction);
@@ -61,6 +66,12 @@ SceneElementAnnotation::~SceneElementAnnotation() {
 }
 
 void SceneElementAnnotation::focusOutEvent(QFocusEvent *e) {
+  if (toPlainText()=="") {
+    setFaint(true);
+    setHtml(d->placeholdertext);
+  } else {
+    d->updateColor(this);
+  }
   QGraphicsTextItem::focusOutEvent(e);
   QTextCursor tc = textCursor();
   if (tc.hasSelection()) {
@@ -72,17 +83,19 @@ void SceneElementAnnotation::focusOutEvent(QFocusEvent *e) {
 
 void SceneElementAnnotation::focusInEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusInEvent(e);
-  setGraphicsEffect(0);
+  d->updateColor(this);
 }
  
 void SceneElementAnnotation::keyPressEvent(QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_Return: case Qt::Key_Enter:
     emit returnPressed();
+    clearFocus();
     e->accept();
     break;
   case Qt::Key_Escape:
     emit escapePressed();
+    clearFocus();
     e->accept();
     break;
   default:
@@ -92,13 +105,10 @@ void SceneElementAnnotation::keyPressEvent(QKeyEvent *e) {
 }
 
 void SceneElementAnnotation::mousePressEvent(QGraphicsSceneMouseEvent *e) {
-  if (defaultTextColor() == Style::faintColor()) {
-    d->origtext = toHtml();
+  if (d->faint) {
     setPlainText("");
-    setDefaultTextColor(Style::textColor());
-  } else {
-    d->origtext = "";
-  }
+    setFaint(false);
+  } 
   if (e->button() == Qt::LeftButton && d->movestep > 0) {
     d->sp_press = e->scenePos();
     d->pressing = true;
@@ -115,9 +125,9 @@ void SceneElementAnnotation::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     QPointF delta = e->scenePos() - d->sp_press;
     if (!d->moving && delta.manhattanLength() >= 3) {
       d->moving = true;
-      if (d->origtext != "") {
-        setHtml(d->origtext);
-        setDefaultTextColor(Style::faintColor());
+      if (d->faint) {
+        setHtml(d->placeholdertext);
+        d->updateColor(this);
       }
       clearFocus();
     }      
@@ -167,21 +177,53 @@ void SceneElementAnnotation::updateCenter() {
 
 void SceneElementAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
   d->hovering = true;
-  d->updateHoverMarking(this);
+  d->updateColor(this);
   emit hovering(true);
 }
   
 void SceneElementAnnotation::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
   d->hovering = false;
-  d->updateHoverMarking(this);
+  d->updateColor(this);
   emit hovering(false);
 }
 
 void SceneElementAnnotation::forceHoverColor(bool x) {
   d->forcedhover = x;
-  d->updateHoverMarking(this);
+  d->updateColor(this);
+}
+
+void SceneElementAnnotation::markSelected(bool x) {
+  d->markedsel = x;
+  update();
 }
 
 void SceneElementAnnotation::setPos(QPointF const &p) {
   QGraphicsTextItem::setPos(p);
+}
+
+void SceneElementAnnotation::paint(QPainter *painter,
+			 const QStyleOptionGraphicsItem *style,
+			 QWidget *w) {
+  QGraphicsTextItem::paint(painter, style, w);
+  if (d->markedsel) {
+    painter->setBrush(QBrush(Style::selectionBackgroundColor()));
+    painter->setPen(QPen(Qt::NoPen));
+    painter->setCompositionMode(QPainter::CompositionMode_Darken);
+    painter->drawRoundedRect(boundingRect(),
+			     Style::selectionRectRadius(),
+			     Style::selectionRectRadius());
+  }
+}
+
+void SceneElementAnnotation::setFaint(bool x) {
+  d->faint = x;
+  if (x)
+    setHtml(d->placeholdertext);
+  d->updateColor(this);
+}
+
+void SceneElementAnnotation::setPlaceholderText(QString s) {
+  d->placeholdertext = s;
+  if (d->faint)
+    setHtml(s);
 }

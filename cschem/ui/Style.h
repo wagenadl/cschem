@@ -15,6 +15,7 @@ public:
   static QColor pinHighlightColor();
   static QColor selectionBackgroundColor();
   static QColor faintColor();
+  static QColor faintHoverColor();
   static QColor textColor();
   static QColor layerColor();
   static double connectionHoverWidthFactor();

@@ -23,6 +23,10 @@ QColor Style::hoverColor() {
   return QColor(64, 192, 255);
 }
 
+QColor Style::faintHoverColor() {
+  return QColor(160, 224, 255);
+}
+
 QColor Style::selectedElementHoverColor() {
   return QColor(0, 64, 255);
 }

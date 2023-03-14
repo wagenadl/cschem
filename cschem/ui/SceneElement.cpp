@@ -71,11 +71,11 @@ void SceneElementData::nameTextToWidget() {
   Element const &elt(circ.elements[id]);
   QString txt = elt.name;
   if (txt.isEmpty()) {
-    name->setHtml("<i>Ref</i>");
-    name->setDefaultTextColor(Style::faintColor());
+    //    name->setHtml("<i>Ref</i>");
+    name->setFaint(true);
   } else {
     name->setHtml(PartNumbering::nameToHtml(txt));
-    name->setDefaultTextColor(Style::textColor());
+    name->setFaint(false);
   }
   if (name->hasFocus())
     name->clearFocus();
@@ -100,8 +100,7 @@ void SceneElementData::valueTextToWidget() {
   // Copy value from circuit to widget
   QString txt = scene->circuit().elements[id].value;
   if (txt.isEmpty()) {
-    value->setHtml("<i>P/V</i>");
-    value->setDefaultTextColor(Style::faintColor());
+    value->setFaint(true);
   } else {
     if (txt.startsWith("“") && txt.endsWith("”")) {
       QString mid = txt.mid(1, txt.size() - 2);
@@ -114,7 +113,7 @@ void SceneElementData::valueTextToWidget() {
     } else {
       value->setPlainText(txt);
     }
-    value->setDefaultTextColor(Style::textColor());
+    value->setFaint(false);
   }
   if (value->hasFocus())
     value->clearFocus();
@@ -168,6 +167,7 @@ void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
     if (elt.type == Element::Type::Component)
       elt.valueVisible = true;
     d->scene->modifyElementAnnotations(elt);
+    d->scene->clearSelection();                                             
   }
 }
 
@@ -253,6 +253,9 @@ void SceneElement::rebuild() {
 		       d.data(), SLOT(removeName()));
       QObject::connect(d->name, SIGNAL(hovering(bool)),
                        d.data(), SLOT(nameHovering(bool)));
+      d->name->setPlaceholderText("<i>Ref</i>");
+      d->name->markSelected(isSelected());
+      d->name->forceHoverColor(d->hover);
     }
 
     QPoint p = elt.namePosition;
@@ -289,6 +292,9 @@ void SceneElement::rebuild() {
 		       d.data(), SLOT(removeValue()));
       QObject::connect(d->name, SIGNAL(hovering(bool)),
                        d.data(), SLOT(valueHovering(bool)));
+      d->value->setPlaceholderText("<i>P/V</i>");
+      d->value->markSelected(isSelected());
+      d->value->forceHoverColor(d->hover);
     }
     QPoint p = elt.valuePosition;
     if (p.isNull()) {
@@ -399,6 +405,10 @@ void SceneElement::setSelected(bool s) {
   d->selected = s;
   d->scene->perhapsEmitSelectionChange();
   setZValue(s ? 8 : 10);
+  if (d->name)
+    d->name->markSelected(s);
+  if (d->value)
+    d->value->markSelected(s);
   update();
 }
 

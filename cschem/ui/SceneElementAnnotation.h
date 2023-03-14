@@ -20,6 +20,10 @@ public:
   // void setBaseline(QPointF xy); // set position based on left=x, baseline=y
   void setCenter(QPointF xy); // set position based on center of bbox
   void forceHoverColor(bool);
+  void markSelected(bool);
+  void setFaint(bool);
+  void setPlaceholderText(QString);
+  void paint(QPainter *, QStyleOptionGraphicsItem const *, QWidget *) override;
 signals:
   void returnPressed();
   void escapePressed();
