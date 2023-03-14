@@ -113,7 +113,6 @@ bool ExportDialog::saveAccordingly(Layout const &pcblayout,
   return true;
 }
 
-// powershell Compress-Archive -Path 'C:\mypath\testfolder' -DestinationPath "C:\mypath\testfolder.zip"
 
 bool ExportDialog::saveGerber(class Layout const &pcblayout) {
   QFileInfo fi(ui->gerberfilename->text());
@@ -152,10 +151,10 @@ bool ExportDialog::saveGerber(class Layout const &pcblayout) {
                            + fn + "”: Zip failed",
                            QMessageBox::Ok);
     return ok;
-  } else {
-    // try windows trickery
-    // powershell Compress-Archive -Path 'C:\mypath\testfolder' -DestinationPath "C:\mypath\testfolder.zip"
-    QStringList args{"Compress-Archive", "-Path", '"' + base + '"',
+  } else if (QProcess::execute("powershell", QStringList{"-h"})==0) {
+    // use powershell Compress-Archive
+    QStringList args{"Compress-Archive", "-Force",
+	  "-Path", '"' + td.filePath(base) + '"',
       "-DestinationPath", '"' + fn + '"'};
     bool ok = QProcess::execute("powershell", args) == 0;
     if (!ok) 
@@ -164,6 +163,12 @@ bool ExportDialog::saveGerber(class Layout const &pcblayout) {
                            + fn + "”: PowerShell Zip failed",
                            QMessageBox::Ok);
       return ok;
+  } else {
+      QMessageBox::warning(parentWidget(), "cpcb",
+                           "Could not export Gerber as “"
+                           + fn + "”: No “zip” executable available",
+                           QMessageBox::Ok);
+    return false;
   }
 }
 
