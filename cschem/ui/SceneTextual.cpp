@@ -22,10 +22,12 @@ public:
     hovered = false;
     selected = false;
     mypress = false;
+    moving = false;
   }
   void rebuild();
   void rebuildText();
   void rebuildPos();
+  void recolor();
 public:
   SceneTextual *st;
   Scene *scene;
@@ -33,9 +35,22 @@ public:
   bool hovered;
   bool selected;
   bool mypress;
+  bool moving;
   QPoint dp; // for temporary moves
   QPointF sp_press;
 };
+
+void STData::recolor() {
+  if (hovered && !st->hasFocus()) {
+    if (selected) 
+      st->setDefaultTextColor(Style::selectedElementHoverColor());
+    else
+      st->setDefaultTextColor(Style::hoverColor());
+  } else {
+    st->setDefaultTextColor(Style::textColor());
+  }
+}
+
 
 void STData::rebuild() {
   rebuildText();
@@ -215,6 +230,15 @@ void SceneTextual::paint(QPainter *p,
 			 QWidget *w) {
   // future vsn might draw s/th for hover or selected
   QGraphicsTextItem::paint(p, i, w);
+  if (d->selected) {
+    p->setBrush(QBrush(Style::selectionAnnotationBackgroundColor()));
+    p->setPen(QPen(Qt::NoPen));
+    p->setCompositionMode(QPainter::CompositionMode_Darken);
+    p->drawRoundedRect(boundingRect(),
+                       Style::selectionRectRadius(),
+                       Style::selectionRectRadius());
+  }
+    
 }
 
 void SceneTextual::temporaryTranslate(QPoint delta) {
@@ -224,6 +248,7 @@ void SceneTextual::temporaryTranslate(QPoint delta) {
 
 void SceneTextual::setSelected(bool s) {
   d->selected = s;
+  d->recolor();
   update();
 }
 
@@ -233,11 +258,13 @@ bool SceneTextual::isSelected() const {
 
 void SceneTextual::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
   d->hovered = true;
+  d->recolor();
   update();
 }
 
 void SceneTextual::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
   d->hovered = false;
+  d->recolor();
   update();
 }
 
@@ -252,11 +279,12 @@ void SceneTextual::keyPressEvent(QKeyEvent *e) {
 }
 
 void SceneTextual::mousePressEvent(QGraphicsSceneMouseEvent *e) {
-  if (e->modifiers() & Qt::ControlModifier) {
+  if (e->button()==Qt::LeftButton) {
     d->mypress = true;
     d->sp_press = e->scenePos();
     temporaryTranslate(QPoint());
-    clearFocus();
+    QGraphicsTextItem::mousePressEvent(e);
+    e->accept();
   } else {
     d->mypress = false;
     QGraphicsTextItem::mousePressEvent(e);
@@ -270,7 +298,13 @@ void SceneTextual::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
 void SceneTextual::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   if (d->mypress) {
     QPointF dp = e->scenePos() - d->sp_press;
-    temporaryTranslate(d->scene->library().downscale(dp));
+    if (!d->moving && dp.manhattanLength()>=3) {
+      d->moving = true;
+      clearFocus();
+      d->recolor();
+    }
+    if (d->moving)
+      temporaryTranslate(d->scene->library().downscale(dp));
   } else {
     QGraphicsTextItem::mouseMoveEvent(e);
   }
@@ -279,15 +313,24 @@ void SceneTextual::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 void SceneTextual::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   if (d->mypress) {
     d->mypress = false;
-    d->scene->repositionTextual(id(), d->txt.position + d->dp);
+    if (d->moving)
+      d->scene->repositionTextual(id(), d->txt.position + d->dp);
+    d->moving = false;
     temporaryTranslate(QPoint());
   } else {
     QGraphicsTextItem::mouseReleaseEvent(e);
   }
 }
 
+
+void SceneTextual::focusInEvent(QFocusEvent *e) {
+  QGraphicsTextItem::focusInEvent(e);
+  d->recolor();
+}
+
 void SceneTextual::focusOutEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusOutEvent(e);
+  d->recolor();
   if (d->txt.text.isEmpty())
     d->scene->dropTextual(id());
 }

@@ -31,6 +31,7 @@ protected:
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) override;
   void mouseMoveEvent(QGraphicsSceneMouseEvent *) override;
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override;
+  void focusInEvent(QFocusEvent *) override;
   void focusOutEvent(QFocusEvent *) override;
 private:
   class STData *d;
