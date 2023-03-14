@@ -90,6 +90,7 @@ void SceneElementAnnotation::focusOutEvent(QFocusEvent *e) {
 void SceneElementAnnotation::focusInEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusInEvent(e);
   d->updateColor(this);
+  emit focused();
 }
  
 void SceneElementAnnotation::keyPressEvent(QKeyEvent *e) {

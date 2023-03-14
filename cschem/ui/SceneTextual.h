@@ -23,6 +23,7 @@ public:
   void temporaryTranslate(QPoint delta);
   void setSelected(bool);
   bool isSelected() const;
+  QPoint textPosition() const;
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void hoverEnterEvent(QGraphicsSceneHoverEvent *) override;

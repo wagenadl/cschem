@@ -253,6 +253,8 @@ void SceneElement::rebuild() {
 		       d.data(), SLOT(removeName()));
       QObject::connect(d->name, SIGNAL(hovering(bool)),
                        d.data(), SLOT(nameHovering(bool)));
+      QObject::connect(d->name, &SceneElementAnnotation::focused,
+                       d.data(), [this]() { d->scene->clearSelection(); });
       d->name->setPlaceholderText("<i>Ref</i>");
       d->name->markSelected(isSelected());
       d->name->forceHoverColor(d->hover);
@@ -290,8 +292,10 @@ void SceneElement::rebuild() {
 		       d.data(), SLOT(moveValue(QPointF)));
       QObject::connect(d->value, SIGNAL(removalRequested()),
 		       d.data(), SLOT(removeValue()));
-      QObject::connect(d->name, SIGNAL(hovering(bool)),
+      QObject::connect(d->value, SIGNAL(hovering(bool)),
                        d.data(), SLOT(valueHovering(bool)));
+      QObject::connect(d->value, &SceneElementAnnotation::focused,
+                       d.data(), [this]() { d->scene->clearSelection(); });
       d->value->setPlaceholderText("<i>P/V</i>");
       d->value->markSelected(isSelected());
       d->value->forceHoverColor(d->hover);
@@ -402,6 +406,8 @@ QString SceneElement::symbol() const {
 }
 
 void SceneElement::setSelected(bool s) {
+  if (d->selected==s)
+    return;
   d->selected = s;
   d->scene->perhapsEmitSelectionChange();
   setZValue(s ? 8 : 10);

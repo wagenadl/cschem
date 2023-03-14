@@ -30,6 +30,7 @@ signals:
   void moved(QPointF delta);
   void removalRequested();
   void hovering(bool);
+  void focused();
 protected:
   void keyPressEvent(QKeyEvent *) override;
   void mousePressEvent(QGraphicsSceneMouseEvent *) override;

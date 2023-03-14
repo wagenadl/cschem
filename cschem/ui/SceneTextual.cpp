@@ -244,9 +244,11 @@ void SceneTextual::paint(QPainter *p,
 void SceneTextual::temporaryTranslate(QPoint delta) {
   d->dp = delta;
   d->rebuildPos();
-}
+} 
 
 void SceneTextual::setSelected(bool s) {
+  if (d->selected==s)
+    return;
   d->selected = s;
   d->recolor();
   update();
@@ -310,6 +312,11 @@ void SceneTextual::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   }
 }
 
+
+QPoint SceneTextual::textPosition() const {
+  return d->txt.position;
+}
+
 void SceneTextual::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   if (d->mypress) {
     d->mypress = false;
@@ -326,6 +333,7 @@ void SceneTextual::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
 void SceneTextual::focusInEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusInEvent(e);
   d->recolor();
+  d->scene->clearSelection();
 }
 
 void SceneTextual::focusOutEvent(QFocusEvent *e) {

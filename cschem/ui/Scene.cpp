@@ -44,6 +44,7 @@ public:
   void preact();
   void unact();
   QSet<int> selectedElements() const;
+  QSet<int> selectedTextuals() const;
   void rotateElement(int id, int steps=1);
   void rotateSelection(int steps=1);
   void rotateElementOrSelection(int steps=1); // creates undo step
@@ -85,6 +86,7 @@ public:
   QGraphicsRectItem *rubberband;
   QPointF rbstart;
   QSet<int> prebandselection;
+  QSet<int> prebandtextselection;
   int postpone;
 };
 
@@ -355,6 +357,18 @@ void Scene::newUUID() {
   d->circ().newUUID();
 }
 
+QSet<int> SceneData::selectedTextuals() const {
+  QSet<int> selection;
+  for (int id: textuals.keys())
+    if (textuals[id]->isSelected())
+      selection << id;
+  return selection;
+}
+
+QSet<int> Scene::selectedTextuals() const {
+  return d->selectedTextuals();
+}
+
 QSet<int> SceneData::selectedElements() const {
   QSet<int> selection;
   for (int id: elts.keys())
@@ -396,6 +410,9 @@ void Scene::tentativelyMoveSelection(QPoint delta, bool first,
     d->conns[id]->temporaryTranslateFrom(delta);
   for (int id: tocons)
     d->conns[id]->temporaryTranslateTo(delta);
+
+  for (int id: selectedTextuals())
+    d->textuals[id]->temporaryTranslate(delta);
 }
 
 void Scene::moveSelection(QPoint delta, bool nomagnet) {
@@ -448,6 +465,10 @@ void Scene::moveSelection(QPoint delta, bool nomagnet) {
       d->elts[id]->rebuild();
     for (int id: internalcons + fromcons + tocons)
       d->conns[id]->rebuild();
+  }
+  for (int id: selectedTextuals()) {
+    d->textuals[id]->temporaryTranslate(QPoint());
+    repositionTextual(id, d->textuals[id]->textPosition() + delta);
   }
 }
 
@@ -511,6 +532,7 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 	clearSelection();
     d->rbstart = e->scenePos();
     d->prebandselection = selectedElements();
+    d->prebandtextselection = selectedTextuals();
     d->rubberband = new QGraphicsRectItem;
     d->rubberband->setRect(QRectF(d->rbstart, d->rbstart));
     d->rubberband->setBrush(QBrush(QColor(0, 128, 255, 32)));
@@ -543,7 +565,10 @@ void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
     d->rubberband->setRect(rect);
     for (int id: d->elts.keys())
       d->elts[id]->setSelected(d->prebandselection.contains(id)
-			       || rect.contains(d->elts[id]->sceneBoundingRect()));
+		      || rect.contains(d->elts[id]->sceneBoundingRect()));
+    for (int id: d->textuals.keys())
+      d->textuals[id]->setSelected(d->prebandtextselection.contains(id)
+                      || rect.contains(d->textuals[id]->sceneBoundingRect()));
   } else {
     QGraphicsScene::mouseMoveEvent(e);
   }
@@ -1323,6 +1348,8 @@ void Scene::clearSelection() {
   SelChgPostpone blk(d);
   for (SceneElement *elt: elements())
     elt->setSelected(false);
+  for (SceneTextual *txt: d->textuals)
+    txt->setSelected(false);
 }
 
 void Scene::addToSelection(int id) {

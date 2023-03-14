@@ -23,6 +23,7 @@ public:
   void moveSelection(QPoint delta, bool nomagnet);
   void tentativelyMoveSelection(QPoint delta, bool first, bool nomagnet);
   QSet<int> selectedElements() const;
+  QSet<int> selectedTextuals() const;
   void selectElements(QSet<int> const &);
   QMap<int, class SceneElement *> const &elements() const;
   QMap<int, class SceneConnection *> const &connections() const;
