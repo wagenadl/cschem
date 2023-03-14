@@ -76,10 +76,10 @@ public:
   int refTextId() const; // ID (in parent group) of the text object
   // that represents our Ref., or 0 if none.
   void setRefTextId(int);
-  bool saveComponent(int id, QString fn); // id must be a subgroup
-  /* saveComponent is not const, because
-     (a) it resets the subgroup's nominal rotation
-     (b) it sets the subgroup's pkg name if previously empty.
+  bool saveComponent(int id, QString fn, bool forcename=false);
+  // id must be a subgroup
+  /* saveComponent is not const, because it sets the subgroup's pkg
+     name if previously empty or if forcename is given as true.
   */
   int insertComponent(QString fn);
   QSet<Point> pinPoints() const; // hole and pad centers of immediate children

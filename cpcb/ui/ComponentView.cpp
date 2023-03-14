@@ -208,7 +208,7 @@ void ComponentView::dropEvent(QDropEvent *e) {
     int gid = g0.insertComponent(fn);
     if (gid) {
       Group const &g1(g0.object(gid).asGroup());
-      if (npins==0 || g1.pinNames().size()==npins) {
+      if (npins==0 || g1.pinNames().size()>=npins) {
 	setGroup(g1);
 	emit edited();
 	e->accept();
@@ -220,7 +220,7 @@ void ComponentView::dropEvent(QDropEvent *e) {
     ElementView const *src = ElementView::instance(id);
     if (src) {
       Group const &g1 = src->group();
-      if (npins==0 || g1.pinNames().size()==npins) {
+      if (npins==0 || g1.pinNames().size()>=npins) {
 	setGroup(src->group());
 	emit edited();
 	e->accept();

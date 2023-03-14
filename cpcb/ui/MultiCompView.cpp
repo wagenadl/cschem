@@ -131,11 +131,15 @@ void MCVData::rebuild() {
       }
       evs[ref]->setRefText(ref);
       QString pv = newelts[ref].value;
-      if (pv.isEmpty())
-	pv = "<i>" + simplifiedSymbol(newelts[ref].symbol()) + "</i>";
-      evs[ref]->setPVText(pv);
       QString sym = newelts[ref].symbol();
       Symbol const &symbol(schem.library().symbol(sym));
+      if (pv.isEmpty())
+	pv = "<i>" +
+          (symbol.popupName().isEmpty()
+           ? simplifiedSymbol(sym)
+           : symbol.popupName())
+          + "</i>";
+      evs[ref]->setPVText(pv);
       if (symbol.isValid()) {
 	int npins = symbol.totalPinCount();
 	QString pin = npins==1 ? "pin" : "pins";

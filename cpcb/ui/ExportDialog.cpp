@@ -22,6 +22,7 @@ ExportDialog::ExportDialog(QWidget *parent): QDialog(parent) {
   connect(ui->savepnp, &QCheckBox::toggled,
           this, [this](bool x) {
             ui->saveunplaced->setEnabled(x);
+            ui->unplacedfilename->setEnabled(x && ui->saveunplaced->isChecked());
           });
   QSettings stg;
   Dim dflt = Dim::fromString(stg.value("shrinkage",
@@ -68,11 +69,15 @@ void ExportDialog::gerbernamechange() {
     ui->bomfilename->setText("");
     ui->pnpfilename->setText("");
     ui->unplacedfilename->setText("");
+    ui->pastemaskfilename->setText("");
+    ui->frontpanelfilename->setText("");
   } else {
     QString base = fi.completeBaseName();
     ui->bomfilename->setText(".../" + base + "-bom.csv");
     ui->pnpfilename->setText(".../" + base + "-pnp.csv");
-    ui->unplacedfilename->setText(".../" + base + "unplaced.csv");
+    ui->unplacedfilename->setText(".../" + base + "-unplaced.csv");
+    ui->pastemaskfilename->setText(".../" + base + "-mask.svg");
+    ui->frontpanelfilename->setText(".../" + base + "-frontpanel.svg");
   }
 }
 

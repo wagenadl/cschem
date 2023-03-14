@@ -6,7 +6,7 @@
 
 #include "Layout.h"
 
-namespace FileIO {
+namespace PCBFileIO {
   Layout loadLayout(QString fn);
   bool saveLayout(QString fn, Layout const &); // true unless failed
 };

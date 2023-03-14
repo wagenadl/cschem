@@ -31,7 +31,7 @@ namespace Paths {
   QString recentSymbolsLocation() {
   QString root
     = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-  return QDir(root).absoluteFilePath("cpcb-recent");
+  return QDir(root).absoluteFilePath("recent-symbol-instances");
   }
   
   QString defaultLocation() {

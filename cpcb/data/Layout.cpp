@@ -4,8 +4,11 @@
 
 class LData: public QSharedData {
 public:
+  LData() { valid = true; }
+public:
   Board board;
   Group root;
+  bool valid;
 };
 
 Layout::Layout(): d(new LData) {
@@ -34,25 +37,34 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Layout const &t) {
   
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Layout &t) {
   t = Layout();
-
+  bool gotboard = false;
+  bool gotroot = false;
+  bool gottrouble = false;
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
-      if (s.name() == "board")
+      if (s.name() == "board") {
 	s >> t.board();
-      else if (s.name() == "group")
+        gotboard = true;
+      } else if (s.name() == "group") {
 	s >> t.root();
-      else
+        gotroot = true;
+      } else {
 	qDebug() << "Unexpected element in layout: " << s.name();
+        gottrouble = true;
+      }
     } else if (s.isEndElement()) {
       break;
     } else if (s.isCharacters() && s.isWhitespace()) {
     } else if (s.isComment()) {
     } else {
       qDebug() << "Unexpected entity in layout: " << s.tokenType();
+      gottrouble = true;
     }
   }
   s.skipCurrentElement();
+  if (gottrouble || !gotboard)
+    t.invalidate();
   return s;
 }
 
@@ -82,3 +94,12 @@ Group &Layout::root() {
   return d->root;
 }
 
+bool Layout::isValid() const {
+  return d->valid;
+}
+
+void Layout::invalidate() {
+  d->valid = false;
+}
+
+  

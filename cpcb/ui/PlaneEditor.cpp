@@ -208,7 +208,7 @@ void PlaneEditor::mouseRelease(Point p,
 void PlaneEditor::mouseMove(Point p,
                             Qt::MouseButton,
                             Qt::KeyboardModifiers m) {
-  d->shiftheld = m & Qt::ShiftModifier;
+  d->shiftheld = !(m & Qt::ShiftModifier);
   Point p0 = d->hoverpt;
   d->hoverpt = p;
   if (d->moving) {

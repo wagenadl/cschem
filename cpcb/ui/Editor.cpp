@@ -58,8 +58,9 @@ void Editor::setMode(Mode m) {
 }
 
 bool Editor::load(QString fn) {
-  d->layout = FileIO::loadLayout(fn);
-  if (d->layout.root().isEmpty())
+  d->layout = PCBFileIO::loadLayout(fn);
+  bool ok = d->layout.isValid();
+  if (!ok)
     d->layout = Layout();
   d->stepsfromsaved = 0;
   d->undostack.clear();
@@ -73,13 +74,13 @@ bool Editor::load(QString fn) {
   emit schematicLinked(d->linkedschematic.isValid());
   emit boardChanged(d->layout.board());
   d->bom->rebuild();
-  return !d->layout.root().isEmpty();
+  return ok;
 }
 
 bool Editor::save(QString fn) {
   QString oldfn = d->layout.board().pcbfilename;
   d->layout.board().pcbfilename = fn;
-  if (FileIO::saveLayout(fn, d->layout)) {
+  if (PCBFileIO::saveLayout(fn, d->layout)) {
     d->stepsfromsaved = 0;
     emit changedFromSaved(false);
     return true;
@@ -1148,11 +1149,13 @@ bool Editor::saveComponent(int id, QString fn) {
   Group const &grp(obj.asGroup());
   int oldrot = grp.nominalRotation();
   QString oldpkg = grp.attributes.value(Group::Attribute::Footprint);
+  QString newpkg = QFileInfo(fn).completeBaseName();
+  
   UndoCreator uc(d);
-  if (oldrot || oldpkg=="")
+  if (oldpkg!=newpkg)
     uc.realize(); // the rotation and/or pkg name is about to change
   
-  bool ok = d->layout.root().subgroup(d->crumbs).saveComponent(id, fn);
+  bool ok = d->layout.root().subgroup(d->crumbs).saveComponent(id, fn, true);
   return ok;
 }
 
@@ -1219,7 +1222,8 @@ void Editor::dropEvent(QDropEvent *e) {
     int id = QString(md->data(ComponentView::dndformat)).toInt();
     ElementView const *src = ElementView::instance(id);
     Group grp(src->group());
-    Point droppos = Point::fromMils(d->widget2mils.map(e->pos()));
+    Point droppos = Point::fromMils(d->widget2mils.map(e->pos()))
+      .roundedTo(d->layout.board().grid);
     QString ref = src->refText();
     QString pv = src->pvText();
     grp.ref = ref;

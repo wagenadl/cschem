@@ -21,6 +21,8 @@ public:
   Group &root();
   Board const &board() const;
   Board &board();
+  bool isValid() const;
+  void invalidate();
 private:
   QSharedDataPointer<class LData> d;
 };

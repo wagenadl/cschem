@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QXmlStreamReader>
 
-namespace FileIO {
+namespace PCBFileIO {
 
   Layout loadLayout(QString fn) {
     QFile file(fn);

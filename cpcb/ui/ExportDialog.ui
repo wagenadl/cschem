@@ -145,7 +145,7 @@
       <item row="7" column="2">
        <widget class="QLineEdit" name="frontpanelfilename">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -158,12 +158,15 @@
           <italic>false</italic>
          </font>
         </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="6" column="2">
        <widget class="QLineEdit" name="pastemaskfilename">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -178,6 +181,9 @@
         </property>
         <property name="toolTip">
          <string/>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -202,7 +208,7 @@
       <item row="5" column="2">
        <widget class="QLineEdit" name="unplacedfilename">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -214,6 +220,9 @@
          <font>
           <italic>false</italic>
          </font>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -238,7 +247,7 @@
       <item row="2" column="2">
        <widget class="QLineEdit" name="pnpfilename">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -250,6 +259,9 @@
          <font>
           <italic>false</italic>
          </font>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -304,7 +316,7 @@
       <item row="0" column="2">
        <widget class="QLineEdit" name="bomfilename">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -316,6 +328,9 @@
          <font>
           <italic>false</italic>
          </font>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -421,18 +436,130 @@
    </hints>
   </connection>
   <connection>
+   <sender>savebom</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>bomfilename</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>55</x>
+     <y>87</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>87</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>savebom</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>compactbom</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>89</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>savepnp</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>pnpfilename</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>119</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>203</x>
+     <y>121</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>savepnp</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>smtonly</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>55</x>
+     <y>118</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveunplaced</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>unplacedfilename</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>55</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>215</x>
+     <y>151</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>savemask</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>pastemaskfilename</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>56</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>219</x>
+     <y>182</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>savemask</sender>
    <signal>toggled(bool)</signal>
    <receiver>shrinkage</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>74</x>
-     <y>199</y>
+     <x>84</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
-     <x>414</x>
-     <y>202</y>
+     <x>405</x>
+     <y>182</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>savefrontpanel</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frontpanelfilename</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>212</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>170</x>
+     <y>210</y>
     </hint>
    </hints>
   </connection>

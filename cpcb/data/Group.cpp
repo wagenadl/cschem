@@ -636,10 +636,12 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
     return s;
   }
   s.writeStartElement("group");
-  s.writeAttribute("ref", t.ref);
+  if (!t.ref.isEmpty())
+    s.writeAttribute("ref", t.ref);
   for (Group::Attribute attr: t.attributes.keys())
         s.writeAttribute(xmlnames[attr], t.attributes[attr]);
-  s.writeAttribute("nomrot", QString::number(t.d->nominalrotation));
+  if (t.d->nominalrotation)
+    s.writeAttribute("nomrot", QString::number(t.d->nominalrotation));
   for (Object const &o: t.d->obj) {
     if (o.isGroup()) {
       s.writeStartElement("gr");
@@ -661,7 +663,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Group const &t) {
   return s;
 }
 
-bool Group::saveComponent(int id, QString fn) {
+bool Group::saveComponent(int id, QString fn, bool forcename) {
   if (!d->obj.contains(id))
     return false;
   Object const &obj(object(id));
@@ -674,9 +676,9 @@ bool Group::saveComponent(int id, QString fn) {
     return false;
   }
 
-  object(id).asGroup().d->nominalrotation = 0;
-  object(id).asGroup().attributes[Attribute::Footprint]
-    = QFileInfo(fn).completeBaseName();
+  if (forcename || object(id).asGroup().attributes[Attribute::Footprint]=="")
+    object(id).asGroup().attributes[Attribute::Footprint]
+      = QFileInfo(fn).completeBaseName();
 
   QXmlStreamWriter sw(&file);
   sw.setAutoFormatting(true);
