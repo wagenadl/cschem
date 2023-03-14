@@ -133,9 +133,9 @@ void SceneElementAnnotation::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
       d->moving = true;
       if (d->faint) {
         setHtml(d->placeholdertext);
-        d->updateColor(this);
       }
       clearFocus();
+      d->updateColor(this);
     }      
     if (d->moving) {
       QPoint d0 = (delta / d->movestep).toPoint();
