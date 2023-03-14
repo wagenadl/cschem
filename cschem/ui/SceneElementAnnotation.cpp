@@ -39,14 +39,20 @@ public:
 };
 
 void SAData::updateColor(SceneElementAnnotation *sa) {
-  if ((hovering || forcedhover) && !sa->hasFocus())
-    sa->setDefaultTextColor(faint
-                            ? Style::faintHoverColor()
-                            : Style::hoverColor());
- else 
+  if ((hovering || forcedhover) && !sa->hasFocus()) {
+    if (markedsel) 
+      sa->setDefaultTextColor(faint
+                              ? Style::faintColor()
+                              : Style::selectedElementHoverColor());
+    else
+      sa->setDefaultTextColor(faint
+                              ? Style::faintHoverColor()
+                              : Style::hoverColor());
+  } else {
     sa->setDefaultTextColor(faint
                             ? Style::faintColor()
                             : Style::textColor());
+  }
 }
 
 SceneElementAnnotation::SceneElementAnnotation(double movestep,
@@ -194,6 +200,7 @@ void SceneElementAnnotation::forceHoverColor(bool x) {
 
 void SceneElementAnnotation::markSelected(bool x) {
   d->markedsel = x;
+  d->updateColor(this);
   update();
 }
 
@@ -206,7 +213,7 @@ void SceneElementAnnotation::paint(QPainter *painter,
 			 QWidget *w) {
   QGraphicsTextItem::paint(painter, style, w);
   if (d->markedsel) {
-    painter->setBrush(QBrush(Style::selectionBackgroundColor()));
+    painter->setBrush(QBrush(Style::selectionAnnotationBackgroundColor()));
     painter->setPen(QPen(Qt::NoPen));
     painter->setCompositionMode(QPainter::CompositionMode_Darken);
     painter->drawRoundedRect(boundingRect(),

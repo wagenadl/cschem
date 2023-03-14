@@ -43,6 +43,10 @@ QColor Style::selectionBackgroundColor() {
   return QColor(255, 240, 0, 176);
 }
 
+QColor Style::selectionAnnotationBackgroundColor() {
+  return QColor(255, 240, 0, 80);
+}
+
 double Style::selectionRectRadius() {
   return 7;
 }
