@@ -15,7 +15,7 @@ install(DIRECTORY symbols DESTINATION share/cschem/cschem)
 install(DIRECTORY pcb-outlines DESTINATION share/cschem/cpcb)
 
 # Icons
-foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256 512)
+foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256)
   install(FILES cschem/cschem.iconset/cschem_${RES}x${RES}.png
     DESTINATION share/icons/hicolor/${RES}x${RES}/apps
     RENAME cschem.png)
@@ -24,7 +24,7 @@ foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256 512)
     RENAME application-cschem-cschem.png)
 endforeach()
 
-foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256 512)
+foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256)
   install(FILES cpcb/cpcb.iconset/cpcb_${RES}x${RES}.png
     DESTINATION share/icons/hicolor/${RES}x${RES}/apps
     RENAME cpcb.png)

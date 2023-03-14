@@ -160,6 +160,8 @@ void MainWindow::showPartsList() {
 
 void MainWindow::createView() {
   d->view = new QGraphicsView(this);
+  d->view->setRenderHints(QPainter::Antialiasing); // this helps wires look
+  // .. more like components, which are always antialised by the svgrenderer
   d->view->setInteractive(true);
   d->view->setMouseTracking(true);
   setCentralWidget(d->view);

@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=cschem
+Name=CSchem
 GenericName=CSchem circuit designer
 Comment=
 Exec=cschem %f
