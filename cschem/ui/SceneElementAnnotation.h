@@ -1,20 +1,20 @@
-// SceneAnnotation.h
+// SceneElementAnnotation.h
 
-#ifndef SCENEANNOTATION_H
+#ifndef SCENEELEMENTANNOTATION_H
 
-#define SCENEANNOTATION_H
+#define SCENEELEMENTANNOTATION_H
 
 #include <QGraphicsTextItem>
 
 // This is an annotation for a scene element, not a free annotation
 
-class SceneAnnotation: public QGraphicsTextItem {
+class SceneElementAnnotation: public QGraphicsTextItem {
   Q_OBJECT;
 public:
-  SceneAnnotation(double movestep, QGraphicsItem *parent=0);
-  virtual ~SceneAnnotation();
-  SceneAnnotation(SceneAnnotation const &) = delete;
-  SceneAnnotation &operator=(SceneAnnotation const &) = delete;
+  SceneElementAnnotation(double movestep, QGraphicsItem *parent=0);
+  virtual ~SceneElementAnnotation();
+  SceneElementAnnotation(SceneElementAnnotation const &) = delete;
+  SceneElementAnnotation &operator=(SceneElementAnnotation const &) = delete;
 public:
   void backspace();
   // void setBaseline(QPointF xy); // set position based on left=x, baseline=y

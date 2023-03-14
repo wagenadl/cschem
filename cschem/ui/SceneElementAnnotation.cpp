@@ -1,6 +1,6 @@
-// SceneAnnotation.cpp
+// SceneElementAnnotation.cpp
 
-#include "SceneAnnotation.h"
+#include "SceneElementAnnotation.h"
 #include <QKeyEvent>
 #include <QGraphicsSceneMouseEvent>
 #include "Style.h"
@@ -30,10 +30,10 @@ public:
   bool hovering; // real hovering
   bool forcedhover; // from parent
 public:
-  void updateHoverMarking(SceneAnnotation *);
+  void updateHoverMarking(SceneElementAnnotation *);
 };
 
-void SAData::updateHoverMarking(SceneAnnotation *sa) {
+void SAData::updateHoverMarking(SceneElementAnnotation *sa) {
   bool has = sa->graphicsEffect();
   bool should = hovering || forcedhover;
   if (should && !has) {
@@ -45,7 +45,7 @@ void SAData::updateHoverMarking(SceneAnnotation *sa) {
   }
 }
 
-SceneAnnotation::SceneAnnotation(double movestep, QGraphicsItem *parent):
+SceneElementAnnotation::SceneElementAnnotation(double movestep, QGraphicsItem *parent):
   QGraphicsTextItem(parent), d(new SAData(movestep)) {
   setFont(Style::annotationFont());
   setTextInteractionFlags(Qt::TextEditorInteraction);
@@ -53,14 +53,14 @@ SceneAnnotation::SceneAnnotation(double movestep, QGraphicsItem *parent):
   setFlag(ItemAcceptsInputMethod);
   setAcceptHoverEvents(true);
   connect(document(), &QTextDocument::contentsChange,
-	  this, &SceneAnnotation::updateCenter, Qt::QueuedConnection);
+	  this, &SceneElementAnnotation::updateCenter, Qt::QueuedConnection);
 }
 
-SceneAnnotation::~SceneAnnotation() {
+SceneElementAnnotation::~SceneElementAnnotation() {
   delete d;
 }
 
-void SceneAnnotation::focusOutEvent(QFocusEvent *e) {
+void SceneElementAnnotation::focusOutEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusOutEvent(e);
   QTextCursor tc = textCursor();
   if (tc.hasSelection()) {
@@ -70,12 +70,12 @@ void SceneAnnotation::focusOutEvent(QFocusEvent *e) {
   emit returnPressed(); // hmmm..
 }
 
-void SceneAnnotation::focusInEvent(QFocusEvent *e) {
+void SceneElementAnnotation::focusInEvent(QFocusEvent *e) {
   QGraphicsTextItem::focusInEvent(e);
   setGraphicsEffect(0);
 }
  
-void SceneAnnotation::keyPressEvent(QKeyEvent *e) {
+void SceneElementAnnotation::keyPressEvent(QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_Return: case Qt::Key_Enter:
     emit returnPressed();
@@ -91,7 +91,7 @@ void SceneAnnotation::keyPressEvent(QKeyEvent *e) {
   }
 }
 
-void SceneAnnotation::mousePressEvent(QGraphicsSceneMouseEvent *e) {
+void SceneElementAnnotation::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   if (defaultTextColor() == Style::faintColor()) {
     d->origtext = toHtml();
     setPlainText("");
@@ -110,7 +110,7 @@ void SceneAnnotation::mousePressEvent(QGraphicsSceneMouseEvent *e) {
   }
 }
 
-void SceneAnnotation::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
+void SceneElementAnnotation::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   if (d->pressing) {
     QPointF delta = e->scenePos() - d->sp_press;
     if (!d->moving && delta.manhattanLength() >= 3) {
@@ -130,7 +130,7 @@ void SceneAnnotation::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
   }      
 }
 
-void SceneAnnotation::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
+void SceneElementAnnotation::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   if (d->pressing) {
     d->pressing = false;
     if (d->moving) {
@@ -142,16 +142,16 @@ void SceneAnnotation::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   }
 }
 
-void SceneAnnotation::backspace() {
+void SceneElementAnnotation::backspace() {
   emit removalRequested();
 }
 
-void SceneAnnotation::setCenter(QPointF p) {
+void SceneElementAnnotation::setCenter(QPointF p) {
   d->p_center = p;
   updateCenter();
 }
 
-void SceneAnnotation::updateCenter() {
+void SceneElementAnnotation::updateCenter() {
   QRectF me = boundingRect();
   double xcenter = me.width() / 2;
 
@@ -165,23 +165,23 @@ void SceneAnnotation::updateCenter() {
   setPos(d->p_center - QPointF(xcenter, ycenter));
 }
 
-void SceneAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+void SceneElementAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
   d->hovering = true;
   d->updateHoverMarking(this);
   emit hovering(true);
 }
   
-void SceneAnnotation::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+void SceneElementAnnotation::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
   d->hovering = false;
   d->updateHoverMarking(this);
   emit hovering(false);
 }
 
-void SceneAnnotation::forceHoverColor(bool x) {
+void SceneElementAnnotation::forceHoverColor(bool x) {
   d->forcedhover = x;
   d->updateHoverMarking(this);
 }
 
-void SceneAnnotation::setPos(QPointF const &p) {
+void SceneElementAnnotation::setPos(QPointF const &p) {
   QGraphicsTextItem::setPos(p);
 }

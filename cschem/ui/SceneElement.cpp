@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QGraphicsColorizeEffect>
 #include <QGraphicsSceneMouseEvent>
-#include "SceneAnnotation.h"
+#include "SceneElementAnnotation.h"
 #include "Style.h"
 #include <QSvgRenderer>
 #include <QPainter>
@@ -242,7 +242,7 @@ void SceneElement::rebuild() {
     if (d->name) {
       d->name->show();
     } else {
-      d->name = new SceneAnnotation(d->scene->library().scale(), this);
+      d->name = new SceneElementAnnotation(d->scene->library().scale(), this);
       QObject::connect(d->name, SIGNAL(returnPressed()),
 		       d.data(), SLOT(nameTextToCircuit()));
       QObject::connect(d->name, SIGNAL(escapePressed()),
@@ -278,7 +278,7 @@ void SceneElement::rebuild() {
     if (d->value) {
       d->value->show();
     } else {
-      d->value = new SceneAnnotation(d->scene->library().scale(), this);
+      d->value = new SceneElementAnnotation(d->scene->library().scale(), this);
       QObject::connect(d->value, SIGNAL(returnPressed()),
 		       d.data(), SLOT(valueTextToCircuit()));
       QObject::connect(d->value, SIGNAL(escapePressed()),

@@ -13,7 +13,7 @@
 #include <QMimeData>
 #include <QUrl>
 #include <QKeyEvent>
-#include "SceneAnnotation.h"
+#include "SceneElementAnnotation.h"
 #include "FloatingSymbol.h"
 #include "PartList.h"
 #include "circuit/PartNumbering.h"
@@ -643,8 +643,8 @@ void Scene::key_backspace() {
 }
 
 void SceneData::key_backspace() {
-  SceneAnnotation *sa
-    = dynamic_cast<SceneAnnotation *>(scene->itemAt(mousexy,
+  SceneElementAnnotation *sa
+    = dynamic_cast<SceneElementAnnotation *>(scene->itemAt(mousexy,
 						    QTransform()));
   if (sa)
     sa->backspace();

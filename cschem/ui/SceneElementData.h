@@ -40,8 +40,8 @@ public:
   int id;
   QString sym;
   class SvgItem *element;
-  class SceneAnnotation *name;
-  class SceneAnnotation *value;
+  class SceneElementAnnotation *name;
+  class SceneElementAnnotation *value;
   QPoint delta0;
 public:
   bool dragmoved;
