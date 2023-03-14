@@ -6,7 +6,7 @@
 
 #include <QGraphicsTextItem>
 
-// This is an annotation for a scene element
+// This is an annotation for a scene element, not a free annotation
 
 class SceneAnnotation: public QGraphicsTextItem {
   Q_OBJECT;
@@ -19,6 +19,7 @@ public:
   void backspace();
   // void setBaseline(QPointF xy); // set position based on left=x, baseline=y
   void setCenter(QPointF xy); // set position based on center of bbox
+  void forceHoverColor(bool);
 signals:
   void returnPressed();
   void escapePressed();

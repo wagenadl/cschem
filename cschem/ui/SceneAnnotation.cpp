@@ -15,7 +15,9 @@ public:
   SAData(double ms):
     movestep(ms),
     pressing(false),
-    moving(false) {
+    moving(false),
+    hovering(false),
+    forcedhover(false) {
   }
 public:
   double movestep;
@@ -25,7 +27,23 @@ public:
   bool pressing;
   bool moving;
   QString origtext;
+  bool hovering; // real hovering
+  bool forcedhover; // from parent
+public:
+  void updateHoverMarking(SceneAnnotation *);
 };
+
+void SAData::updateHoverMarking(SceneAnnotation *sa) {
+  bool has = sa->graphicsEffect();
+  bool should = hovering || forcedhover;
+  if (should && !has) {
+    auto *ef = new QGraphicsColorizeEffect;
+    ef->setColor(Style::hoverColor());
+    sa->setGraphicsEffect(ef);
+  } else if (has && !should) {
+    sa->setGraphicsEffect(0);
+  }
+}
 
 SceneAnnotation::SceneAnnotation(double movestep, QGraphicsItem *parent):
   QGraphicsTextItem(parent), d(new SAData(movestep)) {
@@ -148,15 +166,20 @@ void SceneAnnotation::updateCenter() {
 }
 
 void SceneAnnotation::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
-  auto *ef = new QGraphicsColorizeEffect;
-  ef->setColor(Style::hoverColor());
-  setGraphicsEffect(ef);
+  d->hovering = true;
+  d->updateHoverMarking(this);
   emit hovering(true);
 }
   
 void SceneAnnotation::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
-  setGraphicsEffect(0);
+  d->hovering = false;
+  d->updateHoverMarking(this);
   emit hovering(false);
+}
+
+void SceneAnnotation::forceHoverColor(bool x) {
+  d->forcedhover = x;
+  d->updateHoverMarking(this);
 }
 
 void SceneAnnotation::setPos(QPointF const &p) {

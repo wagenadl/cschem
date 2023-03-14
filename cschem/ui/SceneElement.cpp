@@ -29,6 +29,11 @@ void SceneElementData::markHover() {
   } else {
     element->setGraphicsEffect(0);    
   }
+  if (name)
+    name->forceHoverColor(hover);
+  if (value)
+    value->forceHoverColor(hover);
+
 }  
 
 void SceneElementData::removeName() {
