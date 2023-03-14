@@ -68,6 +68,8 @@ Learn more
 
    install
    cschemtut
+   containertut
+   modtut
    cpcbtut
    cschem
    cpcb

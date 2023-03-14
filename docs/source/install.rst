@@ -111,8 +111,8 @@ installation package::
     cd build
     cpack
 
-On Ubuntu, that creates a :file:`.deb`; on Windows, a :file:`.exe`. The :file:`.deb` may
-be installed like::
+On Ubuntu, that creates a :file:`.deb`; on Windows, a
+:file:`.exe`. The :file:`.deb` may be installed like::
 
     sudo dpkg -i cschem_0.2.2-1_amd64.deb
 
