@@ -1,11 +1,7 @@
-.. CSchem documentation master file, created by
-   sphinx-quickstart on Sun Feb 26 13:42:21 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-***************
-CSchem and CPCB
-***************
+  .. image:: banner.svg
+             :width: 700
+             :align: left
+             :class: no-scaled-link
 
 Introduction
 ============
@@ -33,14 +29,13 @@ Here is a screenshot of CSchem while designing a simple opamp circuit:
              :width: 428
              :align: center
 
-and here is an example of the control circuit for a thermostatically
-regulated behavior box, saved in “svg” format from CSchem:
+and here is an example of the control circuit for an Arduino-controlled high-intensity triple LED driver, saved in “svg” format from CSchem:
 
-  .. image:: eg-thermostat1.png
+  .. image:: ug-driver.svg
              :width: 700
              :align: center
 
-CPCB was likely designed to be intuitive for casual users. Yet, out of
+CPCB was likewise designed to be intuitive for casual users. Yet, out of
 the box it can export “Gerber” files that can be directly sent to PCB
 manufacturers. Here is a screenshot of CPCB showing a design of a
 simple PMT amplifier:
@@ -60,18 +55,59 @@ should be attached. Likewise, if you inadvertantly create a
 short-circuit, CPCB indicates the spurious connections in pink.
 
 Learn more
-^^^^^^^^^^
-                     
+==========
+
+Position papers
+---------------
+
+
 .. toctree::
    :maxdepth: 1
-   :caption: The rest of this document is comprised of the following parts:
+   :caption: Unsure whether CSchem and CPCB are for you? Read these to
+             find out!
+
+   whycschem
+   whycpcb
+
+Tutorials
+---------
+
+.. toctree::
+   :maxdepth: 1
+   :caption: New here? To help you get started with CSchem and CPCB, several
+             tutorials are available.
 
    install
    cschemtut
    containertut
    modtut
    cpcbtut
+
+User guides
+-----------
+
+.. toctree::
+   :maxdepth: 1
+   :caption: For full details on how to use the software, read these.
+      
    cschem
    cpcb
+
+Application notes
+-----------------
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Useful information for PCB fabrication.
+      
+   cpcb-smt   
    
+License information
+-------------------
+
+.. toctree::
+   :maxdepth: 1
+   :caption: CSchem and CPCB are free software.
+
+   license
    

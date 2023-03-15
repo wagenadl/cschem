@@ -1,5 +1,7 @@
-Installing CSchem and CPCB on your computer
-===========================================
+.. _install:
+
+Tutorial: Installing CSchem and CPCB on your computer
+=====================================================
 
 Binary installation
 -------------------

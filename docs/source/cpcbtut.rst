@@ -1,4 +1,4 @@
-Tutorial: laying out your first printed circuit board with CPCB
+Tutorial: Laying out your first printed circuit board with CPCB
 ===============================================================
 
 In this tutorial we will lay out the DC version of the opamp circuit
@@ -184,7 +184,7 @@ Making connections
 
 When making connections, I like to zoom in a little. Still with the bottom layer selected (press “3” just to make sure), double-click the ground pin of J1. A small green cross appears, indicating a connection to the filled plane. As you hover over this pin, all the other pins that need to be connected to ground light up blue. Double-click them one by one. 
 
-  .. image:: pcb-plane1.png
+  .. image:: pcb-plane3.png
              :width: 750
              :align: center
 
@@ -200,8 +200,11 @@ resistors were rotated, so go back to “Edit” mode (F1), drag a
 selection rectangle over the resistors, and rotate them
 counter-clockwise, along with their texts (Ctrl+Alt+Shift+R, or use
 the “Edit” menu). Now, press “F2” again, and click on a pin to start
-dragging out a connection. If the connection looks yellow, press
-Escape, then “2” to make sure you are drawing on the top layer. It is OK to draw straight through yellow lines with your red trace.
+dragging out a connection. If the line looks yellow, you're not
+drawing on the intended layer, so press Escape to abandon the
+operation, then “2” to make sure you are drawing on the top layer, and
+try again. It is OK to draw straight through yellow lines with your
+red trace.
 
   .. image:: pcb-trace1.png
              :width: 750
@@ -239,7 +242,7 @@ Tidying up
 
 Let's spend a few minutes tidying up the design by pulling things a
 little closer together. I also like to have mounting holes in my PCBs,
-so I press “F3” for “Hole” mode (or clicking the button), and set the
+so I press “F3” for “Hole” mode (or clicking the button [#f1]_), and set the
 diameter to 0.125 inch (good for US #4-40 screws or M3 alike).
 
 Let's place some identifying text on the board as well, by pressing
@@ -251,20 +254,28 @@ if you don't get it quite right the first time.)
              :width: 750
              :align: center
 
-We can almost shrink the board now, but first we have to adjust the
-filled plane so it doesn't stick out too far. Press “Ctrl-5” (or click the button) to unhide the filled plane, then press “F7” (or click the button) to enable editing it.
+The board is a lot bigger than it needs to be, but before we can
+shrink it, we first have to adjust the filled plane so it doesn't
+stick out too far. Press “Ctrl-5” (or click the button) to unhide the
+filled plane, then press “F7” (or click the button) to enable editing
+it. Drag the right and bottom edges to a reasonable position.
 
   .. image:: pcb-tidier2.png
              :width: 750
              :align: center
 
-Finally, choose “Board size” from the “Tools” menu, click “Shrink”, then “OK”.
+Notice, by the way, how the filled plane automatically avoids the
+power trace we drew a minute ago?
+
+Finally, choose “Board size” from the “Tools” menu, click “Shrink”,
+then “OK”.
 
   .. image:: pcb-done.png
              :width: 750
              :align: center
 
-*Now*, we're all done. Let's do one more “Verify nets” to be positive.
+*Now*, we should be all done. Let's do one more “Verify nets” to be
+positive.
 
 Good?
 
@@ -273,7 +284,9 @@ Getting your board manufactured
 
 One might reasonably choose to lay out the board we just drew on a
 breadboard by hand, but for slightly more complex designs, having a
-custom PCB manufactured is a great convenience. Once you are sure your design is good, choose “Export fabrication files” from the “File” menu.
+custom PCB manufactured is a great convenience. Once you are sure your
+design is good, choose “Export fabrication files” from the “File”
+menu.
 
 
   .. image:: pcb-export.png
@@ -287,12 +300,34 @@ for board manufacturers. The other files that are generated are:
   - BOM (“Bill of materials”): a shopping list for your parts;
   - P&P table: instructions for a “pick and place” service that may do the
     soldering for you;
-  - Unplaced: a list of items that CPCB could not include in the P&P table;
+  - Unplaced: a list of any items that CPCB could not include in
+    the P&P table;
   - Paste mask: a design for a stencil you can use for placement of
     surface-mount components;
   - Front panel: a design for a front panel, if you are going to put the
     final product in an enclosure.
 
 Usage instructions for all of these can be found in the user guide. If
-you don't want to clutter up your project folder, just unclick all of
-them.
+you don't want to clutter up your project folder, just unselect all of
+the options.
+
+Click “OK” and send the zip file to your favorite manufacturer. (There
+are lots of companies that do excellent work. Unless you use extremely
+thin traces, they are probably all plenty good enough, so you can
+afford to select based on other criteria, such as geographical
+proximity. The one thing to always check is that they will use
+lead-free processes for your manufacture. Shockingly, that is still
+not a given in this industry.)
+
+.. rubric:: Footnotes
+
+.. [#f1] In this text, it is easier to write “F3” than to describe the
+         appearance of the corresponding button. So please bear with
+         me, and tolerate the use of the key shortcut, if only to make
+         the button flash so it becomes clear what I am talking
+         about. If you like key shortcuts: The assignments are
+         actually relatively easy to remember: “F1”, “F2”, etc.,
+         activate the editing mode buttons, with the order of the
+         buttons on the screen matching the order of the keys on your
+         keyboard; “1”, “2”, etc., select layers; Ctrl+1, Ctrl+2,
+         etc., toggle layer visibility.

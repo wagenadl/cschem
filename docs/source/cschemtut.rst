@@ -1,10 +1,10 @@
-Tutorial: designing your first circuit with CSchem
+Tutorial: Designing your first circuit with CSchem
 ==================================================
 
 In this tutorial, you will draw a circuit like the example shown on
 the front page of the CSchem documentation. If you have not yet
 installed the software, please follow the steps outlined under
-:ref:`Installing CSchem and CPCB on your computer`.
+:ref:`install`.
 
 First step: Starting CSchem
 ---------------------------

@@ -57,8 +57,10 @@ html_theme = 'classic'
 html_theme_options = {
     "stickysidebar": "true"
     }
-html_show_sourcelink = False
-
+#html_show_sourcelink = False
+html_sidebars = {
+   '**': ['localtoc.html', 'relations.html']
+    }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
