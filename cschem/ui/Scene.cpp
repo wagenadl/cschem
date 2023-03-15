@@ -52,7 +52,7 @@ public:
   void flipSelection();
   void flipElementOrSelection(); // creates undo step
   void rebuildAsNeeded(CircuitMod const &cm);
-  void rebuildAsNeeded(QSet<int> elts, QSet<int> cons);
+  void rebuildAsNeeded(QSet<int> elts, QSet<int> cons, QSet<int> texts);
   void key_delete();
   void key_backspace();
   void startSymbolDragIn(QString sym, QPointF sp);
@@ -63,6 +63,7 @@ public:
   void modifyContents(Element const &container, QString oldname, int sibid=-1);
   void modifyContainerAndSiblings(Element const &container, QString oldname);
   void newTextual(QPointF);
+  void deleteTextuals(QSet<int> texts);
 public:
   inline Circuit const &circ() const { return schem.circuit(); }
   inline Circuit &circ() { return schem.circuit(); }
@@ -78,8 +79,10 @@ public:
   HoverManager *hovermanager;
   QList<Circuit> undobuffer;
   QList< QSet<int> > undoselections;
+  QList< QSet<int> > undotxtselections;
   QList<Circuit> redobuffer;
   QList< QSet<int> > redoselections;
+  QList< QSet<int> > redotxtselections;
   ConnBuilder *connbuilder;
   FloatingSymbol *dragin;
   PartList *partlist;
@@ -125,6 +128,7 @@ bool SceneData::undo() {
 
   redobuffer << circ();
   redoselections << selectedElements();
+  redotxtselections << selectedTextuals();
 
   circ() = undobuffer.takeLast();
   rebuild();
@@ -134,6 +138,10 @@ bool SceneData::undo() {
     if (elts.contains(id))
       elts[id]->setSelected(true);
 
+  for (int id: undotxtselections.takeLast())
+    if (textuals.contains(id))
+      textuals[id]->setSelected(true);
+  
   return true;
 }
 
@@ -145,6 +153,7 @@ bool SceneData::redo() {
   
   undobuffer << circ();
   undoselections << selectedElements();
+  undotxtselections << selectedTextuals();
 
   circ() = redobuffer.takeLast();
   rebuild();
@@ -154,19 +163,26 @@ bool SceneData::redo() {
     if (elts.contains(id))
       elts[id]->setSelected(true);
 
+  for (int id: redotxtselections.takeLast())
+    if (textuals.contains(id))
+      textuals[id]->setSelected(true);
+  
   return true;
 }
 
 void SceneData::preact() {
   undobuffer << circ();
   undoselections << selectedElements();
+  undotxtselections << selectedTextuals();
   redobuffer.clear();
   redoselections.clear();
+  redotxtselections.clear();
 }
 
 void SceneData::unact() {
   undobuffer.removeLast();
   undoselections.removeLast();
+  undotxtselections.removeLast();
 }
 
 void SceneData::startConnectionFromPin(QPointF pos) {
@@ -199,11 +215,12 @@ void SceneData::newTextual(QPointF pos) {
 
 void SceneData::rebuildAsNeeded(CircuitMod const &cm) {
   circ() = cm.circuit();
-  rebuildAsNeeded(cm.affectedElements(), cm.affectedConnections());
+  rebuildAsNeeded(cm.affectedElements(), cm.affectedConnections(), QSet<int>());
   scene->emitCircuitChanged();
 }
 
-void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
+void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids,
+                                QSet<int> textids) {
   for (int id: conids) {
     if (circ().connections.contains(id)) {
       if (conns.contains(id))
@@ -224,6 +241,18 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids) {
     } else if (elts.contains(id)) {
       delete elts[id];
       elts.remove(id);
+    }
+  }
+
+  for (int id: textids) {
+    if (circ().textuals.contains(id)) {
+      if (!textuals.contains(id))
+        textuals[id] = new SceneTextual(scene, circ().textuals[id]);
+      else
+        textuals[id]->setTextual(circ().textuals[id]);
+    } else if (textuals.contains(id)) {
+      delete textuals[id];
+      textuals.remove(id);
     }
   }
 
@@ -275,6 +304,18 @@ void SceneData::flipSelection() {
   rebuildAsNeeded(cm);
 }  
 
+
+void SceneData::deleteTextuals(QSet<int> texts) {
+  // be sure to set an undo point first
+  for (int id: texts) {
+    circ().textuals.remove(id);
+    if (textuals.contains(id)) {
+      SceneTextual *st = textuals[id];
+      textuals.remove(id);
+      st->deleteLater();
+    }
+  }
+}
 
 Scene::~Scene() {
   delete d;
@@ -668,20 +709,11 @@ void SceneData::key_delete() {
     return;
   
   preact();
-  
+  deleteTextuals(tt);
   if (!ee.isEmpty()) {
     CircuitMod cm(circ(), lib());
     cm.deleteElements(ee);
     rebuildAsNeeded(cm);
-  }
-  
-  for (int id: tt) {
-    circ().textuals.remove(id);
-    if (textuals.contains(id)) {
-      SceneTextual *st = textuals[id];
-      textuals.remove(id);
-      st->deleteLater();
-    }
   }
 
   scene->circuitChanged();
@@ -978,18 +1010,24 @@ void Scene::modifyConnection(int id, QPolygonF newpath) {
 
 void Scene::copyToClipboard(bool cut) {
   QSet<int> elts;
-  if (d->hovermanager->onElement())
+  QSet<int> texts;
+  if (d->hovermanager->onElement()) {
     elts << d->hovermanager->element();
-  else
+  } else {
     elts = selectedElements();
+    texts = selectedTextuals();
+  }
 
-  if (elts.isEmpty())
+  if (elts.isEmpty() && texts.isEmpty())
       return;
 
   Circuit pp = d->circ().subset(elts);
+  for (int id: texts)
+    pp.insert(d->circ().textuals[id]);
   Clipboard::clipboard().store(pp, d->lib());
   if (cut) {
     d->preact();
+    d->deleteTextuals(texts);
     CircuitMod cm(d->circ(), d->lib());
     cm.deleteElements(elts);
     d->rebuildAsNeeded(cm);
@@ -1028,14 +1066,19 @@ void Scene::pasteFromClipboard() {
   d->circ().verifyIDs();
   QList<int> eltids = pp.elements.keys();
   QList<int> conids = pp.connections.keys();
+  QList<int> txtids = pp.textuals.keys();
   d->rebuildAsNeeded(QSet<int>(eltids.begin(), eltids.end()),
-                     QSet<int>(conids.begin(), conids.end()));
+                     QSet<int>(conids.begin(), conids.end()),
+                     QSet<int>(txtids.begin(), txtids.end()));
   qDebug() << "check circuit after rebuild";
   d->circ().verifyIDs();
   clearSelection();
   for (int id: pp.elements.keys()) 
     if (d->elts.contains(id))
       d->elts[id]->setSelected(true);
+  for (int id: pp.textuals.keys())
+    if (d->textuals.contains(id))
+      d->textuals[id]->setSelected(true);
 }
 
 void Scene::removeDangling() {

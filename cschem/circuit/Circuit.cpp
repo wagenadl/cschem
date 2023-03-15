@@ -180,6 +180,8 @@ void Circuit::translate(QPoint delta) {
     elt.position += delta;
   for (Connection &con: connections)
     con.via.translate(delta);
+  for (Textual &txt: textuals)
+    txt.position += delta;
 }
 
 int Circuit::renumber(int start, QMap<int, int> *mapout) {
