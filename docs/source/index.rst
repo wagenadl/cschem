@@ -14,6 +14,9 @@ course of their work/study/hobbies. That is not to say that CSchem
 could not be used to make complex designs, but rather that it will not
 overcomplicate simple designs.
 
+CSchem: Circuit design (“Schematic capture”)
+--------------------------------------------
+
 These leading principles guided CSchem development:
 
 - The user interface should be clean and inviting;
@@ -29,16 +32,20 @@ Here is a screenshot of CSchem while designing a simple opamp circuit:
              :width: 428
              :align: center
 
-and here is an example of the control circuit for an Arduino-controlled high-intensity triple LED driver, saved in “svg” format from CSchem:
+and here is an example of the circuit for an Arduino-controlled
+high-intensity triple LED driver, saved in “svg” format from CSchem:
 
   .. image:: ug-driver.svg
              :width: 700
              :align: center
 
-CPCB was likewise designed to be intuitive for casual users. Yet, out of
-the box it can export “Gerber” files that can be directly sent to PCB
-manufacturers. Here is a screenshot of CPCB showing a design of a
-simple PMT amplifier:
+CPCB: Printed circuit board (“PCB”) layout
+-------------------------------------------
+                     
+CPCB was likewise designed to be intuitive for casual users. Yet, out
+of the box it can export professional-quality “Gerber” files that can
+be directly sent to PCB manufacturers. Here is a screenshot of CPCB
+showing a design of a simple PMT amplifier:
 
   .. image:: eg-pmtamp.png
              :width: 500
@@ -57,8 +64,8 @@ short-circuit, CPCB indicates the spurious connections in pink.
 Learn more
 ==========
 
-Position papers
----------------
+Position statements
+---------------------
 
 
 .. toctree::
@@ -107,7 +114,7 @@ License information
 
 .. toctree::
    :maxdepth: 1
-   :caption: CSchem and CPCB are free software.
+   :caption: CSchem and CPCB are free software. Read what that means here:
 
    license
    

@@ -53,7 +53,7 @@ components. Here is what I do:
 
 
 A note on temperature
-=====================
+---------------------
 
 It might seem that 137 °C is a crazy low melting point, but it is
 actually not unreasonable: For instance, the max. operating
@@ -64,7 +64,7 @@ experience, soldering through-hole components onto the same board with
 doesn't transfer enough heat to melt these connections either.
 
 Notes on solder types
-=====================
+---------------------
 
 Most solder formulations melt at a much higher temperature than the
 one I use, which makes it much more difficult to avoid damage to
