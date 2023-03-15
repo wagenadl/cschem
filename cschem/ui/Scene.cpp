@@ -630,38 +630,64 @@ void Scene::key_delete() {
 
 void SceneData::key_delete() {
   if (connbuilder) {
+    // abort connection
     delete connbuilder;
     connbuilder = 0;
-  } else {
-    if (hovermanager->onElement()) {
-      QSet<int> sel = scene->selectedElements();
-      preact();
-      scene->clearSelection();
-      CircuitMod cm(circ(), lib());
-      cm.deleteElement(hovermanager->element());
-      rebuildAsNeeded(cm);
-      scene->selectElements(sel);
-    } else if (hovermanager->onConnection()) {
-      QSet<int> sel = scene->selectedElements();
-      preact();
-      scene->clearSelection();
-      CircuitMod cm(circ(), lib());
-      cm.deleteConnectionSegment(hovermanager->connection(),
-                                 hovermanager->segment());
-      rebuildAsNeeded(cm);
-      scene->selectElements(sel);
-    } else {
-      QSet<int> ee = selectedElements();
-      if (!ee.isEmpty()) {
-        preact();
-        CircuitMod cm(circ(), lib());
-        cm.deleteElements(ee);
-        rebuildAsNeeded(cm);
-      }
-      scene->clearSelection();
+    return;
+  }
+  
+  if (hovermanager->onElement()) {
+    // delete hovered element
+    QSet<int> sel = scene->selectedElements();
+    preact();
+    scene->clearSelection();
+    CircuitMod cm(circ(), lib());
+    cm.deleteElement(hovermanager->element());
+    rebuildAsNeeded(cm);
+    scene->selectElements(sel);
+    return;
+  }
+
+  if (hovermanager->onConnection()) {
+    // delete hovered connection
+    QSet<int> sel = scene->selectedElements();
+    preact();
+    scene->clearSelection();
+    CircuitMod cm(circ(), lib());
+    cm.deleteConnectionSegment(hovermanager->connection(),
+                               hovermanager->segment());
+    rebuildAsNeeded(cm);
+    scene->selectElements(sel);
+    return;
+  }
+
+  // delete selection
+  QSet<int> ee = selectedElements();
+  QSet<int> tt = selectedTextuals();
+  if (ee.isEmpty() && tt.isEmpty())
+    return;
+  
+  preact();
+  
+  if (!ee.isEmpty()) {
+    CircuitMod cm(circ(), lib());
+    cm.deleteElements(ee);
+    rebuildAsNeeded(cm);
+  }
+  
+  for (int id: tt) {
+    circ().textuals.remove(id);
+    if (textuals.contains(id)) {
+      SceneTextual *st = textuals[id];
+      textuals.remove(id);
+      st->deleteLater();
     }
   }
+
+  scene->circuitChanged();
+  scene->clearSelection();
 }
+
 
 void Scene::key_backspace() {
   d->key_backspace();
