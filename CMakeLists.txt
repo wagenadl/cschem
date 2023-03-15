@@ -66,16 +66,6 @@ target_include_directories(cpcb PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
 add_subdirectory("docs")
 
 ######################################################################
-# Userguide
-if (UNIX AND NOT APPLE)
-  include(doc/UseLATEX.cmake)
-  add_latex_document(doc/cschem-userguide.tex IMAGE_DIRS doc
-    FORCE_PDF INCLUDE_DIRECTORIES doc)
-  add_latex_document(doc/cpcb-userguide.tex IMAGE_DIRS doc
-    FORCE_PDF INCLUDE_DIRECTORIES doc)
-endif()
-
-######################################################################
 # General packaging / installation
 set(CPACK_PACKAGE_VENDOR "Daniel Wagenaar")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CSchem and CPCB")

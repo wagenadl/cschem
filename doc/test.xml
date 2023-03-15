@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<cpcb xmlns="http://www.danielwagenaar.net/cpcb-ns.html">
-  <group>
-  <text p="100 200" text="Hello" fs="50" ori="0 0" layer="1"/>
-  <hole p="250 250" id="50" od="70" sq="0"/>
-  </group>
-</cpcb>
