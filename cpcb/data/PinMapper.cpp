@@ -81,7 +81,7 @@ PMData::PMData(QString ref, QStringList cc, QStringList pp):
   }
   
   // Next, match things by alpha part (or any other nonnumeric part)
-  for (QString s: circav.toList()) {
+  for (QString s: circav) {
     QStringList ss = s.split("/");
     for (QString p: ss) {
       if (pcbalphapart2full.contains(s)) {
@@ -98,7 +98,7 @@ PMData::PMData(QString ref, QStringList cc, QStringList pp):
   }
 
   // Finally, match things by number part
-  for (QString s: circav.toList()) {
+  for (QString s: circav) {
     QStringList ss = s.split("/");
     for (QString p: ss) {
       if (pcbnumberpart2full.contains(s)) {
