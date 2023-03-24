@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="12.7mm" height="12.7mm" viewBox="0 0 500 500" version="1.2" baseProfile="tiny" xmlns:n1="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cpcb="http://www.danielwagenaar.net/cpcb-ns.html">
+<svg width="127mm" height="127mm" viewBox="0 0 500 500" version="1.2" baseProfile="tiny" xmlns:n1="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cpcb="http://www.danielwagenaar.net/cpcb-ns.html">
   <cpcb:part pkg="Capacitor-Electrolytic-8.0x6.2" xmlns="http://www.danielwagenaar.net/cpcb-ns.html">
     <group ref="C?" pkg="Capacitor-Electrolytic-8.0x6.2" nomrot="0">
       <trace p1="266885 193287" p2="346885 193287" w="2540" l="1"/>
