@@ -57,7 +57,7 @@ public:
                 Layer l=Layer::Invalid, bool notrace=false) const;
   // even inside subgroups; return is crumbs from this group
   // optional layer limits pads to given layer
-  NodeID findNodeByName(Nodename name) const;
+  QList<NodeID> findNodesByName(Nodename name) const; // all matching nodes
   QString humanName(NodeID const &) const;
   QStringList nodePath(NodeID const &) const; // refs for each level
   Nodename nodeName(NodeID const &) const;
