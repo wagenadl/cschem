@@ -34,7 +34,7 @@ find_package(Qt5 COMPONENTS Widgets Svg PrintSupport REQUIRED)
 # Add the executables
 add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp)
 add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp)
-
+configure_file(config.h.in config.h)
 include(cschem/CMakeLists.txt)
 include(cpcb/CMakeLists.txt)
 
@@ -51,6 +51,23 @@ if (WIN32)
   target_sources(cpcb PRIVATE cpcb/cpcb.iconset/cpcb.rc)
   target_link_libraries(cschem secur32.lib)
   target_link_libraries(cpcb secur32.lib)
+endif()
+if (APPLE)
+  set(MACOSX_BUNDLE_ICON_FILE cschem.icns)
+  add_custom_command(TARGET cschem POST_BUILD
+    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cschem/cschem.icns 
+      ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
+    COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/symbols
+      ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
+  )
+  add_custom_command(TARGET cpcb POST_BUILD
+    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cpcb/cpcb.icns 
+      ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources/cschem.icns
+    COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/pcb-outlines
+      ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
+  )
 endif()
 
 # Produce configuration files

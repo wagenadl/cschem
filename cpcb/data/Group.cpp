@@ -833,36 +833,37 @@ QDebug operator<<(QDebug d, Group const &t) {
   return d;
 }
 
-NodeID Group::findNodeByName(Nodename name) const {
+QList<NodeID> Group::findNodesByName(Nodename name) const {
+  QList<NodeID> res;
   for (int id: d->obj.keys()) {
     Object const &obj(d->obj[id]);
-    if (obj.isGroup()) {
+    if (obj.isGroup() && res.isEmpty()) {
       Group const &grp(obj.asGroup());
       if (grp.ref.isEmpty()) {
-	NodeID nid = grp.findNodeByName(name);
-	if (!nid.isEmpty()) {
+	QList<NodeID> nids = grp.findNodesByName(name);
+        for (NodeID &nid: nids)
 	  nid.push_front(id);
-	  return nid;
-	}
+        if (!nids.isEmpty())
+          return nids;
       } else if (grp.ref==name.component()) {
 	Nodename subn("", name.pin());
-	NodeID nid = grp.findNodeByName(subn);
-	if (!nid.isEmpty()) {
+	QList<NodeID> nids = grp.findNodesByName(subn);
+        for (NodeID &nid: nids)
 	  nid.push_front(id);
-	  return nid;
+	if (!nids.isEmpty()) 
+	  return nids;
 	}
-      }
     } else if (obj.isPad() || obj.isHole()) {
       Nodename n1("", obj.isPad() ? obj.asPad().ref : obj.asHole().ref);
       if (name.matches(n1)) {
 	NodeID nid;
 	nid << id;
-	return nid;
+        res << nid;
       }
     }
   }
 
-  return NodeID();
+  return res;
 }
 
 QSet<QString> Group::immediateRefs() const {

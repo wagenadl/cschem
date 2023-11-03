@@ -27,11 +27,11 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
   */
   reset();
   
-  QSet<Nodename> pcbnames;
+  QMap<NodeID, Nodename> pcbnames;
   for (NodeID const &pcbnode: net.nodes()) {
     Nodename name = root.nodeName(pcbnode);
     if (name.isValid() && name.pin()!="") {
-      pcbnames << name;
+      pcbnames[pcbnode] = name;
       if (!linkednet.containsMatch(name)) {
         wronglyInNet << pcbnode;
       }
@@ -39,32 +39,28 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
   }
   wronglyInNet.remove(net.seed());
   if (pcbnames.size()==1) {
-    NodeID id = root.findNodeByName(*pcbnames.begin());
-    wronglyInNet.remove(id);
+    for (auto id: root.findNodesByName((pcbnames.begin().value())))
+      wronglyInNet.remove(id);
     // a net with one named node is not bad. By definition.
   }
 
   // qDebug() << "NetMismatch::recalculate" << net.seed() << " : " << pcbnames;
 
   for (Nodename const &name: linkednet.nodes) {
-    if (pcbnames.contains(name))
-      continue;
-    bool got = false;
-    for (Nodename const &n: pcbnames) {
-      if (n.matches(name)) {
-	got = true;
-	break;
-      }
+    QSet<NodeID> contained;
+    for (auto it=pcbnames.begin(); it!=pcbnames.end(); it++) {
+      if (it.value().matches(name))
+        contained << it.key();
     }
-    if (!got) {
-      NodeID id = root.findNodeByName(name);
-      qDebug() << "looking for" << name << "gave" << id;
-      if (!id.isEmpty())
-	missingFromNet << id;
-      else
-	missingEntirely << name;
+    QList<NodeID> ids = root.findNodesByName(name);
+    qDebug() << "looking for" << name << "gave" << ids;
+    if (ids.isEmpty())
+      missingEntirely << name;
+    else
+      for (auto id: ids)
+        if (!contained.contains(id))
+          missingFromNet << id;
     }
-  }
 
   //  if (!missingEntirely.isEmpty())
   //    wronglyInNet << net.seed(); // trick to make it colored
