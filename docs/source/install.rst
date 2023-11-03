@@ -94,6 +94,7 @@ be safe, it is best to define a few system variables before the first
 
     export CMAKE_PREFIX_PATH=/c/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5 
     export PATH=/c/Qt/5.15.2/msvc2019_64/bin:$PATH
+    export VCINSTALLDIR="/c/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC"
     
 Of course, you may have to adjust those to point to the appropriate
 location on your own system.
