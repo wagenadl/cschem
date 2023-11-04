@@ -4,8 +4,17 @@
 #include <QSet>
 #include <QDebug>
 
+
+inline QString simplehyphen(QString s) {
+  s.replace("−", "-");
+  s.replace("–", "-");
+  s.replace("‒", "-");
+  // replace minus (0x2212), en-dash (0x2013) and fig-dash (0x2012) by hyphen-minus (0x2d)
+  return s;
+}
+
 Nodename::Nodename(QString component, QString pin):
-  comp_(component), pin_(pin) {
+  comp_(simplehyphen(component)), pin_(simplehyphen(pin)) {
 }
 
 Nodename::Nodename() {
@@ -40,6 +49,7 @@ bool Nodename::operator<(Nodename const &o) const {
 bool Nodename::operator==(Nodename const &o) const {
   return comp_==o.comp_ && pin_==o.pin_;
 }
+
 
 bool Nodename::matches(Nodename const &o) const {
   if (comp_==o.comp_) {

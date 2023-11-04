@@ -17,7 +17,6 @@ public:
   SceneElementAnnotation &operator=(SceneElementAnnotation const &) = delete;
 public:
   void backspace();
-  // void setBaseline(QPointF xy); // set position based on left=x, baseline=y
   void setCenter(QPointF xy); // set position based on center of bbox
   void forceHoverColor(bool);
   void markSelected(bool);
