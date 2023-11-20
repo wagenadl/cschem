@@ -115,6 +115,8 @@ private:
   void fillLayer(QSet<int> const &objects, Group const &here);
   void fillFontSize(QSet<int> const &objects, Group const &here);    
   void fillGroupProps(QSet<int> const &objects, Group const &here);
+public:
+  void doFillArcAngle(int arcangle);
 };
 
 void PBData::checkLayer(Layer l) {
@@ -366,6 +368,15 @@ void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
     textl->setText("Ref.");
 }
 
+void PBData::doFillArcAngle(int arcangle) {
+  arc360->setChecked(arcangle==360);
+  arc300->setChecked(arcangle==300);  
+  arc240->setChecked(arcangle==240);  
+  arc180->setChecked(arcangle==180);  
+  arc120->setChecked(arcangle==120);  
+  arc_90->setChecked(arcangle==90);
+}
+
 void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
   qDebug() << "fillarcangle" << objects;
   bool got = false;
@@ -385,18 +396,15 @@ void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
       }
     }
   }
-  if (got) {
-    arc360->setChecked(arcangle==360);
-    arc300->setChecked(arcangle==300);  
-    arc240->setChecked(arcangle==240);  
-    arc180->setChecked(arcangle==180);  
-    arc120->setChecked(arcangle==120);  
-    arc_90->setChecked(arcangle==90);
-  }
-  //if (arcangle==90)
-  //  editor->properties().arcangle = -arcangle;
   if (arcangle!=0)
     editor->properties().arcangle = arcangle;
+  if (got)
+    doFillArcAngle(arcangle);
+  else
+    doFillArcAngle(editor->properties().arcangle);
+  //if (arcangle==90)
+  //  editor->properties().arcangle = -arcangle;
+  
 }
 
 void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
@@ -1054,7 +1062,7 @@ void PBData::setupUI() {
 		   [this]() { editor->setRefText(text->text()); });
 
   auto *c1 = makeContainer(textg);
-  makeLabel(c1, "Size", "Font size");
+  makeLabel(c1, "Font size", "Font size");
   fs = makeDimSpinner(c1);
   fs->setValue(Dim::fromInch(.050));
   QObject::connect(fs, &DimSpinner::valueEdited,
@@ -1214,8 +1222,8 @@ void Propertiesbar::reflectMode(Mode m) {
   }
   if (m==Mode::PlaceArc) {
     if (d->arcAngle()==0) {
-      d->arc360->setChecked(true);
       d->editor->properties().arcangle = 360;
+      d->doFillArcAngle(360);
     }
   }
   if (m==Mode::PlacePlane) {

@@ -7,6 +7,8 @@
 #include <QFile>
 #include "BOMTable.h"
 #include <QTextStream>
+#include "circuit/PartNumbering.h"
+#include <algorithm>
 
 PNPLine::PNPLine() {
   valid = false;
@@ -110,6 +112,9 @@ QList<QStringList> PickNPlace::toList() const {
 
 bool PickNPlace::saveCSV(QString fn) const {
   QList<QStringList> list = toList();
+  std::sort(list.begin(), list.end(),
+            [](QStringList a, QStringList b) {
+              return PartNumbering::lessThan(a[0], b[0]); });
   list.insert(0, PNPLine::header());
   QFile f(fn);
   if (f.open(QFile::WriteOnly)) {

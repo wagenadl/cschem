@@ -11,7 +11,7 @@ public:
   BOMRow(int id, Group const &g);
   void augment(class Circuit const &circuit);
   QStringList toStringList() const;
-  static QStringList header();
+  static QStringList header(bool compact);
   static QList<Group::Attribute> attributeOrder();
   static BOMRow fromStringList(QStringList const &);
 public:

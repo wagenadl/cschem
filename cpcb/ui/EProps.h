@@ -9,6 +9,8 @@
 #include "data/Layer.h"
 #include <QString>
 
+constexpr int DEFAULT_ARCANGLE = 180;
+
 struct EProps {
   Dim linewidth;
   Layer layer;
@@ -34,7 +36,7 @@ struct EProps {
     text = "";
     fs = Dim::fromMils(70);
     flip = false;
-    arcangle = 90;
+    arcangle = DEFAULT_ARCANGLE; 
     angleconstraint = false;
   }
 };

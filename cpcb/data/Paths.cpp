@@ -15,11 +15,11 @@ namespace Paths {
     QDir dir = exe.dir();
     dir.makeAbsolute();
     qDebug() << "dir" << dir;
-    dir.cdUp();
+    //dir.cdUp();
     if (dir.path().endsWith("build"))
       dir.cdUp();
     installPath = dir;
-    qDebug() << "dir" << installPath;
+    qDebug() << "installpath" << installPath;
   }
 
   QString userComponentRoot() {
@@ -42,7 +42,7 @@ namespace Paths {
     QString userroot
       = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QStringList allroots
-      = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+      = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
     qDebug() << "allroots = " << allroots;
     for (QString const &root: allroots) {
       if (root==userroot)

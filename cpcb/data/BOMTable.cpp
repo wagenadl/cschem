@@ -21,16 +21,19 @@ BOMRow::BOMRow(int id, Group const &g): id(id) {
   attributes = g.attributes;
 }
 
-QStringList BOMRow::header() {
-  static QStringList hdr{
-    "Comment",
+QStringList BOMRow::header(bool compact) {
+  QStringList hdr{
     "Designator",
+    "Value",
     "Footprint",
     "Mfg.",
     "Mfg. Part No.",
     "Vendor",
-    "Vendor Cat. No."
+    "Vendor Cat. No.",
+    "Notes"
   };
+  if (compact)
+    hdr.insert(1, "Qty.");
   return hdr;
 }
 
@@ -41,12 +44,13 @@ QList<Group::Attribute> BOMRow::attributeOrder() {
     Group::Attribute::PartNo,
     Group::Attribute::Vendor,
     Group::Attribute::CatNo,
+    Group::Attribute::Notes,
   };
   return attrs;
 }
   
 QStringList BOMRow::toStringList() const {
-  QStringList lst{value, ref};
+  QStringList lst{ref, ref.startsWith("J") ? QString() : value.trimmed()};
   for (auto attr: attributeOrder())
     lst << attributes[attr];
   return lst;
@@ -54,8 +58,8 @@ QStringList BOMRow::toStringList() const {
 
 BOMRow BOMRow::fromStringList(QStringList const &lst) {
   BOMRow row;
-  row.value = lst[0];
-  row.ref = lst[1];
+  row.ref = lst[0];
+  row.value = lst[1];
   int k = 2;
   for (auto attr: attributeOrder()) {
     if (lst.size()>k)
@@ -96,15 +100,19 @@ void BOMTable::augment(Circuit const &circuit) {
 }
 
 static QList<QStringList> packtable(QList<QStringList> table) {
+  /* For rows to be combined, everything other than the REF needs to
+     be identical, including notes. */
   QMap<QStringList, QStringList> refs;
   for (QStringList row: table) {
-    QString ref = row[1];
-    row[1] = PartNumbering::prefix(ref);
+    QString ref = row[0];
+    row[0] = PartNumbering::prefix(ref);
     refs[row] << ref;
   }
   table.clear();
   for (QStringList row: refs.keys()) {
-    row[1] = PartNumbering::compactRefs(refs[row]);
+    QStringList rr = refs[row];
+    row[0] = PartNumbering::compactRefs(rr);
+    row.insert(1, QString::number(rr.size()));
     table << row;
   }
   return table;
@@ -121,13 +129,13 @@ QList<QStringList> BOMTable::toList(bool compact, QStringList *universe) const {
     table = packtable(table);
   std::sort(table.begin(), table.end(),
             [](QStringList a, QStringList b) {
-              return PartNumbering::lessThan(a[1], b[1]); });
+              return PartNumbering::lessThan(a[0], b[0]); });
   return table;
 }
 
 bool BOMTable::saveCSV(QString fn, bool compact, QStringList *universe) const {
   QList<QStringList> table = toList(compact, universe);
-  table.insert(0, BOMRow::header());
+  table.insert(0, BOMRow::header(compact));
   QFile f(fn);
   if (f.open(QFile::WriteOnly)) {
     QTextStream(&f) << CSV::encode(table);
@@ -139,13 +147,20 @@ bool BOMTable::saveCSV(QString fn, bool compact, QStringList *universe) const {
 
 BOMTable BOMTable::fromList(QList<QStringList> list) {
   BOMTable table;
+  int hdrlen = BOMRow::header(false).size();
   for (QStringList row: list) {
-    if (row.size() != BOMRow::header().size())
-      return BOMTable(); // error
-    QStringList refs = PartNumbering::unpackRefs(row[1]);
-    for (QString ref: refs) {
-      row[1] = ref;
+    if (row.size()==hdrlen) {
+      // simple row
       table << BOMRow::fromStringList(row);
+    } else if (row.size()==hdrlen+1) {
+      row.removeAt(1); // remove qty
+      QStringList refs = PartNumbering::unpackRefs(row[0]);
+      for (QString ref: refs) {
+        row[0] = ref;
+        table << BOMRow::fromStringList(row);
+      }
+    } else {
+      return BOMTable(); // error
     }
   }
   return table;
@@ -167,9 +182,9 @@ BOMTable BOMTable::fromCSV(QString fn, QString &error) {
   qDebug() << "Read: ";
   for (QStringList row: table)
     qDebug() << "  Row: " << row;
-  if (table[0] != BOMRow::header()) {
+  if (table[0] != BOMRow::header(false) && table[0] != BOMRow::header(true)) {
     error = "Mismatched header";
-    qDebug() << "Expected: " << BOMRow::header();
+    qDebug() << "Expected: " << BOMRow::header(false);
     qDebug() << "Got:      " << table[0];
     return BOMTable();
   }
