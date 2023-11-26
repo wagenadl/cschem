@@ -163,7 +163,7 @@ Symbol::Symbol(XmlElement const &elt, QString name) {
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
       d->scanPins(e.element());
-  if (d->valid && d->pins.isEmpty())
+  if (d->valid && d->pins.isEmpty() && d->cpins.isEmpty())
     d->setError("No pins found in symbol definition.");
   d->ensureBBox();
   forgetRenderer(*this);
