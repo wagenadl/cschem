@@ -26,6 +26,7 @@ public:
   QByteArray toSvg(bool withbbox, bool withpins) const;
   void scanPins(XmlElement const &elt);
   void setError(QString err);
+  void setValid();
 public:
   XmlElement elt;
   QString name;
@@ -148,12 +149,18 @@ void SymbolData::ensureBBox() {
 
 void SymbolData::setError(QString err) {
   valid = false;
+  qDebug() << "symbol error" << err;
   errors << err;
+}
+
+void SymbolData::setValid() {
+  errors.clear();
+  qDebug() << "symbol valid";
+  valid = true;
 }
 
 Symbol::Symbol() {
   d = new SymbolData;
-  d->setError("Not a symbol file.");
 }
 
 Symbol::Symbol(XmlElement const &elt, QString name) {
@@ -169,7 +176,7 @@ Symbol::Symbol(XmlElement const &elt, QString name) {
   if (d->name.isEmpty())
     d->setError("Symbol has no name.");
   else
-    d->valid = true;
+    d->setValid();
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
       d->scanPins(e.element());
@@ -251,6 +258,10 @@ void SymbolData::scanPins(XmlElement const &elt) {
       label = elt.label();
     if (label.startsWith("pin")) {
       QString name = label.mid(4);
+      if (pins.contains(name)) {
+        setError("Repeated pin name “" + name + "” ignored");
+        return;
+      }
       pins[name] = QPointF(); // pin positions are determined by ensureBBox
       pinIds[name] = id;
     } else if (label.startsWith("cp")) {
@@ -268,6 +279,11 @@ void SymbolData::scanPins(XmlElement const &elt) {
                    + name + "” is ill-formed.");
           }
 	  QString sub = name.mid(didx+1);
+          if (cpins[n].contains(sub)) {
+            setError("Repeated contained pin name “" + sub
+                     + "” in subcomponent " + QString::number(n) + " ignored");
+            return;
+          }
 	  cpins[n][sub] = name.left(sidx);
 	} else {
           qDebug() << "Symbol: CP without slot number??";
@@ -286,6 +302,10 @@ void SymbolData::scanPins(XmlElement const &elt) {
 	QString name = bits[1];
         if (name=="ref")
           name = "name";
+        if (annIds.contains(name)) {
+          setError("Repeated annotation “" + name + "” ignored");
+          return;
+        }
 	annotationBBox[name] = QRectF();
         annIds[name] = id;
       }

@@ -1118,8 +1118,8 @@ void SceneData::hideDragIn() {
 bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
   Symbol symbol = Symbol::load(filename);
   qDebug() << "startSvgDragIn" << filename << pos << symbol.isValid();
-  if (!symbol.isValid())
-    return false;
+  //if (!symbol.isValid())
+  //return false;
 
   if (dragin)
     delete dragin;

@@ -191,20 +191,20 @@ QRectF Geometry::defaultAnnotationSvgBoundingRect(Element const &elt,
   QTransform xf = d->symbolToSceneElementTransformation(elt);
   Symbol const &sym(d->lib.symbol(elt.symbol()));
   QRectF r0 = sym.shiftedAnnotationBBox(annotation);
-  if (r0.isEmpty()) {
-    if (annotation=="value") {
-      r0 = defaultAnnotationSvgBoundingRect(elt, "name");
-      return r0.translated(0, d->lib.scale()*3);
-    } else {
-      QRectF bb = svgBoundingRect(elt);
-      QRectF r
-	= QRectF(QPointF(bb.bottomRight()) + d->lib.upscale(QPoint(1, 2)),
-		 d->lib.scale()*QSizeF(5, 1));
-      return r;
-    }
-  } else {
+  if (!r0.isEmpty())
     return xf.mapRect(r0);
+
+  QRectF bb = sym.shiftedBBox();
+  if (annotation=="value") {
+    r0 = defaultAnnotationSvgBoundingRect(elt, "name");
+    r0 = r0.translated(0, d->lib.scale()*3);
+    if (r0.intersected(bb).isEmpty())
+      return xf.mapRect(r0);
   }
+
+  r0 = QRectF(QPointF(bb.bottomRight()) + d->lib.upscale(QPoint(1, 2)),
+		 d->lib.scale()*QSizeF(5, 1));
+  return xf.mapRect(r0);
 }
 
 QRectF annotationBox(QPointF p, QString txt) {
