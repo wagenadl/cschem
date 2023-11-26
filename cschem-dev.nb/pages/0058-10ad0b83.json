@@ -1,0 +1,586 @@
+{ "typ": "page",
+  "cre": "2023-11-26T08:00:59.682",
+  "mod": "2023-11-26T14:53:03.859",
+  "cui": "2edabb2b1502c998",
+  "stampTime": 0,
+  "startPage": 58,
+  "unlocked": false,
+  "uuid": "10ad0b83",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2023-11-26T08:00:59.681",
+      "mod": "2023-11-26T13:45:24.972",
+      "uuid": "2287e9ce",
+      "cc": [
+        { "typ": "res",
+          "cre": "2023-11-26T13:44:49.387",
+          "mod": "2023-11-26T13:44:49.389",
+          "archive": "_1_-5b9127b2.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "5b9127b2"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T13:45:24.970",
+          "mod": "2023-11-26T13:45:24.972",
+          "archive": "_2_-af0220a6.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*2",
+          "title": "",
+          "uuid": "af0220a6"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2023-11-26T08:01:01.148",
+      "mod": "2023-11-26T08:01:03.302",
+      "uuid": "c4b94c7f",
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:01:01.148",
+          "mod": "2023-11-26T08:01:03.301",
+          "lines": [
+            0
+          ],
+          "text": "Bugs in CSchem",
+          "uuid": "58130431"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T08:01:07.049",
+      "mod": "2023-11-26T08:01:18.662",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "e8051af3",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:01:07.049",
+          "mod": "2023-11-26T08:01:18.662",
+          "lines": [
+            0
+          ],
+          "text": "1. Containers with no external pins cannot be copied&pasted",
+          "uuid": "b34566d7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T09:06:03.800",
+      "mod": "2023-11-26T09:06:16.088",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "13610bdc",
+      "y0": 99.166,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T09:06:03.800",
+          "mod": "2023-11-26T09:06:16.088",
+          "lines": [
+            0
+          ],
+          "text": "Solved. Turned out they could be, but position was wrong.",
+          "uuid": "d0811983",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-11-26T09:06:09.590",
+              "mod": "2023-11-26T09:06:09.590",
+              "end": 29,
+              "start": 24,
+              "style": 1,
+              "uuid": "212f8f17"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T08:01:19.797",
+      "mod": "2023-11-26T08:02:38.605",
+      "h": 73.498,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "de2bca63",
+      "y0": 118.313,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:01:19.797",
+          "mod": "2023-11-26T08:02:35.366",
+          "lines": [
+            0,
+            61,
+            114
+          ],
+          "text": "2. I have seen the name of the “-5V” reference be changed to “U4” without obvious cause. Perhaps during renumber. Could be related to above if object IDs get mucked up.",
+          "uuid": "410bf6be"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T13:12:28.945",
+      "mod": "2023-11-26T13:12:41.545",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "768da7da",
+      "y0": 191.811,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T13:12:28.945",
+          "mod": "2023-11-26T13:12:41.545",
+          "lines": [
+            0
+          ],
+          "text": "Definitely not caused by above, which was purely geometric.",
+          "uuid": "23f58a32",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-11-26T13:12:31.176",
+              "mod": "2023-11-26T13:12:31.176",
+              "end": 14,
+              "start": 11,
+              "style": 1,
+              "uuid": "ad7253be"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T08:02:40.305",
+      "mod": "2023-11-26T08:03:15.172",
+      "h": 50.332,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "09745e1b",
+      "y0": 210.958,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:02:40.305",
+          "mod": "2023-11-26T08:03:15.172",
+          "lines": [
+            0,
+            59
+          ],
+          "text": "3. Under certain circumstances when dragging items around, non-orthogonal traces can result.",
+          "uuid": "cae3d31f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T13:42:54.386",
+      "mod": "2023-11-26T14:53:03.859",
+      "h": 90.427,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0d93873e",
+      "y0": 261.29,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T13:42:54.386",
+          "mod": "2023-11-26T14:53:03.859",
+          "lines": [
+            0,
+            71,
+            133,
+            155,
+            224
+          ],
+          "text": "One easy way to trigger this is to hold Control while dragging a line. This allows non-orthogonal movement. Not sure why, but either way, should be fixed.\nFixed non-ortho mvt. Not sure why it was allowed in the first place. Not sure if this fixes all instances of non-ortho lines appearing.",
+          "uuid": "c02d0683"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T08:03:16.171",
+      "mod": "2023-11-26T08:03:35.178",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f2cf630f",
+      "y0": 351.717,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:03:16.171",
+          "mod": "2023-11-26T08:03:35.178",
+          "lines": [
+            0
+          ],
+          "text": "4. Does drag-in actually always click in place correctly?",
+          "uuid": "1e211cb4"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T09:06:19.157",
+      "mod": "2023-11-26T09:06:21.551",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "2175d54f",
+      "y0": 378.883,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T09:06:19.157",
+          "mod": "2023-11-26T09:06:21.551",
+          "lines": [
+            0
+          ],
+          "text": "I think so.",
+          "uuid": "0cd56a7d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T08:03:36.574",
+      "mod": "2023-11-26T08:04:09.313",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "bf8fe88c",
+      "y0": 398.03,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:03:36.574",
+          "mod": "2023-11-26T08:04:09.312",
+          "lines": [
+            0
+          ],
+          "text": "5. Initial positioning of text labels does not work.",
+          "uuid": "50db4546"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T09:06:24.573",
+      "mod": "2023-11-26T09:06:46.231",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "20433d51",
+      "y0": 425.196,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T09:06:24.573",
+          "mod": "2023-11-26T09:06:46.231",
+          "lines": [
+            0,
+            65
+          ],
+          "text": "Fixed by improved annotations in stock symbols.svg and bugfix to support in Symbol.cpp",
+          "uuid": "068b8ff7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T08:04:10.919",
+      "mod": "2023-11-26T08:04:55.164",
+      "h": 73.498,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "a9d38dc6",
+      "y0": 462.163,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:04:10.919",
+          "mod": "2023-11-26T08:04:55.164",
+          "lines": [
+            0,
+            63,
+            123
+          ],
+          "text": "6. Magnetic attraction is unfathomable. It is not clear when a line/point will be allowed to be dragged by single step and when not.",
+          "uuid": "66882f28"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T13:43:39.374",
+      "mod": "2023-11-26T13:44:13.822",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5c95cd63",
+      "y0": 535.661,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T13:43:39.374",
+          "mod": "2023-11-26T13:44:13.822",
+          "lines": [
+            0,
+            72
+          ],
+          "text": "One issue is that a dot counts as a holding point (requiring at least 3 steps of movement to disconnect) even when not needed. ",
+          "uuid": "f7ec4bfe"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-26T13:44:49.382",
+      "mod": "2023-11-26T13:49:16.958",
+      "h": 116.779,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "32a8dc06",
+      "xref": 0.0,
+      "y0": 572.628,
+      "yref": -20.0657,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-26T13:44:49.389",
+          "mod": "2023-11-26T13:45:51.886",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 271.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.364499,
+          "uuid": "3c54ae18",
+          "width": 189.0,
+          "x": 0.0,
+          "y": -11.0657
+        },
+        { "typ": "gfxnote",
+          "cre": "2023-11-26T13:45:01.567",
+          "mod": "2023-11-26T13:45:54.002",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "f8aaceef",
+          "x": 44.9509,
+          "y": 24.1254,
+          "cc": [
+            { "typ": "text",
+              "cre": "2023-11-26T13:45:01.567",
+              "mod": "2023-11-26T13:45:07.285",
+              "lines": [
+                0
+              ],
+              "text": "Here it makes sense…",
+              "uuid": "b9dd4826"
+            }
+          ]
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T13:45:24.972",
+          "mod": "2023-11-26T13:49:16.958",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 168.0,
+          "res": [
+            "*2"
+          ],
+          "resName": "*2",
+          "scale": 0.386172,
+          "uuid": "14d23afe",
+          "width": 422.0,
+          "x": 260.479,
+          "y": 11.9282
+        },
+        { "typ": "gfxnote",
+          "cre": "2023-11-26T13:45:34.362",
+          "mod": "2023-11-26T13:46:06.385",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "216de4bd",
+          "x": 147.427,
+          "y": 49.0435,
+          "cc": [
+            { "typ": "text",
+              "cre": "2023-11-26T13:45:34.362",
+              "mod": "2023-11-26T13:45:41.209",
+              "lines": [
+                0
+              ],
+              "text": "… but here it does not.",
+              "uuid": "3c80100a"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T13:49:57.506",
+      "mod": "2023-11-26T14:52:34.005",
+      "h": 36.967,
+      "ind": 6,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "d8bbc71e",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T13:49:57.506",
+          "mod": "2023-11-26T14:52:34.005",
+          "lines": [
+            0,
+            52
+          ],
+          "text": "This should not exert holding force, nor reattract.\nMade several improvements, still not great.",
+          "uuid": "107ca6d7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T13:49:08.805",
+      "mod": "2023-11-26T13:49:33.308",
+      "h": 50.332,
+      "ind": 4,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "d8bbc71e",
+      "y0": 108.967,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T13:49:08.805",
+          "mod": "2023-11-26T13:49:33.308",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "6a. Lines are not magnetically attracted to pins. Only other pins are.",
+          "uuid": "107ca6d7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T08:05:07.591",
+      "mod": "2023-11-26T09:07:15.499",
+      "h": 73.498,
+      "ind": 4,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "d8bbc71e",
+      "y0": 159.299,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:05:07.591",
+          "mod": "2023-11-26T09:07:15.499",
+          "lines": [
+            0,
+            51,
+            107
+          ],
+          "text": "7. Reliance on Inkscape for symbol drawing remains problematic. For instances, no testing for repeated pin names, subtly malformed pin names (?).",
+          "uuid": "107ca6d7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T13:46:56.088",
+      "mod": "2023-11-26T13:47:20.440",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "fe150a8f",
+      "y0": 232.797,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T13:46:56.088",
+          "mod": "2023-11-26T13:47:20.440",
+          "lines": [
+            0,
+            65
+          ],
+          "text": "Real fix would require in-program symbol editor. For now, I have improved error reporting when broken symbols are dragged in.",
+          "uuid": "72b00500"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T08:43:56.474",
+      "mod": "2023-11-26T08:44:40.749",
+      "h": 50.332,
+      "ind": 4,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "58d2779c",
+      "y0": 269.764,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T08:43:56.474",
+          "mod": "2023-11-26T08:44:39.784",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "8. Drag-in does not create undo point. Worse: breaks undo history.",
+          "uuid": "a10a23ea"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T13:38:30.679",
+      "mod": "2023-11-26T13:38:44.222",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "f9085fa3",
+      "y0": 320.096,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T13:38:30.679",
+          "mod": "2023-11-26T13:38:43.435",
+          "lines": [
+            0
+          ],
+          "text": "Caused by incorrect handling of undo of element annotations. Fixed.",
+          "uuid": "ef38df7f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T13:46:26.656",
+      "mod": "2023-11-26T13:46:42.716",
+      "h": 50.332,
+      "ind": 4,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "dc3bafdb",
+      "y0": 339.243,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T13:46:26.656",
+          "mod": "2023-11-26T13:46:42.716",
+          "lines": [
+            0,
+            54
+          ],
+          "text": "9. Sometimes dots do not get taken away even when not needed any more.",
+          "uuid": "3b309aed"
+        }
+      ]
+    }
+  ]
+}
