@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="102"
    height="105.30565"
    viewBox="0 0 102 105.30565"
    version="1.1"
    id="svg852"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="instramp.svg">
+   inkscape:version="1.3.1 (1:1.3.1+202311172155+91b66b0783)"
+   sodipodi:docname="instramp.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs846" />
   <sodipodi:namedview
@@ -26,32 +26,37 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="8.5714286"
-     inkscape:cx="70.73034"
-     inkscape:cy="30.578881"
+     inkscape:cx="35.058333"
+     inkscape:cy="47.891667"
      inkscape:document-units="px"
-     inkscape:current-layer="g5872"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      fit-margin-top="2"
      fit-margin-left="2"
      fit-margin-right="2"
      fit-margin-bottom="2"
-     inkscape:window-width="3200"
-     inkscape:window-height="1756"
+     inkscape:window-width="1920"
+     inkscape:window-height="1051"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      showborder="true"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:snap-global="false">
+     inkscape:snap-global="false"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid1508"
        spacingx="7.0000001"
        spacingy="7.0000001"
        originx="-18.999971"
-       originy="17.652832" />
+       originy="17.652832"
+       units="px"
+       visible="true" />
   </sodipodi:namedview>
   <metadata
      id="metadata849">
@@ -61,7 +66,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -181,15 +186,10 @@
        style="opacity:1;fill:#0000ff;fill-opacity:0.38926176;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.33333302px;line-height:125%;font-family:Lato;-inkscape-font-specification:'Lato, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.3333px;line-height:125%;font-family:Lato;-inkscape-font-specification:'Lato, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        x="1300.8571"
        y="291.44824"
-       id="text1260-0"><tspan
-         sodipodi:role="line"
-         id="tspan1258-6"
-         x="1300.8571"
-         y="303.84824"
-         style="stroke-width:1px" /></text>
+       id="text1260-0" />
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.43500001;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#fd00fd;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157475;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
        id="pin:K-6-7-7"
@@ -205,7 +205,7 @@
        cx="1167.8572"
        cy="533.94824"
        r="7"
-       inkscape:label="pin:-"
+       inkscape:label="pin:RG-"
        inkscape:transform-center-x="65.942797"
        inkscape:transform-center-y="2.3834746" />
   </g>
