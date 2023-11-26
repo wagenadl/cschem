@@ -35,7 +35,8 @@ public:
   QRectF bbox; // svg coords
   QRectF shbbox; // shifted coords (origin=first pin)
   QString groupId; // id of contents element
-  QMap<QString, QString> pinIds;
+  QMap<QString, QString> pinIds; // our pin name to svg element id
+  QMap<QString, QString> annIds; // our ann name to svg element id
   QString originId;
   QMap<QString, QRectF> annotationBBox;
   QMap<QString, QRectF> shAnnotationBBox;
@@ -46,15 +47,22 @@ public:
 };
 
 QPointF Symbol::svgOrigin() const {
-  return d->pins[d->originId];
+  if (d->originId.isEmpty())
+    return d->bbox.center();
+  else
+    return d->pins[d->originId];
 }
 
 void SymbolData::newshift() {
   QStringList pp = pinIds.keys();
-  if (pp.isEmpty())
-    return;
-  originId = pp.first();
-  QPointF origin = pins[originId];
+  QPointF origin;
+  if (pp.isEmpty()) {
+    originId = QString();
+    origin = bbox.center();
+  } else {
+    originId = pp.first();
+    origin = pins[originId];
+  }
   shbbox = bbox.translated(-origin);
   for (QString p: pp)
     shpins[p] = pins[p] - origin;
@@ -131,7 +139,7 @@ void SymbolData::ensureBBox() {
   for (QString ann: annotationBBox.keys())
     annotationBBox[ann]
       = renderer.transformForElement(id)
-      .mapRect(annotationBBox[ann]);
+      .mapRect(renderer.boundsOnElement(annIds[ann]));
       
   newshift();
 }
@@ -234,6 +242,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
      Also scans for rectangles with name matching {annotation:WHAT} where
      WHAT must be "ref" (or "name") or "value".
    */
+  QString id = elt.attributes().value("id").toString();
   if (elt.name()=="circle") {
     QString label = elt.title();
     if (label.isEmpty())
@@ -241,7 +250,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
     if (label.startsWith("pin")) {
       QString name = label.mid(4);
       pins[name] = QPointF(); // pin positions are determined by ensureBBox
-      pinIds[name] = elt.attributes().value("id").toString();
+      pinIds[name] = id;
     } else if (label.startsWith("cp")) {
       QString name = label.mid(3);
       int sidx = name.indexOf("/");
@@ -276,6 +285,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
         if (name=="ref")
           name = "name";
 	annotationBBox[name] = QRectF();
+        annIds[name] = id;
       }
     }
     
