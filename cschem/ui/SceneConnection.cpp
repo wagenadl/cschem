@@ -94,7 +94,7 @@ QPen SceneConnectionData::draftPen() const {
 }
 
 QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
-  nomagnet = true; // temporary fix
+  // nomagnet = true; // temporary fix
   if (nomagnet)
     havemagnet = false;
   if (moveseg<0)
@@ -124,11 +124,13 @@ QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
     double x0 = origpath[moveseg].x();
     double x1 = x0 + delta.x();
     if (moveseg<=0) {
+      /* Disable magnetism to original place
       if (fabs(delta.x()) < 2*s) {
         magnetdelta = 0;
         delta.setX(0);
         havemagnet = true;
       }
+      */
     } else {
       double xpre = origpath[moveseg-1].x();
       if (fabs(x1 - xpre) < 2*s) {
@@ -138,11 +140,13 @@ QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
       }
     }
     if (moveseg+2>=origpath.size()) {
+      /* Disable magnetism to original place
       if (fabs(delta.x()) < 2*s) {
         magnetdelta = 0;
         delta.setX(0);
         havemagnet = true;
       }
+      */
     } else {
       double xpost = origpath[moveseg+2].x();
       if (fabs(x1 - xpost) < 2*s) {
@@ -162,11 +166,13 @@ QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
     double y0 = origpath[moveseg].y();
     double y1 = y0 + delta.y();
     if (moveseg<=0) {
+      /* Disable magnetism to original place
       if (fabs(delta.y()) < 2*s) {
         magnetdelta = 0;
         delta.setY(0);
         havemagnet = true;
       }
+      */
     } else {
       double ypre = origpath[moveseg-1].y();
       if (fabs(y1 - ypre) < 2*s) {
@@ -176,11 +182,13 @@ QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
       }
     }
     if (moveseg+2>=origpath.size()) {
+      /* Disable magnetism to original place
       if (fabs(delta.y()) < 2*s) {
         magnetdelta = 0;
         delta.setY(0);
         havemagnet = true;
       }
+      */
     } else {
       double ypost = origpath[moveseg+2].y();
       if (fabs(y1 - ypost) < 2*s) {
