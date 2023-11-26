@@ -38,19 +38,26 @@ void SceneElementData::markHover() {
 
 void SceneElementData::removeName() {
   Element elt(scene->circuit().elements[id]);
-  elt.nameVisible = false;
-  scene->modifyElementAnnotations(elt);
+  if (elt.nameVisible) {
+    scene->createUndoStep();
+    elt.nameVisible = false;
+    scene->modifyElementAnnotations(elt);
+  }
 }
 
 void SceneElementData::removeValue() {
   Element elt(scene->circuit().elements[id]);
-  elt.valueVisible = false;
-  scene->modifyElementAnnotations(elt);
+  if (elt.valueVisible) {
+    scene->createUndoStep();
+    elt.valueVisible = false;
+    scene->modifyElementAnnotations(elt);
+  }
 }
 
 void SceneElementData::moveValue(QPointF delta) {
   if (delta.isNull())
     return;
+  scene->createUndoStep();
   Element elt(scene->circuit().elements[id]);
   elt.valuePosition += delta.toPoint();
   scene->modifyElementAnnotations(elt);
@@ -59,6 +66,7 @@ void SceneElementData::moveValue(QPointF delta) {
 void SceneElementData::moveName(QPointF delta) {
   if (delta.isNull())
     return;
+  scene->createUndoStep();
   Element elt(scene->circuit().elements[id]);
   elt.namePosition += delta.toPoint();
   scene->modifyElementAnnotations(elt);
@@ -93,6 +101,7 @@ void SceneElementData::nameTextToCircuit() {
   else
     txt = PartNumbering::prettifyMinus(txt);
   if (txt != elt.name) { // prevent recursion
+    scene->createUndoStep();
     elt.name = txt;
     scene->modifyElementAnnotations(elt);
   }
@@ -129,6 +138,7 @@ void SceneElementData::valueTextToCircuit() {
     txt = "";
   txt = PartNumbering::prettyValue(txt, elt.name);
   if (txt != elt.value) { // prevent recursion
+    scene->createUndoStep();
     elt.value = txt;
     scene->modifyElementAnnotations(elt);
   }
@@ -165,6 +175,9 @@ void SceneElement::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
   Element elt = d->scene->circuit().elements[d->id];
   if (elt.type == Element::Type::Component
       || elt.type == Element::Type::Port) {
+    if (!elt.nameVisible
+        || (elt.type == Element::Type::Component && !elt.valueVisible))
+        d->scene->createUndoStep(); // only if we are making a change
     elt.nameVisible = true;
     if (elt.type == Element::Type::Component)
       elt.valueVisible = true;
@@ -201,10 +214,9 @@ void SceneElement::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
   auto const &circ = d->scene->circuit();
   QPoint newpos = lib.downscale(e->scenePos()) + d->delta0;
   QPoint oldpos = circ.elements[d->id].position;
-  if (d->dragmoved || newpos != oldpos) {
+  if (d->dragmoved || newpos != oldpos) 
     d->scene->moveSelection(newpos - oldpos,
 			    e->modifiers() & Qt::ControlModifier);
-  }
   e->accept();
 }
 

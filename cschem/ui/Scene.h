@@ -41,6 +41,7 @@ public:
   void pasteFromClipboard();
   void undo();
   void redo();
+  void createUndoStep();
   void key_delete();
   void key_backspace();
   void removeDangling();

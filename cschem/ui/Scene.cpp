@@ -121,6 +121,7 @@ QPointF SceneData::pinPosition(int id, QString pin) const {
 }
 
 bool SceneData::undo() {
+  qDebug() << "undo buffer length" << undobuffer.size() << redobuffer.size();
   if (undobuffer.isEmpty())
     return false;
 
@@ -130,22 +131,30 @@ bool SceneData::undo() {
   redoselections << selectedElements();
   redotxtselections << selectedTextuals();
 
-  circ() = undobuffer.takeLast();
+  Circuit c = undobuffer.takeLast();
+  QSet<int> undosel = undoselections.takeLast();
+  QSet<int> undotxtsel = undotxtselections.takeLast();
+  qDebug() << "circuit" << c;
+  qDebug() << "sel" << undosel << undotxtsel;
+
+  circ() = c;
   rebuild();
 
   scene->clearSelection();
-  for (int id: undoselections.takeLast())
+  for (int id: undosel)
     if (elts.contains(id))
       elts[id]->setSelected(true);
 
-  for (int id: undotxtselections.takeLast())
+  for (int id: undotxtsel)
     if (textuals.contains(id))
       textuals[id]->setSelected(true);
   
+  qDebug() << "-> buffer length" << undobuffer.size() << redobuffer.size();
   return true;
 }
 
 bool SceneData::redo() {
+  qDebug() << "redo. buffer length" << undobuffer.size() << redobuffer.size();  
   if (redobuffer.isEmpty())
     return false;
 
@@ -862,8 +871,6 @@ void Scene::modifyElementAnnotations(Element const &elt) {
   int id = elt.id;
   if (!elements().contains(id))
     return;
-
-  d->preact();
   
   Element elt0 = d->circ().elements[id];
   QString oldname = elt0.name;
@@ -1467,4 +1474,8 @@ void Scene::dropTextual(int id) {
     st->deleteLater();
   }
   emit circuitChanged();
+}
+
+void Scene::createUndoStep() {
+  d->preact();
 }
