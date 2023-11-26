@@ -751,18 +751,17 @@ void Scene::redo() {
 }
 
 int Scene::elementAt(QPointF scenepos, int exclude) const {
-  QGraphicsItem *it = itemAt(scenepos, QTransform());
-
-  SceneElement *e = dynamic_cast<SceneElement *>(it);
-  while (it && !e) {
-    it = it->parentItem();
-    e = dynamic_cast<SceneElement *>(it);
+  for (QGraphicsItem *it: items(scenepos)) {
+    SceneElement *e = dynamic_cast<SceneElement *>(it);
+    while (it && !e) {
+      it = it->parentItem();
+      e = dynamic_cast<SceneElement *>(it);
+    }
+    
+    if (e && e->id() != exclude
+        && e->boundingRect().contains(e->mapFromScene(scenepos)))
+      return e->id();
   }
-
-  if (e && e->id() != exclude
-      && e->boundingRect().contains(e->mapFromScene(scenepos)))
-    return e->id();
-
   return -1;
 }
 

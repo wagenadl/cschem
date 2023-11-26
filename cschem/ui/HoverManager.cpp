@@ -409,7 +409,7 @@ void HoverManager::unhover() {
 }
 
 QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
-  //  qDebug() << "  SEEWHATSTICKS" << del;
+  // qDebug() << "  SEEWHATSTICKS" << del;
   Circuit const &circ = scene->circuit();
   SymbolLibrary const &lib = scene->library();
   Geometry geom(circ, lib);
@@ -419,11 +419,11 @@ QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
     QPoint p = info.pt + del;
     QPointF pup = lib.upscale(p);
     int elt = scene->elementAt(pup, info.elt);
-    //    qDebug() << "    seewhatsticks -- " << del << p << pup << elt << info.elt;
+    //qDebug() << "    seewhatsticks -- " << del << p << pup << elt << info.elt;
     QString pin;
     if (elt>0) {
       pin = scene->pinAt(pup, elt);
-      //      qDebug() << "     got stick -- " << del << p << pup << elt << pin << geom.pinPosition(elt, pin);
+      //qDebug() << "     got stick -- " << del << p << pup << elt << pin << geom.pinPosition(elt, pin);
       if (pin != PinID::NOPIN) {
         if (geom.pinPosition(elt, pin)==p)
           pts << p;
@@ -465,16 +465,18 @@ void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
 
 QPoint HoverManagerData::tryNearby(QPoint del, QList<QPoint> &pts) {
   QList<QPoint> dd{{-1,0},{1,0},{0,-1},{0,1},{-1,-1},{-1,1},{1,1},{1,-1}};
-  for (QPoint x: dd) {
-    pts = seeWhatSticks(del + x);
-    if (!pts.isEmpty())
-      return del + x;
+  for (QPoint dxy: dd) {
+    QPoint del1 = del + dxy;
+    if (true) { //del1!=QPoint()) {
+      pts = seeWhatSticks(del1);
+      if (!pts.isEmpty())
+        return del1;
+    }
   }
   return del;
 }
 
 QPoint HoverManager::tentativelyMoveSelection(QPoint del, bool nomagnet) {
-  nomagnet = true; // temporary fix
   if (d->haveMagnet && !nomagnet) {
     if ((del - d->magnetDelta).manhattanLength() < 3)
       del = d->magnetDelta;
@@ -483,12 +485,10 @@ QPoint HoverManager::tentativelyMoveSelection(QPoint del, bool nomagnet) {
   }
   
   QList<QPoint> pts = d->seeWhatSticks(del);
-  //  qDebug() << "tentamove" << del << pts << nomagnet;
   if (pts.isEmpty() && !nomagnet) 
     del = d->tryNearby(del, pts);
-  //  qDebug() << "nearby " << del << pts;
 
-  if (!pts.isEmpty()) { 
+  if (!pts.isEmpty() && del!=QPoint(0,0)) { 
     d->haveMagnet = true;
     d->magnetDelta = del;
   }
