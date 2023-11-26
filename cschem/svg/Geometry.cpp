@@ -295,7 +295,20 @@ QPoint Geometry::centerOfPinMass() const {
     for (QString p: pins)
       sum += pinPosition(elt, p);
   }
-  return (sum/N).toPoint();
+  qDebug() << "copm" << N << sum/N;
+  if (N>0)
+    return (sum/N).toPoint();
+
+  for (Element const &elt: d->circ.elements) {
+    Symbol const &symbol(d->lib.symbol(elt.symbol()));
+    sum += d->elementBBox(elt).center();
+    N ++;
+  }
+  qDebug() << "copm1" << N << sum/N;
+  if (N>0)
+    return (sum/N).toPoint();
+
+  return QPoint(); // desperate
 }
 
 QPoint Geometry::centerOfPinMass(int eltid) const {
@@ -313,7 +326,7 @@ QPoint Geometry::centerOfPinMass(Element const &elt) const {
   QPointF sum;
   int N = pins.size();
   if (N==0)
-    return QPoint();
+    return symbol.shiftedBBox().center().toPoint();
   for (QString p: pins)
     sum += pinPosition(elt, p);
   double sumx = sum.x();

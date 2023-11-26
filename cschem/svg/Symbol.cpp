@@ -130,7 +130,8 @@ void SymbolData::ensureBBox() {
   QByteArray svg = toSvg(false, true);
   QSvgRenderer renderer(svg);
   QString id = groupId;
-  bbox = renderer.transformForElement(id).mapRect(renderer.boundsOnElement(id))
+  bbox = renderer.transformForElement(id)
+    .mapRect(renderer.boundsOnElement(id))
     .toAlignedRect();
   for (QString pin: pinIds.keys())
     pins[pin]
@@ -139,7 +140,8 @@ void SymbolData::ensureBBox() {
   for (QString ann: annotationBBox.keys())
     annotationBBox[ann]
       = renderer.transformForElement(id)
-      .mapRect(renderer.boundsOnElement(annIds[ann]));
+      .mapRect(renderer.boundsOnElement(annIds[ann]))
+      .toAlignedRect();
       
   newshift();
 }
@@ -301,7 +303,9 @@ QStringList Symbol::pinNames() const {
 
 QPointF Symbol::bbOrigin() const {
   QStringList l = d->pins.keys();
-  return l.isEmpty() ? QPointF() : bbPinPosition(l.first());
+  return l.isEmpty()
+    ? d->bbox.center() - d->bbox.topLeft()
+    : bbPinPosition(l.first());
 }
 
 QRectF Symbol::shiftedBBox() const {
