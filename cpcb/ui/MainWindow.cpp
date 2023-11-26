@@ -64,6 +64,7 @@ public:
   void fillBars();
   void boardSizeDialog();
   void openDialog();
+  void revert();
   void newWindow();
   void arbitraryRotation();
   bool exportDialog();
@@ -268,6 +269,22 @@ void MWData::newWindow() {
   auto *w = new MainWindow();
   w->resize(mw->size());
   w->show();
+  // attempt to raise...
+  //  w->raise();
+  //  w->setFocus();
+}
+
+void MWData::revert() {
+  if (!editor->isAsSaved()) {
+    auto ret= QMessageBox::warning(mw, "cpcb",
+			     mw->tr("The layout has been modified.\n"
+				"Do you want to discard your changes?"),
+                                   QMessageBox::Discard
+                                   | QMessageBox::Cancel);
+    if (ret!=QMessageBox::Discard)
+      return;
+  }
+  mw->open(filename);
 }
 
 void MWData::openDialog() {
@@ -389,15 +406,6 @@ void MWData::verifyNets() {
     QMessageBox::warning(0, "cpcb", msg);
     return;
   }
-  QMap<QString, QSet<QString>> duppins = grp.groupsWithDuplicatedPins();
-  if (!duppins.isEmpty()) {
-    auto it = duppins.begin();
-    QString msg = "Part " + it.key() + " has duplicated pin names:";
-    for (QString n: it.value())
-      msg += "\n  " + n;
-    QMessageBox::warning(0, "cpcb", msg);
-    return;
-  }
     
   NetMismatch nm;
   nm.recalculateAll(editor->linkedSchematic(), grp);
@@ -413,7 +421,17 @@ void MWData::verifyNets() {
   statusbar->setMissing(names);
   if (nm.wronglyInNet.isEmpty() && nm.missingFromNet.isEmpty()
       && nm.missingEntirely.isEmpty()) {
-    QMessageBox::information(mw, "cpcb", "All nets verified OK.");
+    QMap<QString, QSet<QString>> duppins = grp.groupsWithDuplicatedPins();
+    if (!duppins.isEmpty()) {
+      auto it = duppins.begin();
+      QString msg = "Part " + it.key() + " has duplicated pin names:";
+      for (QString n: it.value())
+        msg += "\n  " + n;
+      msg += "\nApart from that, all nets verified OK.";
+      QMessageBox::information(mw, "cpcb", msg);
+    } else {
+      QMessageBox::information(mw, "cpcb", "All nets verified OK.");
+    }
   } else {
     QStringList msgs;
     msgs << "Verification unsuccessful:";
@@ -454,7 +472,8 @@ void MWData::verifyNets() {
     if (nm.missingEntirely.size()>1)
       msgs << "See status bar for details.";
     QMessageBox::warning(mw, "cpcb", msgs.join("\n"));
-  }
+    return;
+  }  
 }
 
 void MWData::linkSchematicDialog() {
@@ -635,6 +654,8 @@ void MWData::makeMenus() {
 
   file->addAction("Save &as…", [this]() { saveAsDialog(); },
 		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
+
+  file->addAction("Re&vert", [this]() { revert(); });
 
   //  auto *fexport = file->addMenu("&Export");
   file->addAction("&Export fabrication files…",
