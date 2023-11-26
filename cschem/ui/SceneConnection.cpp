@@ -94,18 +94,27 @@ QPen SceneConnectionData::draftPen() const {
 }
 
 QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
+  nomagnet = true; // temporary fix
+  if (nomagnet)
+    havemagnet = false;
   if (moveseg<0)
     return QPointF();
   double s = scene->library().scale();
   QPointF delta = scene->library().nearestGrid(sp - movestart);
+  QPointF ll = origpath[moveseg + 1] - origpath[moveseg];
+  if (ll.isNull())
+    return delta; // null line, this should not happen
+
+  if (ll.x()==0) 
+    delta.setY(0); // vertical line, cannot move in Y
+  else if (ll.y()==0)
+    delta.setX(0); // horizontal line, cannot move in X
+
   if (nomagnet)
     return delta;
-  QPointF ll = origpath[moveseg + 1] - origpath[moveseg];
-  if (ll.isNull()) {
-    // null line, don't know what to do exactly
-  } else if (ll.x()==0) {
-    // vertical line, cannot move in Y
-    delta.setY(0);
+
+  if (ll.x()==0) {
+    // vertical line
     if (havemagnet) {
       if (fabs(delta.x()-magnetdelta) < 3*s)
         delta.setX(magnetdelta);
@@ -143,8 +152,7 @@ QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
       }
     }
   } else if (ll.y()==0) {
-    // horizontal line, cannot move in X
-    delta.setX(0);
+    // horizontal line
     if (havemagnet) {
       if (fabs(delta.y()-magnetdelta) < 3*s)
         delta.setY(magnetdelta);
@@ -182,7 +190,7 @@ QPointF SceneConnectionData::moveDelta(QPointF sp, bool nomagnet) {
       }
     }
   } else {
-    // diag line, don't know what to do exactly
+    // diag line, don't know what to do exactly; this should not happen
   }
   return delta;
 }
