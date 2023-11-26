@@ -28,6 +28,7 @@ public:
   static QString compactRefs(QStringList refs);
   static QList<QStringList> compressPartList(QList<QStringList> symbols);
   static QStringList unpackRefs(QString crefs);
+  static QString prettifyMinus(QString ref);
 };
 
 #endif

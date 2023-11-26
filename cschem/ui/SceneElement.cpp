@@ -90,6 +90,8 @@ void SceneElementData::nameTextToCircuit() {
     txt = "";
   if (txt.isEmpty())
     txt = scene->circuit().autoName(elt.symbol());
+  else
+    txt = PartNumbering::prettifyMinus(txt);
   if (txt != elt.name) { // prevent recursion
     elt.name = txt;
     scene->modifyElementAnnotations(elt);
