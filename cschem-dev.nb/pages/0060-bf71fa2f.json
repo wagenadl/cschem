@@ -1,0 +1,791 @@
+{ "typ": "page",
+  "cre": "2023-11-26T19:19:05.238",
+  "mod": "2023-11-26T19:43:40.006",
+  "cui": "2edabb2b1502c998",
+  "stampTime": 0,
+  "startPage": 60,
+  "unlocked": false,
+  "uuid": "bf71fa2f",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2023-11-26T19:19:05.236",
+      "mod": "2023-11-26T19:36:40.292",
+      "uuid": "fbe01316",
+      "cc": [
+        { "typ": "res",
+          "cre": "2023-11-26T19:20:34.158",
+          "mod": "2023-11-26T19:20:34.160",
+          "archive": "_1_-cb847c01.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "cb847c01"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:20:55.163",
+          "mod": "2023-11-26T19:20:55.165",
+          "archive": "_2_-e1c291e3.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*2",
+          "title": "",
+          "uuid": "e1c291e3"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:21:31.662",
+          "mod": "2023-11-26T19:21:31.665",
+          "archive": "_3_-564877e8.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*3",
+          "title": "",
+          "uuid": "564877e8"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:21:58.358",
+          "mod": "2023-11-26T19:21:58.359",
+          "archive": "_4_-c3ce45b2.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*4",
+          "title": "",
+          "uuid": "c3ce45b2"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:22:11.960",
+          "mod": "2023-11-26T19:22:11.961",
+          "archive": "_5_-bd7eeb27.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*5",
+          "title": "",
+          "uuid": "bd7eeb27"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:22:25.762",
+          "mod": "2023-11-26T19:22:25.765",
+          "archive": "_6_-71ada117.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*6",
+          "title": "",
+          "uuid": "71ada117"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:22:39.637",
+          "mod": "2023-11-26T19:22:39.640",
+          "archive": "_7_-95ef8001.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*7",
+          "title": "",
+          "uuid": "95ef8001"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:23:05.929",
+          "mod": "2023-11-26T19:23:05.932",
+          "archive": "_8_-aeab15c9.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*8",
+          "title": "",
+          "uuid": "aeab15c9"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:23:19.644",
+          "mod": "2023-11-26T19:23:19.646",
+          "archive": "_9_-66b872b2.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*9",
+          "title": "",
+          "uuid": "66b872b2"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:25:28.578",
+          "mod": "2023-11-26T19:25:28.597",
+          "archive": "_10_-1ba6fb89.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*10",
+          "title": "",
+          "uuid": "1ba6fb89"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:26:33.590",
+          "mod": "2023-11-26T19:26:33.621",
+          "archive": "_11_-d5a5f2e4.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*11",
+          "title": "",
+          "uuid": "d5a5f2e4"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:27:33.696",
+          "mod": "2023-11-26T19:27:33.709",
+          "archive": "_12_-d368e8f3.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*12",
+          "title": "",
+          "uuid": "d368e8f3"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:28:50.241",
+          "mod": "2023-11-26T19:28:50.288",
+          "archive": "_13_-b88c03fb.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*13",
+          "title": "",
+          "uuid": "b88c03fb"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:29:29.895",
+          "mod": "2023-11-26T19:29:29.907",
+          "archive": "_14_-b0be6e15.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*14",
+          "title": "",
+          "uuid": "b0be6e15"
+        },
+        { "typ": "res",
+          "cre": "2023-11-26T19:36:40.276",
+          "mod": "2023-11-26T19:36:40.292",
+          "archive": "_15_-7f01bc53.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*15",
+          "title": "",
+          "uuid": "7f01bc53"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2023-11-26T19:19:06.834",
+      "mod": "2023-11-26T19:19:17.195",
+      "uuid": "0d77d55f",
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:19:06.834",
+          "mod": "2023-11-26T19:19:17.194",
+          "lines": [
+            0
+          ],
+          "text": "Is a Symbol editor for CSchem practical?",
+          "uuid": "0b3e1043"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:19:19.632",
+      "mod": "2023-11-26T19:20:05.265",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "eb1498d2",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:19:19.632",
+          "mod": "2023-11-26T19:20:05.265",
+          "lines": [
+            0,
+            62,
+            124
+          ],
+          "text": "I’d love to move away from drawing Symbols in Inkscape. But I don’t want to implement an entire svg editor myself. Would it be possible to implement a very restricted subset?",
+          "uuid": "5f6bdbf1"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:20:09.771",
+      "mod": "2023-11-26T19:34:58.198",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "98d457b1",
+      "y0": 145.498,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:20:09.771",
+          "mod": "2023-11-26T19:34:58.198",
+          "lines": [
+            0
+          ],
+          "text": "Many of the “standard” symbols stick to the grid system:",
+          "uuid": "9f9c8258"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-26T19:20:34.158",
+      "mod": "2023-11-26T19:21:37.203",
+      "h": 125.024,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "8e081bf4",
+      "xref": 0.0,
+      "y0": 172.664,
+      "yref": -15.1134,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:20:34.160",
+          "mod": "2023-11-26T19:21:08.918",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 160.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.527934,
+          "uuid": "11b10f9e",
+          "width": 165.0,
+          "x": 0.0,
+          "y": 0.0
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:20:55.165",
+          "mod": "2023-11-26T19:21:36.536",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 205.0,
+          "res": [
+            "*2"
+          ],
+          "resName": "*2",
+          "scale": 0.522069,
+          "uuid": "474c03ca",
+          "width": 283.0,
+          "x": 98.6033,
+          "y": -6.11335
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:21:31.665",
+          "mod": "2023-11-26T19:21:35.628",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 197.0,
+          "res": [
+            "*3"
+          ],
+          "resName": "*3",
+          "scale": 0.453404,
+          "uuid": "4fde55d3",
+          "width": 434.0,
+          "x": 258.301,
+          "y": 0.763224
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:21:38.947",
+      "mod": "2023-11-26T19:21:48.963",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "8e7494ec",
+      "y0": 297.688,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:21:38.947",
+          "mod": "2023-11-26T19:21:48.963",
+          "lines": [
+            0
+          ],
+          "text": "But subtle deviations abound:",
+          "uuid": "24717281"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-26T19:21:58.358",
+      "mod": "2023-11-26T19:23:29.230",
+      "h": 244.118,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f101f39e",
+      "xref": 0.0,
+      "y0": 324.854,
+      "yref": -15.4534,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:21:58.359",
+          "mod": "2023-11-26T19:22:02.340",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 205.0,
+          "res": [
+            "*4"
+          ],
+          "resName": "*4",
+          "scale": 0.492538,
+          "uuid": "1df1ce56",
+          "width": 127.0,
+          "x": 0.0,
+          "y": 0.0
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:22:11.961",
+          "mod": "2023-11-26T19:22:16.253",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 215.0,
+          "res": [
+            "*5"
+          ],
+          "resName": "*5",
+          "scale": 0.458629,
+          "uuid": "31173d02",
+          "width": 151.0,
+          "x": 77.1777,
+          "y": -1.06171
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:22:25.765",
+          "mod": "2023-11-26T19:22:28.713",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 475.0,
+          "res": [
+            "*6"
+          ],
+          "resName": "*6",
+          "scale": 0.476038,
+          "uuid": "ecf5f7e8",
+          "width": 184.0,
+          "x": 157.219,
+          "y": -6.4534
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:22:39.640",
+          "mod": "2023-11-26T19:23:26.811",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 263.0,
+          "res": [
+            "*7"
+          ],
+          "resName": "*7",
+          "scale": 0.410316,
+          "uuid": "fba2f606",
+          "width": 307.0,
+          "x": 4.71611,
+          "y": 107.951
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:23:05.932",
+          "mod": "2023-11-26T19:23:09.963",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 316.0,
+          "res": [
+            "*8"
+          ],
+          "resName": "*8",
+          "scale": 0.336898,
+          "uuid": "4d3ea569",
+          "width": 280.0,
+          "x": 268.148,
+          "y": -3.52519
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:23:19.646",
+          "mod": "2023-11-26T19:23:24.167",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 259.0,
+          "res": [
+            "*9"
+          ],
+          "resName": "*9",
+          "scale": 0.412465,
+          "uuid": "aaf98b80",
+          "width": 254.0,
+          "x": 267.085,
+          "y": 111.172
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:23:32.841",
+      "mod": "2023-11-26T19:24:21.928",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "d793bb93",
+      "y0": 568.972,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:23:32.841",
+          "mod": "2023-11-26T19:24:21.928",
+          "lines": [
+            0,
+            60
+          ],
+          "text": "Would it be practical to extract a comprehensive grammar of graphical atoms?",
+          "uuid": "2e324e0a"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:25:17.472",
+      "mod": "2023-11-26T19:25:28.151",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5aabf1dd",
+      "y0": 619.304,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:25:17.472",
+          "mod": "2023-11-26T19:25:28.151",
+          "lines": [
+            0,
+            54
+          ],
+          "text": "In the non-standard collection, I have sometimes been creative:",
+          "uuid": "6bb6a4e7"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-26T19:25:28.578",
+      "mod": "2023-11-26T19:25:33.220",
+      "h": 157.289,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "a871833a",
+      "xref": 0.0,
+      "y0": 72.0,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:25:28.597",
+          "mod": "2023-11-26T19:25:33.220",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 1030.0,
+          "res": [
+            "*10"
+          ],
+          "resName": "*10",
+          "scale": 0.135232,
+          "uuid": "367fbe0a",
+          "width": 674.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:26:28.848",
+      "mod": "2023-11-26T19:26:33.269",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "45b293e2",
+      "y0": 229.289,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:26:28.848",
+          "mod": "2023-11-26T19:26:33.269",
+          "lines": [
+            0
+          ],
+          "text": "but mostly extremely boring:",
+          "uuid": "02aacb1f"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-26T19:26:33.589",
+      "mod": "2023-11-26T19:26:36.836",
+      "h": 161.142,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "5886b64f",
+      "xref": 0.0,
+      "y0": 256.455,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:26:33.621",
+          "mod": "2023-11-26T19:26:36.836",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 1011.0,
+          "res": [
+            "*11"
+          ],
+          "resName": "*11",
+          "scale": 0.141584,
+          "uuid": "d7705908",
+          "width": 1044.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:27:26.077",
+      "mod": "2023-11-26T19:30:25.790",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "9bdcae46",
+      "y0": 417.597,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:27:26.077",
+          "mod": "2023-11-26T19:30:25.790",
+          "lines": [
+            0,
+            56,
+            114
+          ],
+          "text": "Containers present some unique problems, because I have drawn some rather complex circuits inside them. Arguably, drawing all contained subelements in the correct geometric",
+          "uuid": "69a7d9bf"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-26T19:27:33.696",
+      "mod": "2023-11-26T19:29:38.566",
+      "h": 209.612,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "f6e64ee2",
+      "xref": 0.0,
+      "y0": 491.095,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:27:33.709",
+          "mod": "2023-11-26T19:27:36.370",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 598.0,
+          "res": [
+            "*12"
+          ],
+          "resName": "*12",
+          "scale": 0.217441,
+          "uuid": "d89a0153",
+          "width": 699.0,
+          "x": 0.0,
+          "y": 0.0
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:28:50.288",
+          "mod": "2023-11-26T19:28:58.177",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 1536.0,
+          "res": [
+            "*13"
+          ],
+          "resName": "*13",
+          "scale": 0.123559,
+          "uuid": "9027e3a6",
+          "width": 1072.0,
+          "x": 157.742,
+          "y": 1.82494
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:29:29.907",
+          "mod": "2023-11-26T19:29:37.863",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 529.0,
+          "res": [
+            "*14"
+          ],
+          "resName": "*14",
+          "scale": 0.308074,
+          "uuid": "b2926829",
+          "width": 551.0,
+          "x": 293.367,
+          "y": 1.82494
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:30:28.593",
+      "mod": "2023-11-26T19:33:11.863",
+      "h": 119.83,
+      "ind": 0,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "f371eb95",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:30:28.593",
+          "mod": "2023-11-26T19:33:11.863",
+          "lines": [
+            0,
+            61,
+            122,
+            182,
+            248
+          ],
+          "text": "arrangement violates the principle of separating CSchem from CPCB, so I would be happy to just draw, e.g., a single opamp and the text “⨯4” inside the quad-opamp container. However, it certainly is convenient that CPCB often “guesses” correctly if a device implements an opamp with standard pinout.",
+          "uuid": "b3689786"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:35:29.955",
+      "mod": "2023-11-26T19:35:52.040",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "86dd39d3",
+      "y0": 191.83,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:35:29.955",
+          "mod": "2023-11-26T19:35:52.039",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "A useful starting point would be a (python?) program that constructs simple symbols like",
+          "uuid": "b3d10606"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-26T19:36:40.275",
+      "mod": "2023-11-26T19:36:49.290",
+      "h": 240.703,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "40ff1c93",
+      "xref": 0.0,
+      "y0": 242.162,
+      "yref": -7.68223,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-26T19:36:40.292",
+          "mod": "2023-11-26T19:36:47.459",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 4.0,
+          "height": 680.0,
+          "res": [
+            "*15"
+          ],
+          "resName": "*15",
+          "scale": 0.329443,
+          "uuid": "d35d36b4",
+          "width": 538.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:36:53.382",
+      "mod": "2023-11-26T19:38:10.533",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "3316feec",
+      "y0": 482.865,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:36:53.382",
+          "mod": "2023-11-26T19:38:10.533",
+          "lines": [
+            0,
+            56,
+            123
+          ],
+          "text": "given lists of pins for each of the four sides and some additional info like spacing (2/3/4 grid steps, sep. for vert. and hori.).",
+          "uuid": "c320053c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:43:30.146",
+      "mod": "2023-11-26T19:43:40.006",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "0a86dcd6",
+      "y0": 556.363,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:43:30.146",
+          "mod": "2023-11-26T19:43:40.006",
+          "lines": [
+            0
+          ],
+          "text": "First as command line, then with a gui on top.",
+          "uuid": "e170b11e"
+        }
+      ]
+    }
+  ]
+}

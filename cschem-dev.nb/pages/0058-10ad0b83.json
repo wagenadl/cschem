@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2023-11-26T08:00:59.682",
-  "mod": "2023-11-26T14:53:03.859",
+  "mod": "2023-11-26T19:19:03.869",
   "cui": "2edabb2b1502c998",
   "stampTime": 0,
   "startPage": 58,
@@ -473,6 +473,29 @@
       ]
     },
     { "typ": "textblock",
+      "cre": "2023-11-26T19:14:49.236",
+      "mod": "2023-11-26T19:15:35.535",
+      "h": 54.787,
+      "ind": 2,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "1c7b4135",
+      "y0": 159.299,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:14:49.236",
+          "mod": "2023-11-26T19:15:35.535",
+          "lines": [
+            0,
+            70,
+            136
+          ],
+          "text": "I will not fix this today, as Connection magnetism is quite different from Element magnetism: the latter has a specific “hover manager” to help",
+          "uuid": "4db1c01b"
+        }
+      ]
+    },
+    { "typ": "textblock",
       "cre": "2023-11-26T08:05:07.591",
       "mod": "2023-11-26T09:07:15.499",
       "h": 73.498,
@@ -480,7 +503,7 @@
       "sheet": 1,
       "split": [ ],
       "uuid": "d8bbc71e",
-      "y0": 159.299,
+      "y0": 214.086,
       "cc": [
         { "typ": "text",
           "cre": "2023-11-26T08:05:07.591",
@@ -503,7 +526,7 @@
       "sheet": 1,
       "split": [ ],
       "uuid": "fe150a8f",
-      "y0": 232.797,
+      "y0": 287.584,
       "cc": [
         { "typ": "text",
           "cre": "2023-11-26T13:46:56.088",
@@ -525,7 +548,7 @@
       "sheet": 1,
       "split": [ ],
       "uuid": "58d2779c",
-      "y0": 269.764,
+      "y0": 324.551,
       "cc": [
         { "typ": "text",
           "cre": "2023-11-26T08:43:56.474",
@@ -547,7 +570,7 @@
       "sheet": 1,
       "split": [ ],
       "uuid": "f9085fa3",
-      "y0": 320.096,
+      "y0": 374.883,
       "cc": [
         { "typ": "text",
           "cre": "2023-11-26T13:38:30.679",
@@ -568,7 +591,7 @@
       "sheet": 1,
       "split": [ ],
       "uuid": "dc3bafdb",
-      "y0": 339.243,
+      "y0": 394.03,
       "cc": [
         { "typ": "text",
           "cre": "2023-11-26T13:46:26.656",
@@ -579,6 +602,24 @@
           ],
           "text": "9. Sometimes dots do not get taken away even when not needed any more.",
           "uuid": "3b309aed"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-26T19:19:03.869",
+      "mod": "2023-11-26T19:19:03.869",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "ff39dd9c",
+      "y0": 444.362,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-26T19:19:03.869",
+          "mod": "2023-11-26T19:19:03.869",
+          "text": "",
+          "uuid": "e91dc7ff"
         }
       ]
     }
