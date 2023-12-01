@@ -30,7 +30,8 @@ public:
   int elementAt(QPointF scenepos, int exclude=-1) const;
   QString pinAt(QPointF scenepos, int elementId) const;
   // returns NOPIN if none
-  int connectionAt(QPointF scenepos, int *segmentp=0) const;
+  int connectionAt(QPointF scenepos, int *segmentp=0,
+                   QSet<int> avoid=QSet<int>()) const;
   void modifyConnection(int id, QPolygonF path);
   void modifyElementAnnotations(Element const &);
   /* This can change name, value, info, and position and visibility of labels,
