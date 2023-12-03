@@ -781,7 +781,7 @@ QString Scene::pinAt(QPointF scenepos, int elementId) const {
   return PinID::NOPIN;
 }
 
-int Scene::connectionAt(QPointF scenepos, int *segp) const {
+int Scene::connectionAt(QPointF scenepos, int *segp, QSet<int> avoid) const {
   if (segp)
     *segp = -1;
   
@@ -789,6 +789,8 @@ int Scene::connectionAt(QPointF scenepos, int *segp) const {
     return -1; // shortcut in case nothing there at all
   
  for (auto c: d->conns) {
+   if (avoid.contains(c->id()))
+     continue;
    int seg = c->segmentAt(scenepos);
    if (seg>=0) {
      if (segp)
@@ -796,7 +798,7 @@ int Scene::connectionAt(QPointF scenepos, int *segp) const {
      return c->id();
    }
  }
- 
+
  return -1;
 }
 

@@ -1,0 +1,316 @@
+{ "typ": "page",
+  "cre": "2023-11-28T08:32:26.602",
+  "mod": "2023-11-28T08:41:59.368",
+  "cui": "2edabb2b1502c998",
+  "stampTime": 0,
+  "startPage": 63,
+  "unlocked": false,
+  "uuid": "23d705b5",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2023-11-28T08:32:26.592",
+      "mod": "2023-11-28T08:39:54.652",
+      "uuid": "ece230af",
+      "cc": [
+        { "typ": "res",
+          "cre": "2023-11-28T08:32:26.617",
+          "mod": "2023-11-28T08:32:26.618",
+          "archive": "58_-ae417f17.html",
+          "desc": "",
+          "preview": "58_-ae417f17p.png",
+          "source": "page://0.0.0.58/10ad0b83/0",
+          "tag": "58",
+          "title": "",
+          "uuid": "ae417f17"
+        },
+        { "typ": "res",
+          "cre": "2023-11-28T08:32:28.009",
+          "mod": "2023-11-28T08:32:28.022",
+          "archive": "_1_-fe4c9575.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "fe4c9575"
+        },
+        { "typ": "res",
+          "cre": "2023-11-28T08:32:42.551",
+          "mod": "2023-11-28T08:32:42.555",
+          "archive": "_2_-436a0c03.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*2",
+          "title": "",
+          "uuid": "436a0c03"
+        },
+        { "typ": "res",
+          "cre": "2023-11-28T08:32:59.088",
+          "mod": "2023-11-28T08:32:59.092",
+          "archive": "_3_-b97c2b0c.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*3",
+          "title": "",
+          "uuid": "b97c2b0c"
+        },
+        { "typ": "res",
+          "cre": "2023-11-28T08:33:40.719",
+          "mod": "2023-11-28T08:33:40.723",
+          "archive": "_4_-3fdc669e.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*4",
+          "title": "",
+          "uuid": "3fdc669e"
+        },
+        { "typ": "res",
+          "cre": "2023-11-28T08:39:54.651",
+          "mod": "2023-11-28T08:39:54.652",
+          "archive": "_5_-810118a1.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*5",
+          "title": "",
+          "uuid": "810118a1"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2023-11-28T08:32:26.604",
+      "mod": "2023-11-28T08:32:26.619",
+      "uuid": "f0abac12",
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-28T08:32:26.604",
+          "mod": "2023-11-28T08:32:26.619",
+          "lines": [
+            0
+          ],
+          "text": "Bugs in CSchem (cont’d)",
+          "uuid": "664b58ba",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2023-11-28T08:32:26.617",
+              "mod": "2023-11-28T08:32:26.619",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "fdbef083",
+              "x": -46.8281,
+              "y": 45.06,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2023-11-28T08:32:26.617",
+                  "mod": "2023-11-28T08:32:26.617",
+                  "lines": [
+                    0
+                  ],
+                  "text": "p. 58 >",
+                  "uuid": "337c4928",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2023-11-28T08:32:26.617",
+                      "mod": "2023-11-28T08:32:26.617",
+                      "end": 5,
+                      "res": [
+                        "58"
+                      ],
+                      "start": 3,
+                      "style": 4,
+                      "uuid": "e3fa6997"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-28T08:33:09.228",
+      "mod": "2023-11-28T08:34:52.310",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "f76f927c",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-28T08:33:09.228",
+          "mod": "2023-11-28T08:34:52.310",
+          "lines": [
+            0,
+            54,
+            109,
+            172
+          ],
+          "text": "Reliable way to get non-ortho segment: drag down from symbol on top left and connect one grid unit below the junction. (Connecting two units below instead creates a second junction.)",
+          "uuid": "ba345425"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-28T08:32:28.009",
+      "mod": "2023-11-28T08:33:58.795",
+      "h": 186.549,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "35bacfad",
+      "xref": 0.0,
+      "y0": 168.664,
+      "yref": -38.8866,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-28T08:32:28.022",
+          "mod": "2023-11-28T08:33:58.795",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 343.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.487579,
+          "uuid": "5a43eeb8",
+          "width": 437.0,
+          "x": 226.245,
+          "y": -28.5771
+        },
+        { "typ": "gfximage",
+          "cre": "2023-11-28T08:33:40.723",
+          "mod": "2023-11-28T08:33:54.921",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 343.0,
+          "res": [
+            "*4"
+          ],
+          "resName": "*4",
+          "scale": 0.471797,
+          "uuid": "22afc4a5",
+          "width": 437.0,
+          "x": 13.7116,
+          "y": -29.8866
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-28T08:36:12.616",
+      "mod": "2023-11-28T08:41:59.368",
+      "h": 73.498,
+      "ind": 4,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "3fe3cb90",
+      "y0": 355.213,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-28T08:36:12.616",
+          "mod": "2023-11-28T08:41:59.368",
+          "lines": [
+            0,
+            63,
+            125
+          ],
+          "text": "10. Magnetism bug: When a pin is magnetically stuck to a line, it should still be allowed to be dragged along the line, even in single step increments. Irksome to user.",
+          "uuid": "66cd8547",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2023-11-28T08:36:44.240",
+              "mod": "2023-11-28T08:36:44.240",
+              "end": 109,
+              "start": 104,
+              "style": 1,
+              "uuid": "6a0d11e8"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-28T08:39:37.580",
+      "mod": "2023-11-28T08:39:53.690",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "3de1a653",
+      "y0": 428.711,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-28T08:39:37.580",
+          "mod": "2023-11-28T08:39:53.690",
+          "lines": [
+            0
+          ],
+          "text": "11. Overly eager hyphen to minus change:",
+          "uuid": "0d37d268"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2023-11-28T08:39:54.650",
+      "mod": "2023-11-28T08:39:58.150",
+      "h": 80.3485,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "373bdc03",
+      "xref": 0.0,
+      "y0": 455.877,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2023-11-28T08:39:54.652",
+          "mod": "2023-11-28T08:39:58.150",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 121.0,
+          "res": [
+            "*5"
+          ],
+          "resName": "*5",
+          "scale": 0.515276,
+          "uuid": "1226d9d1",
+          "width": 271.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2023-11-28T08:40:01.677",
+      "mod": "2023-11-28T08:41:32.536",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0db1d1fd",
+      "y0": 536.225,
+      "cc": [
+        { "typ": "text",
+          "cre": "2023-11-28T08:40:01.677",
+          "mod": "2023-11-28T08:41:31.771",
+          "lines": [
+            0
+          ],
+          "text": "Strictly speaking, should not be done in middle of part number. ",
+          "uuid": "40e86af3"
+        }
+      ]
+    }
+  ]
+}

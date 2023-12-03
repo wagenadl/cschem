@@ -474,6 +474,8 @@ Geometry::Intersection Geometry::intersection(QPoint p, QPolygon poly,
 	best.index = n;
 	best.q = p0;
 	dist = d0;
+        if (dist==0)
+          return best;
       }
       if (p0.x() < p1.x())
 	p0 += QPoint(1,0);

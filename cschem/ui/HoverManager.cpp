@@ -56,7 +56,8 @@ public:
   void unhighlightSegment();
   QList<QPoint> seeWhatSticks(QPoint delta);
   void showStickPoints(QList<QPoint> const &pts);
-  QPoint tryNearby(QPoint del, QList<QPoint> &pts);
+  QList<QPoint> tryNearby(QPoint del); // final in list is update delta, rest is stuck points
+  // empty if no success
   QString pointName(int elt, QString pin) const;
   QString netName(int con) const;
 public:
@@ -425,17 +426,18 @@ QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
       pin = scene->pinAt(pup, elt);
       //qDebug() << "     got stick -- " << del << p << pup << elt << pin << geom.pinPosition(elt, pin);
       if (pin != PinID::NOPIN) {
-        if (geom.pinPosition(elt, pin)==p)
+        if (geom.pinPosition(elt, pin)==p) {
           pts << p;
+          continue;
+        }
       }
-    } else {
-      int con = scene->connectionAt(pup);
-      if (con>0 && !avoidConnections.contains(con)) {
-        QPolygon path = geom.connectionPath(con);
-        Geometry::Intersection ii = geom.intersection(p, path);
-        if (ii.index>=0 && ii.q==p)
-          pts << p;
-      }
+    }
+    int con = scene->connectionAt(pup, 0, avoidConnections);
+    if (con>0) {
+      QPolygon path = geom.connectionPath(con);
+      Geometry::Intersection ii = geom.intersection(p, path);
+      if (ii.index>=0 && ii.q==p)
+        pts << p;
     }
   }
   return pts;
@@ -463,38 +465,42 @@ void HoverManagerData::showStickPoints(QList<QPoint> const &pts) {
     floatMarkers[n++]->setBrush(QColor(255, 255, 255, 0));  // hide it
 }
 
-QPoint HoverManagerData::tryNearby(QPoint del, QList<QPoint> &pts) {
+QList<QPoint> HoverManagerData::tryNearby(QPoint del) {
   QList<QPoint> dd{{-1,0},{1,0},{0,-1},{0,1},{-1,-1},{-1,1},{1,1},{1,-1}};
   for (QPoint dxy: dd) {
     QPoint del1 = del + dxy;
-    if (true) { //del1!=QPoint()) {
-      pts = seeWhatSticks(del1);
-      if (!pts.isEmpty())
-        return del1;
+    if (del1 != QPoint(0,0)) {
+      QList<QPoint> pts = seeWhatSticks(del1);
+      if (!pts.isEmpty()) {
+        pts << del1;
+        return pts;
+      }
     }
   }
-  return del;
+  return QList<QPoint>();
 }
 
 QPoint HoverManager::tentativelyMoveSelection(QPoint del, bool nomagnet) {
-  if (d->haveMagnet && !nomagnet) {
-    if ((del - d->magnetDelta).manhattanLength() < 3)
-      del = d->magnetDelta;
-    else
-      d->haveMagnet = false;
-  }
-  
   QList<QPoint> pts = d->seeWhatSticks(del);
-  if (pts.isEmpty() && !nomagnet) 
-    del = d->tryNearby(del, pts);
-
-  if (!pts.isEmpty() && del!=QPoint(0,0)) { 
+  if (pts.isEmpty() && !nomagnet) {
+    pts = d->tryNearby(del);
+    if (!pts.isEmpty()) 
+      del = pts.takeLast();
+  }
+  if (!pts.isEmpty() && !nomagnet) {
     d->haveMagnet = true;
     d->magnetDelta = del;
+  } else if (d->haveMagnet) {
+    if (del==d->magnetDelta) {
+      // already at magnet
+    } else if ((del - d->magnetDelta).manhattanLength() < 3) {
+      del = d->magnetDelta;
+      pts = d->seeWhatSticks(del);
+    } else {
+      d->haveMagnet = false;
+    }
   }
-
   d->showStickPoints(pts);
-  
   return del;
 }
 
