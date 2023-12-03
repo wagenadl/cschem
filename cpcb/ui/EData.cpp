@@ -49,7 +49,6 @@ bool EData::updateOnWhat(bool force) {
   if (isnew || force) {
     Nodename nn(currentGroup().nodeName(ids));
     Nodename alias(linkedschematic.pinAlias(nn));
-    //qDebug () << "updateonwhat" << ids << nn.toString() << alias.toString();
     if (alias.isValid())
       onobject = alias.humanName();
     else
@@ -67,10 +66,8 @@ void EData::updateNet(NodeID seed) {
   if (linkedschematic.isValid() && !net.nodes().isEmpty()
       && crumbs.isEmpty()) {
     Nodename seed = net.someNode();
-    //qDebug() << "updatenet" << seed;
     for (LinkedNet const &lnet: linkedschematic.nets()) {
       if (lnet.containsMatch(seed)) {
-        //  qDebug() << "  matched against" << lnet;
 	linkednet = lnet;
 	break;
       }
@@ -479,7 +476,6 @@ void EData::moveMoving(Point p) {
     Dim mrg = pressMargin();
     int fave = visibleObjectAt(p, mrg);
     movingdelta = p.roundedTo(layout.board().grid) - movingstart;
-    //qDebug() << "EData::moveMoving" << p << movingdelta << fave;
     if (fave>0) {
       Point altpt = movingstart;
       // perhaps snap
@@ -500,7 +496,6 @@ void EData::moveMoving(Point p) {
           }
         }
       } else if (obj.isTrace()) {
-        //qDebug() << "move trace";
         Trace const &trc(obj.asTrace());
         Dim mrg = pressMargin();
         if (trc.onP1(p, mrg))
@@ -525,17 +520,6 @@ void EData::moveTracing(Point p) {
   ed->update();
 }
 
-enum class Prio {
-  None,
-  BottomPlane,
-  TopPlane,
-  BottomTrace,
-  BottomObject,
-  TopTrace,
-  TopObject,
-  Silk,
-  Panel,
-};
 
 NodeID EData::visibleNodeAt(Point p, Dim mrg) const {
   Group const &here(currentGroup());
@@ -568,6 +552,59 @@ void EData::pressOrigin(Point p) {
   ed->userOriginChanged(userorigin);
 }
 
+EData::Prio EData::objectPriority(Object const &obj, Point p, Dim mrg) const {
+  Board const &brd = layout.board();
+  Layer l = obj.layer();
+  switch (obj.type()) {
+  case Object::Type::Trace:
+    if (brd.layervisible[l])
+      return l==Layer::Bottom ? Prio::BottomTrace
+        : l==Layer::Top ? Prio::TopTrace
+        : l==Layer::Silk ? Prio::Silk
+        : Prio::Panel;
+    else
+      return Prio::None;
+  case Object::Type::Text: case Object::Type::Pad: case Object::Type::Arc:
+    if (brd.layervisible[l])
+      return l==Layer::Bottom ? Prio::BottomObject
+        : l==Layer::Top ? Prio::TopObject
+        : l==Layer::Silk ? Prio::Silk
+        : Prio::Panel;
+    else
+      return Prio::None;
+  case Object::Type::Hole:
+    if (brd.layervisible[Layer::Top])
+      return Prio::TopObject;
+    else if (brd.layervisible[Layer::Bottom])
+      return Prio::BottomObject;
+    else
+      return Prio::None;
+  case Object::Type::NPHole:
+    return Prio::Silk;
+  case Object::Type::Group: {
+    Group const &g = obj.asGroup();
+    Prio prio = Prio::None;
+    QList<int> ids = g.objectsAt(p, mrg);
+    for (int id: ids) {
+      Prio p1 = objectPriority(g.object(id), p, mrg);
+      if (p1!=Prio::None && int(p1) >= int(prio))
+        prio = p1;
+    }
+    return prio;
+  }
+  case Object::Type::Plane:
+    if (brd.planesvisible && brd.layervisible[l])
+      return l==Layer::Bottom ? Prio::BottomPlane
+        : l==Layer::Top ? Prio::TopPlane
+        : Prio::None;
+    else
+      return Prio::None;
+  default:
+    return Prio::None;
+  }
+}
+
+
 int EData::visibleObjectAt(Point p, Dim mrg) const {
   Group const &here(currentGroup());
   return visibleObjectAt(here, p, mrg);
@@ -584,49 +621,10 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
   int fave = -1;
   Prio prio = Prio::None;
   Board const &brd = layout.board();
-  auto better = [&prio](Prio p1) { return p1!=Prio::None
-				   && int(p1) >= int(prio); };
   for (int id: ids) {
-    Prio p1 = Prio::None;
     Object const &obj = here.object(id);
-    Layer l = obj.layer();
-    switch (obj.type()) {
-    case Object::Type::Trace:
-      if (brd.layervisible[l])
-	p1 = l==Layer::Bottom ? Prio::BottomTrace
-	  : l==Layer::Top ? Prio::TopTrace
-	  : l==Layer::Silk ? Prio::Silk
-	  : Prio::Panel;
-      break;
-    case Object::Type::Text: case Object::Type::Pad: case Object::Type::Arc:
-      if (brd.layervisible[l])
-	p1 = l==Layer::Bottom ? Prio::BottomObject
-	  : l==Layer::Top ? Prio::TopObject
-	  : l==Layer::Silk ? Prio::Silk
-	  : Prio::Panel;
-      break;
-    case Object::Type::Hole:
-      if (brd.layervisible[Layer::Top])
-	p1 = Prio::TopObject;
-      else if (brd.layervisible[Layer::Bottom])
-	p1 = Prio::BottomObject;
-      break;
-    case Object::Type::NPHole:
-      p1 = Prio::Silk;
-      break;
-    case Object::Type::Group:
-      p1 = Prio::Silk;
-      break;
-    case Object::Type::Plane:
-      if (brd.planesvisible && brd.layervisible[l])
-        p1 = l==Layer::Bottom ? Prio::BottomPlane
-          : l==Layer::Top ? Prio::TopPlane
-          : Prio::None;
-      break;
-    default:
-      break;
-    }
-    if (better(p1)) {
+    Prio p1 = objectPriority(obj, p, mrg);
+    if (p1 != Prio::None && int(p1) >= int(prio)) {
       prio = p1;
       fave = id;
     }
@@ -637,7 +635,6 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
 void EData::pressPNPOrient(Point p, Qt::KeyboardModifiers m) {
   Dim mrg = pressMargin();
   int fave = visibleObjectAt(p, mrg);
-  qDebug() << "presspnp" << fave;
   if (currentGroup().object(fave).isGroup()) {
     UndoCreator uc(this, true);
     Group &g = currentGroup().object(fave).asGroup();
@@ -718,7 +715,6 @@ void EData::startMoveSelection(int fave) {
 	}
       }
     } else if (obj.isTrace()) {
-      //qDebug() << "move trace";
       Trace const &trc(obj.asTrace());
       if (trc.onP1(presspoint, 1.1*pressMargin()))
         movingstart = trc.p1;
@@ -935,7 +931,6 @@ void EData::editPinName(int groupid, int hole_pad_id) {
   bool ok = false;
   Symbol const &sym(linkedschematic.schematic()
 		    .symbolForNamedElement(group_ref));
-  //qDebug() << "editpinname" << pin_ref << sym.isValid();
   if (sym.isValid()) {
     PinNameEditor pne(group_ref, pin_ref, sym, ed, grp.allPins().size());
     ok = pne.exec();
@@ -947,7 +942,6 @@ void EData::editPinName(int groupid, int hole_pad_id) {
 				    QLineEdit::Normal,
 				    pin_ref, &ok);
   }
-  //  qDebug() << "editpinname ->" << pin_ref;
   if (ok) {
     UndoCreator uc(this, true);
     Group &group(currentGroup().object(groupid).asGroup());

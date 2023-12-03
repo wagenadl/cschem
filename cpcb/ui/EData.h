@@ -30,6 +30,18 @@
 #include <QFileInfo>
 
 class EData {
+private:
+  enum class Prio {
+    None,
+    BottomPlane,
+    TopPlane,
+    BottomTrace,
+    BottomObject,
+    TopTrace,
+    TopObject,
+    Silk,
+    Panel,
+  };
 public:
   EData(class Editor *ed);
   void drawBoard(QPainter &) const;
@@ -44,6 +56,7 @@ public:
   void pressEdit(Point, Qt::KeyboardModifiers);
   int visibleObjectAt(Point p, Dim mrg=Dim()) const;
   int visibleObjectAt(Group const &grp, Point p, Dim mrg) const;
+  Prio objectPriority(Object const &obj, Point p, Dim mrg) const;
   NodeID visibleNodeAt(Point p, Dim mrg=Dim()) const;
   NodeID visibleNodeAt(Group const &grp, Point p, Dim mrg) const;
   void pressOrigin(Point);
