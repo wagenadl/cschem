@@ -37,6 +37,13 @@
 #include "ui/RecentFiles.h"
 #include <QMetaMethod> 
 
+static QMap<QString, MainWindow *> &openFiles() {
+  static QMap<QString, MainWindow *> *m = 0;
+  if (m==0)
+    m = new QMap<QString, MainWindow *>();
+  return *m;
+}
+
 class MWData {
 public:
   MWData(MainWindow *mw): mw(mw) {
@@ -204,6 +211,7 @@ QString MWData::getSaveFilename(QString ext, QString caption) {
 }
 
 void MWData::resetFilename() {
+  openFiles().remove(filename);
   filename = "";
   setWindowTitle();
 }
@@ -291,15 +299,23 @@ void MWData::openDialog() {
   QString fn = getOpenFilename("cpcb", "Select file to open…",
                                "PCB layouts (*.cpcb)");
   if (!fn.isEmpty()) {
-    auto *w = editor->pcbLayout().root().isEmpty() ? mw : new MainWindow();
-    w->open(fn);
-    w->show();
+    if (openFiles().contains(fn)) {
+      openFiles()[fn]->show();
+      openFiles()[fn]->raise();
+    } else {
+      auto *w = editor->pcbLayout().root().isEmpty() ? mw : new MainWindow();
+      w->open(fn);
+      w->show();
+    }
   }
 }
 
 bool MainWindow::open(QString fn) {
+  openFiles().remove(d->filename);
   QFileInfo fi(fn);
-  if (!d->editor->load(fi.absoluteFilePath())) {
+  openFiles()[fn] = this;
+  fn = fi.absoluteFilePath();
+  if (!d->editor->load(fn)) {
     d->resetFilename();
     QMessageBox::warning(this, "CPCB",
 			 "Could not load “" + fn + "”",
@@ -555,7 +571,9 @@ bool MWData::saveAsDialog() {
 
   if (!fn.endsWith(".cpcb"))
     fn += ".cpcb";
+  openFiles().remove(filename);
   filename = fn;
+  openFiles()[filename] = mw;
   pwd = QFileInfo(fn).absolutePath();
   mw->setWindowTitle(fn);
   recentfiles->mark(fn);
@@ -640,11 +658,16 @@ void MWData::makeMenus() {
   recentfiles = new RecentFiles("cpcb-recent", mw);
   mw->connect(recentfiles, &RecentFiles::selected,
 	  [this](QString fn) {
-	    auto *mw1 = editor->pcbLayout().root().isEmpty()
-	      ? mw : new MainWindow();
-	    mw1->open(fn);
-	    mw1->show();
-	  });
+            if (openFiles().contains(fn)) {
+              openFiles()[fn]->show();
+              openFiles()[fn]->raise();
+            } else {
+              auto *mw1 = editor->pcbLayout().root().isEmpty()
+                ? mw : new MainWindow();
+              mw1->open(fn);
+              mw1->show();
+            }
+          });
   file->addMenu(recentfiles);
   
   a = file->addAction("&Save", [this]() { saveImmediately(); },
@@ -991,6 +1014,13 @@ MainWindow::MainWindow(): QMainWindow() {
 
 MainWindow::~MainWindow() {
   delete d;
+  for (auto it=openFiles().begin(); it!=openFiles().end();) {
+    // remove all mentions of this window, even if filename mapping got mucked
+    auto here = it;
+    ++it;
+    if (here.value()==this)
+      openFiles().erase(here);
+  }
 }
 
 void MainWindow::closeEvent(QCloseEvent *e) {

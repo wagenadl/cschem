@@ -12,7 +12,7 @@ class RecentFiles: public QMenu {
 public:
   static const int MAXFILES = 9;
   RecentFiles(QString varname="recentfiles", QWidget *parent=0);
-  void mark(QString fn);
+  void mark(QString fn); // add to top of list, but exclude from showing
   QStringList list() const;
   void showEvent(QShowEvent *) override;
 signals:
@@ -22,6 +22,7 @@ private:
 private:
   QString varname;
   QAction *actions[MAXFILES];
+  QString current; // to be excluded
 };
 
 #endif

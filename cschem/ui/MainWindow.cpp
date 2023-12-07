@@ -35,6 +35,13 @@
 #include "FindSym.h"
 #include "VerifySchematic.h"
 
+static QMap<QString, MainWindow *> &openFiles() {
+  static QMap<QString, MainWindow *> *m = 0;
+  if (m==0)
+    m = new QMap<QString, MainWindow *>();
+  return *m;
+}
+
 class MWData {
 public:
   MWData():
@@ -188,9 +195,14 @@ void MainWindow::createActions() {
   d->recentfiles = new RecentFiles("cschem-recent", this);
   connect(d->recentfiles, &RecentFiles::selected,
 	  [this](QString fn) {
-	    auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
-	    mw->load(fn);
-	    mw->show();
+            if (openFiles().contains(fn)) {
+              openFiles()[fn]->show();
+              openFiles()[fn]->raise();
+            } else {
+              auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
+              mw->load(fn);
+              mw->show();
+            }
 	  });
   menu->addMenu(d->recentfiles);
 
@@ -396,9 +408,14 @@ void MainWindow::openAction() {
 					    d->lastdir,
                         tr("Schematics (*.schem *.cschem)"));
   if (!fn.isEmpty()) {
-    auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
-    mw->load(fn);
-    mw->show();
+    if (openFiles().contains(fn)) {
+      openFiles()[fn]->show();
+      openFiles()[fn]->raise();
+    } else {
+      auto *mw = d->scene->schem().isEmpty() ? this : new MainWindow();
+      mw->load(fn);
+      mw->show();
+    }
   }
 }
 
@@ -486,7 +503,9 @@ bool MainWindow::load(QString fn) {
   }
   d->libview->rebuild();
   QFileInfo fi(fn);
+  openFiles().remove(d->filename);
   d->filename = fi.absoluteFilePath();
+  openFiles()[d->filename] = this;
   d->recentfiles->mark(d->filename);
   setWindowTitle(d->filename);
   d->lastdir = fi.dir().absolutePath();
@@ -499,7 +518,9 @@ bool MainWindow::saveAs(QString fn) {
   schem.circuit().renumber(1);
   QFileInfo fi(fn);
   if (FileIO::saveSchematic(fi.absoluteFilePath(), schem)) {
+    openFiles().remove(d->filename);
     d->filename = fi.absoluteFilePath();
+    openFiles()[d->filename] = this;
     d->recentfiles->mark(d->filename);
     d->lastdir = fi.dir().absolutePath();
     setWindowTitle(d->filename);

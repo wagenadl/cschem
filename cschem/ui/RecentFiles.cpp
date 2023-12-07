@@ -30,6 +30,7 @@ void RecentFiles::mark(QString fn) {
   while (files.size() > MAXFILES)
     files.removeLast();
   QSettings().setValue(varname, files);
+  current = fn;
   updateItems();
 }
 
@@ -39,6 +40,7 @@ QStringList RecentFiles::list() const {
 
 void RecentFiles::updateItems() {
   QStringList files = list();
+  files.removeAll(current);
   QSet<QString> leaves;
   QSet<QString> dups;
   for (int n=0; n<MAXFILES; n++) {
