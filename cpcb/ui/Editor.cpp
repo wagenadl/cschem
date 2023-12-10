@@ -889,7 +889,10 @@ void Editor::rotateCW(bool noundo, bool nottext) {
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
-  Point center = box.center(); //.roundedTo(d->layout.board().grid);
+  QSet<Point> pp = selectedPoints();
+  Point center = pp.isEmpty()
+    ? box.center()
+    : Point::average(pp); // roundedTo(d->layout.board().grid);
   UndoCreator uc(d);
   if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
     uc.realize();

@@ -295,7 +295,39 @@ void ConnBuilder::mouseMove(QGraphicsSceneMouseEvent *e) {
   if (d->points.isEmpty())
     return;
   QPointF p0 = d->points.last();
-  QPointF p = d->lib.nearestGrid(e->scenePos());
+  QPointF p = e->scenePos();
+  int elt = d->scene->elementAt(p);
+  QString pin = elt>0 ? d->scene->pinAt(p, elt) : PinID::NOPIN;
+  int seg = -1;
+  int con = pin==PinID::NOPIN ? d->scene->connectionAt(p, &seg) : -1;
+  qDebug() << "cb " << p << elt << pin << con << seg;
+  if (pin!=PinID::NOPIN) {
+    p = d->scene->pinPosition(elt, pin);
+  } else if (con>0) {
+    // ugly copy of code in hovermanager
+    Connection ccc(d->scene->circuit().connections[con]);
+    auto const &lib = d->scene->library();
+    if (seg==0
+	&& ccc.danglingStart()
+	&& !ccc.via.isEmpty()
+	&& QLineF(p, lib.upscale(ccc.via.first())).length() < lib.scale()) {
+      // near dangling start
+      p = lib.upscale(ccc.via.first());
+    } else if (seg==ccc.via.size()-(ccc.danglingStart()?2:1)
+	       && ccc.danglingEnd()
+	       && !ccc.via.isEmpty()
+	       && QLineF(p, lib.upscale(ccc.via.last())).length() < lib.scale()) {
+      p = lib.upscale(ccc.via.last());
+    } else {
+      Geometry geom(d->scene->circuit(), lib);
+      Geometry::Intersection ii(geom.intersection(lib.downscale(p),
+                                                  con, false));
+      p = lib.upscale(ii.q);
+    }
+  } else {
+    p = d->lib.nearestGrid(p);
+  }
+  qDebug() << "  => " << p;
   QPointF dp = p - p0;
   int N = d->segments.size();
   auto *gli1 = d->segments[N-2];

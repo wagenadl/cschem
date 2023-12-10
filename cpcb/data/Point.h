@@ -7,6 +7,7 @@
 #include <QDebug>
 #include "Dim.h"
 #include <QPointF>
+#include <QSet>
 
 struct Point {
   Dim x;
@@ -27,6 +28,7 @@ public:
   static Point fromInch(QPointF const &p) {
     return Point(Dim::fromInch(p.x()), Dim::fromInch(p.y()));
   }
+  static Point average(QSet<Point> const &);
   Point roundedTo(Dim o) const { return Point(x.roundedTo(o),
 					      y.roundedTo(o)); }
   Dim distance(Point const &o) const { return Dim::quadrature(o.x-x, o.y-y); }

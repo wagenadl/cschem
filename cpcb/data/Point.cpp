@@ -94,3 +94,11 @@ bool Point::isNull() const {
 qint64 Point::innerProduct(Point const &b) const {
   return x.raw() * b.x.raw()  + y.raw() * b.y.raw();
 }
+
+Point Point::average(QSet<Point> const &pp) {
+  Point p;
+  for (Point const &p1: pp)
+    p += p1;
+  return p / pp.size();
+}
+
