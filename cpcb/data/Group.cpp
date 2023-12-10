@@ -228,6 +228,7 @@ Object &Group::object(int key) {
   return d->obj[key];
 }
 
+
 Object const &Group::object(NodeID const &id) const {
   static Object nil;
   if (id.isEmpty() || !contains(id[0]))
@@ -563,70 +564,62 @@ Nodename Group::nodeName(NodeID const &ids) const {
 
 QString Group::humanName(NodeID const &ids) const {
   return nodeName(ids).humanName();
-  /*
-  if (ids.isEmpty())
-    return ref;
-  int id = ids.first();
-  Object const &obj(object(id));
-  QString name;
-  switch (obj.type()) {
-  case Object::Type::Group:
-    name = obj.asGroup().humanName(ids.tail());
-    break;
-  case Object::Type::Pad:
-    name = "pin " + obj.asPad().ref;
-    break;
-  case Object::Type::Hole:
-    name = "pin " + obj.asHole().ref;
-    break;
-  default:
-    break;
-  }
-  if (!ref.isEmpty() && !name.isEmpty())
-    return name + " of " + ref;
-  else
-    return name + ref;
-  */
 }
 
-NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace) const {
+NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
+                     Dim *distance_return) const {
   NodeID ids;
+  Dim dist = Dim::infinity();
   for (int id: d->obj.keys()) {
     Object const &obj(object(id));
     if (obj.touches(p, mrg)) {
       switch (obj.type()) {
-      case Object::Type::Group:
-	ids = obj.asGroup().nodeAt(p, mrg, lay, true); // no traces inside groups
-	ids.push_front(id);
-	return ids;
-      case Object::Type::Hole:
-	return NodeID().plus(id);
+      case Object::Type::Group: {
+        Group const &g = obj.asGroup();
+        Dim dist1;
+	NodeID ids1 = g.nodeAt(p, mrg, lay, notrace, &dist1);
+        if (dist1<dist) {
+          ids = ids1;
+          ids.push_front(id);
+          dist = dist1;
+        }
+      } break;
+      case Object::Type::Hole: {
+        Dim dist1 = p.distance(obj.asHole().p);
+        if (dist1 < dist) {
+          ids = NodeID().plus(id);
+          dist = dist1;
+        }
+      } break;
       case Object::Type::Pad:
-        if (lay==Layer::Invalid || lay==obj.asPad().layer) 
-	  return NodeID().plus(id);
+        if (lay==Layer::Invalid || lay==obj.asPad().layer) {
+          Dim dist1 = p.distance(obj.asPad().p);
+          if (dist1 < dist) {
+            ids = NodeID().plus(id);
+            dist = dist1;
+          }
+        }
         break;
       case Object::Type::Trace:
         if (!notrace && ids.isEmpty()
 	    && (lay==obj.asTrace().layer
 		|| (lay==Layer::Invalid
-		    && layerIsCopper(obj.asTrace().layer)))) {
-          ids.clear();
-	  ids << id; // this could still be overwritten!
-        }
+		    && layerIsCopper(obj.asTrace().layer)))) 
+          ids = NodeID().plus(id); // this could still be overwritten!
         break;
       case Object::Type::Plane:
         if (!notrace && ids.isEmpty()
 	    && (lay==obj.asPlane().layer
-		|| lay==Layer::Invalid)) {
-          ids.clear();
-	  ids << id; // this could still be overwritten!
-        }
+		|| lay==Layer::Invalid)) 
+          ids = NodeID().plus(id); // this could still be overwritten!
         break;
       default:
         break;
       }
     }
   }
+      if (distance_return)
+        *distance_return = dist;
   return ids;
 }
 

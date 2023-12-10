@@ -38,7 +38,7 @@ public:
   bool operator>=(Dim const &x) const { return d>=x.d; }
   bool operator!=(Dim const &x) const { return d!=x.d; }
   double toMM() const { return d*1.0/PerMM; }
-  double toMils() const { return d*1.0/PerMil; }
+  double toMils() const { return d*1.0/PerMil; } // a mil is 0.001 inch
   double toInch() const { return d*1.0/PerInch; }
   QString toString() const { return QString::number(d); }
   bool isNull() const { return d==0; }
@@ -54,7 +54,7 @@ public:
   }
   Dim abs() const { return isNegative() ? Dim(-d) : Dim(d); }
   qint64 raw() const { return d; }
-  Dim nonneg() const { return d > 0 ? *this : Dim(); }
+  Dim nonneg() const { return d > 0 ? *this : Dim(); } // this dim or zero, whichever is greater
 public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }
   static Dim fromMils(float x) { return Dim(int(std::round(PerMil*x))); }

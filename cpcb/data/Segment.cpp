@@ -133,11 +133,14 @@ bool Segment::intersects(Segment const &t, Point *intersection) const {
     return no(p);
 }
 
+double Segment::angle() const {
+  return atan2(p2.y.toMils() - p1.y.toMils(),
+               p2.x.toMils() - p1.x.toMils());
+}
+
 double Segment::angle(Segment const &t) const {
-  double us = atan2(p2.y.toMils() - p1.y.toMils(),
-		    p2.x.toMils() - p1.x.toMils());
-  double them = atan2(t.p2.y.toMils() - t.p1.y.toMils(),
-		      t.p2.x.toMils() - t.p1.x.toMils());
+  double us = angle();
+  double them = t.angle();
   double a = them - us;
   while (a>=PI)
     a -= 2*PI;

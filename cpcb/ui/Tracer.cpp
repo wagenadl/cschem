@@ -12,28 +12,79 @@ public:
     layer = ed->props.layer;
     constr45 = ed->props.angleconstraint;
     onsomething = false;
+    onendpoint = false;
+    startonpin = false;
+    startongrid = false;
     second = false;
   }
   Point toGrid(Point p) const {
     Dim grid = ed->layout.board().grid;
     return p.roundedTo(grid);
   }
+  Point constrainTrace(Point p, Segment const &s) const {
+    if (s.p1==s.p2)
+      return constrain(p); // hopeless for length zero segment
+    Dim grid = ed->layout.board().grid;
+    Dim sdx = s.p2.x - s.p1.x;
+    Dim sdy = s.p2.y - s.p1.y;
+    double sdx_ = sdx.raw();
+    double sdy_ = sdy.raw();
+    auto adjusty = [&p, s, sdy, sdx_]() { p.y = s.p1.y + sdy * ((p.x - s.p1.x).raw()/sdx_); };
+    auto adjustx = [&p, s, sdx, sdy_]() { p.x = s.p1.x + sdx * ((p.y - s.p1.y).raw()/sdy_); };
+
+    if (startonpin && !startongrid) {
+      Point delta = p - tracestart;
+      if (delta.x.abs() < grid/2) {
+        p.x = tracestart.x;
+        adjusty();
+        return p;
+      } else if (delta.y.abs() < grid/2) {
+        p.y = tracestart.y;
+        adjustx();
+        return p;
+      }
+    }
+    if (abs(sdy_) < abs(sdx_)) {
+      // closer to horizontal
+      p.x = p.roundedTo(grid).x;
+      adjusty();
+    } else {
+      // closer to vertical
+      p.y = p.roundedTo(grid).y;
+      adjustx();
+    }
+    return p;
+  }
   Point constrain(Point p) const {
+    // constrain 45° angles or grid
     Dim grid = ed->layout.board().grid;
     if (constr45 && tracing) {
-      Point p0 = tracestart;//.roundedTo(grid);
+      Point p0 = tracestart;
       p = p.roundedTo(grid);
       Dim dx = p.x - p0.x;
       Dim dy = p.y - p0.y;
       Dim dr = (abs(dx) + abs(dy))/2;
+      if (p0==p0.roundedTo(grid))
+        dr = dr.roundedTo(grid);
       Point p1 = p0 + Point(dx, Dim());
       Point p2 = p0 + Point(Dim(), dy);
       Point p3 = (p0 + Point(dr*sign(dx), dr*sign(dy))).roundedTo(grid);
       Point p12 = p.distance(p1) < p.distance(p2) ? p1 : p2;
       return (p.distance(p3) < p.distance(p12)) ? p3 : p12;
-    } else {
-      return p.roundedTo(grid);
+    } 
+    if (startonpin && !startongrid) {
+      Point delta = p - tracestart;
+      if (delta.x.abs() < grid/2) { // && delta.x.abs() < .2*delta.y.abs()) {
+        p.x = tracestart.x;
+        p.y = p.roundedTo(grid).y;
+        return p;
+      } else if (delta.y.abs() < grid/2) { //  && delta.y.abs() < .2*delta.x.abs()) {
+        p.y = tracestart.y;
+        p.x = p.roundedTo(grid).x;
+        return p;
+      }
     }
+    return p.roundedTo(grid);
   }
   void maybeSplit(bool createUndo) {
     if (!onsomething)
@@ -76,6 +127,9 @@ public:
   Layer layer;
   bool constr45;
   bool onsomething;
+  bool onendpoint;
+  bool startonpin;
+  bool startongrid;
   NodeID onnode; // only valid if onsomething
   LayerPoint onlp; // only valid if onsomething
   bool second;
@@ -101,10 +155,15 @@ void Tracer::start(class Point const &p) {
   move(p);
   d->tracestart = d->tracecurrent;
   qDebug() << "start" << d->tracestart << d->tracecurrent;
+  if (d->onendpoint) {
+    Object const &obj(d->ed->currentGroup().object(d->onnode));
+    d->startonpin = obj.isPad() || obj.isHole();
+  }
   if (!d->tracing && d->onsomething) {
     d->maybeSplit(true);
   }
   d->tracing = true;
+  d->startongrid = d->tracecurrent == d->toGrid(d->tracecurrent);
 }
 
 void Tracer::click(Point const &p) {
@@ -199,10 +258,18 @@ void Tracer::move(Point const &p) {
                                d->ed->pressMargin());
                      //p.roundedTo(d->ed->layout.board().grid));
   d->onsomething = d->onlp.layer != Layer::Invalid;
-  if (d->onsomething) 
-    d->tracecurrent = d->onlp.point;
-  else
+  if (d->onsomething) {
+    Object const &obj(d->ed->currentGroup().object(d->onnode));
+    d->onendpoint = obj.isPad() || obj.isHole()
+      || (obj.isTrace() && (d->onlp.point==obj.asTrace().p1 || d->onlp.point==obj.asTrace().p2));
+    if (d->onendpoint)
+      d->tracecurrent = d->onlp.point;
+    else
+      d->tracecurrent = d->constrainTrace(d->onlp.point, obj.asTrace());
+  } else {
+    d->onendpoint = false;
     d->tracecurrent = d->constrain(p);
+  }
   qDebug() << "Tracer::move" << p << d->onnode
            << d->onlp.layer << d->onlp.point 
            << d->onsomething << d->tracecurrent;

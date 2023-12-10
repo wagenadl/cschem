@@ -28,7 +28,9 @@ public:
   // The returned intersection point is on the segment if the result is true,
   // otherwise it is on the line extended from the segment.
   Point projectionOntoSegment(Point p) const;
+  // returns p1 or p2 if projection onto line would be outside of segment
   double angle(Segment const &t) const; // putting t after us. angle [-pi,+pi).
+  double angle() const; // our angle wrt +ve x, [-pi,+pi).
   bool intersects(Rect r) const;
 protected:
   Fraction projectionCoefficient(Point p) const;

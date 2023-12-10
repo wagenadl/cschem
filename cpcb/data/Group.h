@@ -34,16 +34,19 @@ public:
   Group(Group const &);
   Group &operator=(Group const &);
   int insert(class Object const &); // assigns ID
-  void remove(int);
-  bool contains(int) const;
-  Object const &object(int) const;
-  Object &object(int);
-  Object const &object(NodeID const &) const;
+  void remove(int); // by ID
+  bool contains(int) const; // by ID
+  Object const &object(int) const; // by ID
+  Object &object(int); // by ID
+  Object const &object(NodeID const &) const; // by tuple of IDs, going into group hierarchy
+  // note that empty nodeid returns nil object, not this group
   Object &object(NodeID const &);
-  QList<int> keys() const;
+  QList<int> keys() const; // i.e., IDs
   QList<NodeID> allPins() const; // recursively
   bool isEmpty() const;
-  Group const &subgroup(NodeID path) const; // follows breadcrumbs
+  Group const &subgroup(NodeID path) const; // follows breadcrumbs.
+  // empty path returns this group
+  // if nodeid does not point to a group, returns empty group
   Group &subgroup(NodeID path);
   // Caution: Do NOT change the empty group that may be returned.
   Group const &parentOf(NodeID) const;
@@ -54,7 +57,8 @@ public:
   QList<int> objectsAt(Point p, Dim mrg=Dim()) const; // p is relative to parent
   // only direct children are returned
   NodeID nodeAt(Point p, Dim mrg=Dim(),
-                Layer l=Layer::Invalid, bool notrace=false) const;
+                Layer l=Layer::Invalid, bool notrace=false,
+                Dim *distance_return=0) const;
   // even inside subgroups; return is crumbs from this group
   // optional layer limits pads to given layer
   QList<NodeID> findNodesByName(Nodename name) const; // all matching nodes
