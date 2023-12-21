@@ -18,6 +18,8 @@ public:
   ScalingDim(Dim fixed);
   ScalingDim(Dim min, float perc, Dim max);
   Dim apply(Dim x) const;
+  void fromSettings(QString name);
+  void toSettings(QString name) const;
 };
 
 QDebug operator<<(QDebug, ScalingDim const &);

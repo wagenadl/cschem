@@ -8,7 +8,7 @@
 #include <QXmlStreamReader>
 #include <QDebug>
 
-class Settings {
+class FabSettings {
 public:
   ScalingDim trace_clearance;
   ScalingDim pad_clearance;
@@ -16,11 +16,14 @@ public:
   ScalingDim mask_margin;
   Dim hole_min, hole_max, ring_min;
 public:
-  Settings();
+  FabSettings();
+  void save() const;
+  void resetToSaved();
+  void restoreFactoryDefaults(); 
 };
 
-QDebug operator<<(QDebug, Board const &);
-QXmlStreamWriter &operator<<(QXmlStreamWriter &, Board const &);
-QXmlStreamReader &operator>>(QXmlStreamReader &, Board &);
+QDebug operator<<(QDebug, FabSettings const &);
+QXmlStreamWriter &operator<<(QXmlStreamWriter &, FabSettings const &);
+QXmlStreamReader &operator>>(QXmlStreamReader &, FabSettings &);
 
 #endif

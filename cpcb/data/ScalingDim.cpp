@@ -59,3 +59,19 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, ScalingDim &sd) {
   }
   return s;
 }
+
+void ScalingDim::fromSettings(QString name) {
+  QSettings ss;
+  min = Dim::fromUM(ss.value(name + "_min", 0).toInt());
+  scale = ss.value(name + "_scale", false).toBool();
+  max = Dim::fromUM(ss.value(name + "_max", 1000).toInt());
+  perc = ss.value(name + "_perc", 100).toDouble();
+}
+
+void ScalingDim::toSettings(QString name) const {
+  QSettings ss;
+  ss.setValue(name + "_min", min.toUM());
+  ss.setValue(name + "_scale", scale);
+  ss.setValue(name + "_max", max.toUM());
+  ss.setValue(name + "_perc", perc);
+}
