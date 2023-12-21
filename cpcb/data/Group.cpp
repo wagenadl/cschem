@@ -1083,20 +1083,24 @@ bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
     return acted;
   
   // add vias if necessary
-  auto insert_via_at = [this](Point p) {
+  auto insert_via_at = [this](Point p, Dim w) {
     Hole h;
     h.via = true;
     h.p = p;
-    h.id = Dim::fromMils(25);
-    h.od = Dim::fromMils(35);
+    Dim id = 0.5*w;
+    Dim minID(Dim::fromMM(.3));
+    h.id = max(id, minID);
+    Dim od = w;
+    Dim minOD = h.id + Dim::fromMM(.3);
+    h.od = max(od, minOD);
     insert(Object(h));
   };
   if (hole_at_p1<0 && layers_at_p1.contains(tr.layer)) {
-    insert_via_at(tr.p1);
+    insert_via_at(tr.p1, tr.width);
     acted = true;
   }
   if (hole_at_p2<0 && layers_at_p2.contains(tr.layer)) {
-    insert_via_at(tr.p2);
+    insert_via_at(tr.p2, tr.width);
     acted = true;
   }
   return acted;

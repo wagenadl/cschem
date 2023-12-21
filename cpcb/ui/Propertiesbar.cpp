@@ -15,7 +15,7 @@
 #include "data/Object.h"
 #include <QSpinBox>
 
-const Dim minRingWidth(Dim::fromInch(0.015));
+const Dim minRingWidth(Dim::fromMM(0.3));
 
 class NarrowEditor: public QLineEdit {
 public:
@@ -987,7 +987,7 @@ void PBData::setupUI() {
   //makeLabel(idc, "⌀", "Hole diameter");
   makeIcon(idc, "Diameter", "Hole diameter");
   id = makeDimSpinner(idc);
-  id->setMinimumValue(Dim::fromInch(0.005));
+  id->setMinimumValue(Dim::fromMM(0.3));
   id->setValue(Dim::fromInch(.040));
   QObject::connect(id, &DimSpinner::valueEdited,
 		   [this](Dim d) {
