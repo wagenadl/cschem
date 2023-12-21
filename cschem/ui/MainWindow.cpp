@@ -49,9 +49,10 @@ public:
     scene(0),
     libview(0), libviewdock(0),
     partlistview(0), partlistviewdock(0),
+    recentfiles(0),
     unsaved(false),
-    recursedepth(0),
-    recentfiles(0) {
+    recursedepth(0)
+   {
   }
 public:
   void fitView();

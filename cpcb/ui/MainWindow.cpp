@@ -143,7 +143,7 @@ void MWData::attemptRelinkSchematic() {
   
   QPushButton *yes = available ? mb.addButton("Yes", QMessageBox::YesRole) : 0;
   QPushButton *browse = mb.addButton("Browse", QMessageBox::YesRole);
-  QPushButton *no = mb.addButton("No", QMessageBox::NoRole);
+  /*QPushButton *no =*/ mb.addButton("No", QMessageBox::NoRole);
 
   mb.exec();
   

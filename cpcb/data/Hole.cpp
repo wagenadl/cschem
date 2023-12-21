@@ -17,8 +17,8 @@ Hole::Hole() {
 
 Rect Hole::boundingRect() const {
   Dim r = od/2;
-  if (fpcon!=Layer::Invalid)
-    r += Board::padClearance(od,od), Board::fpConOverlap();
+  if (fpcon!=Layer::Invalid) 
+    r += Board::padClearance(od,od) + Board::fpConOverlap();
   Rect rct(p - Point(r, r), p + Point(r, r));
   if (rota%90!=0 || slotlength.isPositive()) {
     Dim dx = slotlength/2;

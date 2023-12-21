@@ -620,7 +620,7 @@ int EData::visibleObjectAt(Group const &here, Point p, Dim mrg) const {
   */
   int fave = -1;
   Prio prio = Prio::None;
-  Board const &brd = layout.board();
+  //  Board const &brd = layout.board();
   for (int id: ids) {
     Object const &obj = here.object(id);
     Prio p1 = objectPriority(obj, p, mrg);

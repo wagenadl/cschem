@@ -55,7 +55,7 @@ QPainterPath Trace::outlinePath() const {
   path.addEllipse(QPoint(0,0), w/2, w/2);
   path.addEllipse(px.toMils(), w/2, w/2);
   path.addRect(0, -w/2, px.x.toMils(), w);
-  QTransform t; t.rotate(angle*180/3.14159265);
+  QTransform t; t.rotate(angle*180/M_PI); //3.14159265);
   return t.map(path).translated(p1.toMils());
 }
 

@@ -300,7 +300,7 @@ QPoint Geometry::centerOfPinMass() const {
     return (sum/N).toPoint();
 
   for (Element const &elt: d->circ.elements) {
-    Symbol const &symbol(d->lib.symbol(elt.symbol()));
+    // Symbol const &symbol(d->lib.symbol(elt.symbol()));
     sum += d->elementBBox(elt).center();
     N ++;
   }

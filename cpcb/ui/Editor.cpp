@@ -1150,7 +1150,7 @@ bool Editor::saveComponent(int id, QString fn) {
   if (!obj.isGroup())
     return false;
   Group const &grp(obj.asGroup());
-  int oldrot = grp.nominalRotation();
+  //  int oldrot = grp.nominalRotation();
   QString oldpkg = grp.attributes.value(Group::Attribute::Footprint);
   QString newpkg = QFileInfo(fn).completeBaseName();
   
@@ -1555,7 +1555,7 @@ void Editor::setGroupRotation(NodeID path, int degccw) {
   degccw = (degccw % 360 + 360) % 360;
   if (degccw != d->layout.root().subgroup(path).nominalRotation()) {
     UndoCreator uc(d, true);
-    Group &here = d->layout.root().subgroup(path.parent());
+    //    Group &here = d->layout.root().subgroup(path.parent());
     Group &grp = d->layout.root().subgroup(path);
     grp.setNominalRotation(degccw);
     emit componentsChanged(); //?

@@ -38,7 +38,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Layout const &t) {
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Layout &t) {
   t = Layout();
   bool gotboard = false;
-  bool gotroot = false;
+  //  bool gotroot = false;
   bool gottrouble = false;
   while (!s.atEnd()) {
     s.readNext();
@@ -48,7 +48,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Layout &t) {
         gotboard = true;
       } else if (s.name() == "group") {
 	s >> t.root();
-        gotroot = true;
+        // gotroot = true;
       } else {
 	qDebug() << "Unexpected element in layout: " << s.name();
         gottrouble = true;

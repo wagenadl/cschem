@@ -44,7 +44,7 @@ bool Polyline::contains(Point p, Dim mrg) const {
 
   Segment s0(p, Point(Dim::infinity(), p.y));
   int n = 0;
-  bool ok;
+  //  bool ok;
   for (int k=0; k<K-1; k++)
     if (s0.intersects(Segment(operator[](k), operator[](k+1))))
       n++;

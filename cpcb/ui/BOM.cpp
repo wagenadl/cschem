@@ -86,7 +86,7 @@ QVariant BOM::data(QModelIndex const &index,
 
 bool BOM::setAttributeData(int r, Group::Attribute attr,
                            QVariant const &value) {
-  BOMRow &row(d->elements[r]);
+  //  BOMRow &row(d->elements[r]);
   for (int c=0; c!=int(Column::N); c++) 
     if (col2attr.contains(Column(c)) && col2attr[Column(c)]==attr) 
       return setData(index(r, c), value);

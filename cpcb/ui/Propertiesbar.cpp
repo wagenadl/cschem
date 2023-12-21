@@ -645,6 +645,8 @@ void PBData::hideAndShow() {
     break;
   case Mode::PickupTrace:
     break;
+  case Mode::PNPOrient:
+    break;
   }
 
   //qDebug() << "crumbs" << (editor->breadcrumbs().size()>0);
@@ -852,6 +854,7 @@ void PBData::setupUI() {
     return s;
   };
 
+  /*
   auto makeTextTool = [](QWidget *container, QString text, QString tip="") {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
@@ -863,7 +866,8 @@ void PBData::setupUI() {
     container->layout()->addWidget(s);
     return s;
   };
-
+  */
+  
   auto makeIconTool = [this](QWidget *container, QString icon,
 			     bool chkb=false, bool ae=false, QString tip="",
 			     QKeySequence seq=QKeySequence()) {

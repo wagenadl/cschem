@@ -167,7 +167,7 @@ bool ExportDialog::saveGerber(class Layout const &pcblayout) {
                            "Could not export Gerber as “"
                            + fn + "”: PowerShell Zip failed",
                            QMessageBox::Ok);
-      return ok;
+    return ok;
   } else {
       QMessageBox::warning(parentWidget(), "cpcb",
                            "Could not export Gerber as “"
