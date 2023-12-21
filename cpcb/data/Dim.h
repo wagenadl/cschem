@@ -40,6 +40,7 @@ public:
   double toMM() const { return d*1.0/PerMM; }
   double toMils() const { return d*1.0/PerMil; } // a mil is 0.001 inch
   double toInch() const { return d*1.0/PerInch; }
+  qint64 toUM() const { return d/PerUM; }
   QString toString() const { return QString::number(d); }
   bool isNull() const { return d==0; }
   bool isMetric() const { return !isInch(); }
@@ -59,6 +60,7 @@ public:
   static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }
   static Dim fromMils(float x) { return Dim(int(std::round(PerMil*x))); }
   static Dim fromInch(float x) { return Dim(int(std::round(PerInch*x))); }
+  static Dim fromUM(qint64 x) { return Dim(PerUM*x); }
   static Dim fromString(QString x, bool *ok=0) { return Dim(x.toInt(ok)); }
   static Dim quadrature(Dim const &a, Dim const &b) {
     return sqrt(a.d*a.d + b.d*b.d); }
@@ -69,6 +71,10 @@ private:
   friend QDebug operator<<(QDebug d, Dim const &x);
   friend uint qHash(Dim const &d);
 };
+
+inline Dim const &max(Dim const &a, Dim const &b) {
+  return a.raw() > b.raw() ? a : b;
+}
 
 inline Dim operator*(double a, Dim const &x) {
   return Dim(a*x.d);
