@@ -65,6 +65,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
     }
   }
   // now at end of circuit element
+  IDFactory::instance().reserve(sr.maxId());
+  // we don't need to renumber first, because saveAs renumbers
   return sr;
 }
   
