@@ -32,7 +32,9 @@ public slots:
   void setInch();
   void setMode(Expression::Mode);
   void setStep(Dim);
-  void parseValue();
+  void parseValue(bool force=false);
+  // If force is false, steps < 1LSD are not implemented
+  // This prevents metric/inch rounding errors
   void showTrailingZeros();
   void hideTrailingZeros();
 protected:

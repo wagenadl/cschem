@@ -23,7 +23,7 @@ DimSpinner::DimSpinner(QWidget *parent): QLineEdit(parent) {
   setInch();
   connect(this, &QLineEdit::returnPressed,
 	  [this]() {
-            parseValue();
+            parseValue(true);
 	  });
   connect(this, &QLineEdit::textEdited,
           [this]() {
@@ -146,7 +146,7 @@ void DimSpinner::setNoValueText(QString s) {
   reflectValue();
 }
 
-void DimSpinner::parseValue() {
+void DimSpinner::parseValue(bool force) {
   if (text() == nvtext) {
     hasvalue_ = false;
     reflectValid(true);
@@ -160,6 +160,16 @@ void DimSpinner::parseValue() {
     metric_ = expr.isMetric();
     Dim v1 = metric_ ? Dim::fromMM(expr.value())
       : Dim::fromInch(expr.value());
+    if (hasvalue_ && !force) {
+      Dim dv = (v1-v).abs();
+      if (metric_) {
+        if (dv<Dim::fromMM(0.008))
+          v1 = v; // don't update trivial change
+      } else {
+        if (dv<Dim::fromInch(0.0008))
+          v1 = v;
+      }
+    }
     if (v1<minv)
       v1 = minv;
     else if (v1>maxv)
