@@ -66,7 +66,7 @@ public:
   
   QWidget *layerg;
   QAction *layera;
-  QAction *panel, *silk, *top, *bottom;
+  QAction *panel, *silk, *bsilk, *top, *bottom;
 
   QWidget *orientg;
   QAction *orienta;
@@ -122,6 +122,7 @@ public:
 void PBData::checkLayer(Layer l) {
   panel->setChecked(l==Layer::Panel);
   silk->setChecked(l==Layer::Silk);
+  bsilk->setChecked(l==Layer::BSilk);
   top->setChecked(l==Layer::Top);
   bottom->setChecked(l==Layer::Bottom);
 }
@@ -132,7 +133,8 @@ bool PBData::anyDirectionChecked() const {
 }
 
 bool PBData::anyLayerChecked() const {
-  return panel->isChecked() || silk->isChecked()
+  return panel->isChecked()
+    || silk->isChecked() || bsilk->isChecked()
     || top->isChecked() || bottom->isChecked();
 }
 
@@ -526,6 +528,8 @@ Layer PBData::checkedLayer() const {
     return Layer::Panel;
   else if (silk->isChecked())
     return Layer::Silk;
+  else if (bsilk->isChecked())
+    return Layer::BSilk;
   else if (top->isChecked())
     return Layer::Top;
   else if (bottom->isChecked())
@@ -1178,8 +1182,16 @@ void PBData::setupUI() {
 		     editor->setLayer(Layer::Bottom);
 		   });
 
-  panel = makeIconTool(lc, "Panel", true, false, "",
+  bsilk = makeIconTool(lc, "BSilk", true, false, "Bottom silk",
 		      QKeySequence(Qt::Key_4));
+  QObject::connect(bsilk, &QAction::triggered,
+		   [this]() {
+                     checkLayer(Layer::BSilk);
+		     editor->setLayer(Layer::BSilk);
+		     });
+
+  panel = makeIconTool(lc, "Panel", true, false, "",
+		      QKeySequence(Qt::Key_5));
   QObject::connect(panel, &QAction::triggered,
 		   [this]() {
 		     checkLayer(Layer::Panel);

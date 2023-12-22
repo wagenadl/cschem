@@ -61,7 +61,7 @@ void Collector::collect(Group const &grp) {
     case Object::Type::Text: {
       Text text(obj.asText());
       text.flipUpDown(d->mirrory);
-      if (text.layer==Layer::Bottom)
+      if (text.layer==Layer::Bottom || text.layer==Layer::BSilk)
         text.flip = !text.flip;
       Gerber::FontSpec fs(text.fontsize, text.rota, text.flip);
       d->texts[text.layer][fs] << text;

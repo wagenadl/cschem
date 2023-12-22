@@ -261,6 +261,9 @@ void EData::drawObjects(QPainter &p) const {
   if (brd.layervisible[Layer::Bottom])
     onelayer(Layer::Bottom);
 
+  if (brd.layervisible[Layer::BSilk])
+    onelayer(Layer::BSilk);
+
   if (brd.layervisible[Layer::Top])
     onelayer(Layer::Top);
 
@@ -561,6 +564,7 @@ EData::Prio EData::objectPriority(Object const &obj, Point p, Dim mrg) const {
       return l==Layer::Bottom ? Prio::BottomTrace
         : l==Layer::Top ? Prio::TopTrace
         : l==Layer::Silk ? Prio::Silk
+        : l==Layer::BSilk ? Prio::BSilk
         : Prio::Panel;
     else
       return Prio::None;
@@ -569,6 +573,7 @@ EData::Prio EData::objectPriority(Object const &obj, Point p, Dim mrg) const {
       return l==Layer::Bottom ? Prio::BottomObject
         : l==Layer::Top ? Prio::TopObject
         : l==Layer::Silk ? Prio::Silk
+        : l==Layer::BSilk ? Prio::BSilk
         : Prio::Panel;
     else
       return Prio::None;

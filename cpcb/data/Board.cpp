@@ -10,6 +10,7 @@ Board::Board() {
   grid = Dim::fromInch(0.050);
   layervisible[Layer::Panel] = true;
   layervisible[Layer::Silk] = true;
+  layervisible[Layer::BSilk] = true;
   layervisible[Layer::Top] = true;
   layervisible[Layer::Bottom] = true;
   planesvisible = true;

@@ -37,6 +37,7 @@ private:
     TopPlane,
     BottomTrace,
     BottomObject,
+    BSilk,
     TopTrace,
     TopObject,
     Silk,

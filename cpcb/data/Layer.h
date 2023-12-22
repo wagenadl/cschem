@@ -13,6 +13,7 @@ enum class Layer {
   Top,
   Bottom,
   Panel,
+  BSilk,
 };
 
 QColor const &layerColor(Layer, bool selected=false);

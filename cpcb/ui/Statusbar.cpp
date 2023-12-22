@@ -44,7 +44,8 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
     auto *w = new QToolButton;
     layerui[l] = w;
     w->setIcon(QIcon(":icons/" + name + ".svg"));
-    w->setToolTip(name + " layer visible (" + seq.toString() + ")");
+    QString label = (name=="BSilk") ? "Bottom silk" : name;
+    w->setToolTip(label + " layer visible (" + seq.toString() + ")");
     w->setCheckable(true);
     w->setChecked(true);
     w->setShortcut(seq);
@@ -55,13 +56,14 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   addlui(Layer::Silk, "Silk", QKeySequence(Qt::CTRL + Qt::Key_1));
   addlui(Layer::Top, "Top", QKeySequence(Qt::CTRL + Qt::Key_2));
   addlui(Layer::Bottom, "Bottom", QKeySequence(Qt::CTRL + Qt::Key_3));
-  addlui(Layer::Panel, "Panel", QKeySequence(Qt::CTRL + Qt::Key_4));
+  addlui(Layer::BSilk, "BSilk", QKeySequence(Qt::CTRL + Qt::Key_4));
+  addlui(Layer::Panel, "Panel", QKeySequence(Qt::CTRL + Qt::Key_5));
 
   auto *w = new QToolButton;
   planesui = w;
   w->setIcon(QIcon(":icons/Planes.svg"));
-  w->setToolTip("Planes visible (Ctrl+5)");
-  w->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_5));
+  w->setToolTip("Planes visible (Ctrl+7)");
+  w->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_7));
   w->setCheckable(true);
   w->setChecked(true);
   connect(w, &QToolButton::toggled,
@@ -71,8 +73,8 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   w = new QToolButton;
   netsui = w;
   w->setIcon(QIcon(":icons/Nets.svg"));
-  w->setToolTip("Nets visible (Ctrl+6)");
-  w->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_6));
+  w->setToolTip("Nets visible (Ctrl+8)");
+  w->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_8));
   w->setCheckable(true);
   w->setChecked(true);
   connect(w, &QToolButton::toggled,

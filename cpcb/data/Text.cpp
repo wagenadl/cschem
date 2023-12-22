@@ -22,7 +22,7 @@ Rect Text::boundingRect() const {
   Dim w(scl*sf.width(text));
   Dim asc(scl*sf.ascent());
   Dim desc(scl*sf.descent());
-  bool efflip = flip ^ (layer==Layer::Bottom);
+  bool efflip = flip ^ (layer==Layer::Bottom || layer==Layer::BSilk);
   int effrot = rota;//efflip ? -rota : rota;
   if (efflip)
     w = -w;

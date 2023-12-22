@@ -19,6 +19,7 @@ namespace Gerber {
     TopSolderMask,
     TopPasteMask,
     TopSilk,
+    BottomSilk,
     NonplatedHoles,
   };
   enum class Polarity {

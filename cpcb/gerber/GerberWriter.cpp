@@ -23,7 +23,7 @@ public:
   bool writeCopper(Gerber::Layer);
   bool writePasteMask(Gerber::Layer);
   bool writeSolderMask(Gerber::Layer);
-  bool writeSilk();
+  bool writeSilk(Gerber::Layer);
   static Layer mapLayer(Gerber::Layer l);
 private:
   bool writeFilledPlanes(GerberFile &out, Gerber::Layer);
@@ -48,6 +48,7 @@ Layer GWData::mapLayer(Gerber::Layer l) {
   case Gerber::Layer::TopCopper: return Layer::Top;
   case Gerber::Layer::TopPasteMask: return Layer::Top;
   case Gerber::Layer::TopSolderMask: return Layer::Top;
+  case Gerber::Layer::BottomSilk: return Layer::BSilk;
   case Gerber::Layer::BottomCopper: return Layer::Bottom;
   case Gerber::Layer::BottomPasteMask: return Layer::Bottom;
   case Gerber::Layer::BottomSolderMask: return Layer::Bottom;
@@ -103,7 +104,9 @@ bool GerberWriter::writeLayer(Gerber::Layer layer) {
   case Gerber::Layer::BottomSolderMask: case Gerber::Layer::TopSolderMask:
     return d->writeSolderMask(layer);
   case Gerber::Layer::TopSilk:
-    return d->writeSilk();
+    return d->writeSilk(layer);
+  case Gerber::Layer::BottomSilk:
+    return d->writeSilk(layer);
   default:
     qDebug() << "Unknown layer" << int(layer);
     return false;
@@ -338,15 +341,15 @@ bool GWData::writeSolderMask(Gerber::Layer layer) {
   return true;
 }
 
-bool GWData::writeSilk() {
-  GerberFile out(dir, Gerber::Layer::TopSilk, uuid);
+bool GWData::writeSilk(Gerber::Layer layer) {
+  GerberFile out(dir, layer, uuid);
   if (!out.isValid())
     return false;
 
-  collectNonCopperApertures(out, Gerber::Layer::TopSilk);
-  if (!writeTracksAndPads(out, Gerber::Layer::TopSilk))
+  collectNonCopperApertures(out, layer);
+  if (!writeTracksAndPads(out, layer))
     return false;
-  if (!writeText(out, Gerber::Layer::TopSilk))
+  if (!writeText(out, layer))
     return false;
   
   out << "M02*\n";
@@ -421,6 +424,7 @@ void GWData::collectNonCopperApertures(GerberFile &out, Gerber::Layer layer) {
 
   switch (layer) {
   case Gerber::Layer::TopSilk:
+  case Gerber::Layer::BottomSilk:
     for (Dim lw: collector.traces(mapLayer(layer)).keys())
       aps.ensure(Gerber::Circ(lw));
     for (Point p: collector.smdPads(mapLayer(layer)).keys())
@@ -832,8 +836,10 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
     || layer==Gerber::Layer::BottomSolderMask;
   bool ispaste = layer==Gerber::Layer::TopPasteMask
     || layer==Gerber::Layer::BottomPasteMask;
+  bool issilk = layer==Gerber::Layer::TopSilk
+    || layer==Gerber::Layer::BottomSilk;
   
-  if (iscopper || layer==Gerber::Layer::TopSilk) {
+  if (iscopper || issilk) {
     writeTraces(out,
                 out.apertures(iscopper 
                               ? Gerber::Apertures::Func::Conductor
@@ -880,6 +886,8 @@ bool GerberWriter::writeAllLayers() {
   if (!writeLayer(Gerber::Layer::BottomSolderMask))
     return false;
   if (!writeLayer(Gerber::Layer::BottomPasteMask))
+    return false;
+  if (!writeLayer(Gerber::Layer::BottomSilk))
     return false;
   if (!writeLayer(Gerber::Layer::TopCopper))
     return false;

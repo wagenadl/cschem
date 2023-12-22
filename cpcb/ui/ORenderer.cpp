@@ -407,7 +407,8 @@ void ORenderer::drawText(Text const &t, bool selected) {
   //  p->drawEllipse(QPointF(0,0), 5,5);
 
   p->rotate(t.rota);
-  int xflip = ((t.layer==Layer::Bottom) ^ t.flip) ? -1 : 1;
+  int xflip = ((t.layer==Layer::Bottom || t.layer==Layer::BSilk) ^ t.flip)
+    ? -1 : 1;
 
   p->scale(xflip*scl, -scl);
   p->setPen(QPen(layerColor(t.layer, selected), sf.lineWidth().toMils(),
@@ -503,8 +504,9 @@ QByteArray ORenderer::objectToSvg(Object const &obj,
 
 void ORenderer::render(Object const &obj, QPainter *ptr) {
   ORenderer rndr(ptr);
-  for (auto l: QList<Layer>{Layer::Bottom, Layer::Top, Layer::Invalid,
-	Layer::Silk, Layer::Panel}) {
+  for (auto l: QList<Layer>{Layer::Bottom, Layer::BSilk,
+                            Layer::Top, Layer::Invalid,
+                            Layer::Silk, Layer::Panel}) {
     rndr.setLayer(l);
     rndr.drawObject(obj);
   }
@@ -512,8 +514,9 @@ void ORenderer::render(Object const &obj, QPainter *ptr) {
 
 void ORenderer::render(Group const &grp, QPainter *ptr) {
   ORenderer rndr(ptr);
-  for (auto l: QList<Layer>{Layer::Bottom, Layer::Top, Layer::Invalid,
-	Layer::Silk, Layer::Panel}) {
+  for (auto l: QList<Layer>{Layer::Bottom, Layer::BSilk,
+                            Layer::Top, Layer::Invalid,
+                            Layer::Silk, Layer::Panel}) {
     rndr.setLayer(l);
     rndr.drawGroup(grp);
   }
