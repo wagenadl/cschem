@@ -662,10 +662,10 @@ void Editor::setLayer(Layer l) {
       d->currentGroup().object(id).asTrace().layer = l;
       break;
     case Object::Type::Text:
-      if (obj.asText().groupAffiliation()<0) {
+      //      if (obj.asText().groupAffiliation()<0) {
 	uc.realize();
 	d->currentGroup().object(id).asText().setLayer(l);
-      }
+        //      }
       break;
     case Object::Type::Pad:
       uc.realize();
