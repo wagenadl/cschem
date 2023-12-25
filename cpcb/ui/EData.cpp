@@ -230,7 +230,7 @@ void EData::drawObjects(QPainter &p) const {
   };
   auto onelayer = [&](Layer l) {
     if (brd.planesvisible && mode!=Mode::PNPOrient) {
-      if (l==Layer::Top) {
+      if (l==Layer::Top || l==Layer::Bottom) {
         QPixmap pm(ed->size());
         pm.fill(QColor(0, 0, 0, 0));
         QPainter pmp(&pm);
@@ -239,21 +239,25 @@ void EData::drawObjects(QPainter &p) const {
         pmp.setCompositionMode(QPainter::CompositionMode_Source);
         onesublayer(l, ORenderer::Sublayer::Plane);
         onesublayer(l, ORenderer::Sublayer::Clearance);
+        onesublayer(l, ORenderer::Sublayer::Extra);
         onesublayer(l, ORenderer::Sublayer::Main);
         rndr.setPainter(&p);
-        p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+        //p.setCompositionMode(QPainter::CompositionMode_SourceOver);
         p.setTransform(QTransform());
         p.drawPixmap(QPoint(0,0), pm);
         p.setTransform(mils2widget, true);
-      } else if (l==Layer::Bottom) {
-        p.setCompositionMode(QPainter::CompositionMode_Source);
-        onesublayer(l, ORenderer::Sublayer::Plane);
-        onesublayer(l, ORenderer::Sublayer::Clearance);
-        onesublayer(l, ORenderer::Sublayer::Main);
+//      } else if (l==Layer::Bottom) {
+//         p.setCompositionMode(QPainter::CompositionMode_Source);
+//        onesublayer(l, ORenderer::Sublayer::Plane);
+//        onesublayer(l, ORenderer::Sublayer::Clearance);
+//        onesublayer(l, ORenderer::Sublayer::Extra);
+//        onesublayer(l, ORenderer::Sublayer::Main);
       } else {
+        onesublayer(l, ORenderer::Sublayer::Extra);
         onesublayer(l, ORenderer::Sublayer::Main);
       }
     } else {
+      onesublayer(l, ORenderer::Sublayer::Extra);
       onesublayer(l, ORenderer::Sublayer::Main);
     }
   };

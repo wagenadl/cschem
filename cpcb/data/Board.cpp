@@ -142,8 +142,8 @@ Dim Board::padClearance(Dim, Dim) {
   return Dim::fromMils(15);
 }
 
-Dim Board::fpConWidth(Dim, Dim) {
-  return Dim::fromMils(12);
+Dim Board::fpConWidth(Dim w, Dim h) {
+  return min(.5*min(w,h), Dim::fromMils(15));
 }
 
 Dim Board::maskMargin(Dim) {

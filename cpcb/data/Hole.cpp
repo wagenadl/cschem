@@ -141,7 +141,7 @@ bool Hole::touches(Trace const &t) const {
 }
 
 bool Hole::touches(FilledPlane const &fp) const {
-  if (noclear || fpcon==fp.layer) {
+  if (fpcon==fp.layer) {
     if (fp.perimeter.contains(p, od/2))
       return true;
     return false; // this is not quite good enough

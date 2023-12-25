@@ -153,17 +153,17 @@ double ORenderer::extraMils(bool innet, Dim w, Dim h) const {
 
 QColor ORenderer::brushColor(bool selected, bool innet) const {
   if (subl==Sublayer::Clearance)
-    return boardColor();
+    return QColor(0,0,0, 0); //boardColor();
   else if (innet) 
     return overrideColor(layerColor(layer, selected));
   else
     return layerColor(layer, selected);
 }
 
-void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
+void ORenderer::drawHole(Hole const &hole, bool selected, bool innet) {
   if (subl == Sublayer::Plane)
     return;
-  if (subl == Sublayer::Clearance && t.noclear)
+  if (subl == Sublayer::Clearance && hole.noclear)
     return;
   bool inv = layer==Layer::Invalid; // this is used for drilling
   bool tb = layer==Layer::Bottom || layer==Layer::Top;
@@ -177,65 +177,91 @@ void ORenderer::drawHole(Hole const &t, bool selected, bool innet) {
   if (!inv && !tb)
     return;
   
-  Point p1 = origin + t.p;
+  Point p1 = origin + hole.p;
   if (selected && toplevel) 
     p1 += movingdelta;
   QPointF p0 = p1.toMils();
-  double id = t.id.toMils();
-  double dx = t.slotlength.toMils()/2;
-  QPoint dxy(dx*cos(PI*t.rota/180), dx*sin(PI*t.rota/180));
+  double id = hole.id.toMils();
+  double dx = hole.slotlength.toMils()/2;
+  double od = hole.od.toMils();
+  double pc = brd.padClearance(hole.od, hole.od).toMils();
+  double fpover = brd.fpConOverlap().toMils();
+  double extramils = extraMils(innet, hole.od, hole.od);
+  double cs = cos(PI*hole.rota/180);
+  double sn = sin(PI*hole.rota/180);
+
+  QColor c = (pnporient 
+              && !(hole.ref=="1"
+                   || hole.ref.startsWith("1/")
+                   || hole.ref.endsWith("/1")))
+    ? grayPadColor()
+    : brushColor(selected, innet);
+  
+  // draw fpcon
+  if (subl==Sublayer::Extra && layer!=Layer::Invalid
+      && hole.fpcon==layer && !pnporient) {
+    c = c.darker(150);
+    double dym = od/2 + pc + fpover;
+    double dxm = dym + dx;
+    if (hole.noclear) {
+      if (dx>0) {
+        p->setPen(QPen(c, od + 2*pc + 2*fpover, Qt::SolidLine, Qt::RoundCap));
+        QPointF dxy(dx*cs, dx*sn);
+        p->drawLine(p0 - dxy, p0 + dxy);
+      } else {
+        p->setBrush(c);
+        p->setPen(QPen(Qt::NoPen));
+        if (hole.square) {
+          QPointF dp(dxm, dym);
+          QRectF r(-dp, dp);
+          if (hole.rota) {
+            QTransform xf; xf.rotate(hole.rota);
+            p->drawPolygon(xf.map(r).translated(p0));
+          } else {
+            p->drawRect(r.translated(p0));
+          }
+        } else {
+          p->drawEllipse(p0, dym, dym);
+        }
+      }
+    } else {
+      QPointF dmaj(cs*dxm, sn*dxm);
+      QPointF dmin(-sn*dym, cs*dym);
+      p->setPen(QPen(c, pc));
+      p->drawLine(p0 - dmaj, p0 + dmaj);
+      p->drawLine(p0 - dmin, p0 + dmin);
+    }
+    return;
+  }
+
   if (inv) {
     // draw cutout
     if (dx>0) {
-      p->setPen(QPen(p->background().color(),
-		     //QColor(0,0,0),
+      p->setPen(QPen(QColor(0,0,0),
 		     id, Qt::SolidLine, Qt::RoundCap));
+      QPointF dxy(dx*cs, dx*sn);
       p->drawLine(p0 - dxy, p0 + dxy);
     } else {
-      p->setBrush(p->background().color()); // QColor(0,0,0));
+      p->setBrush(QColor(0,0,0));
       p->setPen(Qt::NoPen);
       p->drawEllipse(p0, id/2, id/2);
     }
   } else {
     // draw surrounding pad
-    QColor c = (pnporient &&
-                !(t.ref=="1" || t.ref.startsWith("1/") || t.ref.endsWith("/1")))
-      ? grayPadColor()
-      : brushColor(selected, innet);
-    
-    double od = t.od.toMils();
-    double extramils = extraMils(innet, t.od, t.od);
-    if (dx>0 || t.square) {
+    if (dx>0 || hole.square) {
       p->setPen(QPen(c, od+extramils, Qt::SolidLine,
-                     t.square ? Qt::FlatCap : Qt::RoundCap));
-      if (t.square) {
-	dx += od/2 + extramils/2;
-	dxy = QPoint(dx*cos(PI*t.rota/180), dx*sin(PI*t.rota/180));
-      }
+                     hole.square ? Qt::FlatCap : Qt::RoundCap));
+      double dx1 = hole.square ? dx + od/2 + extramils/2 : dx;
+      QPointF dxy(dx1*cs, dx1*sn);
       p->drawLine(p0 - dxy, p0 + dxy);
     } else {
       QBrush b(c);
-      if (t.via)
+      if (hole.via)
 	b.setStyle(layer==Layer::Top ? Qt::Dense5Pattern : Qt::Dense3Pattern);
       p->setBrush(b);
       p->setPen(QPen(Qt::NoPen));
       p->drawEllipse(p0, od/2+extramils/2, od/2+extramils/2);
     }
-  }
-  if (subl==Sublayer::Main && layer!=Layer::Invalid && t.fpcon==layer
-      && !pnporient) {
-    double dym = (t.od/2 + brd.padClearance(t.od, t.od)
-                  + brd.fpConOverlap()).toMils();
-    double dxm = dym + t.slotlength.toMils()/2;
-    double cs = cos(PI*t.rota/180);
-    double sn = sin(PI*t.rota/180);
-    QPointF dmaj(cs*dxm, sn*dxm);
-    QPointF dmin(-sn*dym, cs*dym);
-    p->setPen(QPen(brushColor(selected, innet),
-                   brd.fpConWidth(t.od, t.od).toMils(),
-                   Qt::SolidLine, Qt::FlatCap));
-    p->drawLine(p0 - dmaj, p0 + dmaj);
-    p->drawLine(p0 - dmin, p0 + dmin);
   }
 }
 
@@ -267,53 +293,70 @@ void ORenderer::drawNPHole(NPHole const &h, bool selected, bool /*innet*/) {
   }
 }
 
-void ORenderer::drawPad(Pad const &t, bool selected, bool innet) {
+void ORenderer::drawPad(Pad const &pad, bool selected, bool innet) {
   if (subl == Sublayer::Plane)
     return;
-  if (subl == Sublayer::Clearance && t.noclear)
+  if (subl == Sublayer::Clearance && pad.noclear)
     return;
   if (overr == Override::None) {
-    if (t.layer != layer)
+    if (pad.layer != layer)
       return;
   } else {
     selected = false;
     innet = true;
   }
   
-  p->setPen(Qt::NoPen);
-
-  QPointF p0 = (origin + t.p).toMils();
+  QPointF p0 = (origin + pad.p).toMils();
   if (toplevel && selected)
     p0 += movingdelta.toMils();
   
-  double w = t.width.toMils();
-  double h = t.height.toMils();
+  double w = pad.width.toMils();
+  double h = pad.height.toMils();
 
-  double extramils = extraMils(innet, t.width, t.height);
-  if (pnporient &&
-      !(t.ref=="1" || t.ref.startsWith("1/") || t.ref.endsWith("/1")))
-    p->setBrush(grayPadColor());
-  else
-    p->setBrush(brushColor(selected, innet));
+  QColor c = (pnporient && !(pad.ref=="1"
+                             || pad.ref.startsWith("1/")
+                             || pad.ref.endsWith("/1")))
+    ? grayPadColor()
+    : brushColor(selected, innet);
+  
+  if (subl==Sublayer::Extra && pad.fpcon && !pnporient) {
+    c = c.darker(150);
+    Dim pc = brd.padClearance(pad.width, pad.height) + brd.fpConOverlap();
+    double dxm = w/2 + pc.toMils();
+    double dym = h/2 + pc.toMils();
+    if (pad.noclear) {
+      p->setPen(Qt::NoPen);
+      p->setBrush(c);
+      QPointF dp(dxm, dym);
+      QRectF r(-dp, dp);
+      if (pad.rota) {
+        QTransform xf; xf.rotate(pad.rota);
+        p->drawPolygon(xf.map(r).translated(p0));
+      } else {
+        p->drawRect(r.translated(p0));
+      }
+    } else {
+      p->setPen(QPen(c,
+                     brd.fpConWidth(pad.width, pad.height).toMils(),
+                     Qt::SolidLine, Qt::FlatCap));
+      p->drawLine(p0 - QPointF(dxm, 0), p0 + QPointF(dxm, 0));
+      p->drawLine(p0 - QPointF(0, dym), p0 + QPointF(0, dym));
+    }
+    return;
+  }
+  
+  p->setPen(Qt::NoPen);
+  p->setBrush(c);
+  double extramils = extraMils(innet, pad.width, pad.height);
   QPointF dp(w+extramils, h+extramils);
   QRectF r(-dp/2, dp/2);
-  if (t.rota) {
-    QTransform xf; xf.rotate(t.rota);
+  if (pad.rota) {
+    QTransform xf; xf.rotate(pad.rota);
     p->drawPolygon(xf.map(r).translated(p0));
   } else {
     p->drawRect(r.translated(p0));
   }
 
-  if (subl==Sublayer::Main && t.fpcon && !pnporient) {
-    Dim pc = brd.padClearance(t.width, t.height);
-    double dxm = w/2 + pc.toMils();
-    double dym = h/2 + pc.toMils();
-    p->setPen(QPen(brushColor(selected, innet),
-                   brd.fpConWidth(t.width, t.height).toMils(),
-                   Qt::SolidLine, Qt::RoundCap));
-    p->drawLine(p0 - QPointF(dxm, 0), p0 + QPointF(dxm, 0));
-    p->drawLine(p0 - QPointF(0, dym), p0 + QPointF(0, dym));
-  }
 }
 
 void ORenderer::drawArc(Arc const &t, bool selected) {

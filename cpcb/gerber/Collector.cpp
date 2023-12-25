@@ -39,8 +39,12 @@ void Collector::collect(Group const &grp) {
       hole.flipUpDown(d->mirrory);
       d->holes[hole.id] << hole;
       auto &map(hole.square ? d->squareHolePads : d->roundHolePads);
-      map[Layer::Top][hole.od] << hole;
-      map[Layer::Bottom][hole.od] << hole;
+      Dim od1 = hole.od;
+      if (hole.noclear)
+        od1 += 2*Board::padClearance(hole.od, hole.od)
+          + 2*Board::fpConOverlap();
+      map[Layer::Top][hole.fpcon==Layer::Top ? od1 : hole.od] << hole;
+      map[Layer::Bottom][hole.fpcon==Layer::Bottom ? od1 : hole.od] << hole;
     } break;
     case Object::Type::NPHole: {
       NPHole hole(obj.asNPHole());
@@ -50,7 +54,11 @@ void Collector::collect(Group const &grp) {
     case Object::Type::Pad: {
       Pad pad(obj.asPad());
       pad.flipUpDown(d->mirrory);
-      d->smdPads[pad.layer][Point(pad.width, pad.height)] << pad;
+      Dim extra;
+      if (pad.noclear && pad.fpcon)
+        extra = 2*Board::padClearance(pad.width, pad.height)
+          + 2*Board::fpConOverlap();
+      d->smdPads[pad.layer][Point(pad.width+extra, pad.height+extra)] << pad;
     } break;
     case Object::Type::Trace: {
       Trace trace(obj.asTrace());

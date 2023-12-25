@@ -280,7 +280,7 @@ void PlaneEditor::mouseMove(Point p,
 
 void PlaneEditor::doubleClick(Point p,
                               Qt::MouseButton,
-                              Qt::KeyboardModifiers) {
+                              Qt::KeyboardModifiers m) {
   Group const &here(ed->currentGroup());
   NodeID nid = here.nodeAt(p, ed->pressMargin(), ed->props.layer, true);
   if (nid.isEmpty())
@@ -289,16 +289,41 @@ void PlaneEditor::doubleClick(Point p,
   if (obj.isPad()) {
     UndoCreator uc(ed, true);
     Pad &pad(ed->currentGroup().object(nid).asPad());
-    pad.fpcon = !pad.fpcon;
+    if (m & Qt::ControlModifier) {
+      if (pad.noclear) {
+        pad.noclear = false;
+      } else {
+        pad.noclear = true;
+        pad.fpcon = true;
+      }
+    } else {
+      if (pad.fpcon) {
+        pad.fpcon = false;
+        pad.noclear = false;
+      } else {
+        pad.fpcon = true;
+      }
+    }
     ed->updateOnWhat(true);
     ed->ed->update();
   } else if (obj.isHole()) {
     UndoCreator uc(ed, true);
     Hole &hole(ed->currentGroup().object(nid).asHole());
-    if (hole.fpcon==ed->props.layer)
-      hole.fpcon = Layer::Invalid;
-    else
-      hole.fpcon = ed->props.layer;
+    if (m & Qt::ControlModifier) {
+      if (hole.noclear) {
+        hole.noclear = false;
+      } else {
+        hole.noclear = true;
+        hole.fpcon = ed->props.layer;
+      }
+    } else {
+      if (hole.fpcon==ed->props.layer) {
+        hole.fpcon = Layer::Invalid;
+        hole.noclear = false;
+      } else {
+        hole.fpcon = ed->props.layer;
+      }
+    }
     ed->updateOnWhat(true); // rebuild net
     ed->ed->update();
   }  

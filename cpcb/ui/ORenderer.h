@@ -19,6 +19,7 @@ public:
   };
   enum class Sublayer {
     Main,
+    Extra,
     Clearance,
     Plane
   };

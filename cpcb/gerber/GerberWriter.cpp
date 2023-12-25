@@ -736,7 +736,7 @@ static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
                         QList<Pad> const &lst) {
   QList<PointRota> sel;
   for (Pad const &p: lst) 
-    if (p.fpcon)
+    if (p.fpcon && !p.noclear)
       sel << PointRota(p.p, p.rota);
   writeFPCons(out, trcaps, brd, w, h, sel);
 }
@@ -746,7 +746,7 @@ static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
                         QList<Hole> const &lst, Layer layer) {
   QList<PointRota> sel;
   for (Hole const &p: lst) 
-    if (p.fpcon==layer)
+    if (p.fpcon==layer && !p.noclear)
       sel << PointRota(p.p, p.rota, p.slotlength);
   writeFPCons(out, trcaps, brd, w, h, sel);
 }
@@ -778,7 +778,7 @@ static void writeComponentPads(GerberFile &out,
 	continue;
       if (hole.rota && hole.square) {
 	writeRotatedRect(out, hole.p,
-			 hole.od + hole.slotlength, hole.od,
+			 d + hole.slotlength, d,
 			 hole.rota);
       } else if (hole.isSlot()) {
           writeSlotSegment(out, hole);

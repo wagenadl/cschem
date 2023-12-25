@@ -76,6 +76,10 @@ inline Dim const &max(Dim const &a, Dim const &b) {
   return a.raw() > b.raw() ? a : b;
 }
 
+inline Dim const &min(Dim const &a, Dim const &b) {
+  return a.raw() < b.raw() ? a : b;
+}
+
 inline Dim operator*(double a, Dim const &x) {
   return Dim(a*x.d);
 }

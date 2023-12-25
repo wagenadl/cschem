@@ -167,7 +167,12 @@ bool Pad::touches(class Trace const &t) const {
 }
 
 bool Pad::touches(FilledPlane const &fp) const {
-  if (noclear || (fpcon && layer==fp.layer)) {
+  if (layer!=fp.layer)
+    return false;
+  if (noclear) {
+    return fp.perimeter.contains(p);
+    /* Warning: This is WRONG if an attached trace creates clearance */
+  } else if (fpcon) {
     Dim r = width > height ? width/2 : height/2;
     return fp.perimeter.contains(p, r);
   } else {
