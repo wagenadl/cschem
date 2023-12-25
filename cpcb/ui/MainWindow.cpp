@@ -55,8 +55,9 @@ public:
     recentfiles = 0;
     linklabel = 0;
   }
+  void discussRelinkWhileSaving();
   void attemptRelinkSchematic(); 
-  void discussRelinkingSchematic(); 
+  void discussRelinkWhileLoading(); 
   void setWindowTitle();
   void resetFilename();
   void about();
@@ -121,6 +122,39 @@ void MWData::passthroughSignal(QString sig) {
     meta->method(idx).invoke(dest, Qt::AutoConnection);
 }
 
+void MWData::discussRelinkWhileSaving() {
+  QString schemfn = editor->pcbLayout().board().linkedschematic;
+  if (schemfn=="")
+    return; // not linked to anythign
+  QFileInfo schemfi(schemfn);
+  QString oldleaf = schemfi.fileName();
+  QFileInfo myfi(filename);
+  QString newleaf = myfi.fileName();
+  if (newleaf.endsWith(".cpcb"))
+    newleaf = newleaf.left(newleaf.size() - 5);
+  newleaf += ".cschem";
+  QDir dir = schemfi.dir();
+  if (!dir.exists(newleaf))
+    return; // no new schematic exists
+
+  QString txt = "Your layout is linked to a schematic named “" + oldleaf + "”.";
+  txt += " However, a schematic named “" + newleaf + "” also exists";
+  txt += " in “" + dir.absolutePath() + "”.";
+  txt += " Would you like to link to that schematic instead?";
+
+  QMessageBox mb(QMessageBox::Question, "CPCB", txt,
+                 QMessageBox::No | QMessageBox::Yes, mw);
+  
+  if (mb.exec() != QMessageBox::Yes)
+    return;
+  
+  QString altfn = dir.absoluteFilePath(newleaf);
+  if (!editor->linkSchematic(altfn))
+      QMessageBox::warning(mw, "Failed to link schematic",
+                           "Cannot link schematic “" + altfn
+                           + "”. Could the file be damaged?");
+}
+
 void MWData::attemptRelinkSchematic() {
   /* If the linked schematic could not be found at original location,
      check whether a file with the same name exists locally, and offer
@@ -158,7 +192,7 @@ void MWData::attemptRelinkSchematic() {
   }
 }
 
-void MWData::discussRelinkingSchematic() {
+void MWData::discussRelinkWhileLoading() {
   /* If our file got moved (i.e., loaded from a different location
      than the "pcbfilename" in Board), determine whether the
      difference affects the path and whether it affects the
@@ -332,7 +366,7 @@ bool MainWindow::open(QString fn) {
     if (!d->editor->linkedSchematic().isValid())
       d->attemptRelinkSchematic();
     else if (d->filename !=  d->editor->pcbLayout().board().pcbfilename)
-      d->discussRelinkingSchematic();
+      d->discussRelinkWhileLoading();
   }
   if (d->editor->linkedSchematic().isValid()) 
     d->showParts();
@@ -571,12 +605,16 @@ bool MWData::saveAsDialog() {
 
   if (!fn.endsWith(".cpcb"))
     fn += ".cpcb";
+
   openFiles().remove(filename);
   filename = fn;
   openFiles()[filename] = mw;
+
   pwd = QFileInfo(fn).absolutePath();
   mw->setWindowTitle(fn);
   recentfiles->mark(fn);
+
+  discussRelinkWhileSaving();
 
   if (editor->save(fn))
     return true;
@@ -844,7 +882,7 @@ void MWData::makeMenus() {
   QObject::connect(editor, &Editor::schematicLinked,
 		   a, &QAction::setDisabled);
 
-  auto *links = tools->addMenu("Linked &schematic");
+  auto *links = tools->addMenu("Lin&ked schematic");
   QObject::connect(editor, &Editor::schematicLinked,
 		   links, &QMenu::setEnabled);
   links->setEnabled(false);
@@ -1013,14 +1051,13 @@ MainWindow::MainWindow(): QMainWindow() {
 }
 
 MainWindow::~MainWindow() {
+  QStringList ss;
+  for (auto it=openFiles().begin(); it!=openFiles().end(); ++it) 
+    if (it.value()==this)
+      ss << it.key();
+  for (QString s: ss)
+    openFiles().remove(s);
   delete d;
-  for (auto it=openFiles().begin(); it!=openFiles().end();) {
-    // remove all mentions of this window, even if filename mapping got mucked
-    auto here = it;
-    ++it;
-    if (here.value()==this)
-      openFiles().erase(here);
-  }
 }
 
 void MainWindow::closeEvent(QCloseEvent *e) {

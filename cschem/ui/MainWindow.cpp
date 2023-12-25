@@ -392,6 +392,12 @@ void MainWindow::createActions() {
 }
 
 MainWindow::~MainWindow() {
+  QStringList ss;
+  for (auto it=openFiles().begin(); it!=openFiles().end(); ++it) 
+    if (it.value()==this)
+      ss << it.key();
+  for (QString s: ss)
+    openFiles().remove(s);
   delete d;
 }
 
