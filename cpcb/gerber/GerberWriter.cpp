@@ -482,6 +482,8 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
   
   bool ispaste = layer==Gerber::Layer::TopPasteMask
     || layer==Gerber::Layer::BottomPasteMask;
+  bool ismask = layer==Gerber::Layer::TopSolderMask
+    || layer==Gerber::Layer::BottomSolderMask;
   if (!ispaste) { // Apertures for traces
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::Conductor));
@@ -498,13 +500,19 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
     out.writeApertures(aps);
   }
 
-  if (!ispaste) { // Apertures for component pads
+  if (!ispaste) { // Apertures for component pads (hole pads)
     Gerber::Apertures
       &aps(out.newApertures(Gerber::Apertures::Func::ComponentPad));
     for (Dim od: collector.roundHolePads(l).keys())
       aps.ensure(Gerber::Circ(od));
     for (Dim od: collector.squareHolePads(l).keys())
       aps.ensure(Gerber::Rect(od, od));
+    if (!ismask) {
+      for (Dim od: collector.roundWithNoClear())
+        aps.ensure(Gerber::Circ(od));
+      for (Dim od: collector.squareWithNoClear())
+        aps.ensure(Gerber::Rect(od));
+    }
     out.writeApertures(aps);
   }
   
@@ -513,6 +521,9 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
       &aps(out.newApertures(Gerber::Apertures::Func::SMDPad));
     for (Point p: collector.smdPads(l).keys())
       aps.ensure(Gerber::Rect(p.x, p.y));
+    if (!ismask) 
+      for (Point p: collector.smdWithNoClear())
+        aps.ensure(Gerber::Rect(p.x, p.y));
     out.writeApertures(aps);
   }
 
@@ -712,15 +723,17 @@ public:
 };
 
 static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
-                        Board const &brd, Dim w, Dim h,
+                        Board const &brd, Point wh,
                         QList<PointRota> const &lst) {
+  Dim w = wh.x;
+  Dim h = wh.y;  
   Dim fpcw = brd.fpConWidth(w, h);
   Dim dxm = w/2 + brd.padClearance(w, h) - fpcw/2
     + Board::fpConOverlap();
   Dim dym = h/2 + brd.padClearance(w, h) - fpcw/2
     + Board::fpConOverlap();
   out << trcaps.select(Gerber::Rect(fpcw));
-  for (auto const &pr: lst) {
+  for (PointRota const &pr: lst) {
     auto pt = [&](Dim dx, Dim dy) {
       return Gerber::point(pr.p + Point(dx, dy).rotatedFreely(pr.r));
     };
@@ -732,25 +745,98 @@ static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
 }
 
 static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
-                        Board const &brd, Dim w, Dim h,
+                        Board const &brd, Point wh,
                         QList<Pad> const &lst) {
   QList<PointRota> sel;
   for (Pad const &p: lst) 
     if (p.fpcon && !p.noclear)
       sel << PointRota(p.p, p.rota);
-  writeFPCons(out, trcaps, brd, w, h, sel);
+  writeFPCons(out, trcaps, brd, wh, sel);
 }
 
 static void writeFPCons(GerberFile &out, Gerber::Apertures const &trcaps,
-                        Board const &brd, Dim w, Dim h,
+                        Board const &brd, Point wh,
                         QList<Hole> const &lst, Layer layer) {
   QList<PointRota> sel;
   for (Hole const &p: lst) 
     if (p.fpcon==layer && !p.noclear)
       sel << PointRota(p.p, p.rota, p.slotlength);
-  writeFPCons(out, trcaps, brd, w, h, sel);
+  writeFPCons(out, trcaps, brd, wh, sel);
 }
 
+static bool gotRegular(QList<Hole> const &holes, Layer l) {
+  for (Hole const &hole: holes) 
+    if (!hole.noclear || hole.fpcon!=l) 
+      return true;
+  return false;
+}
+
+static bool gotNoClear(QList<Hole> const &holes, Layer l) {
+  for (Hole const &hole: holes) 
+    if (hole.noclear && hole.fpcon==l) 
+      return true;
+  return false;
+}
+
+static void writePlainComponentPads(GerberFile &out,
+                                    Gerber::Apertures const &padaps,
+                                    Board const &brd,
+                                    Dim od, QList<Hole> const &lst,
+                                    Layer l, bool sq,
+                                    bool mask) {
+  if (!gotRegular(lst, l))
+    return;
+  
+  if (mask)
+    od += 2 * brd.maskMargin(od);
+  if (sq)
+    out << padaps.select(Gerber::Rect(od));
+  else
+    out << padaps.select(Gerber::Circ(od));
+  
+  for (Hole const &hole: lst) {
+    if (mask && hole.via)
+      continue;
+    else if (!mask && hole.noclear && hole.fpcon==l)
+      continue;
+    if (hole.rota && hole.square) {
+      writeRotatedRect(out, hole.p,
+                       od + hole.slotlength, od,
+                       hole.rota);
+    } else if (hole.isSlot()) {
+      writeSlotSegment(out, hole);
+    } else {
+      out << Gerber::point(hole.p) << "D03*\n";
+    }
+  }
+}
+
+static void writeNoClearComponentPads(GerberFile &out,
+                                      Gerber::Apertures const &padaps,
+                                      Dim od, QList<Hole> const &lst,
+                                      bool sq, Layer l) {
+  if (!gotNoClear(lst, l))
+    return;
+  
+  if (sq)
+    out << padaps.select(Gerber::Rect(od));
+  else
+    out << padaps.select(Gerber::Circ(od));
+  
+  for (Hole const &hole: lst) {
+    if (!hole.noclear || hole.fpcon!=l)
+      continue;
+    if (hole.rota && hole.square) {
+      writeRotatedRect(out, hole.p,
+                       od + hole.slotlength, od,
+                       hole.rota);
+    } else if (hole.isSlot()) {
+      writeSlotSegment(out, hole); // astonishingly, this works just like that
+    } else {
+      out << Gerber::point(hole.p) << "D03*\n";
+    }
+  }
+}
 
 static void writeComponentPads(GerberFile &out,
                                Board const &brd,
@@ -761,37 +847,80 @@ static void writeComponentPads(GerberFile &out,
     &padaps(out.apertures(mask
                           ? Gerber::Apertures::Func::Material
                           : Gerber::Apertures::Func::ComponentPad));
-  auto const &pads(sq ? col.squareHolePads(l) : col.roundHolePads(l));
-
+  QMap<Dim, QList<Hole>> const &pads(sq ? col.squareHolePads(l)
+                                       : col.roundHolePads(l));
+  
   out << "G01*\n"; // linear
   out << "%LPD*%\n"; // positive
   for (Dim od: pads.keys()) {
-    Dim d = od;
-    if (mask)
-      d += 2 * brd.maskMargin(od);
-    if (sq)
-      out << padaps.select(Gerber::Rect(d, d));
-    else
-      out << padaps.select(Gerber::Circ(d));
-    for (Hole const &hole: pads[od]) {
-      if (mask && hole.via)
-	continue;
-      if (hole.rota && hole.square) {
-	writeRotatedRect(out, hole.p,
-			 d + hole.slotlength, d,
-			 hole.rota);
-      } else if (hole.isSlot()) {
-          writeSlotSegment(out, hole);
-      } else {
-        out << Gerber::point(hole.p) << "D03*\n";
-      }
-    }
+    writePlainComponentPads(out, padaps, brd, od, pads[od], l, sq, mask);
     if (!mask) {
-      Gerber::Apertures const
-        &trcaps(out.apertures(Gerber::Apertures::Func::Conductor));
-      writeFPCons(out, trcaps, brd, od, od, pads[od], l);
+      writeFPCons(out, out.apertures(Gerber::Apertures::Func::Conductor), brd,
+                  Point(od, od), pads[od], l);
+      Dim od1 = sq ? col.squareWithNoClear()[od] : col.roundWithNoClear()[od];
+      writeNoClearComponentPads(out, padaps, od1, pads[od], sq, l);
     }
   }
+}
+
+
+static bool gotRegular(QList<Pad> const &pads) {
+  for (Pad const &pad: pads) 
+    if (!pad.noclear) 
+      return true;
+  return false;
+}
+
+static bool gotNoClear(QList<Pad> const &pads) {
+  for (Pad const &pad: pads) 
+    if (pad.noclear) 
+      return true;
+  return false;
+}
+
+static void writePlainSMDPads(GerberFile &out,
+                              Gerber::Apertures const &padaps,
+                              Board const &brd,
+                              Point wh, QList<Pad> const &pads,
+                              bool copper, bool mask) { // paste if neither
+  if (copper && !gotRegular(pads))
+    return; // on non-copper layers, even "noclear" pads are regular
+  Dim w(wh.x);
+  Dim h(wh.y);
+  Dim mrg = Dim();
+  if (mask)
+    mrg = brd.maskMargin(w, h);
+  Dim w1(w + 2*mrg);
+  Dim h1(h + 2*mrg);
+
+  out << padaps.select(Gerber::Rect(w1, h1));
+  for (Pad const &pad: pads) {
+    if (pad.noclear && copper) 
+      continue; // must take special action; see below
+    if (pad.rota) 
+      writeRotatedRect(out, pad.p, w1, h1, pad.rota);
+    else 
+      out << Gerber::point(pad.p) << "D03*\n";
+  }
+}
+
+static void writeNoClearSMDPads(GerberFile &out,
+                                Gerber::Apertures const &padaps,
+                                Point wh, QList<Pad> const &pads) {
+  // wh is _after_ expansion. Only called for copper layers
+  if (!gotNoClear(pads))
+    return;
+  Dim w(wh.x);
+  Dim h(wh.y);
+  out << padaps.select(Gerber::Rect(w, h));
+  for (Pad const &pad: pads) {
+    if (!pad.noclear) 
+      continue;
+    if (pad.rota) 
+      writeRotatedRect(out, pad.p, w, h, pad.rota);
+    else 
+      out << Gerber::point(pad.p) << "D03*\n";
+  }    
 }
 
 static void writeSMDPads(GerberFile &out,
@@ -803,27 +932,16 @@ static void writeSMDPads(GerberFile &out,
     &padaps(out.apertures(mask
                           ? Gerber::Apertures::Func::Material
                           : Gerber::Apertures::Func::SMDPad));
-  auto const &pads(col.smdPads(l));
+  QMap<Point, QList<Pad>> const &pads(col.smdPads(l));
   out << "G01*\n"; // linear
   out << "%LPD*%\n"; // positive (even in mask layers!)
-  for (Point p: pads.keys()) {
-    Dim w(p.x);
-    Dim h(p.y);
-    Dim mrg = Dim();
-    if (mask)
-      mrg = brd.maskMargin(p.x, p.y);
-    out << padaps.select(Gerber::Rect(w + 2*mrg, h + 2*mrg));
-    for (Pad const &pad: pads[p]) {
-      if (pad.rota) 
-        writeRotatedRect(out, pad.p,
-                         pad.width + 2*mrg, pad.height + 2*mrg, pad.rota);
-      else 
-        out << Gerber::point(pad.p) << "D03*\n";
-    }
-    if (copper) {
-      Gerber::Apertures const
-        &trcaps(out.apertures(Gerber::Apertures::Func::Conductor));
-      writeFPCons(out, trcaps, brd, w, h, pads[p]);
+
+  for (Point wh: pads.keys()) {
+    writePlainSMDPads(out, padaps, brd, wh, pads[wh], copper, mask);
+    if (copper) { 
+      writeFPCons(out, out.apertures(Gerber::Apertures::Func::Conductor), brd,
+                  wh, pads[wh]);
+      writeNoClearSMDPads(out, padaps, col.smdWithNoClear()[wh], pads[wh]);
     }
   }
 }

@@ -17,8 +17,24 @@ public:
   QMap<Layer, QMap<Dim, QList<Arc>>> arcs;
   QMap<Layer, QList<Polyline>> filledPlanes;
   QMap<Layer, QMap<Gerber::FontSpec, QList<Text>>> texts;
-};
+  QMap<Dim, Dim> roundWithNoClear;
+  QMap<Dim, Dim> squareWithNoClear;
+  QMap<Point, Point> smdWithNoClear;
   
+};
+
+QMap<Dim, Dim> const &Collector::roundWithNoClear() const {
+  return d->roundWithNoClear;
+}
+QMap<Dim, Dim> const &Collector::squareWithNoClear() const {
+  return d->squareWithNoClear;
+}
+
+QMap<Point, Point> const &Collector::smdWithNoClear() const {
+  return d->smdWithNoClear;
+}
+
+
 Collector::Collector(Board const &brd): d(new ColData()) {
   d->mirrory = brd.height/2;
 }
@@ -39,12 +55,16 @@ void Collector::collect(Group const &grp) {
       hole.flipUpDown(d->mirrory);
       d->holes[hole.id] << hole;
       auto &map(hole.square ? d->squareHolePads : d->roundHolePads);
-      Dim od1 = hole.od;
-      if (hole.noclear)
-        od1 += 2*Board::padClearance(hole.od, hole.od)
+      map[Layer::Top][hole.od] << hole;
+      map[Layer::Bottom][hole.od] << hole;
+      if (hole.noclear) {
+        Dim extra = 2*Board::padClearance(hole.od, hole.od)
           + 2*Board::fpConOverlap();
-      map[Layer::Top][hole.fpcon==Layer::Top ? od1 : hole.od] << hole;
-      map[Layer::Bottom][hole.fpcon==Layer::Bottom ? od1 : hole.od] << hole;
+        if (hole.square)
+          d->squareWithNoClear[hole.od] = hole.od + extra;
+        else
+          d->roundWithNoClear[hole.od] = hole.od + extra;
+      }
     } break;
     case Object::Type::NPHole: {
       NPHole hole(obj.asNPHole());
@@ -54,11 +74,13 @@ void Collector::collect(Group const &grp) {
     case Object::Type::Pad: {
       Pad pad(obj.asPad());
       pad.flipUpDown(d->mirrory);
-      Dim extra;
-      if (pad.noclear && pad.fpcon)
-        extra = 2*Board::padClearance(pad.width, pad.height)
+      d->smdPads[pad.layer][Point(pad.width, pad.height)] << pad;
+      if (pad.noclear && pad.fpcon) {
+        Dim extra = 2*Board::padClearance(pad.width, pad.height)
           + 2*Board::fpConOverlap();
-      d->smdPads[pad.layer][Point(pad.width+extra, pad.height+extra)] << pad;
+        d->smdWithNoClear[Point(pad.width, pad.height)]
+          = Point(pad.width+extra, pad.height+extra);
+      }
     } break;
     case Object::Type::Trace: {
       Trace trace(obj.asTrace());
