@@ -155,7 +155,6 @@ void SymbolData::setError(QString err) {
 
 void SymbolData::setValid() {
   errors.clear();
-  qDebug() << "symbol valid";
   valid = true;
 }
 
@@ -181,7 +180,7 @@ Symbol::Symbol(XmlElement const &elt, QString name) {
     if (e.type()==XmlNode::Type::Element)
       d->scanPins(e.element());
   if (d->valid && d->pins.isEmpty() && d->cpins.isEmpty())
-    d->setError("No pins found in symbol definition.");
+    d->setError("No pins found in symbol definition for “" + d->name + "”.");
   d->ensureBBox();
   forgetRenderer(*this);
   // qDebug() << stats();

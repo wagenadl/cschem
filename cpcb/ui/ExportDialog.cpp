@@ -143,6 +143,8 @@ bool ExportDialog::saveGerber(class Layout const &pcblayout) {
 
   if (QProcess::execute("zip", QStringList{"-h"})==0) {
     // use zip
+    /* should do the test as a QProcess start + waitForFinished
+       to avoid spurious output. */
     QDir cwd = QDir::current();
     QDir::setCurrent(td.path());
     QStringList args{"-r", fn, base};

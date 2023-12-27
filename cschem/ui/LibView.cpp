@@ -225,16 +225,16 @@ LibView::~LibView() {
 }
 
 void LibView::activate(QString symbol, QString pop) {
-  qDebug () <<"libview act" << symbol << pop;
+  //qDebug () <<"libview act" << symbol << pop;
   emit activated(symbol, pop);
 }
 
 void LibView::hover(QString symbol, QString pop) {
-  qDebug () <<"libview hover" << symbol << pop;
+  //qDebug () <<"libview hover" << symbol << pop;
   emit hoveron(symbol, pop);
 }
 
 void LibView::unhover() {
-  qDebug () <<"libview unhover";
+  //  qDebug () <<"libview unhover";
   emit hoveroff();
 }

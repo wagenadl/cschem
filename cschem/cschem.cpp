@@ -15,13 +15,13 @@
 
 void ensureSymbolLibrary() {
   QDir userlib(Paths::userSymbolRoot());
-  qDebug() << "userlib" << userlib.absolutePath();
+  //  qDebug() << "userlib" << userlib.absolutePath();
   if (!userlib.exists())
     userlib.mkpath(".");
 
   if (!userlib.exists("System")) {
     QString sysloc(Paths::systemSymbolRoot());
-    qDebug() << "syslib" << sysloc;
+    //    qDebug() << "syslib" << sysloc;
     if (!sysloc.isEmpty()) {
       QString linkname = userlib.absoluteFilePath("System");
       if (QSysInfo::productType() == "windows")

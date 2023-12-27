@@ -101,7 +101,7 @@ public:
   }
   ~SelChgPostpone() {
     d->postpone--;
-    qDebug() << "~postpone" << d->postpone;
+    //    qDebug() << "~postpone" << d->postpone;
     if (d->postpone==0)
       d->scene->selectionChanged();
   }
@@ -121,7 +121,7 @@ QPointF SceneData::pinPosition(int id, QString pin) const {
 }
 
 bool SceneData::undo() {
-  qDebug() << "undo buffer length" << undobuffer.size() << redobuffer.size();
+  //  qDebug() << "undo buffer length" << undobuffer.size() << redobuffer.size();
   if (undobuffer.isEmpty())
     return false;
 
@@ -134,8 +134,8 @@ bool SceneData::undo() {
   Circuit c = undobuffer.takeLast();
   QSet<int> undosel = undoselections.takeLast();
   QSet<int> undotxtsel = undotxtselections.takeLast();
-  qDebug() << "circuit" << c;
-  qDebug() << "sel" << undosel << undotxtsel;
+  //  qDebug() << "circuit" << c;
+  //  qDebug() << "sel" << undosel << undotxtsel;
 
   circ() = c;
   rebuild();
@@ -149,12 +149,12 @@ bool SceneData::undo() {
     if (textuals.contains(id))
       textuals[id]->setSelected(true);
   
-  qDebug() << "-> buffer length" << undobuffer.size() << redobuffer.size();
+  //  qDebug() << "-> buffer length" << undobuffer.size() << redobuffer.size();
   return true;
 }
 
 bool SceneData::redo() {
-  qDebug() << "redo. buffer length" << undobuffer.size() << redobuffer.size();  
+  //qDebug() << "redo. buffer length" << undobuffer.size() << redobuffer.size();  
   if (redobuffer.isEmpty())
     return false;
 
@@ -524,7 +524,7 @@ void Scene::moveSelection(QPoint delta, bool nomagnet) {
 
 void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
   if (d->hovermanager->onNothing() && !itemAt(e->scenePos(), QTransform())) {
-    qDebug() << "Double click in space" << e->scenePos();
+    //    qDebug() << "Double click in space" << e->scenePos();
     d->newTextual(e->scenePos());
   } else {
     QGraphicsScene::mouseDoubleClickEvent(e);
@@ -542,10 +542,10 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
                                      ? HoverManager::Purpose::Connecting
                                      : HoverManager::Purpose::Moving);
   d->hovermanager->update(e->scenePos());
-  qDebug() << "mouse press. now at elt" << d->hovermanager->element()
-           << d->hovermanager->pin()
-           << "con" << d->hovermanager->connection()
-           << d->hovermanager->segment();
+  //qDebug() << "mouse press. now at elt" << d->hovermanager->element()
+  //         << d->hovermanager->pin()
+  //         << "con" << d->hovermanager->connection()
+  //         << d->hovermanager->segment();
 
   if (d->connbuilder) {
     d->connbuilder->mousePress(e);
@@ -876,11 +876,11 @@ void Scene::modifyElementAnnotations(Element const &elt) {
   Element elt0 = d->circ().elements[id];
   QString oldname = elt0.name;
   elt0.copyAnnotationsFrom(elt);
-  qDebug() << "scene MEA" << oldname << elt0.name;
+  //qDebug() << "scene MEA" << oldname << elt0.name;
   if (!elt.value.isEmpty()) {
     // Add fraction prefix to value if appropriate
     int cid = d->circ().containerOf(id);
-    qDebug() << "  cid=" << cid;
+    //qDebug() << "  cid=" << cid;
     if (cid>0) {
       Q_ASSERT(d->circ().elements.contains(cid));
       Element const &cont(d->circ().elements[cid]);
@@ -890,7 +890,7 @@ void Scene::modifyElementAnnotations(Element const &elt) {
 	QString pfx = Symbol::prefixForSlotCount(nSlots);
 	QString val = pfx + stripFraction(elt.value);
 	if (val != elt.value) {
-	  qDebug() << "mucking" << val << elt.value;
+	  //qDebug() << "mucking" << val << elt.value;
 	  elt0.value = val;
 	}
       }
@@ -918,12 +918,12 @@ void SceneData::modifyContainerAndSiblings(Element const &elt, QString oldname) 
       return; // don't do it if double containee names
   // we are going to change our container, iff there is only one
   int containerid = -1;
-  qDebug() << "modifycontainerandsiblings" << elt << oldname;
+  //qDebug() << "modifycontainerandsiblings" << elt << oldname;
   QString cname = PartNumbering::cname(oldname);
   for (Element const &e: circ().elements) {
     if (!e.isContainer())
       continue;
-    qDebug() << "  cf" << e;
+    //qDebug() << "  cf" << e;
     if (e.name==oldname)
       return; // don't do anything if a duplicate container exists
     if (e.name==cname) {
@@ -974,7 +974,7 @@ void SceneData::modifyContents(Element const &elt, QString oldname, int sibid) {
     affectedelts << e;
   }
   for (Element e: affectedelts) {
-    qDebug() << "affected now" << e.name << e.id;
+    //qDebug() << "affected now" << e.name << e.id;
     if (!elt.name.isEmpty())
       e.name = elt.name + e.csuffix();
     Symbol const &symbol = schem.library().symbol(elt.symbol());
@@ -1043,13 +1043,13 @@ void Scene::copyToClipboard(bool cut) {
 }
 
 void Scene::pasteFromClipboard() {
-  qDebug() << "paste";
-  qDebug() << "check pre-existing circuit";
+  //qDebug() << "paste";
+  //qDebug() << "check pre-existing circuit";
   d->circ().verifyIDs();
   SelChgPostpone blk(d);
   int mx = d->circ().maxId();
   Circuit pp = Clipboard::clipboard().retrieve();
-  qDebug() << "check clipboard circuit";
+  //qDebug() << "check clipboard circuit";
   pp.verifyIDs();
   SymbolLibrary const &altlib = Clipboard::clipboard().library();
   QPoint cm = Geometry(pp, d->lib()).centerOfPinMass();
@@ -1059,7 +1059,7 @@ void Scene::pasteFromClipboard() {
     qDebug() << "nothing to paste";
     return;
   }
-  qDebug() << "check clipboard circuit after renumber";
+  //  qDebug() << "check clipboard circuit after renumber";
   pp.verifyIDs();
 
   d->preact();
@@ -1070,7 +1070,7 @@ void Scene::pasteFromClipboard() {
 	d->lib().insert(altlib.symbol(elt.symbol()));
 	  
   d->circ().merge(pp);
-  qDebug() << "check circuit after merge";
+  //  qDebug() << "check circuit after merge";
   d->circ().verifyIDs();
   QList<int> eltids = pp.elements.keys();
   QList<int> conids = pp.connections.keys();
@@ -1078,7 +1078,7 @@ void Scene::pasteFromClipboard() {
   d->rebuildAsNeeded(QSet<int>(eltids.begin(), eltids.end()),
                      QSet<int>(conids.begin(), conids.end()),
                      QSet<int>(txtids.begin(), txtids.end()));
-  qDebug() << "check circuit after rebuild";
+  //  qDebug() << "check circuit after rebuild";
   d->circ().verifyIDs();
   clearSelection();
   for (int id: pp.elements.keys()) 
@@ -1125,7 +1125,7 @@ void SceneData::hideDragIn() {
 
 bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
   Symbol symbol = Symbol::load(filename);
-  qDebug() << "startSvgDragIn" << filename << pos << symbol.isValid();
+  //  qDebug() << "startSvgDragIn" << filename << pos << symbol.isValid();
   //if (!symbol.isValid())
   //return false;
 
@@ -1141,7 +1141,7 @@ bool SceneData::startSvgDragIn(QString filename, QPointF pos) {
 }
 
 bool SceneData::importAndPlonk(Symbol const &symbol, QPointF pos, bool merge) {
-  qDebug() << "importAndPlonk" << pos << merge;
+  //  qDebug() << "importAndPlonk" << pos << merge;
   if (!symbol.isValid())
     return false;
   lib().insert(symbol);
@@ -1175,7 +1175,7 @@ bool SceneData::importAndPlonk(Symbol const &symbol, QPointF pos, bool merge) {
 }
 
 void Scene::plonk(QString symbol, QPointF scenepos, bool merge, QString pop) {
-  qDebug() << "plonk" << symbol << scenepos << merge << pop;
+  //  qDebug() << "plonk" << symbol << scenepos << merge << pop;
     
   clearSelection();
   QPoint pt = d->lib().downscale(scenepos);
@@ -1464,7 +1464,7 @@ void Scene::repositionTextual(int id, QPoint p) {
 }
 
 void Scene::dropTextual(int id) {
-  qDebug() << "droptextual" << id;
+  //  qDebug() << "droptextual" << id;
   if (!d->circ().textuals.contains(id))
     return;
   d->preact();
