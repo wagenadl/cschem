@@ -19,7 +19,7 @@ void ensureOutlineLibrary() {
   if (!userlib.exists())
     userlib.mkpath(".");
 
-  qDebug() << "ensure" << userlib;
+  // qDebug() << "ensure" << userlib;
 
   if (!userlib.exists("System")) {
     QString sysloc(Paths::systemComponentRoot());
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
                     );
   QFont font = app.font();
   font.setPointSizeF(11.0);
-  qDebug() << "CPCB FONT" << font;
+  //qDebug() << "CPCB FONT" << font;
   app.setFont(font);
 
   ensureOutlineLibrary();

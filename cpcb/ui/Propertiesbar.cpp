@@ -244,7 +244,7 @@ void PBData::fillWH(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
-  qDebug() << "filldiamandshape" << objects << circle->isChecked() << square->isChecked();
+  //qDebug() << "filldiamandshape" << objects << circle->isChecked() << square->isChecked();
   bool got = false;
   // Set id (od, square) if we have at least one hole and their id (etc)
   // etc all same
@@ -325,7 +325,7 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
     editor->properties().square = true;
   if (circle->isChecked())
     editor->properties().square = false;
-  qDebug() << "ischecked" << circle->isChecked() << square->isChecked();
+  //qDebug() << "ischecked" << circle->isChecked() << square->isChecked();
 }
 
 void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
@@ -380,7 +380,7 @@ void PBData::doFillArcAngle(int arcangle) {
 }
 
 void PBData::fillArcAngle(QSet<int> const &objects, Group const &here) {
-  qDebug() << "fillarcangle" << objects;
+  //qDebug() << "fillarcangle" << objects;
   bool got = false;
   int arcangle = 0; // "invalid"
   // set angle if all are same
@@ -481,7 +481,7 @@ void PBData::fillFontSize(QSet<int> const &objects, Group const &here) {
 }
 
 void PBData::fillGroupProps(QSet<int> const &/*objects*/, Group const &here) {
-  qDebug() << "fillgroupprops" << here.nominalRotation();
+  //qDebug() << "fillgroupprops" << here.nominalRotation();
   pkg->setText(here.attributes.value(Group::Attribute::Footprint));
   rot->setValue(here.nominalRotation());
   //  partno->setText(here.partno);
@@ -493,7 +493,7 @@ void PBData::getPropertiesFromSelection() {
   QSet<Point> points(editor->selectedPoints());
   Group const &here(editor->currentGroup());
 
-  qDebug() << "getpropertiesfromselection" << objects.size() << points.size();
+  //qDebug() << "getpropertiesfromselection" << objects.size() << points.size();
   if (!fillXY(points)) 
     fillXYfromText(objects, here);
   fillLinewidth(objects, here);
@@ -559,9 +559,9 @@ void PBData::hideAndShow() {
   flipped->setVisible(true);
   rotatec->setVisible(false);
 
-  qDebug() << "top acts" << xya << dima << arca;
-  qDebug() << "group" << xyg << dimg << arcg;
-  qDebug() << "conts" << squarec << arcc;
+  //qDebug() << "top acts" << xya << dima << arca;
+  //qDebug() << "group" << xyg << dimg << arcg;
+  //qDebug() << "conts" << squarec << arcc;
 
   switch (mode) {
   case Mode::Invalid: case Mode::SetIncOrigin: case Mode::BoardOutline:
@@ -776,7 +776,6 @@ void PBData::hsEdit() {
 }
 
 void PBData::setupUI() {
-  qDebug() << "setupui" << (void*)xya << (void*)arca;
   auto makeGroup = [this](QAction **a) {
     Q_ASSERT(parent);
     Q_ASSERT(a);
@@ -955,9 +954,9 @@ void PBData::setupUI() {
                      editor->setCurrentGroupAttribute(Group::Attribute::Notes,
                                            notes->document()->toPlainText());
                    });
-  qDebug() << "premg" << xya;
+  //  qDebug() << "premg" << xya;
   xyg = makeGroup(&xya);
-  qDebug() << "postmg" << xya;
+  //qDebug() << "postmg" << xya;
   xc = makeContainer(xyg);
   makeLabel(xc, "X", "Distance from left");
   x = makeDimSpinner(xc, Dim::fromInch(.050));
@@ -1199,7 +1198,7 @@ void PBData::setupUI() {
 		     });
 
   top->setChecked(true);
-  qDebug() << "post" << xya;
+  //qDebug() << "post" << xya;
 }  
 
 Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) {
@@ -1231,7 +1230,7 @@ void Propertiesbar::reflectMode(Mode m) {
   }
   if (m==Mode::PlaceTrace || m==Mode::PlacePad) {
     if (!d->anyLayerChecked()) {
-      qDebug() << "setting layer top";
+      //qDebug() << "setting layer top";
       d->top->setChecked(true);
       d->editor->properties().layer = Layer::Top;
     }

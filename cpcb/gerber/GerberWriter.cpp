@@ -522,8 +522,11 @@ void GWData::collectCopperApertures(GerberFile &out, Gerber::Layer layer) {
     for (Point p: collector.smdPads(l).keys())
       aps.ensure(Gerber::Rect(p.x, p.y));
     if (!ismask) 
-      for (Point p: collector.smdWithNoClear())
+      for (Point p: collector.smdWithNoClear().values())
         aps.ensure(Gerber::Rect(p.x, p.y));
+    if (!ismask) 
+      for (Point p: collector.smdWithNoClear().values())
+        qDebug() << "Ensure SMD noclearpad" << p;
     out.writeApertures(aps);
   }
 
@@ -912,6 +915,7 @@ static void writeNoClearSMDPads(GerberFile &out,
     return;
   Dim w(wh.x);
   Dim h(wh.y);
+  qDebug() << "writenoclearsmdpads" << w << h;
   out << padaps.select(Gerber::Rect(w, h));
   for (Pad const &pad: pads) {
     if (!pad.noclear) 

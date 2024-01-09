@@ -422,7 +422,7 @@ void MWData::saveComponentDialog() {
 }
 
 void MWData::openLibrary() {
-  qDebug() << QUrl::fromLocalFile(Paths::userComponentRoot());
+  //qDebug() << QUrl::fromLocalFile(Paths::userComponentRoot());
   QDesktopServices::openUrl(QUrl::fromLocalFile(Paths::userComponentRoot()));
 }
 
@@ -1010,7 +1010,7 @@ void MWData::makeConnections() {
   QObject::connect(modebar, &Modebar::modeChanged,
 		   [this](Mode m) {
                      if (m==Mode::PlacePlane) {
-                       qDebug() << "I might make the planes visible now";
+                       //qDebug() << "I might make the planes visible now";
                        // statusbar->showPlanes();
                      }
                    });
@@ -1032,7 +1032,7 @@ void MWData::fillBars() {
   statusbar->setBoard(editor->pcbLayout().board());
   propbar->reflectBoard(editor->pcbLayout().board());
   propbar->reflectMode(modebar->mode());
-  qDebug() << "mw:fillbars";
+  //qDebug() << "mw:fillbars";
   propbar->reflectSelection();
   propbar->forwardAllProperties();
 }
@@ -1092,7 +1092,7 @@ void MainWindow::closeEvent(QCloseEvent *e) {
 }
 
 void MWData::selectionToBOM() {
-  qDebug() << "selection to bom";
+  //qDebug() << "selection to bom";
   if (editor->breadcrumbs().size())
     return; // we only care at top level
   QSet<int> sel = editor->selectedObjects();
@@ -1100,7 +1100,7 @@ void MWData::selectionToBOM() {
 }
 
 void MWData::selectionFromBOM() {
-  qDebug() <<"selection from bom";
+  //  qDebug() <<"selection from bom";
   if (editor->breadcrumbs().size())
     return; // we only care at top level
   if (bomv->isQuiet())
