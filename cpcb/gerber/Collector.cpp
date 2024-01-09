@@ -17,22 +17,8 @@ public:
   QMap<Layer, QMap<Dim, QList<Arc>>> arcs;
   QMap<Layer, QList<Polyline>> filledPlanes;
   QMap<Layer, QMap<Gerber::FontSpec, QList<Text>>> texts;
-  QMap<Dim, Dim> roundWithNoClear;
-  QMap<Dim, Dim> squareWithNoClear;
-  QMap<Point, Point> smdWithNoClear;
   
 };
-
-QMap<Dim, Dim> const &Collector::roundWithNoClear() const {
-  return d->roundWithNoClear;
-}
-QMap<Dim, Dim> const &Collector::squareWithNoClear() const {
-  return d->squareWithNoClear;
-}
-
-QMap<Point, Point> const &Collector::smdWithNoClear() const {
-  return d->smdWithNoClear;
-}
 
 
 Collector::Collector(Board const &brd): d(new ColData()) {
@@ -57,14 +43,6 @@ void Collector::collect(Group const &grp) {
       auto &map(hole.square ? d->squareHolePads : d->roundHolePads);
       map[Layer::Top][hole.od] << hole;
       map[Layer::Bottom][hole.od] << hole;
-      if (hole.noclear) {
-        Dim extra = 2*Board::padClearance(hole.od, hole.od)
-          + 2*Board::fpConOverlap();
-        if (hole.square)
-          d->squareWithNoClear[hole.od] = hole.od + extra;
-        else
-          d->roundWithNoClear[hole.od] = hole.od + extra;
-      }
     } break;
     case Object::Type::NPHole: {
       NPHole hole(obj.asNPHole());
@@ -75,12 +53,6 @@ void Collector::collect(Group const &grp) {
       Pad pad(obj.asPad());
       pad.flipUpDown(d->mirrory);
       d->smdPads[pad.layer][Point(pad.width, pad.height)] << pad;
-      if (pad.noclear && pad.fpcon) {
-        Dim extra = 2*Board::padClearance(pad.width, pad.height)
-          + 2*Board::fpConOverlap();
-        d->smdWithNoClear[Point(pad.width, pad.height)]
-          = Point(pad.width+extra, pad.height+extra);
-      }
     } break;
     case Object::Type::Trace: {
       Trace trace(obj.asTrace());

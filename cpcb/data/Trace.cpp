@@ -6,6 +6,7 @@
 
 Trace::Trace() {
   layer = Layer::Invalid;
+  noclear = false;
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Trace const &t) {
@@ -14,6 +15,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Trace const &t) {
   s.writeAttribute("p2", t.p2.toString());
   s.writeAttribute("w", t.width.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
+  if (t.noclear)
+    s.writeAttribute("noclear", "1");
   s.writeEndElement();
   return s;
 }
@@ -27,8 +30,8 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Trace &t) {
     t.p2 = Point::fromString(a.value("p2").toString(), &ok);
   if (ok)
     t.width = Dim::fromString(a.value("w").toString(), &ok);
-  if (ok)
-    t.layer = Layer(a.value("l").toInt());
+  t.layer = Layer(a.value("l").toInt());
+  t.noclear = a.value("noclear").toInt() != 0;
   s.skipCurrentElement();
   return s;
 }
@@ -38,6 +41,7 @@ QDebug operator<<(QDebug d, Trace const &t) {
     << t.p2
     << t.width
     << t.layer
+    << (t.noclear ? "noclear" : "")
     << ")";
   return d;
 }

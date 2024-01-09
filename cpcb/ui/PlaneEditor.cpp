@@ -52,7 +52,6 @@ void PlaneEditor::resetMouseMargin() {
 }
 
 void PlaneEditor::deleteSelected() {
-  qDebug() << "PE:Delete";
   if (d->hoveredgeidx>=0)
     return; // not doing anything
   Group const &here(ed->currentGroup());
@@ -282,10 +281,12 @@ void PlaneEditor::doubleClick(Point p,
                               Qt::MouseButton,
                               Qt::KeyboardModifiers m) {
   Group const &here(ed->currentGroup());
-  NodeID nid = here.nodeAt(p, ed->pressMargin(), ed->props.layer, true);
+  NodeID nid = here.nodeAt(p, ed->pressMargin(), ed->props.layer, false);
+  qDebug() << "doubleclick" << nid;
   if (nid.isEmpty())
     return;
   Object const &obj(here.object(nid));
+  qDebug() << "  obj" << obj.isTrace();
   if (obj.isPad()) {
     UndoCreator uc(ed, true);
     Pad &pad(ed->currentGroup().object(nid).asPad());
@@ -326,7 +327,16 @@ void PlaneEditor::doubleClick(Point p,
     }
     ed->updateOnWhat(true); // rebuild net
     ed->ed->update();
-  }  
+  } else if (obj.isTrace()) {
+    if (m & Qt::ControlModifier) {
+      UndoCreator uc(ed, true);
+      Trace &trace(ed->currentGroup().object(nid).asTrace());
+      trace.noclear = !trace.noclear;
+      ed->updateOnWhat(true); // rebuild net
+      ed->ed->update();
+      qDebug() << "double click trace" << trace.noclear;
+    }
+  }
 }
 
 
@@ -359,8 +369,5 @@ void PlaneEditor::render(QPainter &p) {
 	p.drawEllipse(d->hoverpt.toMils(), rad, rad);
       }
     }
-    qDebug() << "Hovering on plane";
-  } else {
-    qDebug() << "Not on plane";
   }
 }

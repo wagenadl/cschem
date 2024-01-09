@@ -15,6 +15,7 @@ class Trace: public Segment {
 public:
   Layer layer;
   Dim width;
+  bool noclear;
 public:
   Trace();
   bool isValid() const { return layer!=Layer::Invalid; }

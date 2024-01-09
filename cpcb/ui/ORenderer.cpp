@@ -106,6 +106,8 @@ void ORenderer::drawTrace(Trace const &t, bool selected, bool innet) {
     return;
   if (subl == Sublayer::Plane)
     return;
+  if (subl == Sublayer::Clearance && t.noclear)
+    return;
   
   Point p1 = origin + t.p1;
   Point p2 = origin + t.p2;
@@ -204,6 +206,7 @@ void ORenderer::drawHole(Hole const &hole, bool selected, bool innet) {
     double dym = od/2 + pc + fpover;
     double dxm = dym + dx;
     if (hole.noclear) {
+      /*
       if (dx>0) {
         p->setPen(QPen(c, od + 2*pc + 2*fpover, Qt::SolidLine, Qt::RoundCap));
         QPointF dxy(dx*cs, dx*sn);
@@ -224,7 +227,9 @@ void ORenderer::drawHole(Hole const &hole, bool selected, bool innet) {
           p->drawEllipse(p0, dym, dym);
         }
       }
+      */
     } else {
+      // draw four rays
       QPointF dmaj(cs*dxm, sn*dxm);
       QPointF dmin(-sn*dym, cs*dym);
       p->setPen(QPen(c, pc));
@@ -325,6 +330,7 @@ void ORenderer::drawPad(Pad const &pad, bool selected, bool innet) {
     double dxm = w/2 + pc.toMils();
     double dym = h/2 + pc.toMils();
     if (pad.noclear) {
+      /*
       p->setPen(Qt::NoPen);
       p->setBrush(c);
       QPointF dp(dxm, dym);
@@ -335,7 +341,9 @@ void ORenderer::drawPad(Pad const &pad, bool selected, bool innet) {
       } else {
         p->drawRect(r.translated(p0));
       }
+      */
     } else {
+      // draw four rays
       p->setPen(QPen(c,
                      brd.fpConWidth(pad.width, pad.height).toMils(),
                      Qt::SolidLine, Qt::FlatCap));

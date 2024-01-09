@@ -24,9 +24,6 @@ public:
   QMap<Dim, QList<Arc>> const &arcs(Layer) const; // key is LW
   QList<Polyline> const &filledPlanes(Layer) const;
   QMap<Gerber::FontSpec, QList<Text>> const &texts(Layer) const;
-  QMap<Dim, Dim> const &roundWithNoClear() const; // key is plain OD, ...
-  QMap<Dim, Dim> const &squareWithNoClear() const; // ... val is augmented
-  QMap<Point, Point> const &smdWithNoClear() const; // sim.
 private:
   class ColData *d;
 };
