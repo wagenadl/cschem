@@ -68,7 +68,8 @@ void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
         insertRecursively(nid);
       break;
     case Object::Type::Plane:
-      // traces do not touch planes
+      if (!discountwire && tr.touches(obj.asPlane()))
+        insertRecursively(nid);
       break;
     case Object::Type::Group:
       insertFriendsOfTrace(tr, nid);
@@ -153,6 +154,8 @@ void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
 
 void Builder::insertFriendsOfPlane(FilledPlane const &fp, NodeID grpid) {
   Group const &univ(grpid.isEmpty() ? root : root.object(grpid).asGroup());
+  bool discountwire = univ.attributes[Group::Attribute::Footprint]
+    .contains("trace");
   for (int id: univ.keys()) {
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
@@ -174,6 +177,9 @@ void Builder::insertFriendsOfPlane(FilledPlane const &fp, NodeID grpid) {
     case Object::Type::Group:
       insertFriendsOfPlane(fp, nid);
       break;
+    case Object::Type::Trace:
+      if (!discountwire && obj.asTrace().touches(fp))
+        insertRecursively(nid);
     default:
       break;
     }

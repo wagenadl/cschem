@@ -46,7 +46,7 @@ bool FilledPlane::contains(Point p, Dim mrg) const {
 
 bool FilledPlane::touches(FilledPlane const &fp) const {
   bool got = layer==fp.layer
-    && !perimeter.toMils().intersected(fp.perimeter.toMils()).isEmpty();
+    &&!perimeter.toMils().intersects(fp.perimeter.toMils());
   return got;
 }
 

@@ -3,6 +3,8 @@
 #include "Trace.h"
 #include <cmath>
 #include <QTransform>
+#include "FilledPlane.h"
+#include "pi.h"
 
 Trace::Trace() {
   layer = Layer::Invalid;
@@ -59,7 +61,7 @@ QPainterPath Trace::outlinePath() const {
   path.addEllipse(QPoint(0,0), w/2, w/2);
   path.addEllipse(px.toMils(), w/2, w/2);
   path.addRect(0, -w/2, px.x.toMils(), w);
-  QTransform t; t.rotate(angle*180/M_PI); //3.14159265);
+  QTransform t; t.rotate(angle*180/PI);
   return t.map(path).translated(p1.toMils());
 }
 
@@ -74,6 +76,18 @@ bool Trace::onP2(Point p, Dim mrg) const {
 
 bool Trace::onSegment(Point p, Dim mrg) const {
   return Segment::onSegment(p, mrg + width/2);
+}
+
+bool Trace::touches(FilledPlane const &fp) const {
+  if (!noclear)
+    return false;
+  if (layer != fp.layer)
+    return false;
+  if (!boundingRect().intersects(fp.boundingRect()))
+    return false;
+  QPainterPath pp;
+  pp.addPolygon(fp.perimeter.toMils());
+  return pp.intersects(outlinePath());
 }
 
 

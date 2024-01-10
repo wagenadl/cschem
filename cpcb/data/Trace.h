@@ -30,6 +30,7 @@ public:
   // Close enough means within a distance .5*WIDTH + MRG.
   // ONSEGMENT returns true even if ONP1 or ONP2 would return true as well.
   bool touches(Trace const &t, Point *intersection=0) const;
+  bool touches(class FilledPlane const &fp) const;
   bool touches(Rect r) const;
   bool operator==(Trace const &) const;
 };
