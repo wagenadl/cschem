@@ -7,8 +7,8 @@ install(FILES man/cschem.1 DESTINATION share/man/man1)
 install(FILES man/cpcb.1 DESTINATION share/man/man1)
 install(FILES README.md DESTINATION share/doc/cschem)
 install(FILES CHANGELOG DESTINATION share/doc/cschem)
-install(FILES ${CMAKE_BINARY_DIR}/cschem-userguide.pdf DESTINATION share/doc/cschem)
-install(FILES ${CMAKE_BINARY_DIR}/cpcb-userguide.pdf DESTINATION share/doc/cschem)
+##install(FILES ${CMAKE_BINARY_DIR}/cschem-userguide.pdf DESTINATION share/doc/cschem)
+##install(FILES ${CMAKE_BINARY_DIR}/cpcb-userguide.pdf DESTINATION share/doc/cschem)
 
 # Symbol and outline libraries
 install(DIRECTORY symbols DESTINATION share/cschem/cschem)
