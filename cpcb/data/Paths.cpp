@@ -5,21 +5,24 @@
 #include <QFileInfo>
 #include <QStandardPaths>
 #include <QDebug>
+#include <QCoreApplication>
 
 namespace Paths {
   static QDir installPath;
 
   void setExecutablePath(QString s) {
-    QFileInfo exe(s);
-    //qDebug() << "exe" << exe;
-    QDir dir = exe.dir();
+    QString appdir = QCoreApplication::applicationDirPath();
+    //    QFileInfo exe(s);
+    // qDebug() << "exe" << exe << exe.isAbsolute();
+    //QDir dir = exe.dir();
+    QDir dir(appdir);
     dir.makeAbsolute();
-    qDebug() << "dir" << dir;
+    //qDebug() << "dir" << dir;
     //dir.cdUp();
-    if (dir.path().endsWith("build"))
+    if (dir.path().endsWith("build") || dir.path().endsWith("bin"))
       dir.cdUp();
     installPath = dir;
-    qDebug() << "installpath" << installPath;
+    //qDebug() << "installpath" << installPath;
   }
 
   QString userComponentRoot() {

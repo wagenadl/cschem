@@ -5,13 +5,16 @@
 #include <QStandardPaths>
 #include <QFileInfo>
 #include <QDebug>
+#include <QCoreApplication>
 
 namespace Paths {
   static QDir installPath;
 
   void setExecutablePath(QString s) {
-    QFileInfo exe(s);
-    QDir dir = exe.dir();
+    //QFileInfo exe(s);
+    //QDir dir = exe.dir();
+    QString appdir = QCoreApplication::applicationDirPath();
+    QDir dir(appdir);
     dir.makeAbsolute();
     //    qDebug() << "dir" << dir;
     //dir.cdUp();

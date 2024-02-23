@@ -21,11 +21,12 @@ void ensureSymbolLibrary() {
 
   if (!userlib.exists("System")) {
     QString sysloc(Paths::systemSymbolRoot());
-    //    qDebug() << "syslib" << sysloc;
+    qDebug() << "sysloc" << sysloc;
     if (!sysloc.isEmpty()) {
       QString linkname = userlib.absoluteFilePath("System");
       if (QSysInfo::productType() == "windows")
           linkname += ".lnk";
+      qDebug() << "linkname" << linkname;
       QFile(sysloc).link(linkname);
     }
   }

@@ -23,12 +23,12 @@ void ensureOutlineLibrary() {
 
   if (!userlib.exists("System")) {
     QString sysloc(Paths::systemComponentRoot());
-    qDebug() << "..." << sysloc;
+    qDebug() << "sysloc" << sysloc;
     if (!sysloc.isEmpty()) {
       QString linkname = userlib.absoluteFilePath("System");
-      qDebug() << "..." << linkname;
       if (QSysInfo::productType() == "windows")
           linkname += ".lnk";
+      qDebug() << "linkname" << linkname;
       QFile(sysloc).link(linkname);
     }
   }
