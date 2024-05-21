@@ -131,7 +131,7 @@ QDebug operator<<(QDebug d, Board const &t) {
 }
 
 Dim Board::fpConOverlap() {
-  return Dim::fromMils(2);
+  return Dim::fromMils(1);
 }
 
 Dim Board::traceClearance(Dim) {

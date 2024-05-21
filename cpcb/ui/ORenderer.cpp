@@ -232,7 +232,7 @@ void ORenderer::drawHole(Hole const &hole, bool selected, bool innet) {
       // draw four rays
       QPointF dmaj(cs*dxm, sn*dxm);
       QPointF dmin(-sn*dym, cs*dym);
-      p->setPen(QPen(c, pc));
+      p->setPen(QPen(c, pc, Qt::SolidLine, Qt::FlatCap));
       p->drawLine(p0 - dmaj, p0 + dmaj);
       p->drawLine(p0 - dmin, p0 + dmin);
     }
