@@ -48,20 +48,22 @@ public:
 };
 
 QPointF Symbol::svgOrigin() const {
-  if (d->originId.isEmpty())
-    return d->bbox.center();
-  else
+  if (d->pins.contains(d->originId))
     return d->pins[d->originId];
+  else
+    return d->bbox.center(); // this is not what we want, normally
 }
 
 void SymbolData::newshift() {
   QStringList pp = pinIds.keys();
   QPointF origin;
   if (pp.isEmpty()) {
+    qDebug() << "Caution: symbol " << name
+             << " has no pins and aligns on center";
     originId = QString();
     origin = bbox.center();
   } else {
-    originId = pp.first();
+    originId = pp.first(); // note that pin name may be empty for a port
     origin = pins[originId];
   }
   shbbox = bbox.translated(-origin);
@@ -183,7 +185,6 @@ Symbol::Symbol(XmlElement const &elt, QString name) {
     d->setError("No pins found in symbol definition for “" + d->name + "”.");
   d->ensureBBox();
   forgetRenderer(*this);
-  // qDebug() << stats();
 }
 
 Symbol::~Symbol() {
