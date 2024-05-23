@@ -12,6 +12,30 @@
 #include "svg/Paths.h"
 #include <QDir>
 #include <QSysInfo>
+#include <QCommandLineParser>
+#include "svg/SvgExporter.h"
+
+
+bool exportSvg(QString ofn, QString ifn) {
+  Schem s = FileIO::loadSchematic(ifn);
+  if (s.isEmpty()) {
+    qDebug() << "Failed to load schematic" << ifn;
+    return false;
+  }
+  SvgExporter xp(s);
+  if (ofn.isEmpty())
+    ofn = ifn.replace(".cschem", "") + ".svg";
+  if (!xp.exportSvg(ofn)) {
+    qDebug() << "Failed to export svg" << ofn;
+    return false;
+  }    
+  return true;
+}
+
+bool exportPng(QString ofn, int res, QString ifn) {
+  qDebug() << "exportpng" << ifn << ofn << res;
+  return false;
+}
 
 void ensureSymbolLibrary() {
   QDir userlib(Paths::userSymbolRoot());
@@ -41,21 +65,52 @@ int main(int argc, char **argv) {
   Paths::setExecutablePath(argv[0]);
 
   ensureSymbolLibrary();
+
+  QCommandLineOption cli_svg("export-svg", "Convert schematic to SVG.");
+  QCommandLineOption cli_png("export-png", "Convert schematic to PNG.");
+  QCommandLineOption cli_res(QStringList{"resolution", "r"}, "Resolution for PNG export (pix/inch).", "ppi", "300");
+  QCommandLineOption cli_ofn(QStringList{"o"}, "Output filename for export.", "file", "");
+  QCommandLineParser cli;
+  
+  cli.setApplicationDescription("\n"
+    "CSchem — Electronic circuit design and PCB layout\n"
+    "\n"
+    "More information is at https://github.com/wagenadl/cschem");
+  cli.addHelpOption();
+  cli.addVersionOption();
+  cli.addPositionalArgument("filename", "Specify file to open", "[filename.cschem]");
+  cli.addOption(cli_svg);
+  // cli.addOption(cli_png);
+  // cli.addOption(cli_res);
+  cli.addOption(cli_ofn);
+
+  cli.process(app);
+  QStringList args = cli.positionalArguments();
+
+  bool ok = true;
+
+  if (cli.isSet("export-svg"))
+    for (QString fn: args)
+      ok = exportSvg(cli.value("o"), fn) && ok;
+
+//  if (cli.isSet("export-png"))
+//    for (QString fn: args)
+//      ok = exportPng(cli.value("o"), cli.value("resolution").toInt(), fn) && ok;
+
+  if (cli.isSet("export-svg")) // || cli.isSet("export-png"))
+    return ok ? 0 : 1;
   
   QList<MainWindow *> mws;
-  if (argc == 1) {
-    mws << new MainWindow;
-  } else {
-    bool ok = false;
-    for (int i=1; i<argc; i++) {
-      MainWindow *mw = new MainWindow;
-      if (mw->load(argv[i]))
-	ok = true;
-      mws << mw;
-    }
-    if (!ok)
+  for (QString fn: args) {
+    MainWindow *mw = new MainWindow;
+    if (!mw->load(fn))
       return 1;
+    mws << mw;
   }
+
+  if (mws.isEmpty()) 
+    mws << new MainWindow; // new file
+  
   for (auto *mw: mws)
     mw->show();
 
