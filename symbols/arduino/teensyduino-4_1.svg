@@ -5,7 +5,7 @@
    viewBox="0 0 189 525.00007"
    version="1.1"
    id="svg852"
-   inkscape:version="1.3 (1:1.3+202307231459+0e150ed6c4)"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    sodipodi:docname="teensyduino-4_1.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,8 +24,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.9525181"
-     inkscape:cx="-55.057108"
-     inkscape:cy="179.51178"
+     inkscape:cx="-54.801028"
+     inkscape:cy="180.02394"
      inkscape:document-units="px"
      inkscape:current-layer="g1585"
      showgrid="true"
@@ -34,10 +34,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1920"
-     inkscape:window-height="1051"
+     inkscape:window-width="1870"
+     inkscape:window-height="1020"
      inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-y="32"
      inkscape:window-maximized="1"
      showborder="false"
      inkscape:snap-bbox="true"
@@ -755,11 +755,6 @@
            x="1152.4108"
            id="tspan1724-3"
            sodipodi:role="line">D14~/A0</tspan></text>
-      <path
-         d="m 1105.0773,876.72316 q 0,1.07333 -0.34,1.95333 -0.34,0.88 -0.96,1.50666 -0.62,0.62667 -1.4934,0.97333 -0.8666,0.34 -1.9199,0.34 h -3.5667 v -9.55331 h 3.5667 q 1.0533,0 1.9199,0.34667 0.8734,0.34 1.4934,0.97333 0.62,0.62666 0.96,1.50666 0.34,0.88 0.34,1.95333 z m -1.3267,0 q 0,-0.88 -0.24,-1.57333 -0.24,-0.69333 -0.68,-1.17333 -0.44,-0.48 -1.0667,-0.73333 -0.6266,-0.25333 -1.3999,-0.25333 h -2.2734 v 7.45998 h 2.2734 q 0.7733,0 1.3999,-0.25334 0.6267,-0.25333 1.0667,-0.72666 0.44,-0.48 0.68,-1.17333 0.24,-0.69333 0.24,-1.57333 z m 7.8733,1.32666 h 1.4467 v 0.68 q 0,0.10667 -0.067,0.18 -0.06,0.0733 -0.1933,0.0733 h -1.1867 v 2.51333 h -1.04 v -2.51333 h -4.24 q -0.1333,0 -0.2333,-0.0733 -0.093,-0.08 -0.12,-0.19333 l -0.12,-0.60667 4.6467,-6.16665 h 1.1066 z m -1.04,-3.93999 q 0,-0.17333 0.01,-0.37333 0.013,-0.20667 0.047,-0.42 l -3.48,4.73332 h 3.4266 z m 4.5333,6.47999 h 2.0467 v -6.51332 q 0,-0.28 0.02,-0.59333 l -1.7,1.45999 q -0.087,0.0733 -0.1733,0.0933 -0.087,0.0133 -0.16,0 -0.073,-0.0133 -0.14,-0.0533 -0.06,-0.04 -0.093,-0.0867 l -0.3733,-0.51333 2.8467,-2.46 h 0.9666 v 8.66665 h 1.88 v 0.90666 h -5.12 z m 7.66,1.04666 q -0.087,0.23333 -0.2733,0.34667 -0.18,0.11333 -0.3733,0.11333 h -0.5 l 4.0066,-9.97998 q 0.08,-0.21333 0.24,-0.32666 0.1667,-0.11333 0.38,-0.11333 h 0.5067 z m 12.6666,-0.14 h -1 q -0.1733,0 -0.28,-0.0867 -0.1066,-0.0867 -0.16,-0.21999 l -0.8933,-2.30667 h -4.2866 l -0.8934,2.30667 q -0.04,0.11999 -0.1533,0.21333 -0.1133,0.0933 -0.28,0.0933 h -1 l 3.82,-9.55331 h 1.3066 z m -6.2599,-3.54666 h 3.5666 l -1.5,-3.88665 q -0.073,-0.17334 -0.1467,-0.4 -0.067,-0.22667 -0.14,-0.48667 -0.067,0.26 -0.1399,0.49333 -0.067,0.22667 -0.14,0.4 z m 7.9666,2.64 h 2.0466 v -6.51332 q 0,-0.28 0.02,-0.59333 l -1.7,1.45999 q -0.087,0.0733 -0.1733,0.0933 -0.087,0.0133 -0.16,0 -0.073,-0.0133 -0.14,-0.0533 -0.06,-0.04 -0.093,-0.0867 l -0.3734,-0.51333 2.8467,-2.46 h 0.9667 v 8.66665 h 1.88 v 0.90666 h -5.12 z m 13.2733,-8.64665 v 0.53333 q 0,0.22667 -0.053,0.37334 -0.047,0.14666 -0.093,0.24666 l -3.96,7.97998 q -0.087,0.17333 -0.24,0.3 -0.1533,0.12 -0.4066,0.12 h -0.8534 l 4.0133,-7.87998 q 0.087,-0.16667 0.1734,-0.30666 0.093,-0.14 0.2066,-0.26667 h -4.9866 q -0.1133,0 -0.2,-0.0867 -0.087,-0.0933 -0.087,-0.20666 v -0.80667 z"
-         id="text1726-01-0"
-         style="-inkscape-font-specification:Lato;stroke-width:1px"
-         aria-label="D41/A17" />
       <text
          id="text1726-01-0-3"
          y="901.49646"
@@ -770,6 +765,16 @@
            x="1150.9504"
            id="tspan1724-3-2"
            sodipodi:role="line">D40/A16</tspan></text>
+      <text
+         id="text1726-01-0-3-3"
+         y="880.99646"
+         x="1150.8971"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.3333px;line-height:125%;font-family:Lato;-inkscape-font-specification:Lato;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:end;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:end;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="880.99646"
+           x="1150.8971"
+           id="tspan1724-3-2-6"
+           sodipodi:role="line">D41/A17</tspan></text>
       <text
          id="text1726-01-0-7"
          y="921.76807"
