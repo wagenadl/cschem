@@ -364,8 +364,8 @@ int Circuit::containerOf(int id) const {
 QSet<QString> Circuit::allNames() const {
   QSet<QString> names;
   for (Element const &e: elements)
-    if (e.name != "")
-      names.insert(e.name);
+    names.insert(e.name);
+  names.remove("");
   return names;
 }
 

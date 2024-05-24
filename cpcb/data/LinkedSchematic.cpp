@@ -143,15 +143,15 @@ bool LinkedSchematic::isValid() const {
   return !d->schem.isEmpty();
 }
 
-Schem LinkedSchematic::schematic() const {
+Schem const &LinkedSchematic::schematic() const {
   return d->schem;
 }
 
-Circuit LinkedSchematic::circuit() const {
+Circuit const &LinkedSchematic::circuit() const {
   return d->schem.circuit();
 }
 
-QList<LinkedNet> LinkedSchematic::nets() const {
+QList<LinkedNet> const &LinkedSchematic::nets() const {
   d->validateNets();
   return d->nets;
 }

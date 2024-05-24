@@ -72,7 +72,7 @@ public:
   /* Returns ID for named element or -1. Prefers to return container. */
   QSet<int> containedElements(int containerId) const;
   int containerOf(int elt) const; // or -1
-  QSet<QString> allNames() const;
+  QSet<QString> allNames() const; // All names of elements and port values */
   void verifyIDs() const;
   QString humanPinName(PinID pin) const;
   void newUUID();

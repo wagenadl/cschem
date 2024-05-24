@@ -19,9 +19,9 @@ public:
   void unlink();
   ~LinkedSchematic();
   bool isValid() const;
-  Schem schematic() const;
-  Circuit circuit() const;
-  QList<LinkedNet> nets() const;
+  Schem const &schematic() const;
+  Circuit const &circuit() const;
+  QList<LinkedNet> const &nets() const;
   Nodename pinAlias(Nodename const &) const;
 public slots:
   void reload();
