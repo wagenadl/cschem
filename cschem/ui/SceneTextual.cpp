@@ -93,6 +93,7 @@ static QString dehtml(QString ifx) {
 }  
 
 static QString lineToHtml(QString line, QSet<QString> const &allnames) {
+  /* Make sure this logic is copied in SvgExporter::writeTextualLine  */
   QRegularExpression minus("(^|(?<=\\s))-($|(?=[\\s.0-9]))");
   QStringList bits;
   QString bit;
@@ -116,10 +117,24 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
   if (bit != "")
     bits += bit;
 
+
+  QRegularExpression presym("[*/+−=]");
+  QRegularExpression postsym("[*/+−=_^]");
+  QList<bool> mathcontext;
+  for (int k=0; k<bits.size(); k++)  
+    mathcontext << (bits[k].size()==1 && bits[k][0].isLetter()
+                    && ((k>0 && bits[k-1].contains(presym))
+                        || (k+1<bits.size() && bits[k+1].contains(postsym))));  
+  
   QString html;
   bool insup = false;
   bool insub = false;
-  for (QString bit: bits) {
+  for (int k=0; k<bits.size(); k++) {
+    QString bit = bits[k];
+    if (mathcontext[k]) {
+      html += "<i>" + bit + "</i>";
+      continue;
+    }
     bit.replace("&", "&amp;");
     bit.replace("<", "&lt;");
     bit.replace(">", "&gt;");
@@ -180,7 +195,6 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
     html += "</sub>";
     insub = false;
   }
-  // qDebug() << "linetohtml" << line << html;
   return html;
 }
 

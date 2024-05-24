@@ -16,21 +16,25 @@
 #include <QTransform>
 #include "circuit/Schem.h"
 #include "circuit/PartNumbering.h"
+#include <QRegularExpression>
 
 class SvgExporterData {
 public:
   SvgExporterData(Schem const &schem):
     circ(schem.circuit()), lib(schem.library()),
     geom(circ, lib) {
+    allnames = circ.allNames();
   }
   void writeBBox(QXmlStreamWriter &sw);
   void writeElement(QXmlStreamWriter &sw, Element const &elt);
   void writeConnection(QXmlStreamWriter &sw, Connection const &elt);
   void writeTextual(QXmlStreamWriter &sw, Textual const &txt);
+  void writeTextualLine(QXmlStreamWriter &sw, QString const &line);
 public:
   Circuit circ;
   SymbolLibrary const &lib;
   Geometry geom;
+  QSet<QString> allnames;
 };
 
 double svgFontSize(bool script=false) {
@@ -109,7 +113,7 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
     sw.writeCharacters(useitalic ? name.left(subidx) : name);
     if (useitalic) {
       sw.writeStartElement("tspan");
-      sw.writeAttribute("dy", "5");
+      sw.writeAttribute("baseline-shift", "-5");
       sw.writeAttribute("style", svgFontStyle(false, true));
       sw.writeCharacters(name.mid(subidx));
       sw.writeEndElement(); // tspan
@@ -132,7 +136,7 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
       sw.writeCharacters(txt.mid(1, 1));
       sw.writeEndElement(); // tspan
       sw.writeStartElement("tspan");
-      sw.writeAttribute("dy", "5");
+      sw.writeAttribute("baseline-shift", "-5");
       sw.writeAttribute("style", svgFontStyle(false, true));
       sw.writeCharacters(txt.mid(2, txt.size()-3));
       sw.writeEndElement(); // tspan
@@ -145,6 +149,139 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
   sw.writeEndElement(); // g
 }
 
+
+void SvgExporterData::writeTextualLine(QXmlStreamWriter &sw, QString const &line) {
+  /* Make sure logic is copied from SceneTextual::lineToHtml */
+  QRegularExpression minus("(^|(?<=\\s))-($|(?=[\\s.0-9]))");
+  QStringList bits;
+  QString bit;
+  bool inword = false;
+  int len = line.length();
+  for (int pos=0; pos<len; pos++) {
+    QChar c = line[pos];
+    if (bit=="") {
+      bit = c;
+      inword = c.isLetterOrNumber();
+    } else if ((inword==c.isLetterOrNumber())
+               || (inword && c==QChar('.')
+                   && pos<len-1 && line[pos+1].isNumber())) {
+        bit += c;
+    } else {
+      bits += bit;
+      bit = c;
+      inword = c.isLetterOrNumber();      
+    }
+  }
+  if (bit != "")
+    bits += bit;
+
+  QRegularExpression presym("[*/+−=]");
+  QRegularExpression postsym("[*/+−=_^]");
+  QList<bool> mathcontext;
+  for (int k=0; k<bits.size(); k++)  
+    mathcontext << (bits[k].size()==1 && bits[k][0].isLetter()
+                    && ((k>0 && bits[k-1].contains(presym))
+                        || (k+1<bits.size() && bits[k+1].contains(postsym))));
+  
+  bool insup = false;
+  bool insub = false;
+  for (int k=0; k<bits.size(); k++) {
+    QString bit = bits[k];
+    //bit.replace("&", "&amp;"); // writeCharacters takes care of this
+    //bit.replace("<", "&lt;");
+    //bit.replace(">", "&gt;");
+    if (mathcontext[k]) {
+      sw.writeStartElement("tspan");
+      sw.writeAttribute("style", "font-style: italic");
+      sw.writeCharacters(bit);
+      sw.writeEndElement();
+      continue;
+    }
+    bit.replace(minus, "−");
+    if (allnames.contains(bit)) {
+      QString pfx = PartNumbering::prefix(bit);
+      QString sfx = bit.mid(pfx.size());
+      sw.writeStartElement("tspan");
+      sw.writeAttribute("style", "font-style: italic");
+      sw.writeCharacters(pfx);
+      sw.writeEndElement();
+      if (!sfx.isEmpty()) {
+        sw.writeStartElement("tspan");
+        sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)));
+        sw.writeAttribute("baseline-shift", "-5");
+        sw.writeCharacters(sfx);
+        sw.writeEndElement();
+      }
+    } else if ((bit.startsWith("V") || bit.startsWith("I"))
+               && allnames.contains(bit.mid(1))) {
+      QString wht = bit.left(1);
+      QString name = bit.mid(1);
+      QString pfx = PartNumbering::prefix(name);
+      QString sfx = name.mid(pfx.size());
+      sw.writeStartElement("tspan");
+      sw.writeAttribute("style", "font-style: italic");
+      sw.writeCharacters(wht);
+      sw.writeEndElement();
+      sw.writeStartElement("tspan");
+      sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)));
+      sw.writeAttribute("baseline-shift", "-5");
+      sw.writeStartElement("tspan");
+      sw.writeAttribute("style", "font-style: italic");
+      sw.writeCharacters(pfx);
+      sw.writeEndElement();
+      if (!sfx.isEmpty()) {
+        sw.writeStartElement("tspan");
+        sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)*.7));
+        sw.writeAttribute("baseline-shift", "-3.5");
+        sw.writeCharacters(sfx);
+        sw.writeEndElement();
+      }
+      sw.writeEndElement();
+ 
+    } else if (bit=="^") {
+      if (insub) {
+        sw.writeEndElement(); // close the tspan
+        insub = false;
+      }
+      if (!insup) {
+        sw.writeStartElement("tspan");
+        sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)));
+        sw.writeAttribute("baseline-shift", "5");
+        insup = true;
+      }
+    } else if (bit=="_") {
+      if (insup) {
+        sw.writeEndElement(); // close the tspan
+        insup = false;
+      }
+      if (!insub) {
+        sw.writeStartElement("tspan");
+        sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)));
+        sw.writeAttribute("baseline-shift", "-5");
+        insub = true;
+      }
+    } else {
+      sw.writeCharacters(bit);
+      if (insup) {
+        sw.writeEndElement();
+        insup = false;
+      }
+      if (insub) {
+        sw.writeEndElement();
+        insub = false;
+      }
+    }
+  }
+  if (insup) {
+    sw.writeEndElement();
+    insup = false;
+  }
+  if (insub) {
+    sw.writeEndElement();
+    insub = false;
+  }
+}
+
 void SvgExporterData::writeTextual(QXmlStreamWriter &sw,
 				   Textual const &txt) {
   QPointF p = lib.upscale(txt.position) + svgFontDelta();
@@ -155,7 +292,7 @@ void SvgExporterData::writeTextual(QXmlStreamWriter &sw,
     sw.writeStartElement("tspan");
     sw.writeAttribute("y", QString::number(p.y() + dy));
     sw.writeAttribute("x", QString::number(p.x()));
-    sw.writeCharacters(line);
+    writeTextualLine(sw, line);
     sw.writeEndElement();
     dy += 25;
   }
