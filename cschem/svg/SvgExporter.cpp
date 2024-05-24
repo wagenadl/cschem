@@ -149,15 +149,17 @@ void SvgExporterData::writeTextual(QXmlStreamWriter &sw,
 				   Textual const &txt) {
   QPointF p = lib.upscale(txt.position) + svgFontDelta();
   float dy = 0;
+  sw.writeStartElement("text");
+  sw.writeAttribute("style", svgFontStyle(false, false, true));
   for (QString line: txt.text.split("\n")) {
-    sw.writeStartElement("text");
-    sw.writeAttribute("style", svgFontStyle(false, false, true));
-    sw.writeAttribute("x", QString("%1").arg(p.x()));
-    sw.writeAttribute("y", QString("%1").arg(p.y() + dy));
+    sw.writeStartElement("tspan");
+    sw.writeAttribute("y", QString::number(p.y() + dy));
+    sw.writeAttribute("x", QString::number(p.x()));
     sw.writeCharacters(line);
     sw.writeEndElement();
     dy += 25;
   }
+  sw.writeEndElement();
 }
 
 void SvgExporterData::writeConnection(QXmlStreamWriter &sw,

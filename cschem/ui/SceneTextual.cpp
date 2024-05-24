@@ -117,6 +117,8 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
     bits += bit;
 
   QString html;
+  bool insup = false;
+  bool insub = false;
   for (QString bit: bits) {
     bit.replace("&", "&amp;");
     bit.replace("<", "&lt;");
@@ -137,10 +139,48 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
         + "<i>" + pfx + "</i>"
         + subscript(sfx)
         + "</sub>";
+    } else if (bit=="^") {
+      if (insub) {
+        html += "</sub>";
+        insub = false;
+      }
+      if (!insup) {
+        html += "<sup>";
+        insup = true;
+      }
+      html += "<span style=\"font-size: 2pt; color: white;\">" + bit + "</span>";
+
+    } else if (bit=="_") {
+      if (insup) {
+        html += "</sup>";
+        insup = false;
+      }
+      if (!insub) {
+        html += "<sub>";
+        insub = true;
+      }
+      html += "<span style=\"font-size: 2pt; color: white;\">" + bit + "</span>";
     } else {
       html += bit;
+      if (insup) {
+        html += "</sup>";
+        insup = false;
+      }
+      if (insub) {
+        html += "</sub>";
+        insub = false;
+      }
     }
   }
+  if (insup) {
+    html += "</sup>";
+    insup = false;
+  }
+  if (insub) {
+    html += "</sub>";
+    insub = false;
+  }
+  // qDebug() << "linetohtml" << line << html;
   return html;
 }
 
