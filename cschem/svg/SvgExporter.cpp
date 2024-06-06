@@ -18,6 +18,10 @@
 #include "circuit/PartNumbering.h"
 #include <QRegularExpression>
 
+char const *SUBDISPLACE = "-3.5";
+char const *SUBSUBDISPLACE = "-2.5";
+char const *SUPDISPLACE = "3.5";
+
 class SvgExporterData {
 public:
   SvgExporterData(Schem const &schem):
@@ -38,7 +42,7 @@ public:
 };
 
 double svgFontSize(bool script=false) {
-  return Style::annotationFont().pixelSize()*(script ? .7 : 1);
+  return Style::annotationFont().pixelSize()*(script ? .7 : 1)*.95;
 }
 
 QString svgFontStyle(bool italic=false, bool script=false, bool left=false) {
@@ -113,7 +117,7 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
     sw.writeCharacters(useitalic ? name.left(subidx) : name);
     if (useitalic) {
       sw.writeStartElement("tspan");
-      sw.writeAttribute("baseline-shift", "-5");
+      sw.writeAttribute("baseline-shift", SUBDISPLACE);
       sw.writeAttribute("style", svgFontStyle(false, true));
       sw.writeCharacters(name.mid(subidx));
       sw.writeEndElement(); // tspan
@@ -136,7 +140,7 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
       sw.writeCharacters(txt.mid(1, 1));
       sw.writeEndElement(); // tspan
       sw.writeStartElement("tspan");
-      sw.writeAttribute("baseline-shift", "-5");
+      sw.writeAttribute("baseline-shift", SUBDISPLACE);
       sw.writeAttribute("style", svgFontStyle(false, true));
       sw.writeCharacters(txt.mid(2, txt.size()-3));
       sw.writeEndElement(); // tspan
@@ -208,7 +212,7 @@ void SvgExporterData::writeTextualLine(QXmlStreamWriter &sw, QString const &line
       if (!sfx.isEmpty()) {
         sw.writeStartElement("tspan");
         sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)));
-        sw.writeAttribute("baseline-shift", "-5");
+        sw.writeAttribute("baseline-shift", SUBDISPLACE);
         sw.writeCharacters(sfx);
         sw.writeEndElement();
       }
@@ -224,7 +228,7 @@ void SvgExporterData::writeTextualLine(QXmlStreamWriter &sw, QString const &line
       sw.writeEndElement();
       sw.writeStartElement("tspan");
       sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)));
-      sw.writeAttribute("baseline-shift", "-5");
+      sw.writeAttribute("baseline-shift", SUBDISPLACE);
       sw.writeStartElement("tspan");
       sw.writeAttribute("style", "font-style: italic");
       sw.writeCharacters(pfx);
@@ -232,7 +236,7 @@ void SvgExporterData::writeTextualLine(QXmlStreamWriter &sw, QString const &line
       if (!sfx.isEmpty()) {
         sw.writeStartElement("tspan");
         sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)*.7));
-        sw.writeAttribute("baseline-shift", "-3.5");
+        sw.writeAttribute("baseline-shift", SUBSUBDISPLACE);
         sw.writeCharacters(sfx);
         sw.writeEndElement();
       }
@@ -246,7 +250,7 @@ void SvgExporterData::writeTextualLine(QXmlStreamWriter &sw, QString const &line
       if (!insup) {
         sw.writeStartElement("tspan");
         sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)));
-        sw.writeAttribute("baseline-shift", "5");
+        sw.writeAttribute("baseline-shift", SUPDISPLACE);
         insup = true;
       }
     } else if (bit=="_") {
@@ -257,7 +261,7 @@ void SvgExporterData::writeTextualLine(QXmlStreamWriter &sw, QString const &line
       if (!insub) {
         sw.writeStartElement("tspan");
         sw.writeAttribute("style", QString("font-size: %1").arg(svgFontSize(true)));
-        sw.writeAttribute("baseline-shift", "-5");
+        sw.writeAttribute("baseline-shift", SUBDISPLACE);
         insub = true;
       }
     } else {
