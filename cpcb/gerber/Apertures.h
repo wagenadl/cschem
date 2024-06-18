@@ -5,6 +5,7 @@
 #define APERTURES_H
 
 #include "data/Dim.h"
+#include "data/FreeRotation.h"
 #include <QMap>
 #include <QTextStream>
 
@@ -41,6 +42,15 @@ namespace Gerber {
     }
   };
 
+  struct RotatedSquare {
+    RotatedSquare(Dim w0, FreeRotation r0): w(w0), r(r0) { }
+    Dim w;
+    FreeRotation r;
+    bool operator<(RotatedSquare const &rs) const {
+      return (w==rs.w) ? r < rs.r : w < rs.w;
+    }
+  };
+     
   class Apertures {
   public:
     enum class Func {
@@ -68,10 +78,12 @@ namespace Gerber {
     void ensure(Rect);
     void ensure(Hole);
     void ensure(SqHole);
+    void ensure(RotatedSquare);
     QString select(Circ) const;
     QString select(Rect) const;
     QString select(Hole) const;
     QString select(SqHole) const;
+    QString select(RotatedSquare) const;
   private:
     Func func_;
     int apidx;
@@ -79,6 +91,7 @@ namespace Gerber {
     QMap<Rect, int> apRect;
     QMap<Hole, int> apHole;
     QMap<SqHole, int> apSqHole;
+    QMap<RotatedSquare, int> apRotatedSquare;
     bool useattr;
   };
 

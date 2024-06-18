@@ -35,7 +35,8 @@ namespace Gerber {
   
   void Apertures::write(QTextStream &output) const {
     if (apCirc.isEmpty() && apRect.isEmpty()
-	&& apHole.isEmpty() && apSqHole.isEmpty())
+	&& apHole.isEmpty() && apSqHole.isEmpty()
+        && apRotatedSquare.isEmpty())
       return;
     if (useattr)
       output << "%TA.AperFunction," << funcName(func()) << "*%\n";    
@@ -52,6 +53,9 @@ namespace Gerber {
       output << "%ADD" << apSqHole[k]
 	     << "R," << real(k.wh) << "," << real(k.wh)
 	     << "," << real(k.id) << "*%\n";
+    for (RotatedSquare const &k: apRotatedSquare.keys())
+      output << "%ADD" << apRotatedSquare[k]
+             << "P," << real(k.w*1.4142) << ",4," << QString::number(45-int(k.r)) << "*%\n";
   }
 
   QString Apertures::select(Circ k) const {
@@ -71,7 +75,12 @@ namespace Gerber {
 
   QString Apertures::select(SqHole k) const {
     Q_ASSERT(apSqHole.contains(k));
-    return "D" + QString::number(apSqHole[k]) + "%\n";
+    return "D" + QString::number(apSqHole[k]) + "*\n";
+  }
+
+  QString Apertures::select(RotatedSquare k) const {
+    Q_ASSERT(apRotatedSquare.contains(k));
+    return "D" + QString::number(apRotatedSquare[k]) + "*\n";
   }
 
   void Apertures::ensure(Circ k) {
@@ -96,6 +105,12 @@ namespace Gerber {
     if (apSqHole.contains(k))
       return;
     apSqHole[k] = apidx++;
+  }
+
+  void Apertures::ensure(RotatedSquare k) {
+    if (apRotatedSquare.contains(k))
+      return;
+    apRotatedSquare[k] = apidx++;
   }
 
   int Apertures::firstIndex() const {
