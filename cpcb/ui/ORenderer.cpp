@@ -325,31 +325,23 @@ void ORenderer::drawPad(Pad const &pad, bool selected, bool innet) {
     : brushColor(selected, innet);
   
   if (subl==Sublayer::Extra && pad.fpcon && !pnporient) {
+    if (pad.noclear)
+      return;
+    
     c = c.darker(150);
     Dim pc = brd.padClearance(pad.width, pad.height) + brd.fpConOverlap();
     double dxm = w/2 + pc.toMils();
     double dym = h/2 + pc.toMils();
-    if (pad.noclear) {
-      /*
-      p->setPen(Qt::NoPen);
-      p->setBrush(c);
-      QPointF dp(dxm, dym);
-      QRectF r(-dp, dp);
-      if (pad.rota) {
-        QTransform xf; xf.rotate(pad.rota);
-        p->drawPolygon(xf.map(r).translated(p0));
-      } else {
-        p->drawRect(r.translated(p0));
-      }
-      */
-    } else {
-      // draw four rays
-      p->setPen(QPen(c,
-                     brd.fpConWidth(pad.width, pad.height).toMils(),
-                     Qt::SolidLine, Qt::FlatCap));
-      p->drawLine(p0 - QPointF(dxm, 0), p0 + QPointF(dxm, 0));
-      p->drawLine(p0 - QPointF(0, dym), p0 + QPointF(0, dym));
-    }
+    double cs = cos(PI*pad.rota/180);
+    double sn = sin(PI*pad.rota/180);
+    QPoint dw(dxm*cs, dxm*sn);
+    QPoint dh(-dym*sn, dym*cs);
+    // draw four rays
+    p->setPen(QPen(c,
+                   brd.fpConWidth(pad.width, pad.height).toMils(),
+                   Qt::SolidLine, Qt::FlatCap));
+    p->drawLine(p0 - dw, p0 + dw);
+    p->drawLine(p0 - dh, p0 + dh);
     return;
   }
   
