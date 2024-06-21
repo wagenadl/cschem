@@ -7,6 +7,8 @@
 #include <QBuffer>
 #include <QFileInfo>
 #include <QRegularExpression>
+#include <QCollator>
+#include <algorithm>
 
 static QMap<Group::Attribute, QString> xmlnames{
   { Group::Attribute::Footprint, "pkg" },
@@ -418,11 +420,18 @@ QStringList Group::pinNames() const {
       break;
     }
   }
-  return QStringList(names.keys());
+  names.remove("");
+  QStringList list(names.keys());
+  QCollator order; order.setNumericMode(true);
+  std::sort(list.begin(), list.end(), order);
+  //            [&](QString const &a, QString const &b) {
+  //              return order.compare(a, b) < 0; });
+  return list; //  return QStringList(names.keys());
 }
 
 Point Group::anchor() const {
   QStringList names = pinNames();
+  qDebug() << "anchor" << names;
   if (names.isEmpty())
     return boundingRect().center();
   else
