@@ -106,6 +106,7 @@ public:
   bool anyDirectionChecked() const;
 private:
   bool fillXY(QSet<Point> const &points);
+  bool fillXYfromGroup(QSet<int> const &objects, Group const &here);
   void fillXYfromText(QSet<int> const &objects, Group const &here);
   void fillLinewidth(QSet<int> const &objects, Group const &here);
   void fillWH(QSet<int> const &objects, Group const &here);
@@ -137,6 +138,28 @@ bool PBData::anyLayerChecked() const {
     || silk->isChecked() || bsilk->isChecked()
     || top->isChecked() || bottom->isChecked();
 }
+
+bool PBData::fillXYfromGroup(QSet<int> const &objects, Group const &here) {
+  // only works if OBJECTS contains only a group, possibly with its reftext
+  if (objects.size() > 2)
+    return false;
+  for (int id: objects) {
+    if (here.object(id).isGroup()) {
+      Group const &group(here.object(id).asGroup());
+      if (objects.size()>=2) {
+        if (group.refTextId()<=0 || !objects.contains(group.refTextId()))
+          return false;
+      }
+      x0 = group.anchor().x;
+      y0 = group.anchor().y;
+      x->setValue(x0 - ori.x);
+      y->setValue(y0 - ori.y);
+      return true;
+    }
+  }
+  return false;
+}
+      
 
 bool PBData::fillXY(QSet<Point> const &points) {
   if (points.isEmpty()) {
@@ -493,9 +516,10 @@ void PBData::getPropertiesFromSelection() {
   QSet<Point> points(editor->selectedPoints());
   Group const &here(editor->currentGroup());
 
-  //qDebug() << "getpropertiesfromselection" << objects.size() << points.size();
-  if (!fillXY(points)) 
-    fillXYfromText(objects, here);
+  qDebug() << "getpropertiesfromselection" << objects.size() << points.size();
+  if (!fillXYfromGroup(objects, here))
+    if (!fillXY(points)) 
+      fillXYfromText(objects, here);
   fillLinewidth(objects, here);
   fillWH(objects, here);
   fillDiamAndShape(objects,  here);

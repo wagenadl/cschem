@@ -872,29 +872,34 @@ Group const &Editor::currentGroup() const {
 }
 
 void Editor::arbitraryRotation(int degCW) {
+  if (d->selection.isEmpty() && selectedPoints().isEmpty())
+    return;
   Group &here(d->currentGroup());
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
   Point center = box.center(); //.roundedTo(d->layout.board().grid);
   UndoCreator uc(d);
-  if (!d->selection.isEmpty() || !selectedPoints().isEmpty())
-    uc.realize();
+  uc.realize();
   for (int id: d->selection)
     here.object(id).freeRotate(degCW, center);
+  d->emitSelectionStatus();
 }  
 
 void Editor::rotateCW(bool noundo, bool nottext) {
+  if (d->selection.isEmpty() && selectedPoints().isEmpty())
+    return;
   Group &here(d->currentGroup());
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
   QSet<Point> pp = selectedPoints();
-  Point center = pp.isEmpty()
-    ? box.center()
-    : Point::average(pp); // roundedTo(d->layout.board().grid);
+  Point center = (pp.isEmpty()
+                  ? box.center()
+                  : Point::average(pp))
+    .roundedTo(d->layout.board().grid);
   UndoCreator uc(d);
-  if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
+  if (!noundo)
     uc.realize();
   if (d->selection.size()==1)
     nottext=false;
@@ -929,6 +934,7 @@ void Editor::rotateCW(bool noundo, bool nottext) {
       newpts << p.rotatedCW(center);
     d->selpts[l] = newpts;
   }
+  d->emitSelectionStatus();
 }
 
 void Editor::rotateCCW(bool noundo, bool nottext) {
