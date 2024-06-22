@@ -23,10 +23,14 @@ void LinearPatternDialog::gui(Editor *editor, bool metric, QWidget *parent) {
   if (!dlg.exec())
     return;
 
-  int hcount = dlg.ui->hcount->value();
-  int vcount = dlg.ui->vcount->value();
+  int hcount = dlg.ui->horizontal->isChecked() ? dlg.ui->hcount->value() : 1;
+  int vcount = dlg.ui->vertical->isChecked() ? dlg.ui->vcount->value() : 1;
   Dim hspacing = dlg.ui->hspacing->value();
+  if (dlg.ui->left->isChecked())
+    hspacing = -hspacing;
   Dim vspacing = dlg.ui->hspacing->value();
+  if (dlg.ui->up->isChecked())
+    vspacing = -vspacing;
 
   editor->linearPattern(hcount, hspacing, vcount, vspacing);
 }
