@@ -76,6 +76,8 @@ public slots:
   void arbitraryRotation(FreeRotation const &angleCW);
   void flipH(bool noundo=false, bool nottext=false);
   void flipV(bool noundo=false, bool nottext=false);
+  void circularPattern(int count, FreeRotation const &angle, Point center,
+                       bool individual);
   void setRotation(int); // this is not the way to rotate or flip things
   void setFlipped(bool); // this is not the way to rotate or flip things
   void setMode(Mode);

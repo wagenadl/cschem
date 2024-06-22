@@ -886,21 +886,29 @@ void Editor::arbitraryRotation(FreeRotation const &degCW) {
   d->emitSelectionStatus();
 }  
 
-/*
-  void Editor::circularPattern(int count, FreeRotation const &angle,
+void Editor::circularPattern(int count, FreeRotation const &angle,
                              Point center, bool individual) {
   if (d->selection.isEmpty())
     return;
   Group &here(d->currentGroup());
   UndoCreator uc(d);
   uc.realize();
-  for (int id: d->selection()) {
-    Object obj = here.object(id);
-    if (individual)
-      obj.freeRotate(angle, center);
+  FreeRotation a(0.0);
+  for (int k=0; k<count; k++) {
+    a += angle;
+    for (int id: d->selection) {
+      Object obj = here.object(id);
+      if (individual) {
+        obj.freeRotate(a, center);
+      } else {
+        Point c0 = obj.boundingRect().center();
+        Point c1 = c0.rotatedFreely(a, center);
+        obj.translate(c1 - c0);
+      }
+      here.insert(obj);
+    }
   }
 }
-*/
 
 void Editor::rotateCW(bool noundo, bool nottext) {
   if (d->selection.isEmpty() && selectedPoints().isEmpty())

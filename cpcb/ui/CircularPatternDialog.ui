@@ -50,7 +50,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Copies:</string>
+        <string>Count:</string>
        </property>
        <property name="margin">
         <number>2</number>
