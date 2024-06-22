@@ -1,6 +1,7 @@
 // ScalingDim.cpp
 
 #include "ScalingDim.h"
+#include <QSettings>
 
 ScalingDim::ScalingDim(Dim fixed):
   min(fixed), max(fixed), perc(100), scale(false) {
@@ -25,22 +26,22 @@ Dim ScalingDim::apply(Dim x) const {
 };
 
 QDebug operator<<(QDebug d, ScalingDim const &sd) {
-  if (scale)
+  if (sd.scale)
     d << QString("ScalingDim(%1,%2,%3)")
-      .arg(min.toMM())
-      .arg(perc)
-      .arg(max.toMM());
+      .arg(sd.min.toMM())
+      .arg(sd.perc)
+      .arg(sd.max.toMM());
   else
     d << QString("ScalingDim(%1)")
-      .arg(min.toMM());
+      .arg(sd.min.toMM());
   return d;
 }
 
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, ScalingDim const &sd) {
-  s.writeAttribute("min", min.toString());
-  if (scale) {
-    s.writeAttribute("max", max.toString());
-    s.writeAttribute("perc", QString::number(perc));
+  s.writeAttribute("min", sd.min.toString());
+  if (sd.scale) {
+    s.writeAttribute("max", sd.max.toString());
+    s.writeAttribute("perc", QString::number(sd.perc));
   }
   return s;
 }

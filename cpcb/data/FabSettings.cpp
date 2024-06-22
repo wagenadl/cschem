@@ -1,6 +1,7 @@
 // FabSettings.cpp
 
 #include "FabSettings.h"
+#include <QSettings>
 
 FabSettings::FabSettings() {
   resetToSaved();
@@ -21,14 +22,14 @@ void FabSettings::resetToSaved() {
   ring_min = Dim::fromUM(ss.value("ring_min", 300).toInt());
 }
 
-void FabSettings::factoryDefaults() {
+void FabSettings::restoreFactoryDefaults() {
   trace_clearance = ScalingDim(Dim::fromMils(15));
   pad_clearance = ScalingDim(Dim::fromMils(15));
   thermal_width = ScalingDim(Dim::fromMils(12));
   mask_margin = ScalingDim(Dim::fromMils(10));
   hole_min = Dim::fromUM(300);
   hole_max = Dim::fromMM(7.0);
-  ring_min = dim::fromUM(300);
+  ring_min = Dim::fromUM(300);
 }
 
 void FabSettings::save() const {
