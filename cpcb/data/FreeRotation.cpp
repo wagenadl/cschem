@@ -3,26 +3,49 @@
 #include "FreeRotation.h"
 #include <math.h>
 #include "pi.h"
+#include <QDebug>
 
 FreeRotation::FreeRotation() {
   r = 0;
 }
 
-FreeRotation::FreeRotation(int r): r(r) {
+FreeRotation::FreeRotation(double r): r(r) {
   normalize();
 }
 
-FreeRotation::operator int() const {
+double FreeRotation::degrees() const {
   return r;
 }
 
-FreeRotation &FreeRotation::operator+=(int dr) {
+bool FreeRotation::isCardinal() const {
+  return fabs(fmod(r, 90)) < 1e-6;
+}
+
+bool FreeRotation::operator==(FreeRotation const &fr) const {
+  return r == fr.r;
+}
+
+bool FreeRotation::operator<(FreeRotation const &fr) const {
+  return r < fr.r;
+}
+
+FreeRotation &FreeRotation::operator+=(FreeRotation const &dr) {
+  *this += dr.r;
+  return *this;
+}
+
+FreeRotation &FreeRotation::operator-=(FreeRotation const &dr) {
+  *this -= dr.r;
+  return *this;
+}
+
+FreeRotation &FreeRotation::operator+=(double dr) {
   r += dr;
   normalize();
   return *this;
 }
 
-FreeRotation &FreeRotation::operator-=(int dr) {
+FreeRotation &FreeRotation::operator-=(double dr) {
   r -= dr;
   normalize();
   return *this;
@@ -36,9 +59,13 @@ FreeRotation FreeRotation::operator-() const {
 }
 
 void FreeRotation::normalize() {
-  r %= 360;
+  r = fmod(r, 360);
   if (r<0)
     r += 360;
+}
+
+double FreeRotation::radians() const {
+  return r*PI/180;
 }
 
 
@@ -62,4 +89,9 @@ void FreeRotation::flipUpDown() {
 
 QString FreeRotation::toString() const {
   return QString::number(r);
+}
+
+QDebug operator<<(QDebug d, FreeRotation const &fr) {
+  d << fr.degrees();
+  return d;
 }

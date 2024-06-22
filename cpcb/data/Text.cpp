@@ -23,11 +23,11 @@ Rect Text::boundingRect() const {
   Dim asc(scl*sf.ascent());
   Dim desc(scl*sf.descent());
   bool efflip = flip ^ (layer==Layer::Bottom || layer==Layer::BSilk);
-  int effrot = rota;//efflip ? -rota : rota;
+  FreeRotation effrot = rota;//efflip ? -rota : rota;
   if (efflip)
     w = -w;
   Rect r0(p + Point(Dim(), desc), p + Point(w, -asc));
-  if (effrot) {
+  if (effrot.degrees()) {
     Rect r(p, p);
     r|= Point(r0.left, r0.top).rotatedFreely(effrot, p);
     r|= Point(r0.right(), r0.top).rotatedFreely(effrot, p);
@@ -77,7 +77,7 @@ void Text::flipUpDown(Dim y0, bool nottext) {
 }
 
 
-void Text::freeRotate(int degcw, Point const &p0) {
+void Text::freeRotate(FreeRotation const &degcw, Point const &p0) {
   Point ctarget = boundingRect().center().rotatedFreely(degcw, p0);
   rota += degcw;
   p.freeRotate(degcw, p0);
@@ -121,7 +121,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Text const &t) {
   s.writeAttribute("p", t.p.toString());
   s.writeAttribute("fs", t.fontsize.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
-  s.writeAttribute("rot", QString::number(t.rota));
+  s.writeAttribute("rot", t.rota.toString());
   if (t.flip)
     s.writeAttribute("flip", "1");
   s.writeAttribute("text", t.text);
@@ -152,7 +152,7 @@ QDebug operator<<(QDebug d, Text const &t) {
   d << "Text(" << t.p
     << t.layer
     << t.text
-    << int(t.rota)
+    << t.rota.degrees()
     << t.flip
     << t.fontsize
     << t.groupAffiliation()

@@ -12,11 +12,11 @@ Pad::Pad() {
 }
 
 
-void Pad::freeRotate(int degcw, Point const &p0) {
+void Pad::freeRotate(FreeRotation const &degcw, Point const &p0) {
   rota += degcw;
-  if (rota==180) {
+  if (rota.degrees()==180) {
     rota = FreeRotation();
-  } else if (rota==90 || rota==270) {
+  } else if (rota.degrees()==90 || rota.degrees()==270) {
     Dim x = width;
     width = height;
     height = x;
@@ -27,9 +27,9 @@ void Pad::freeRotate(int degcw, Point const &p0) {
 
 void Pad::rotateCW() {
   rota += 90;
-  if (rota==180) {
+  if (rota.degrees()==180) {
     rota = FreeRotation();
-  } else if (rota==90 || rota==270) {
+  } else if (rota.degrees()==90 || rota.degrees()==270) {
     Dim x = width;
     width = height;
     height = x;
@@ -48,8 +48,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Pad const &t) {
     s.writeAttribute("fp", "1");
   if (t.noclear)
     s.writeAttribute("noclear", "1");
-  if (t.rota)
-    s.writeAttribute("rot", QString::number(t.rota));
+  if (t.rota.degrees())
+    s.writeAttribute("rot", t.rota.toString());
   s.writeEndElement();
   return s;
 }
@@ -96,7 +96,7 @@ Rect Pad::boundingRect() const {
   if (fpcon)
     rx += Board::padClearance(width, height) + Board::fpConOverlap();
   Point dp(rx, ry);
-  if (rota) {
+  if (rota.degrees()) {
     // I'm not at all sure this is correct
     Rect r(p, p);
     r |= p + dp.rotatedFreely(rota);
@@ -122,10 +122,9 @@ QPainterPath Pad::outlinePath() const {
     path.addRect(-w/2 - dl, -w1/2, w + 2*dl, w1);
     path.addRect(-w1/2, -h/2 - dl, w1, h + 2*dl);
   }
-  int r = rota;
-  if (r) {
+  if (rota.degrees()) {
     QTransform t;
-    t.rotate(-r);
+    t.rotate(-rota.degrees());
     path = t.map(path);
   }
   return path.translated(p.toMils());
@@ -192,7 +191,7 @@ void Pad::flipLeftRight(Dim const &x0) {
 
 void Pad::flipUpDown(Dim const &y0) {
   rota.flipUpDown();
-  if (rota==180)
+  if (rota.degrees()==180)
     rota = FreeRotation();
   p.flipUpDown(y0);
 }

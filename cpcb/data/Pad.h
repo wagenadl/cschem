@@ -31,7 +31,7 @@ public:
   bool touches(class Trace const &t) const;
   bool touches(class FilledPlane const &fp) const;
   void rotateCW(Point const &p0);
-  void freeRotate(int degcw, Point const &p0);
+  void freeRotate(FreeRotation const &degcw, Point const &p0);
   void flipLeftRight(Dim const &x0);
   void flipUpDown(Dim const &y0);
 };

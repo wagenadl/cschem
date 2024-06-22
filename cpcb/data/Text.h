@@ -31,7 +31,7 @@ public:
   void rotateCCW();
   void rotateCW(Point const &, bool nottext=false); // around another point
   void rotateCCW(Point const &, bool nottext=false); // around another point
-  void freeRotate(int degcw, Point const &p0);
+  void freeRotate(FreeRotation const &degcw, Point const &p0);
   void setLayer(Layer l);
   void setGroupAffiliation(int);
   int groupAffiliation() const;

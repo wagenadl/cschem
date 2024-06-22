@@ -15,7 +15,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Arc const &t) {
   s.writeAttribute("lw", t.linewidth.toString());
   s.writeAttribute("l", QString::number(int(t.layer)));
   s.writeAttribute("ang", QString::number(t.angle));
-  s.writeAttribute("rota", QString::number(t.rota));
+  s.writeAttribute("rota", QString::number(t.rota.degrees()));
   // we call it "rota", because there was an older convention...
   s.writeEndElement();
   return s;
@@ -57,14 +57,14 @@ QDebug operator<<(QDebug d, Arc const &t) {
     << t.radius
     << t.linewidth
     << t.layer
-    << t.angle << t.rota
+    << t.angle << t.rota.degrees()
     << ")";
   return d;
 }
 
 Rect Arc::boundingRect() const {
   Rect rect(center, center);
-  int a0 = rota - 90;
+  int a0 = rota.degrees() - 90;
   int a1 = a0 + angle;
   for (int a=a0; a<=a1; a+=15) {
     double phi = a*PI/180;
@@ -110,7 +110,7 @@ void Arc::rotateCW() {
   rota += 90;
 }
 
-void Arc::freeRotate(int degcw, Point const &p0) {
+void Arc::freeRotate(FreeRotation const &degcw, Point const &p0) {
   rota += degcw;
   center.freeRotate(degcw, p0);
 }

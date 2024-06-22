@@ -541,11 +541,11 @@ void MWData::linkSchematicDialog() {
 }
 
 void MWData::arbitraryRotation() {
-  int angle = QInputDialog::getInt(mw, "Arbitrary rotation",
+  double angle = QInputDialog::getDouble(mw, "Arbitrary rotation",
 				   "Clockwise angle (degrees):",
-				   0, -359, 359);
+				   0, -359.99, 359.99);
   if (angle)
-    editor->arbitraryRotation(angle);
+    editor->arbitraryRotation(FreeRotation(angle));
 }
 
 void MWData::copyPCBImage(bool forprinting) {

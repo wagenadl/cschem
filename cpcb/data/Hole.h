@@ -37,7 +37,7 @@ public:
   bool touches(class Pad const &p) const;
   bool touches(class Hole const &p) const;
   void rotateCW(Point const &p0);
-  void freeRotate(int degcw, Point const &p0);
+  void freeRotate(FreeRotation const &degcw, Point const &p0);
   void flipLeftRight(Dim const &x0);
   void flipUpDown(Dim const &y0);
   bool isSlot() const;

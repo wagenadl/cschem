@@ -158,10 +158,10 @@ void Group::translate(Point p) {
     o.translate(p);
 }
 
-void Group::freeRotate(int degcw, Point const &p) {
+void Group::freeRotate(FreeRotation const &degcw, Point const &p) {
   d.detach();
   d->hasbbox = false;
-  d->nominalrotation -= degcw;
+  d->nominalrotation -= degcw.degrees(); // this is perhaps problematic
   for (Object &o: d->obj)
     o.freeRotate(degcw, p);
 }  

@@ -20,7 +20,7 @@ public:
   NPHole();
   bool isValid() const { return !d.isNull(); }
   Rect boundingRect() const;
-  void freeRotate(int degcw, Point const &p0);
+  void freeRotate(FreeRotation const &degcw, Point const &p0);
   void rotateCW(Point const &p0);
   void flipLeftRight(Dim const &x0);
   void flipUpDown(Dim const &y0);

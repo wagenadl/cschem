@@ -3,6 +3,7 @@
 #include "Point.h"
 #include <QStringList>
 #include "pi.h"
+#include "FreeRotation.h"
 
 Point Point::fromString(QString s, bool *ok) {
   Point p;
@@ -26,16 +27,15 @@ Point Point::flippedUpDown(Dim y0) const {
   return Point(x, 2*y0 - y);
 }
 
-Point Point::rotatedFreely(int deg, Point const &p0) const {
+Point Point::rotatedFreely(FreeRotation const &deg, Point const &p0) const {
   Point p = *this;
   p.freeRotate(deg, p0);
   return p;
 }
 
-Point &Point::freeRotate(int deg, Point const &p0) {
-  double phi = deg*PI/180;
-  double cs = cos(phi);
-  double sn = sin(phi);
+Point &Point::freeRotate(FreeRotation const &deg, Point const &p0) {
+  double cs = deg.cos();
+  double sn = deg.sin();
   x -= p0.x;
   y -= p0.y;
   Dim x1 = x*cs - y*sn;

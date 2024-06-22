@@ -20,7 +20,7 @@ Rect Hole::boundingRect() const {
   if (fpcon!=Layer::Invalid) 
     r += Board::padClearance(od,od) + Board::fpConOverlap();
   Rect rct(p - Point(r, r), p + Point(r, r));
-  if (rota%90!=0 || slotlength.isPositive()) {
+  if (!rota.isCardinal() || slotlength.isPositive()) {
     Dim dx = slotlength/2;
     Point nw(-r-dx, -r);
     Point ne(r+dx, -r);
@@ -53,7 +53,7 @@ QPainterPath Hole::outlinePath(Layer l) const {
     path.addRect(-od_/2 - dl - sl/2, -w/2, od_ + sl + 2*dl, w);
     path.addRect(-w/2, -od_/2 - dl, w, od_ + 2*dl);
   }
-  int r = rota;
+  double r = rota.degrees();
   if (r) {
     QTransform t;
     t.rotate(-r);
@@ -78,8 +78,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Hole const &t) {
     s.writeAttribute("noclear", "1");
   if (t.slotlength.isPositive())
     s.writeAttribute("sl", t.slotlength.toString());
-  if (t.rota)
-    s.writeAttribute("rot", QString::number(t.rota));
+  if (t.rota.degrees())
+    s.writeAttribute("rot", t.rota.toString());
   s.writeEndElement();
   return s;
 }
@@ -112,7 +112,7 @@ QDebug operator<<(QDebug d, Hole const &t) {
     << int(t.fpcon)
     << (t.noclear ? "noclear" : "")
     << t.slotlength
-    << t.rota
+    << t.rota.toString()
     << ")";
   return d;
 }
@@ -155,7 +155,7 @@ void Hole::rotateCW(Point const &p0) {
   p.rotateCW(p0);
 }
 
-void Hole::freeRotate(int degcw, Point const &p0) {
+void Hole::freeRotate(FreeRotation const &degcw, Point const &p0) {
   rota += degcw;
   p.freeRotate(degcw, p0);
 }
@@ -175,8 +175,7 @@ bool Hole::isSlot() const {
 }
 
 Segment Hole::slotEnds() const {
-  double phi = rota*PI/180;
-  Point dp = Point(slotlength/2*cos(phi), slotlength/2*sin(phi));
+  Point dp = Point(slotlength/2*rota.cos(), slotlength/2*rota.sin());
   return Segment(p-dp, p+dp);
 }
 

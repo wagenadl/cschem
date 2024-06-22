@@ -617,7 +617,7 @@ void Editor::setArcAngle(int angle) {
     if (obj.isArc()) {
       uc.realize();
       Arc &arc(obj.asArc());
-      int a0 = (arc.rota + arc.angle/2) / 90.0 + .49;
+      int a0 = (arc.rota.degrees() + arc.angle/2.0) / 90.0 + .49;
       qDebug() << "setarcangle" << arc.rota << arc.angle << a0 << angle;
       if (angle<0) {
         arc.angle = -angle;
@@ -871,7 +871,7 @@ Group const &Editor::currentGroup() const {
   return d->layout.root().subgroup(d->crumbs);
 }
 
-void Editor::arbitraryRotation(int degCW) {
+void Editor::arbitraryRotation(FreeRotation const &degCW) {
   if (d->selection.isEmpty() && selectedPoints().isEmpty())
     return;
   Group &here(d->currentGroup());
@@ -885,6 +885,22 @@ void Editor::arbitraryRotation(int degCW) {
     here.object(id).freeRotate(degCW, center);
   d->emitSelectionStatus();
 }  
+
+/*
+  void Editor::circularPattern(int count, FreeRotation const &angle,
+                             Point center, bool individual) {
+  if (d->selection.isEmpty())
+    return;
+  Group &here(d->currentGroup());
+  UndoCreator uc(d);
+  uc.realize();
+  for (int id: d->selection()) {
+    Object obj = here.object(id);
+    if (individual)
+      obj.freeRotate(angle, center);
+  }
+}
+*/
 
 void Editor::rotateCW(bool noundo, bool nottext) {
   if (d->selection.isEmpty() && selectedPoints().isEmpty())

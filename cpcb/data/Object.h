@@ -77,7 +77,7 @@ public:
   Object translated(Point const &) const;
   void rotateCCW(Point const &, bool nottext=false);
   void rotateCW(Point const &, bool nottext=false);
-  void freeRotate(int degCW, Point const &);
+  void freeRotate(FreeRotation const &degCW, Point const &);
   void flipLeftRight(Dim x, bool nottext=false);
   void flipUpDown(Dim y, bool nottext=false);
   QSet<Point> pinPoints() const; // recursive
