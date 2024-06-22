@@ -890,22 +890,51 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
                              Point center, bool individual) {
   if (d->selection.isEmpty())
     return;
-  Group &here(d->currentGroup());
   UndoCreator uc(d);
   uc.realize();
+  Group &here(d->currentGroup());
+
+  QMap<int, int> group2reftext;
+  QMap<int, QList<int>> reftext2copies;
+  QMap<int, QList<int>> group2copies;
+  for (int id: d->selection) {
+    if (here.object(id).isGroup()) {
+      group2reftext[id] = here.object(id).asGroup().refTextId();
+      group2copies[id] = QList<int>();
+      reftext2copies[id] = QList<int>();
+    }
+  }
+
   FreeRotation a(0.0);
-  for (int k=0; k<count; k++) {
+  for (int k=1; k<count; k++) {
     a += angle;
+    Point shift;
+    if (!individual) {
+        Point c0 = selectionBounds().center();
+        Point c1 = c0.rotatedFreely(a, center);
+        shift = c1 - c0;
+    }
     for (int id: d->selection) {
       Object obj = here.object(id);
-      if (individual) {
+      if (individual) 
         obj.freeRotate(a, center);
-      } else {
-        Point c0 = obj.boundingRect().center();
-        Point c1 = c0.rotatedFreely(a, center);
-        obj.translate(c1 - c0);
-      }
-      here.insert(obj);
+      else 
+        obj.translate(shift);
+      int newid = here.insert(obj);
+
+      if (group2copies.contains(id)) 
+        group2copies[id] << newid;
+      else if (reftext2copies.contains(id))
+        reftext2copies[id] << newid;
+    }
+  }
+
+  for (int grpid: group2reftext.keys()) {
+    int refid = group2reftext[grpid];
+    for (int k=1; k<count; k++) {
+      int newgrp = group2copies[grpid][k-1];
+      int newtxt = reftext2copies[refid][k-1];
+      here.object(newgrp).asGroup().setRefTextId(newtxt);
     }
   }
 }
@@ -1642,4 +1671,8 @@ QString Editor::loadBOM(QString fn) {
   }
   bom()->rebuild();
   return QString();    
+}
+
+Rect Editor::selectionBounds() const {
+  return d->selectionBounds();
 }

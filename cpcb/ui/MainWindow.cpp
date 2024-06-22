@@ -7,6 +7,7 @@
 #include "Statusbar.h"
 #include "Editor.h"
 #include "MultiCompView.h"
+#include "CircularPatternDialog.h"
 #include <QCloseEvent>
 #include "data/Paths.h"
 #include "Find.h"
@@ -726,13 +727,25 @@ void MWData::makeMenus() {
                   [this]() { importBOMDialog(); });
   file->addAction("&Copy PCB image to clipboard",
                   [this]() { copyPCBImage(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
 		  
   
   file->addAction("&Quit", []() { QApplication::quit(); });
 
   auto *edit = mb->addMenu("&Edit");
 
+  a = edit->addAction("&Undo", [this]() { editor->undo(); },
+		      QKeySequence(Qt::CTRL + Qt::Key_Z));
+  QObject::connect(editor, &Editor::undoAvailable,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+  
+  a = edit->addAction("Redo", [this]() { editor->redo(); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+  QObject::connect(editor, &Editor::redoAvailable,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+  
   a = edit->addAction("&Cut", [this]() { passthroughSignal("cut"); },
 		      QKeySequence(Qt::CTRL + Qt::Key_X));
   QObject::connect(editor, &Editor::selectionChanged,
@@ -748,6 +761,13 @@ void MWData::makeMenus() {
   edit->addAction("&Paste", [this]() { passthroughSignal("paste"); },
 		  QKeySequence(Qt::CTRL + Qt::Key_V));
 
+  a = edit->addAction("&Delete selected",
+		      [this]() { passthroughSignal("deleet"); },
+		      QKeySequence(Qt::Key_Delete));
+  QObject::connect(editor, &Editor::selectionChanged,
+                   a, &QAction::setEnabled);
+  a->setEnabled(false);
+  
   a = edit->addAction("Select attached &trace",
 		      [this]() { editor->selectTrace(false); },
 		      QKeySequence(Qt::CTRL + Qt::Key_T));
@@ -811,6 +831,15 @@ void MWData::makeMenus() {
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
+
+  a = edit->addAction("Circular pattern",
+                      [this]() { CircularPatternDialog::gui(editor,
+                                     modebar->isOriginIncremental(), mw); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+
   a = edit->addAction("&Group", [this]() { editor->formGroup(); },
 		      QKeySequence(Qt::CTRL + Qt::Key_G));
   QObject::connect(editor, &Editor::selectionChanged,
@@ -818,7 +847,7 @@ void MWData::makeMenus() {
   a->setEnabled(false);
   
   a = edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
+		      QKeySequence(Qt::CTRL + Qt::Key_U));
   QObject::connect(editor, &Editor::selectionIsGroup,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
@@ -828,25 +857,6 @@ void MWData::makeMenus() {
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = edit->addAction("&Delete selected",
-		      [this]() { passthroughSignal("deleet"); },
-		      QKeySequence(Qt::Key_Delete));
-  QObject::connect(editor, &Editor::selectionChanged,
-                   a, &QAction::setEnabled);
-  a->setEnabled(false);
-  
-  a = edit->addAction("&Undo", [this]() { editor->undo(); },
-		      QKeySequence(Qt::CTRL + Qt::Key_Z));
-  QObject::connect(editor, &Editor::undoAvailable,
-		   a, &QAction::setEnabled);
-  a->setEnabled(false);
-  
-  a = edit->addAction("Redo", [this]() { editor->redo(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
-  QObject::connect(editor, &Editor::redoAvailable,
-		   a, &QAction::setEnabled);
-  a->setEnabled(false);
-
   edit->addAction("Find", [this]() { Find(editor).run(); },
                   QKeySequence(Qt::Key_Slash));
 
@@ -861,11 +871,11 @@ void MWData::makeMenus() {
   
   auto *tools = mb->addMenu("&Tools");
   tools->addAction("&Open library", [this]() { openLibrary(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
   tools->addAction("&Insert component…", [this]() { insertComponentDialog(); },
 		   QKeySequence(Qt::CTRL + Qt::Key_I));
   a = tools->addAction("&Save component…", [this]() { saveComponentDialog(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
   QObject::connect(editor, &Editor::selectionIsGroup,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);

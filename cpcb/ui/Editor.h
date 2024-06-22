@@ -39,6 +39,7 @@ public:
   Point userOrigin() const;
   class BOM *bom() const;
   QString loadBOM(QString fn); // returns "" if OK, else error string
+  Rect selectionBounds() const;
 public slots:
   void setAngleConstraint(bool);
   void setGrid(Dim);
