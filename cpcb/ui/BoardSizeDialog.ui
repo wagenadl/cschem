@@ -208,7 +208,7 @@
  <customwidgets>
   <customwidget>
    <class>DimSpinner</class>
-   <extends>QDoubleSpinBox</extends>
+   <extends>QLineEdit</extends>
    <header>ui/DimSpinner.h</header>
   </customwidget>
  </customwidgets>

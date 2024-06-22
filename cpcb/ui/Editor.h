@@ -79,6 +79,8 @@ public slots:
   void flipV(bool noundo=false, bool nottext=false);
   void circularPattern(int count, FreeRotation const &angle, Point center,
                        bool individual);
+  void linearPattern(int hcount, Dim hspacing,
+                     int vcount, Dim vspacing);
   void setRotation(int); // this is not the way to rotate or flip things
   void setFlipped(bool); // this is not the way to rotate or flip things
   void setMode(Mode);

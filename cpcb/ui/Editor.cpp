@@ -12,6 +12,7 @@
 #include <QResizeEvent>
 #include <QTimer>
 #include <algorithm>
+#include "PatternHelper.h"
 
 #include "ui/BOM.h"
 
@@ -886,6 +887,39 @@ void Editor::arbitraryRotation(FreeRotation const &degCW) {
   d->emitSelectionStatus();
 }  
 
+void Editor::linearPattern(int hcount, Dim hspacing,
+                           int vcount, Dim vspacing) {
+  if (d->selection.isEmpty())
+    return;
+  if ((hcount>1 && hspacing.isNull())
+      || (vcount>1 && vspacing.isNull())) {
+    qDebug() << "linear pattern needs nonzero displacement";
+    return;
+  }
+  
+  UndoCreator uc(d);
+  uc.realize();
+  Group &here(d->currentGroup());
+
+  PatternHelper helper(here, d->selection);
+
+  for (int x=0; x<hcount; x++) {
+    for (int y=0; y<vcount; y++) {
+      if (x==0 && y==0)
+        continue;
+      Point shift(x*hspacing, y*vspacing);
+      for (int id: d->selection) {
+        Object obj = here.object(id);
+        obj.translate(shift);
+        int newid = here.insert(obj);
+        helper.addItem(id, newid);
+      }
+    }
+  }
+
+  helper.apply();
+}
+
 void Editor::circularPattern(int count, FreeRotation const &angle,
                              Point center, bool individual) {
   if (d->selection.isEmpty())
@@ -894,16 +928,7 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
   uc.realize();
   Group &here(d->currentGroup());
 
-  QMap<int, int> group2reftext;
-  QMap<int, QList<int>> reftext2copies;
-  QMap<int, QList<int>> group2copies;
-  for (int id: d->selection) {
-    if (here.object(id).isGroup()) {
-      group2reftext[id] = here.object(id).asGroup().refTextId();
-      group2copies[id] = QList<int>();
-      reftext2copies[id] = QList<int>();
-    }
-  }
+  PatternHelper helper(here, d->selection);
 
   FreeRotation a(0.0);
   for (int k=1; k<count; k++) {
@@ -921,22 +946,11 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
       else 
         obj.translate(shift);
       int newid = here.insert(obj);
-
-      if (group2copies.contains(id)) 
-        group2copies[id] << newid;
-      else if (reftext2copies.contains(id))
-        reftext2copies[id] << newid;
+      helper.addItem(id, newid);
     }
   }
 
-  for (int grpid: group2reftext.keys()) {
-    int refid = group2reftext[grpid];
-    for (int k=1; k<count; k++) {
-      int newgrp = group2copies[grpid][k-1];
-      int newtxt = reftext2copies[refid][k-1];
-      here.object(newgrp).asGroup().setRefTextId(newtxt);
-    }
-  }
+  helper.apply();
 }
 
 void Editor::rotateCW(bool noundo, bool nottext) {

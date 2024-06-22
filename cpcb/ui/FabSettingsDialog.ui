@@ -446,9 +446,32 @@
   <customwidget>
    <class>DimSpinner</class>
    <extends>QLineEdit</extends>
-   <header>DimSpinner.h</header>
+   <header>ui/DimSpinner.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>traceMin</tabstop>
+  <tabstop>traceScale</tabstop>
+  <tabstop>tracePerc</tabstop>
+  <tabstop>traceMax</tabstop>
+  <tabstop>padMin</tabstop>
+  <tabstop>padScale</tabstop>
+  <tabstop>padPerc</tabstop>
+  <tabstop>padMax</tabstop>
+  <tabstop>thermalMin</tabstop>
+  <tabstop>thermalScale</tabstop>
+  <tabstop>thermalPerc</tabstop>
+  <tabstop>thermalMax</tabstop>
+  <tabstop>maskMin</tabstop>
+  <tabstop>maskScale</tabstop>
+  <tabstop>maskPerc</tabstop>
+  <tabstop>maskMax</tabstop>
+  <tabstop>holeMin</tabstop>
+  <tabstop>holeMax</tabstop>
+  <tabstop>ringMin</tabstop>
+  <tabstop>inch</tabstop>
+  <tabstop>metric</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

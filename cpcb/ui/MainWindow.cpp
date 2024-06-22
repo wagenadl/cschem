@@ -8,6 +8,7 @@
 #include "Editor.h"
 #include "MultiCompView.h"
 #include "CircularPatternDialog.h"
+#include "LinearPatternDialog.h"
 #include <QCloseEvent>
 #include "data/Paths.h"
 #include "Find.h"
@@ -832,6 +833,15 @@ void MWData::makeMenus() {
   a->setEnabled(false);
   
 
+  a = edit->addAction("Linear pattern",
+                      [this]() { LinearPatternDialog::gui(editor,
+                                   editor->pcbLayout().board()
+                                     .isEffectivelyMetric(), mw); },
+		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+  QObject::connect(editor, &Editor::selectionChanged,
+		   a, &QAction::setEnabled);
+  a->setEnabled(false);
+
   a = edit->addAction("Circular pattern",
                       [this]() { CircularPatternDialog::gui(editor,
                                      modebar->isOriginIncremental(), mw); },
@@ -871,7 +881,7 @@ void MWData::makeMenus() {
   
   auto *tools = mb->addMenu("&Tools");
   tools->addAction("&Open library", [this]() { openLibrary(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Y));
   tools->addAction("&Insert component…", [this]() { insertComponentDialog(); },
 		   QKeySequence(Qt::CTRL + Qt::Key_I));
   a = tools->addAction("&Save component…", [this]() { saveComponentDialog(); },
@@ -902,7 +912,7 @@ void MWData::makeMenus() {
                    [this]() { openLinkedSchematic(); });
   links->addAction("&Unlink",
                    [this]() { editor->unlinkSchematic(); },
-                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U));
   auto *linkinfo = links->addMenu("&Info");
 
   linklabel = new QLabel(editor->pcbLayout().board().linkedschematic);

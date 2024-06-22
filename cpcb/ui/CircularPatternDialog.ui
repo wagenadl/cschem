@@ -260,6 +260,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>count</tabstop>
+  <tabstop>spacingEven</tabstop>
+  <tabstop>spacingSpecific</tabstop>
+  <tabstop>spacing</tabstop>
+  <tabstop>aroundOrigin</tabstop>
+  <tabstop>aroundCenter</tabstop>
+  <tabstop>individual</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
