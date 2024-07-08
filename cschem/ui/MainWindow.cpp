@@ -34,6 +34,8 @@
 #include "PrintPreview.h"
 #include "FindSym.h"
 #include "VerifySchematic.h"
+#include <QScrollBar>
+#include <cmath>
 
 static QMap<QString, MainWindow *> &openFiles() {
   static QMap<QString, MainWindow *> *m = 0;
@@ -41,6 +43,47 @@ static QMap<QString, MainWindow *> &openFiles() {
     m = new QMap<QString, MainWindow *>();
   return *m;
 }
+
+class MWView: public QGraphicsView {
+public:
+  MWView(QWidget *parent=0): QGraphicsView(parent) {
+    /* Use either AnchorUnderMouse or AnchorViewCenter to set anchor for
+       zooming with [control]+[+/-].
+       Zooming with [control]+[scroll wheel]
+       is always relative to mouse position. */
+    setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+  }
+  virtual ~MWView() { }
+  virtual void wheelEvent(QWheelEvent *e) override {
+    QPoint delta = e->pixelDelta();
+    auto anchor = transformationAnchor();
+    if (e->modifiers() & Qt::ControlModifier) {
+      int dy = delta.y();
+      double scl = std::pow(2, dy/240.0);
+      setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+      scale(scl, scl);
+    } else if (e->modifiers() & Qt::ShiftModifier) {
+      int dx = delta.x() + delta.y();
+      setTransformationAnchor(QGraphicsView::NoAnchor);
+      translate(dx, 0);  
+    } else {
+      int dy = delta.y();
+      setTransformationAnchor(QGraphicsView::NoAnchor);
+      translate(0, dy);  
+    }
+    setTransformationAnchor(anchor); 
+  }
+  virtual void keyPressEvent(QKeyEvent *e) override {
+    if (e->key()==Qt::Key_Alt)
+        setDragMode(QGraphicsView::ScrollHandDrag);
+    QGraphicsView::keyPressEvent(e);
+  }
+  virtual void keyReleaseEvent(QKeyEvent *e) override {
+    if (e->key()==Qt::Key_Alt)
+        setDragMode(QGraphicsView::NoDrag);
+    QGraphicsView::keyReleaseEvent(e);
+  }
+};
 
 class MWData {
 public:
@@ -58,7 +101,7 @@ public:
   void fitView();
   void rescale(double);
 public:
-  QGraphicsView *view;
+  MWView *view;
   Scene *scene;
   QString filename;
   static QString lastdir;
@@ -167,7 +210,7 @@ void MainWindow::showPartsList() {
 }
 
 void MainWindow::createView() {
-  d->view = new QGraphicsView(this);
+  d->view = new MWView(this);
   d->view->setRenderHints(QPainter::Antialiasing); // this helps wires look
   // .. more like components, which are always antialised by the svgrenderer
   d->view->setInteractive(true);

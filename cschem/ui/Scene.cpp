@@ -532,6 +532,8 @@ void Scene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
+  if (e->modifiers() & Qt::AltModifier)
+    return;
   QGraphicsItem *item_at = itemAt(e->scenePos(), QTransform());
   QGraphicsItem *item_focus = focusItem();
   if (item_focus && item_at !=item_focus)
@@ -594,6 +596,8 @@ void Scene::mousePressEvent(QGraphicsSceneMouseEvent *e) {
 }
 
 void Scene::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
+  if (e->modifiers() & Qt::AltModifier)
+    return;
   d->mousexy = e->scenePos();
   auto purp = HoverManager::Purpose::Moving;
   if (d->connbuilder)
