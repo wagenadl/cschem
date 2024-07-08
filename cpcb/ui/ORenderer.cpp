@@ -189,8 +189,8 @@ void ORenderer::drawHole(Hole const &hole, bool selected, bool innet) {
   double pc = brd.padClearance(hole.od, hole.od).toMils();
   double fpover = brd.fpConOverlap().toMils();
   double extramils = extraMils(innet, hole.od, hole.od);
-  double cs = cos(PI*hole.rota/180);
-  double sn = sin(PI*hole.rota/180);
+  double cs = hole.rota.cos();
+  double sn = hole.rota.sin();
 
   QColor c = (pnporient 
               && !(hole.ref=="1"
@@ -281,7 +281,7 @@ void ORenderer::drawNPHole(NPHole const &h, bool selected, bool /*innet*/) {
   QColor col(selected ? QColor(255, 255, 255) : p->background().color());
   if (h.slotlength.isPositive()) {
     double dx = h.slotlength.toMils()/2;
-    QPoint dxy(dx*cos(PI*h.rota/180), dx*sin(PI*h.rota/180));
+    QPoint dxy(dx*h.rota.cos(), dx*h.rota.sin());
     p->setPen(QPen(col, id, Qt::SolidLine, Qt::RoundCap));
     p->drawLine(p0 - dxy, p0 + dxy);
   } else {
@@ -332,8 +332,8 @@ void ORenderer::drawPad(Pad const &pad, bool selected, bool innet) {
     Dim pc = brd.padClearance(pad.width, pad.height) + brd.fpConOverlap();
     double dxm = w/2 + pc.toMils();
     double dym = h/2 + pc.toMils();
-    double cs = cos(PI*pad.rota/180);
-    double sn = sin(PI*pad.rota/180);
+    double cs = pad.rota.cos();
+    double sn = pad.rota.sin();
     QPoint dw(dxm*cs, dxm*sn);
     QPoint dh(-dym*sn, dym*cs);
     // draw four rays
@@ -350,8 +350,8 @@ void ORenderer::drawPad(Pad const &pad, bool selected, bool innet) {
   double extramils = extraMils(innet, pad.width, pad.height);
   QPointF dp(w+extramils, h+extramils);
   QRectF r(-dp/2, dp/2);
-  if (pad.rota) {
-    QTransform xf; xf.rotate(pad.rota);
+  if (pad.rota.degrees()) {
+    QTransform xf; xf.rotate(pad.rota.degrees());
     p->drawPolygon(xf.map(r).translated(p0));
   } else {
     p->drawRect(r.translated(p0));
@@ -373,7 +373,7 @@ void ORenderer::drawArc(Arc const &t, bool selected) {
   double r = t.radius.toMils();
   QRectF rect(c.toMils() - QPointF(r,r), c.toMils() + QPointF(r,r));
   // For Painter, 0 = right, 16*90 = top, etc.
-  int start_ang = 90 - t.rota - t.angle;
+  int start_ang = 90 - t.rota.degrees() - t.angle;
   int span_ang = t.angle;
   p->drawArc(rect, 16*start_ang, 16*span_ang);
 }
@@ -417,9 +417,10 @@ void ORenderer::drawGroup(Group const &g, bool selected,
     p->setBrush(QColor(0,255,255));
     p->setPen(Qt::NoPen);
     QPolygonF pp;
-    pp << (p0+Point(Dim::fromMM(-1.5), Dim::fromMM(.5)).rotatedFreely(-ori)).toMils();
-    pp << (p0+Point(Dim::fromMM(1.5), Dim::fromMM(.5)).rotatedFreely(-ori)).toMils();
-    pp << (p0+Point(Dim(), Dim::fromMM(-1.5)).rotatedFreely(-ori)).toMils();
+    FreeRotation rot(-ori);
+    pp << (p0+Point(Dim::fromMM(-1.5), Dim::fromMM(.5)).rotatedFreely(rot)).toMils();
+    pp << (p0+Point(Dim::fromMM(1.5), Dim::fromMM(.5)).rotatedFreely(rot)).toMils();
+    pp << (p0+Point(Dim(), Dim::fromMM(-1.5)).rotatedFreely(rot)).toMils();
     p->drawPolygon(pp);
   }
 }
@@ -449,7 +450,7 @@ void ORenderer::drawText(Text const &t, bool selected) {
   //  p->setPen(QPen(QColor(255,255,255), 2));
   //  p->drawEllipse(QPointF(0,0), 5,5);
 
-  p->rotate(t.rota);
+  p->rotate(t.rota.degrees());
   int xflip = ((t.layer==Layer::Bottom || t.layer==Layer::BSilk) ^ t.flip)
     ? -1 : 1;
 

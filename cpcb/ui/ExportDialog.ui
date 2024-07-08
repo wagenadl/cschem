@@ -365,10 +365,27 @@
  <customwidgets>
   <customwidget>
    <class>DimSpinner</class>
-   <extends>QDoubleSpinBox</extends>
+   <extends>QLineEdit</extends>
    <header>ui/DimSpinner.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>gerberfilename</tabstop>
+  <tabstop>bb</tabstop>
+  <tabstop>savebom</tabstop>
+  <tabstop>bomfilename</tabstop>
+  <tabstop>compactbom</tabstop>
+  <tabstop>savepnp</tabstop>
+  <tabstop>pnpfilename</tabstop>
+  <tabstop>smtonly</tabstop>
+  <tabstop>saveunplaced</tabstop>
+  <tabstop>unplacedfilename</tabstop>
+  <tabstop>savemask</tabstop>
+  <tabstop>pastemaskfilename</tabstop>
+  <tabstop>shrinkage</tabstop>
+  <tabstop>savefrontpanel</tabstop>
+  <tabstop>frontpanelfilename</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -529,7 +529,7 @@ void Object::rotateCW(Point const &p0, bool nottext) {
   }
 }
 
-void Object::freeRotate(int degCW, Point const &p0) {
+void Object::freeRotate(FreeRotation const &degCW, Point const &p0) {
   switch (type()) {
   case Type::Null:
     break;

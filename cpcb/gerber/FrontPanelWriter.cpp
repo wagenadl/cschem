@@ -155,7 +155,7 @@ void FPWData::writeText(Text const &text, Point const &offset) {
     out << "<g transform=\"scale(1,1)\">";
   else
     out << "<g transform=\"scale(-1,1)\">";
-  int rot = (text.flip ? -1 : 1) * int(text.rota);
+  double rot = (text.flip ? -1 : 1) * text.rota.degrees();
   out << "<g transform=\"rotate(" << QString::number(rot) << ")\">";
   out << "<text style=\"font-family:Lato;font-size:10px\" x=\"0\" y=\"0\">";
   out << "<tspan x=\"0\" y=\"0\">";

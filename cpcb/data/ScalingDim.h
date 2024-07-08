@@ -15,7 +15,7 @@ public:
   float perc;
   bool scale;
 public:
-  ScalingDim(Dim fixed);
+  ScalingDim(Dim fixed=Dim());
   ScalingDim(Dim min, float perc, Dim max);
   Dim apply(Dim x) const;
   void fromSettings(QString name);

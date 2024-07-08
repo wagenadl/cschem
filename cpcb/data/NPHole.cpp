@@ -16,7 +16,7 @@ bool NPHole::contains(Point const &p1) const {
 Rect NPHole::boundingRect() const {
   Dim r = d/2;
   if (slotlength.isPositive()) {
-    Point dxy(cos(rota*PI/180)*slotlength/2, sin(rota*PI/180)*slotlength/2);
+    Point dxy(rota.cos()*slotlength/2, rota.sin()*slotlength/2);
     return Rect(p - dxy, p + dxy).grow(d);
   } else {
     return Rect(p - Point(r, r), p + Point(r, r));
@@ -29,8 +29,8 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, NPHole const &t) {
   s.writeAttribute("d", t.d.toString());
   if (t.slotlength.isPositive())
     s.writeAttribute("sl", t.slotlength.toString());
-  if (t.rota)
-    s.writeAttribute("rot", QString::number(t.rota));
+  if (t.rota.degrees())
+    s.writeAttribute("rot", t.rota.toString());
   s.writeEndElement();
   return s;
 }
@@ -57,7 +57,7 @@ QDebug operator<<(QDebug d, NPHole const &t) {
   return d;
 }
 
-void NPHole::freeRotate(int degcw, Point const &p0) {
+void NPHole::freeRotate(FreeRotation const &degcw, Point const &p0) {
   rota += degcw;
   p.freeRotate(degcw, p0);
 }
@@ -82,7 +82,6 @@ bool NPHole::isSlot() const {
 }
 
 Segment NPHole::slotEnds() const {
-  double phi = rota*PI/180;
-  Point dp = Point(slotlength/2*cos(phi), slotlength/2*sin(phi));
+  Point dp = Point(slotlength/2*rota.cos(), slotlength/2*rota.sin());
   return Segment(p-dp, p+dp);
 }

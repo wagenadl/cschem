@@ -176,6 +176,7 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
       }
       html += "<span style=\"font-size: 2pt; color: white;\">" + bit + "</span>";
     } else {
+      bit.replace("  ", " &nbsp;");
       html += bit;
       if (insup) {
         html += "</sup>";

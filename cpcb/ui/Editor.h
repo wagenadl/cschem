@@ -39,6 +39,7 @@ public:
   Point userOrigin() const;
   class BOM *bom() const;
   QString loadBOM(QString fn); // returns "" if OK, else error string
+  Rect selectionBounds() const;
 public slots:
   void setAngleConstraint(bool);
   void setGrid(Dim);
@@ -73,9 +74,13 @@ public slots:
   void setArcAngle(int angle);
   void rotateCW(bool noundo=false, bool nottext=false);
   void rotateCCW(bool noundo=false, bool nottext=false);
-  void arbitraryRotation(int angleCW);
+  void arbitraryRotation(FreeRotation const &angleCW);
   void flipH(bool noundo=false, bool nottext=false);
   void flipV(bool noundo=false, bool nottext=false);
+  void circularPattern(int count, FreeRotation const &angle, Point center,
+                       bool individual);
+  void linearPattern(int hcount, Dim hspacing,
+                     int vcount, Dim vspacing);
   void setRotation(int); // this is not the way to rotate or flip things
   void setFlipped(bool); // this is not the way to rotate or flip things
   void setMode(Mode);

@@ -7,6 +7,8 @@
 #include <QBuffer>
 #include <QFileInfo>
 #include <QRegularExpression>
+#include <QCollator>
+#include <algorithm>
 
 static QMap<Group::Attribute, QString> xmlnames{
   { Group::Attribute::Footprint, "pkg" },
@@ -156,10 +158,10 @@ void Group::translate(Point p) {
     o.translate(p);
 }
 
-void Group::freeRotate(int degcw, Point const &p) {
+void Group::freeRotate(FreeRotation const &degcw, Point const &p) {
   d.detach();
   d->hasbbox = false;
-  d->nominalrotation -= degcw;
+  d->nominalrotation -= degcw.degrees(); // this is perhaps problematic
   for (Object &o: d->obj)
     o.freeRotate(degcw, p);
 }  
@@ -418,11 +420,18 @@ QStringList Group::pinNames() const {
       break;
     }
   }
-  return QStringList(names.keys());
+  names.remove("");
+  QStringList list(names.keys());
+  QCollator order; order.setNumericMode(true);
+  std::sort(list.begin(), list.end(), order);
+  //            [&](QString const &a, QString const &b) {
+  //              return order.compare(a, b) < 0; });
+  return list; //  return QStringList(names.keys());
 }
 
 Point Group::anchor() const {
   QStringList names = pinNames();
+  qDebug() << "anchor" << names;
   if (names.isEmpty())
     return boundingRect().center();
   else

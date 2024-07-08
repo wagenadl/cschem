@@ -16,9 +16,9 @@ namespace Gerber {
       fs(fs), rota(rot), flip(flip) {}
     bool operator<(FontSpec const &o) const {
       if (fs == o.fs) {
-	if (int(rota) == int(o.rota))
+	if (rota == o.rota)
 	  return flip < o.flip;
-	return int(rota) < int(o.rota);
+	return rota < o.rota;
       }
       return fs < o.fs;
     }

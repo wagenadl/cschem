@@ -12,6 +12,7 @@
 #include <QResizeEvent>
 #include <QTimer>
 #include <algorithm>
+#include "PatternHelper.h"
 
 #include "ui/BOM.h"
 
@@ -617,7 +618,7 @@ void Editor::setArcAngle(int angle) {
     if (obj.isArc()) {
       uc.realize();
       Arc &arc(obj.asArc());
-      int a0 = (arc.rota + arc.angle/2) / 90.0 + .49;
+      int a0 = (arc.rota.degrees() + arc.angle/2.0) / 90.0 + .49;
       qDebug() << "setarcangle" << arc.rota << arc.angle << a0 << angle;
       if (angle<0) {
         arc.angle = -angle;
@@ -871,30 +872,101 @@ Group const &Editor::currentGroup() const {
   return d->layout.root().subgroup(d->crumbs);
 }
 
-void Editor::arbitraryRotation(int degCW) {
+void Editor::arbitraryRotation(FreeRotation const &degCW) {
+  if (d->selection.isEmpty() && selectedPoints().isEmpty())
+    return;
   Group &here(d->currentGroup());
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
   Point center = box.center(); //.roundedTo(d->layout.board().grid);
   UndoCreator uc(d);
-  if (!d->selection.isEmpty() || !selectedPoints().isEmpty())
-    uc.realize();
+  uc.realize();
   for (int id: d->selection)
     here.object(id).freeRotate(degCW, center);
+  d->emitSelectionStatus();
 }  
 
+void Editor::linearPattern(int hcount, Dim hspacing,
+                           int vcount, Dim vspacing) {
+  if (d->selection.isEmpty())
+    return;
+  if ((hcount>1 && hspacing.isNull())
+      || (vcount>1 && vspacing.isNull())) {
+    qDebug() << "linear pattern needs nonzero displacement";
+    return;
+  }
+  
+  UndoCreator uc(d);
+  uc.realize();
+  Group &here(d->currentGroup());
+
+  PatternHelper helper(here, d->selection);
+
+  for (int x=0; x<hcount; x++) {
+    for (int y=0; y<vcount; y++) {
+      if (x==0 && y==0)
+        continue;
+      Point shift(x*hspacing, y*vspacing);
+      for (int id: d->selection) {
+        Object obj = here.object(id);
+        obj.translate(shift);
+        int newid = here.insert(obj);
+        helper.addItem(id, newid);
+      }
+    }
+  }
+
+  helper.apply();
+}
+
+void Editor::circularPattern(int count, FreeRotation const &angle,
+                             Point center, bool individual) {
+  if (d->selection.isEmpty())
+    return;
+  UndoCreator uc(d);
+  uc.realize();
+  Group &here(d->currentGroup());
+
+  PatternHelper helper(here, d->selection);
+
+  FreeRotation a(0.0);
+  for (int k=1; k<count; k++) {
+    a += angle;
+    Point shift;
+    if (!individual) {
+        Point c0 = selectionBounds().center();
+        Point c1 = c0.rotatedFreely(a, center);
+        shift = c1 - c0;
+    }
+    for (int id: d->selection) {
+      Object obj = here.object(id);
+      if (individual) 
+        obj.freeRotate(a, center);
+      else 
+        obj.translate(shift);
+      int newid = here.insert(obj);
+      helper.addItem(id, newid);
+    }
+  }
+
+  helper.apply();
+}
+
 void Editor::rotateCW(bool noundo, bool nottext) {
+  if (d->selection.isEmpty() && selectedPoints().isEmpty())
+    return;
   Group &here(d->currentGroup());
   Rect box(d->selectionBounds());
   if (box.isEmpty())
     return;
   QSet<Point> pp = selectedPoints();
-  Point center = pp.isEmpty()
-    ? box.center()
-    : Point::average(pp); // roundedTo(d->layout.board().grid);
+  Point center = (pp.isEmpty()
+                  ? box.center()
+                  : Point::average(pp))
+    .roundedTo(d->layout.board().grid);
   UndoCreator uc(d);
-  if (!noundo && (!d->selection.isEmpty() || !selectedPoints().isEmpty()))
+  if (!noundo)
     uc.realize();
   if (d->selection.size()==1)
     nottext=false;
@@ -929,6 +1001,7 @@ void Editor::rotateCW(bool noundo, bool nottext) {
       newpts << p.rotatedCW(center);
     d->selpts[l] = newpts;
   }
+  d->emitSelectionStatus();
 }
 
 void Editor::rotateCCW(bool noundo, bool nottext) {
@@ -1612,4 +1685,8 @@ QString Editor::loadBOM(QString fn) {
   }
   bom()->rebuild();
   return QString();    
+}
+
+Rect Editor::selectionBounds() const {
+  return d->selectionBounds();
 }

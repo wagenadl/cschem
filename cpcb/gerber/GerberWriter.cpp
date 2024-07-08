@@ -635,7 +635,7 @@ static void writeSqHoleClearance(GerberFile &out, Board const &board,
     for (Hole const &hole: holes[od]) {
       if (hole.noclear)
         continue;
-      if (hole.rota%90) {
+      if (!hole.rota.isCardinal()) {
         writeRotatedRect(out,
                          hole.p,
                          hole.slotlength + hole.od + mrg, hole.od + mrg,
@@ -660,7 +660,7 @@ static void writeSMDClearance(GerberFile &out, Board const &board,
     for (Pad const &pad: pads[p]) {
       if (pad.noclear)
         continue;
-      if (pad.rota) 
+      if (pad.rota.degrees()) 
         writeRotatedRect(out,
                          pad.p,
                          pad.width + mrg, pad.height + mrg,
@@ -707,7 +707,7 @@ static void writeArcs(GerberFile &out, Gerber::Apertures const &aps,
   for (Dim lw: arcs.keys()) {
     out << aps.select(Gerber::Circ(lw));
     for (Arc const &arc: arcs[lw]) {
-      double astart = PI/180*(arc.rota + 90);
+      double astart = PI/180*(arc.rota.degrees() + 90);
       double aend = astart + PI/180*arc.angle;
       out << "G01" << Gerber::point(arc.center
                                     + Point(arc.radius*cos(astart),
@@ -780,7 +780,7 @@ static void writePlainComponentPads(GerberFile &out,
                                     Gerber::Apertures const &padaps,
                                     Board const &brd,
                                     Dim od, QList<Hole> const &lst,
-                                    Layer l, bool sq,
+                                    Layer /*l*/, bool sq,
                                     bool mask) {
   if (mask)
     od += 2 * brd.maskMargin(od);
@@ -792,7 +792,7 @@ static void writePlainComponentPads(GerberFile &out,
   for (Hole const &hole: lst) {
     if (mask && hole.via)
       continue;
-    if (hole.rota && hole.square) {
+    if (hole.rota.degrees() && hole.square) {
       writeRotatedRect(out, hole.p,
                        od + hole.slotlength, od,
                        hole.rota);
@@ -832,7 +832,7 @@ static void writePlainSMDPads(GerberFile &out,
                               Gerber::Apertures const &padaps,
                               Board const &brd,
                               Point wh, QList<Pad> const &pads,
-                              bool copper, bool mask) { // paste if neither
+                              bool /*copper*/, bool mask) { // paste if neither
   Dim w(wh.x);
   Dim h(wh.y);
   Dim mrg = Dim();
@@ -843,7 +843,7 @@ static void writePlainSMDPads(GerberFile &out,
 
   out << padaps.select(Gerber::Rect(w1, h1));
   for (Pad const &pad: pads) {
-    if (pad.rota) 
+    if (pad.rota.degrees()) 
       writeRotatedRect(out, pad.p, w1, h1, pad.rota);
     else 
       out << Gerber::point(pad.p) << "D03*\n";
