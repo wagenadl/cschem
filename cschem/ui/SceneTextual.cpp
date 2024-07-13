@@ -196,6 +196,8 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
     html += "</sub>";
     insub = false;
   }
+  if (html.endsWith(" "))
+    html = html.left(html.length() - 1) + "&nbsp;";
   return html;
 }
 
