@@ -1,0 +1,141 @@
+{ "typ": "page",
+  "cre": "2024-07-13T08:31:24.793",
+  "mod": "2024-07-13T08:43:53.573",
+  "cui": "2edabb2b1502c998",
+  "stampTime": 0,
+  "startPage": 64,
+  "unlocked": false,
+  "uuid": "4e72ab1e",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2024-07-13T08:31:24.792",
+      "mod": "2024-07-13T08:31:24.792",
+      "uuid": "74b61166"
+    },
+    { "typ": "title",
+      "cre": "2024-07-13T08:31:27.038",
+      "mod": "2024-07-13T08:31:30.874",
+      "uuid": "6d872d76",
+      "cc": [
+        { "typ": "text",
+          "cre": "2024-07-13T08:31:27.038",
+          "mod": "2024-07-13T08:31:30.874",
+          "lines": [
+            0
+          ],
+          "text": "Hyphens and minus signs",
+          "uuid": "5fad0aaf"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2024-07-13T08:31:31.677",
+      "mod": "2024-07-13T08:35:57.787",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "640ca804",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2024-07-13T08:31:31.677",
+          "mod": "2024-07-13T08:35:57.787",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "The current rule in SceneTextuals is that hyphens (-) are replaced with minus signs (−) if they match this regexp:",
+          "uuid": "380e9918"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2024-07-13T08:36:11.452",
+      "mod": "2024-07-13T08:36:12.539",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "27e11888",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2024-07-13T08:36:11.452",
+          "mod": "2024-07-13T08:36:12.539",
+          "lines": [
+            0
+          ],
+          "text": "  QRegularExpression minus(\"(^|(?<=\\\\s))-($|(?=[\\\\s.0-9]))\");",
+          "uuid": "5905f6f5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2024-07-13T08:36:14.554",
+      "mod": "2024-07-13T08:40:39.278",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "385ba922",
+      "y0": 141.479,
+      "cc": [
+        { "typ": "text",
+          "cre": "2024-07-13T08:36:14.554",
+          "mod": "2024-07-13T08:40:39.278",
+          "lines": [
+            0,
+            57,
+            115
+          ],
+          "text": "But it does not work. Instead, all hyphens are replaced. Notably, according to the regexp tester, my expression is correct, i.e., it matches “-” in “ -5” but not in “x-y”.",
+          "uuid": "e1d5550f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2024-07-13T08:40:52.641",
+      "mod": "2024-07-13T08:41:14.186",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "d7b70e31",
+      "y0": 214.977,
+      "cc": [
+        { "typ": "text",
+          "cre": "2024-07-13T08:40:52.641",
+          "mod": "2024-07-13T08:41:14.186",
+          "lines": [
+            0,
+            54
+          ],
+          "text": "Importantly, minus signs are replaced by hyphens when saving to file, so it is just a rendering bug.",
+          "uuid": "5c3156c0"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2024-07-13T08:43:40.167",
+      "mod": "2024-07-13T08:43:53.573",
+      "h": 19.147,
+      "ind": 3,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5740663f",
+      "y0": 265.309,
+      "cc": [
+        { "typ": "text",
+          "cre": "2024-07-13T08:43:40.167",
+          "mod": "2024-07-13T08:43:53.573",
+          "lines": [
+            0
+          ],
+          "text": "Fixed by applying the regexp before splitting into bits.",
+          "uuid": "2783c989"
+        }
+      ]
+    }
+  ]
+}

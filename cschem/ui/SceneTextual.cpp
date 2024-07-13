@@ -95,6 +95,7 @@ static QString dehtml(QString ifx) {
 static QString lineToHtml(QString line, QSet<QString> const &allnames) {
   /* Make sure this logic is copied in SvgExporter::writeTextualLine  */
   QRegularExpression minus("(^|(?<=\\s))-($|(?=[\\s.0-9]))");
+  line.replace(minus, "−");
   QStringList bits;
   QString bit;
   bool inword = false;
@@ -117,7 +118,6 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
   if (bit != "")
     bits += bit;
 
-
   QRegularExpression presym("[*/+−=]");
   QRegularExpression postsym("[*/+−=_^]");
   QList<bool> mathcontext;
@@ -138,7 +138,6 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
     bit.replace("&", "&amp;");
     bit.replace("<", "&lt;");
     bit.replace(">", "&gt;");
-    bit.replace(minus, "−");
     if (allnames.contains(bit)) {
       QString pfx = PartNumbering::prefix(bit);
       QString sfx = bit.mid(pfx.size());
@@ -198,6 +197,7 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
   }
   if (html.endsWith(" "))
     html = html.left(html.length() - 1) + "&nbsp;";
+  qDebug() << "hmtl" << html;
   return html;
 }
 
