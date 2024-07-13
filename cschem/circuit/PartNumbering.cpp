@@ -55,12 +55,8 @@ QString PartNumbering::nameToHtml(QString name) {
 }
 
 QString PartNumbering::prettifyMinus(QString value) {
-  int N = value.size();
-  for (int n=0; n<N; n++) {
-    if (value[n]=='-') 
-      if (n==0 || !value[n-1].isLetter() || n==N-1 ||!value[n+1].isLetter())
-        value = value.left(n) + "−" + value.mid(n+1);
-  }
+  QRegularExpression minus("(^|(?<=\\s))-($|(?=[\\s.0-9]))");
+  value.replace(minus, "−");
   return value;
 }
 
