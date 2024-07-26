@@ -633,7 +633,7 @@ void MWData::about() {
   QString vsn = Version::toString();
   QMessageBox::about(mw, "About CPCB",
 		     me + " " + vsn
-		     + "<p>" + "(C) 2018–2022 Daniel A. Wagenaar\n"
+		     + "<p>" + "(C) 2018–2024 Daniel A. Wagenaar\n"
 		     + "<p>" + me + " is a program for printed circuit board  layout. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
 		     + "<p>" + me + " is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
 		     + "<p>" + me + " is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"
