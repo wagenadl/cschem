@@ -13,6 +13,17 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
+<style type="text/css">
+	@import url('https://fonts.googleapis.com/css?family=Lato');
+	.st0{fill:#ECF0F1;}
+	.st1{fill:none;}
+	.st2{fill:#34495E;stroke:#34495E;stroke-width:0.25;stroke-miterlimit:10;}
+	.st3{font-family:'Lato', sans-serif;}
+	.st4{font-size:35px;}
+	.st5{fill:none;stroke:#34495E;stroke-width:3;stroke-miterlimit:10;}
+	.st6{font-weight: 'lighter';}
+	.st7{fill:#34495E;}
+</style>  
   <sodipodi:namedview
      id="namedview704"
      pagecolor="#ffffff"
