@@ -75,14 +75,22 @@ public:
     setTransformationAnchor(anchor); 
   }
   virtual void keyPressEvent(QKeyEvent *e) override {
+    QGraphicsView::keyPressEvent(e);
+    /*
+    // This does not work, because bizarrely, press and release is
+    // reported as press. a second press and release is reported as release.
+    qDebug() << "KeyPress" << e->key() << int(Qt::Key_Alt);
     if (e->key()==Qt::Key_Alt)
         setDragMode(QGraphicsView::ScrollHandDrag);
-    QGraphicsView::keyPressEvent(e);
+    */
   }
   virtual void keyReleaseEvent(QKeyEvent *e) override {
+    QGraphicsView::keyReleaseEvent(e);
+    /*
+    qDebug() << "KeyRelease" << e->key() << int(Qt::Key_Alt);
     if (e->key()==Qt::Key_Alt)
         setDragMode(QGraphicsView::NoDrag);
-    QGraphicsView::keyReleaseEvent(e);
+    */
   }
 };
 
