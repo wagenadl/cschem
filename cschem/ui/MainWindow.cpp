@@ -51,7 +51,7 @@ public:
        zooming with [control]+[+/-].
        Zooming with [control]+[scroll wheel]
        is always relative to mouse position. */
-    setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    setTransformationAnchor(QGraphicsView::NoAnchor);
   }
   virtual ~MWView() { }
   virtual void wheelEvent(QWheelEvent *e) override {
@@ -146,7 +146,6 @@ void MWData::fitView() {
   w = br.width();
   if (h < H) 
     br = QRectF(QPointF(br.left(), br.top() - (H-h)/2), QSizeF(w, H));
-  //qDebug() << "fitview" << br << W << w;
   if (view->width() < 300 || view->height() < 300) {
     // tiny window, let's be reasonable
     view->setTransform(QTransform());
@@ -569,6 +568,7 @@ bool MainWindow::load(QString fn) {
   setWindowTitle(d->filename);
   d->lastdir = fi.dir().absolutePath();
   setStatusMessage(tr("Loaded “%1”").arg(fn));
+  d->fitView();
   return true;
 }
 
@@ -652,7 +652,6 @@ void MainWindow::removeDanglingAction() {
 }
 
 void MainWindow::plonk(QString sym, QString pop) {
-  //qDebug() << "mw plink" << sym << pop;
   d->scene->plonk(sym,
                   d->view->mapToScene(QPoint(d->view->width()/2,
                                                   d->view->height()/2)),
@@ -895,4 +894,7 @@ void MainWindow::lvhover(QString typ, QString pop) {
 
 void MainWindow::lvunhover() {
   setStatusMessage("");
+}
+
+void MainWindow::showEvent(QShowEvent *) {
 }

@@ -61,6 +61,7 @@ private slots:
   void selectionFromPartList();
 protected:
   void resizeEvent(QResizeEvent *) override;
+  void showEvent(QShowEvent *) override;
   void closeEvent(QCloseEvent *) override;
 private:
   class MWData *d;

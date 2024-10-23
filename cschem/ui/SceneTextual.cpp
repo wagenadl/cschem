@@ -197,7 +197,7 @@ static QString lineToHtml(QString line, QSet<QString> const &allnames) {
   }
   if (html.endsWith(" "))
     html = html.left(html.length() - 1) + "&nbsp;";
-  qDebug() << "hmtl" << html;
+  //qDebug() << "hmtl" << html;
   return html;
 }
 
