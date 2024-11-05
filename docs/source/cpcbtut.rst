@@ -242,7 +242,7 @@ Tidying up
 
 Let's spend a few minutes tidying up the design by pulling things a
 little closer together. I also like to have mounting holes in my PCBs,
-so I press “F3” for “Hole” mode (or clicking the button [#f1]_), and set the
+so I press “F3” for “Hole” mode (or click the button [#f1]_), and set the
 diameter to 0.125 inch (good for US #4-40 screws or M3 alike).
 
 Let's place some identifying text on the board as well, by pressing
@@ -321,13 +321,11 @@ not a given in this industry.)
 
 .. rubric:: Footnotes
 
-.. [#f1] In this text, it is easier to write “F3” than to describe the
-         appearance of the corresponding button. So please bear with
-         me, and tolerate the use of the key shortcut, if only to make
-         the button flash so it becomes clear what I am talking
-         about. If you like key shortcuts: The assignments are
-         actually relatively easy to remember: “F1”, “F2”, etc.,
+.. [#f1] You can control CPCB fully with the mouse. Keyboard shortcuts
+         are available for most actions. The various tool buttons are
+         activated by function and number keys: “F1”, “F2”, etc.,
          activate the editing mode buttons, with the order of the
-         buttons on the screen matching the order of the keys on your
-         keyboard; “1”, “2”, etc., select layers; Ctrl+1, Ctrl+2,
-         etc., toggle layer visibility.
+         buttons on the screen matching the order of the keys on
+         typical keyboards; “1”, “2”, etc., select layers; Ctrl+1,
+         Ctrl+2, etc., toggle layer visibility. Other shortcuts are
+         shown in the menus.

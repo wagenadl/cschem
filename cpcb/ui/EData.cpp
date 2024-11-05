@@ -804,11 +804,14 @@ void EData::releaseMoving(Point p) {
     Object &obj(here.object(id));
     if (selection.contains(id)) {
       if (obj.isTrace()) {
+        uc.realize();
         Trace &t = obj.asTrace();
         if (!stuckpts[t.layer].contains(t.p1))
           t.p1 += movingdelta;
         if (!stuckpts[t.layer].contains(t.p2))
           t.p2 += movingdelta;
+        if (t.p1==t.p2)
+          here.remove(id);
       } else {
         obj.translate(movingdelta);
       }
@@ -823,6 +826,8 @@ void EData::releaseMoving(Point p) {
 	   || purepts[t.layer].contains(t.p2))
           && !stuckpts[t.layer].contains(t.p2))
 	t.p2 += movingdelta;
+      if (t.p1==t.p2)
+        here.remove(id);
     }
   }
 

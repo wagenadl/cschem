@@ -813,7 +813,12 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
       } else {
         Object o;
         s >> o;
-        t.insert(o);
+        if (o.isTrace()) {
+          if (o.asTrace().isValid())
+            t.insert(o);
+        } else {
+          t.insert(o);
+        }
       }
     } else if (s.isEndElement()) {
       break;

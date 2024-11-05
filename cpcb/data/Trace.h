@@ -18,7 +18,7 @@ public:
   bool noclear;
 public:
   Trace();
-  bool isValid() const { return layer!=Layer::Invalid; }
+  bool isValid() const { return layer!=Layer::Invalid && p1!=p2; }
   Rect boundingRect() const;
   QPainterPath outlinePath() const;
   bool onP1(Point p, Dim mrg=Dim()) const;

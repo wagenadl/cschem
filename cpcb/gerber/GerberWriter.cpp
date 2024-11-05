@@ -603,6 +603,8 @@ static void writeTraceClearance(GerberFile &out, Board const &board,
     for (Trace const &trc: trcs[lw]) {
       if (trc.noclear)
         continue;
+      if (trc.p1 == trc.p2)
+        continue; // such traces ought not exist
       out << Gerber::point(trc.p1) << "D02*\n";
       out << Gerber::point(trc.p2) << "D01*\n";
     }
@@ -694,6 +696,8 @@ static void writeTraces(GerberFile &out, Gerber::Apertures const &aps,
   for (Dim lw: trcs.keys()) {
     out << aps.select(Gerber::Circ(lw));
     for (Trace const &trc: trcs[lw]) {
+      if (trc.p1 == trc.p2)
+        continue; // this is a hack. such traces should not exist
       out << Gerber::point(trc.p1) << "D02*\n";
       out << Gerber::point(trc.p2) << "D01*\n";
     }
