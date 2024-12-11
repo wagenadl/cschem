@@ -1,4 +1,4 @@
-![CSchem and CPCB - Electronic circuit design and PCB layout](https://github.com/wagenadl/cschem/blob/main/docs/source/banner.svg)
+<img alt="CSchem and CPCB - Electronic circuit design and PCB layout" src="https://github.com/wagenadl/cschem/blob/main/docs/source/banner.svg" width="100%">
 
 ## Introduction
 
