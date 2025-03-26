@@ -1,5 +1,11 @@
 <img alt="CSchem and CPCB - Electronic circuit design and PCB layout" src="https://github.com/wagenadl/cschem/blob/main/docs/source/banner.svg" width="100%">
 
+[![Build Windows Backend](https://github.com/wagenadl/cschem/actions/workflows/winbuild.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/winbuild.yml)
+[![Build Linux Backend](https://github.com/wagenadl/cschem/actions/workflows/build.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/build.yml)
+[![Build documentation](https://github.com/wagenadl/cschem/actions/workflows/documentation.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/documentation.yml)
+[![Upload .exe](https://github.com/wagenadl/cschem/actions/workflows/uploadexe.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/uploadexe.yml)
+[![Upload .deb](https://github.com/wagenadl/cschem/actions/workflows/uploaddeb.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/uploaddeb.yml)
+
 ## Introduction
 
 CSchem and CPCB are a pair of programs for electronic circuit design and

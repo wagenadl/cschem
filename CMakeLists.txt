@@ -81,11 +81,6 @@ target_include_directories(cpcb PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(cpcb PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
 
 ######################################################################
-if (UNIX AND NOT APPLE)
-  add_subdirectory("docs")
-endif()
-
-######################################################################
 # General packaging / installation
 set(CPACK_PACKAGE_VENDOR "Daniel Wagenaar")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CSchem and CPCB")
