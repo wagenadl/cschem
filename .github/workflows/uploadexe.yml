@@ -34,7 +34,7 @@ jobs:
       - name: Upload .exe
         uses: softprops/action-gh-release@v2
         with:
-          files: build/QPlot*exe
+          files: build/CSChem*exe
           token: ${{github.TOKEN}}
                   
     
