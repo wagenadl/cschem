@@ -34,7 +34,7 @@ jobs:
       - name: Upload .exe
         uses: softprops/action-gh-release@v2
         with:
-          files: build/CSChem*exe
+          files: build/CSchem*exe
           token: ${{github.TOKEN}}
                   
     
