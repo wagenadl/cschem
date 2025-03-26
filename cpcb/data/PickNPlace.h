@@ -5,12 +5,13 @@
 #define PICKNPLACE_H
 
 #include "Group.h"
+#include "Layout.h"
 #include "circuit/Circuit.h"
 
 class PNPLine {
 public:
   PNPLine();
-  PNPLine(Group const &g);
+  PNPLine(Group const &g, Board const &board);
   void augment(Circuit const &circuit);
   bool isValid() const;
   QStringList toStringList() const;
@@ -36,7 +37,7 @@ public:
   };
 public:
   PickNPlace();
-  PickNPlace(Group const &root, Scope scope=Scope::SMTOnly);
+  PickNPlace(Layout const &layout, Scope scope=Scope::SMTOnly);
   void augment(Circuit const &circuit);
   QList<QStringList> toList() const;
   bool saveCSV(QString fn) const;

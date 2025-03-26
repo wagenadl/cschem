@@ -95,7 +95,7 @@ bool ExportDialog::saveAccordingly(Layout const &pcblayout,
     if (!saveBOM(bom))
       return false;
 
-  PickNPlace pnp(pcblayout.root(),
+  PickNPlace pnp(pcblayout,
                  ui->smtonly->isChecked()
                  ? PickNPlace::Scope::SMTOnly
                  : PickNPlace::Scope::SMTAndThruHole);
