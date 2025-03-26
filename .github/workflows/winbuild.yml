@@ -2,7 +2,7 @@ on:
   push:
     branches: [ "main" ]
 
-name: Build backend on Windows
+name: Build binaries on Windows
 
 
 jobs:

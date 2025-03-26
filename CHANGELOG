@@ -1,3 +1,74 @@
+cschem 0.2.4
+
+  Features:
+
+  - Improved PickNPlace output
+  - New outlines and symbols
+  - Documentation on readthedocs
+  - Improved typography of hyphens and minus signs
+  - Improved zooming and scrolling
+  - New Linear Pattern dialog
+  - New Circular Pattern dialog
+  - Pin order now natural (e.g., "2" before "11")
+  - Command-line SVG export
+  - New dialog to re-link to cschematic on PCB save-as
+  - Added support for bottom silk layer
+  - Automatic vias scaled to trace width
+  - Improved CPCB tracing with orthogonal constraints
+  - Improved "magnetism" in CSchem
+  - New “Revert” menu option
+  - Improved net mismatch tracker to highlight all pins with same name
+
+  Bugfixes:
+
+  - Zero-length traces removed
+  - Improvement to scrolling
+  - Corrected wheelevent handling
+  - Correction to properties bar position labeling
+  - Bugfix to svg output of italics and scripts
+  - Bugfix to filled-plane connections rendering
+  - Bugfix to finding systemwide symbols
+  - Bugfix to touch detection between traces and filled planes
+  - Bugfix to id generation
+  - Bugfix to connection builder in CSchem
+  - CPCB no longer grabs hidden objects in rectangle select
+  - Bugfixes to undo behavior
+  - Improved positioning of containers without pins
+  - Text annotations properly included in cut-and-paste and undo
+
+cschem 0.2.2
+
+  Features:
+
+  - Automatic BOM import to cpcb from cschem
+  - Improved Export dialog
+  - Improved circuit verification
+  - New “Find” function
+  - Better error reporting for invalid symbol files
+  - Improvements to handling different grids
+  - Improved cursor icons
+  - Improved snap-to-trace
+  - Added keyboard shortcuts
+  - Start of trace now snaps to other trace ends [subtle bugs remain]
+  - New Print Preview
+  - New "Recent files" menus
+  - New "Shopping list" export
+  - Proper "BOM" table in CPCB
+  - CPCB groups have editable pkg, partno, notes fields
+
+Bugfixes
+
+  - Bugfix to value import between cschem and cpcb
+  - UI bugfixes in CPCB
+  - Corrected handling of filenames containing "." and " "
+  - Fixed broken container files
+  - Bugfix to grid selector
+  - Bugfix to symbol drag-in
+  - Improvement to UI scaling
+  - Text-only selections now correctly placed upon paste
+  - Selection matched between circuit editor and partlist
+  - Corrected symbol drag-in on Windows
+
 cschem 0.1.6
 
   Features:
