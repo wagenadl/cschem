@@ -71,7 +71,7 @@ QVariant BOM::data(QModelIndex const &index,
     return row.id;
   case Column::Ref:
     if (role==Qt::DisplayRole) 
-      return PartNumbering::nameToHtml(row.ref);
+      return PartNumbering::nameToHtml(row.ref, true);
     else
       return row.ref;
   case Column::Value:

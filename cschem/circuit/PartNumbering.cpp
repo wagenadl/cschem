@@ -44,14 +44,17 @@ bool PartNumbering::initiallyShowName(QString symbol) {
 }
 
 
-QString PartNumbering::nameToHtml(QString name) {
-  if (name.left(1)=="V" || name.left(1)=="I")
-    return "<i>V</i><sub>" + name.mid(1) + "</sub>";
-  else if (isNameWellFormed(name))
+QString PartNumbering::nameToHtml(QString name, bool iscomponent) {
+  if (name.startsWith("V") || name.startsWith("I")) {
+    return "<i>" + name.left(1) + "</i><sub>" + name.mid(1) + "</sub>";
+  } else if (isNameWellFormed(name)) {
     return "<i>" + prefix(name) + "</i>"
       + "<sub>" + cnumber(name) + csuffix(name) + "</sub>";
-  else
+  } else if (iscomponent) {
+    return "<i>" + name.left(1) + "</i><sub>" + name.mid(1) + "</sub>";
+  } else {
     return name;
+  }
 }
 
 QString PartNumbering::prettifyMinus(QString value) {
@@ -76,7 +79,7 @@ QString PartNumbering::prettyValue(QString value, QString name) {
 }
 
  
-static QRegularExpression wfn("^([A-Za-z]+)((\\d+)(.(\\d+))?)?$");
+static QRegularExpression wfn("^([A-Z]|JP)((\\d+)(.(\\d+))?)?$");
 // e.g., "A1.2"
 
 bool PartNumbering::isNameWellFormed(QString name) {
