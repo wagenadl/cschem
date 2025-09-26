@@ -5,7 +5,7 @@
    viewBox="0 0 147.00012 385.00007"
    version="1.1"
    id="svg852"
-   inkscape:version="1.1.2 (1:1.1+202202050950+0a00cf5339)"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
    sodipodi:docname="teensyduino-4_0.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,10 +24,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.9525181"
-     inkscape:cx="40.204493"
-     inkscape:cy="192.57184"
+     inkscape:cx="-13.828297"
+     inkscape:cy="193.084"
      inkscape:document-units="px"
-     inkscape:current-layer="g1585"
+     inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
      fit-margin-top="0"
@@ -35,7 +35,7 @@
      fit-margin-right="0"
      fit-margin-bottom="0"
      inkscape:window-width="1920"
-     inkscape:window-height="1059"
+     inkscape:window-height="1051"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -44,7 +44,9 @@
      inkscape:snap-bbox-midpoints="true"
      inkscape:bbox-paths="true"
      inkscape:document-rotation="0"
-     inkscape:pagecheckerboard="0">
+     inkscape:pagecheckerboard="0"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid1508"
@@ -243,7 +245,7 @@
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#e497e4;fill-opacity:0.470968;fill-rule:nonzero;stroke:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
     <circle
        r="7"
-       inkscape:label="pin:DAC"
+       inkscape:label="pin:D13"
        cy="855.94818"
        cx="1167.8572"
        id="circle1720-2-2"

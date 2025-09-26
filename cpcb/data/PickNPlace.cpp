@@ -14,7 +14,7 @@ PNPLine::PNPLine() {
   valid = false;
 }
 
-PNPLine::PNPLine(Group const &g) {
+PNPLine::PNPLine(Group const &g, Dim boardheight) {
   valid = false;
   ref = g.ref;
   QStringList pins = g.pinNames();
@@ -33,6 +33,11 @@ PNPLine::PNPLine(Group const &g) {
   comment = g.attributes.value(Group::Attribute::Notes);
   if (footprint=="")
     valid = false;
+
+  center.y = boardheight - center.y;
+  pin1.y = boardheight - pin1.y;
+  bbox.top = boardheight - bbox.top - bbox.height; // is that right?
+  
 }
 
 void PNPLine::augment(Circuit const &circuit) {
@@ -82,14 +87,14 @@ QString PNPLine::dimToString(Dim x) {
 PickNPlace::PickNPlace() {
 }
 
-PickNPlace::PickNPlace(Group const &root, PickNPlace::Scope scope) {
+PickNPlace::PickNPlace(Group const &root, Dim boardheight, PickNPlace::Scope scope) {
   for (int id: root.keys()) {
     Object const &obj = root.object(id);
     if (!obj.isGroup())
       continue;
     Group const &g(obj.asGroup());
     if (scope==Scope::SMTAndThruHole || !g.hasHoles()) {
-      PNPLine line(g);
+      PNPLine line(g, boardheight);
       if (line.isValid())
         lines << line;
       else

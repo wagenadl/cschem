@@ -19,7 +19,7 @@ namespace CSV {
       }
       res += "\n";
     }
-    return res;
+    return res.replace("µ", "u");
   }
 
   QList<QStringList> decode(QString csv) {

@@ -10,7 +10,7 @@
 namespace Paths {
   static QDir installPath;
 
-  void setExecutablePath(QString s) {
+  void setExecutablePath(QString /*s*/) {
     //QFileInfo exe(s);
     //QDir dir = exe.dir();
     QString appdir = QCoreApplication::applicationDirPath();

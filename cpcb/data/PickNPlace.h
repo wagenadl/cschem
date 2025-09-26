@@ -10,7 +10,7 @@
 class PNPLine {
 public:
   PNPLine();
-  PNPLine(Group const &g);
+  PNPLine(Group const &g, Dim boardheight);
   void augment(Circuit const &circuit);
   bool isValid() const;
   QStringList toStringList() const;
@@ -36,7 +36,7 @@ public:
   };
 public:
   PickNPlace();
-  PickNPlace(Group const &root, Scope scope=Scope::SMTOnly);
+  PickNPlace(Group const &root, Dim boardheight, Scope scope=Scope::SMTOnly);
   void augment(Circuit const &circuit);
   QList<QStringList> toList() const;
   bool saveCSV(QString fn) const;
