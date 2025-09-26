@@ -51,7 +51,10 @@ QString PartNumbering::nameToHtml(QString name, bool iscomponent) {
     return "<i>" + prefix(name) + "</i>"
       + "<sub>" + cnumber(name) + csuffix(name) + "</sub>";
   } else if (iscomponent) {
-    return "<i>" + name.left(1) + "</i><sub>" + name.mid(1) + "</sub>";
+    int imid = 1;
+    while (imid < name.size() && name[imid].isPunct())
+      imid ++;
+    return "<i>" + name.left(imid) + "</i><sub>" + name.mid(imid) + "</sub>";
   } else {
     return name;
   }
