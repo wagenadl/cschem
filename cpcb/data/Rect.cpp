@@ -168,3 +168,8 @@ Rect Rect::translated(Point const &dxy) const {
   return r;
 }
 
+Rect Rect::flippedUpDown(Dim y) const {
+  Rect r = *this;
+  r.top = 2 * y - (top + height);
+  return r;
+}

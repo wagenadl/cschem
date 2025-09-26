@@ -9,7 +9,7 @@
 class PartNumbering {
 public:
   static QString abbreviation(QString symbol);
-  static QString nameToHtml(QString name);
+  static QString nameToHtml(QString name, bool iscomponent);
   static QString prettyValue(QString value, QString name="");
   static bool initiallyShowValue(QString symbol);
   static bool initiallyShowName(QString symbol);

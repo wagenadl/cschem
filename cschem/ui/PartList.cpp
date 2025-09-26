@@ -46,7 +46,8 @@ QVariant PartList::data(QModelIndex const &index,
     return elt.id;
   case Column::Name:
     if (role==Qt::DisplayRole) 
-      return PartNumbering::nameToHtml(elt.name);
+      return PartNumbering::nameToHtml(elt.name,
+                                 elt.type==Element::Type::Component);
     else
       return elt.name;
   case Column::Value:

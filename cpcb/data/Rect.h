@@ -36,6 +36,7 @@ public:
   Point topRight() const;
   Point bottomLeft() const;
   Point bottomRight() const;
+  Rect flippedUpDown(Dim y) const;
 };
 
 QDebug operator<<(QDebug, Rect const &);

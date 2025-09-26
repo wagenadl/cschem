@@ -6,7 +6,7 @@
    height="87.500031"
    width="98.000046"
    sodipodi:docname="LDO-ena.svg"
-   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   inkscape:version="1.3 (1:1.3+202307231459+0e150ed6c4)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,8 +23,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1051"
+     inkscape:window-width="3840"
+     inkscape:window-height="2131"
      id="namedview1501"
      showgrid="true"
      inkscape:snap-smooth-nodes="false"
@@ -32,8 +32,8 @@
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:zoom="14.255273"
-     inkscape:cx="39.634457"
-     inkscape:cy="56.189734"
+     inkscape:cx="42.229987"
+     inkscape:cy="44.299397"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -85,20 +85,7 @@
         <dc:description>A library of SVG symbols to be used in electric and electronic circuit diagrams in Wikimedia Projects.</dc:description>
         <dc:contributor>
           <cc:Agent>
-            <dc:title>Filip Dominec (https://commons.wikimedia.org/wiki/User:FDominec)
-Omegatron (https://commons.wikimedia.org/wiki/User:Omegatron)
-WvBraun (https://commons.wikimedia.org/wiki/User:WvBraun)
-Zedh (https://commons.wikimedia.org/wiki/User:Zedh)
-Rainglasz (see: Wikimedia Commons)
-Guruleninn (see: Wikimedia Commons)
-WarX (https://commons.wikimedia.org/wiki/User:WarX)
-Spuzzdawg~commonswiki (see: Wikimedia Commons)
-Sunspeanzler (https://commons.wikimedia.org/wiki/User:Sunspeanzler)
-Tlapicka (see: Wikimedia Commons)
-Xorx (https://commons.wikimedia.org/wiki/User:Xorx)
-Pemu (https://commons.wikimedia.org/wiki/User:Pemu)
-mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan.pl/&gt;)
-</dc:title>
+            <dc:title>Filip Dominec (https://commons.wikimedia.org/wiki/User:FDominec)&#10;Omegatron (https://commons.wikimedia.org/wiki/User:Omegatron)&#10;WvBraun (https://commons.wikimedia.org/wiki/User:WvBraun)&#10;Zedh (https://commons.wikimedia.org/wiki/User:Zedh)&#10;Rainglasz (see: Wikimedia Commons)&#10;Guruleninn (see: Wikimedia Commons)&#10;WarX (https://commons.wikimedia.org/wiki/User:WarX)&#10;Spuzzdawg~commonswiki (see: Wikimedia Commons)&#10;Sunspeanzler (https://commons.wikimedia.org/wiki/User:Sunspeanzler)&#10;Tlapicka (see: Wikimedia Commons)&#10;Xorx (https://commons.wikimedia.org/wiki/User:Xorx)&#10;Pemu (https://commons.wikimedia.org/wiki/User:Pemu)&#10;mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan.pl/&gt;)&#10;</dc:title>
           </cc:Agent>
         </dc:contributor>
       </cc:Work>
@@ -127,6 +114,16 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        inkscape:label="">
       <title
          id="title1077">pin:Vin</title>
+    </circle>
+    <circle
+       r="7"
+       cy="95.309959"
+       cx="17.999956"
+       id="path2306-7-6-2"
+       style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:#0014ff;fill-opacity:0.38342;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
+       inkscape:label="">
+      <title
+         id="title1081">pin:adj</title>
     </circle>
     <circle
        r="7"
@@ -190,6 +187,12 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
          d="M 1092,816.19189 V 849"
          style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
       <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path3203-3-6-3"
+         d="m 1113,816.19188 v 18.80815"
+         style="opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
          sodipodi:nodetypes="ccc"
          inkscape:connector-curvature="0"
          id="path3203-3-6-3-7"
@@ -222,6 +225,20 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
            x="1067.3318"
            id="tspan1932-0"
            sodipodi:role="line">Ena</tspan></text>
+      <text
+         id="text1934-1-3"
+         y="811.7439"
+         x="1097.3318"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.3333px;line-height:125%;font-family:Lato;-inkscape-font-specification:'Lato, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           y="811.7439"
+           x="1097.3318"
+           id="tspan1932-0-6"
+           sodipodi:role="line">Adj</tspan></text>
     </g>
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 14.517869,80.111547 3.5,-3.5 3.5,3.5 z"
+       id="path4864" />
   </g>
 </svg>

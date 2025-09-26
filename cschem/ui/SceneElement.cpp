@@ -82,7 +82,8 @@ void SceneElementData::nameTextToWidget() {
     //    name->setHtml("<i>Ref</i>");
     name->setFaint(true);
   } else {
-    name->setHtml(PartNumbering::nameToHtml(txt));
+    name->setHtml(PartNumbering::nameToHtml(txt,
+                              elt.type==Element::Type::Component));
     name->setFaint(false);
   }
   if (name->hasFocus())

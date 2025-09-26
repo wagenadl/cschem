@@ -1,4 +1,10 @@
-![CSchem and CPCB - Electronic circuit design and PCB layout](https://github.com/wagenadl/cschem/blob/main/docs/source/banner.svg)
+<img alt="CSchem and CPCB - Electronic circuit design and PCB layout" src="https://github.com/wagenadl/cschem/blob/main/docs/source/banner.svg" width="100%">
+
+[![Build Windows Binaries](https://github.com/wagenadl/cschem/actions/workflows/winbuild.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/winbuild.yml)
+[![Build Linux Binaries](https://github.com/wagenadl/cschem/actions/workflows/linuxbuild.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/build.yml)
+[![Build documentation](https://app.readthedocs.org/projects/cschem/badge/)](https://app.readthedocs.org/projects/cschem/)
+[![Upload .exe](https://github.com/wagenadl/cschem/actions/workflows/uploadexe.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/uploadexe.yml)
+[![Upload .deb](https://github.com/wagenadl/cschem/actions/workflows/uploaddeb.yml/badge.svg)](https://github.com/wagenadl/cschem/actions/workflows/uploaddeb.yml)
 
 ## Introduction
 

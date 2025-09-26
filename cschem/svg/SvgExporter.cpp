@@ -103,12 +103,17 @@ void SvgExporterData::writeElement(QXmlStreamWriter &sw, Element const &elt) {
     // copy styling from SceneElement::nameTextToWidget
     // and PartNumbering::nameTextToToHtml
     QString name = elt.name;
-    int subidx = (name.left(1)=="V" || name.left(1)=="I") 
-      ? 1
-      : (PartNumbering::isNameWellFormed(name))
-      ? PartNumbering::prefix(name).size()
-      : -1;
-    bool useitalic = subidx>=0;
+    int subidx = -1;
+    if (name.startsWith("V") || name.startsWith("I")) {
+      subidx = 1;
+    } else if (PartNumbering::isNameWellFormed(name)) {
+      subidx = PartNumbering::prefix(name).size();
+    } else if (elt.type == Element::Type::Component) {
+      subidx = 1;
+      while (subidx < name.size() && name[subidx].isPunct())
+        subidx ++;
+    }
+    bool useitalic = subidx > 0;
     QPointF p = elt.namePosition + svgFontDelta();
     sw.writeStartElement("text");
     sw.writeAttribute("style", svgFontStyle(useitalic, false));
