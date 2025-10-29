@@ -39,15 +39,17 @@ QXmlStreamReader &operator>>(QXmlStreamReader &sr, Circuit &c) {
     sr.readNext();
     if (sr.isStartElement()) {
       auto n = sr.name();
-      if (n=="component" || n=="port" || n=="junction") {
+      if (n==QStringLiteral("component")
+          || n==QStringLiteral("port")
+          || n==QStringLiteral("junction")) {
 	Element elt;
 	sr >> elt;
 	c.elements.insert(elt.id, elt);
-      } else if (n=="connection") {
+      } else if (n==QStringLiteral("connection")) {
 	Connection con;
 	sr >> con;
 	c.connections.insert(con.id, con);
-      } else if (n=="text") {
+      } else if (n==QStringLiteral("text")) {
 	Textual txt;
 	sr >> txt;
 	c.textuals.insert(txt.id, txt);

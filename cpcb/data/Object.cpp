@@ -345,37 +345,37 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Object const &o) {
 }
 
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Object &o) {
-  QStringRef name = s.name();
-  if (name=="hole") {
+  auto name = s.name();
+  if (name==QStringLiteral("hole")) {
     Hole t;
     s >> t;
     o = Object(t);
-  } else if (name=="nphole") {
+  } else if (name==QStringLiteral("nphole")) {
     NPHole t;
     s >> t;
     qDebug() << "read nphole" << t;
     o = Object(t);
-  } else if (name=="pad") {
+  } else if (name==QStringLiteral("pad")) {
     Pad t;
     s >> t;
     o = Object(t);
-  } else if (name=="arc") {
+  } else if (name==QStringLiteral("arc")) {
     Arc t;
     s >> t;
     o = Object(t);
-  } else if (name=="text") {
+  } else if (name==QStringLiteral("text")) {
     Text t;
     s >> t;
     o = Object(t);
-  } else if (name=="trace") {
+  } else if (name==QStringLiteral("trace")) {
     Trace t;
     s >> t;
     o = Object(t);
-  } else if (name=="group") {
+  } else if (name==QStringLiteral("group")) {
     Group t;
     s >> t;
     o = Object(t);
-  } else if (name=="plane") {
+  } else if (name==QStringLiteral("plane")) {
     FilledPlane t;
     s >> t;
     o = Object(t);

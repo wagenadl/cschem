@@ -95,11 +95,11 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Board &t) {
     while (!s.atEnd()) {
       s.readNext();
       if (s.isStartElement()) {
-	if (s.name()=="outline")
+	if (s.name()==QStringLiteral("outline"))
 	  readOutline(s, t);
-	else if (s.name()=="options")
+	else if (s.name()==QStringLiteral("options"))
 	  readOptions(s, t);
-	else if (s.name()=="links")
+	else if (s.name()==QStringLiteral("links"))
 	  readLinks(s, t);
 	else
 	  qDebug() << "Unexpected element in <board>: " << s.name();

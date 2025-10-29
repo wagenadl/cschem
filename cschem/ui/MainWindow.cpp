@@ -269,17 +269,17 @@ void MainWindow::createActions() {
   menu->addAction(act);
 
   act = new QAction(tr("&Print…"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
   connect(act, &QAction::triggered, this, &MainWindow::printDialogAction);
   menu->addAction(act);
 
   act = new QAction(tr("Print pre&view…"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_P));
   connect(act, &QAction::triggered, this, &MainWindow::printPreviewAction);
   menu->addAction(act);
 
   act = new QAction(tr("&Export circuit as SVG…"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_E));
   connect(act, &QAction::triggered, this, &MainWindow::exportCircuitAction);
   menu->addAction(act);
 
@@ -288,13 +288,13 @@ void MainWindow::createActions() {
   menu->addAction(act);
 
   act = new QAction(tr("Copy circuit &image to clipboard"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C));
   connect(act, &QAction::triggered, this,
           &MainWindow::circuitImageToClipboardAction);
   menu->addAction(act);
 
   act = new QAction(tr("Copy parts lis&t to clipboard"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
   connect(act, &QAction::triggered,
 	  this, &MainWindow::compressedPartListToClipboardAction);
   menu->addAction(act);
@@ -339,37 +339,37 @@ void MainWindow::createActions() {
 
   act = new QAction(tr("&Rotate clockwise"), this);
   act->setShortcuts(QList<QKeySequence>()
-                    << QKeySequence(Qt::CTRL + Qt::Key_R));
+                    << QKeySequence(Qt::CTRL | Qt::Key_R));
   connect(act, &QAction::triggered, this, &MainWindow::rotateCWAction);
   menu->addAction(act);
 
   act = new QAction(tr("Rotate &anticlockwise"), this);
   act->setShortcuts(QList<QKeySequence>()
-                    << QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+                    << QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_R));
   connect(act, &QAction::triggered, this, &MainWindow::rotateCCWAction);
   menu->addAction(act);
 
   act = new QAction(tr("&Flip"), this);
   act->setShortcuts(QList<QKeySequence>()
-                    << QKeySequence(Qt::CTRL + Qt::Key_F));
+                    << QKeySequence(Qt::CTRL | Qt::Key_F));
   act->setStatusTip(tr("Flip horizontally"));
   connect(act, &QAction::triggered, this, &MainWindow::flipAction);
   menu->addAction(act);
 
-  menu->addAction("Find", [this]() { FindSym(d->scene, this).run(); },
-                  QKeySequence(Qt::Key_Slash));
+  menu->addAction("Find", QKeySequence(Qt::Key_Slash),
+                  [this]() { FindSym(d->scene, this).run(); });
 
   
   menu = menuBar()->addMenu(tr("&Tools"));
   
   act = new QAction(tr("&Open external symbol library"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_O));
   act->setStatusTip(tr("Open folder view onto external symbol library"));
   connect(act, &QAction::triggered, this, &MainWindow::openSymbolLibraryFolder);
   menu->addAction(act);
   
   act = new QAction(tr("Remove &dangling connections"), this);
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_B));
   act->setStatusTip(tr("Cleanup circuit by removing dangling connections"));
   connect(act, &QAction::triggered, this, &MainWindow::removeDanglingAction);
   menu->addAction(act);
@@ -389,7 +389,7 @@ void MainWindow::createActions() {
   act = new QAction(tr("&Zoom in"), this);
   act->setShortcuts(QList<QKeySequence>()
                     << QKeySequence(QKeySequence::ZoomIn)
-		    << QKeySequence(Qt::CTRL + Qt::Key_Equal)
+		    << QKeySequence(Qt::CTRL | Qt::Key_Equal)
 		    << QKeySequence(Qt::Key_Equal)
 		    << QKeySequence(Qt::Key_Plus));
   act->setStatusTip(tr("Zoom in"));
@@ -406,20 +406,20 @@ void MainWindow::createActions() {
 
   act = new QAction(tr("Zoom to &fit"), this);
   act->setShortcuts(QList<QKeySequence>()
-                    << QKeySequence(Qt::CTRL + Qt::Key_0)
+                    << QKeySequence(Qt::CTRL | Qt::Key_0)
                     << QKeySequence(Qt::Key_0));
   connect(act, &QAction::triggered, [this]() { d->fitView(); });
   menu->addAction(act);
   
   act = new QAction(tr("&Library"), this);
   act->setStatusTip(tr("Show/hide library pane"));
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_L));
   connect(act, &QAction::triggered, this, &MainWindow::showLibrary);
   menu->addAction(act);
 
   act = new QAction(tr("&Parts List"), this);
   act->setStatusTip(tr("Show/hide parts list"));
-  act->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+  act->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_L));
   connect(act, &QAction::triggered, this, &MainWindow::showPartsList);
   menu->addAction(act);
 
@@ -618,13 +618,20 @@ void MainWindow::setStatusMessage(QString msg) {
 void MainWindow::aboutAction() {
   QString me = "<b>" + Style::programName() + "</b>";
   QString vsn = Style::versionName();
-  QMessageBox::about(0, "About " + Style::programName(),
-                     me + " " + vsn
-                     + "<p>" + "(C) 2018–2024 Daniel A. Wagenaar\n"
-                     + "<p>" + me + " is a program for electronic circuit layout with high-quality SVG export. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
-                     + "<p>" + me + " is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
-                     + "<p>" + me + " is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"
-                     + "<p>" + "You should have received a copy of the GNU General Public License along with this program. If not, see <a href=\"http://www.gnu.org/licenses/gpl-3.0.en.html\">www.gnu.org/licenses/gpl-3.0.en.html</a>.");
+  QString txt = me + " " + vsn
+    + "<p>" + "(C) 2018–2025 Daniel A. Wagenaar\n"
+    + "<p>" + me + " is a program for electronic circuit layout with high-quality SVG export. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
+    + "<p>" + me + " is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
+    + "<p>" + me + " is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"
+    + "<p>" + "You should have received a copy of the GNU General Public License along with this program. If not, see <a href=\"http://www.gnu.org/licenses/gpl-3.0.en.html\">www.gnu.org/licenses/gpl-3.0.en.html</a>.";
+  QPixmap pm = QPixmap(":/cschem.png");
+  pm.setDevicePixelRatio(2);
+  QMessageBox box;
+  box.setWindowTitle("About " + Style::programName());
+  box.setTextFormat(Qt::RichText);
+  box.setText(txt);
+  box.setIconPixmap(pm);
+  box.exec();
 }
 
 void MainWindow::copyAction() {

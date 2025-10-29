@@ -85,12 +85,12 @@ QString Element::symbol() const {
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Element &c) {
   c = Element();
-  QStringRef name = sr.name();
-  if (name=="component")
+  auto name = sr.name();
+  if (name==QStringLiteral("component"))
     c.type = Element::Type::Component;
-  else if (name=="port")
+  else if (name==QStringLiteral("port"))
     c.type = Element::Type::Port;
-  else if (name=="junction")
+  else if (name==QStringLiteral("junction"))
     c.type = Element::Type::Junction;
   else
     c.type = Element::Type::Invalid;

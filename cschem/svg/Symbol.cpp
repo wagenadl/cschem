@@ -224,7 +224,7 @@ Symbol Symbol::load(QString svgfn) {
   int groupcount = 0;
   while (!sr.atEnd()) {
     sr.readNext();
-    if (sr.isStartElement() && sr.name()=="svg") {
+    if (sr.isStartElement() && sr.name()==QStringLiteral("svg")) {
       XmlElement svg(sr);
       groupcount = tryGetGroup(svg, sym, name);
     }

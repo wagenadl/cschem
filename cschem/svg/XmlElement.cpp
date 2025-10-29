@@ -95,7 +95,7 @@ void XmlElement::writeStartElement(QXmlStreamWriter &dst) const {
   dst.writeStartElement(d->name);
   dst.writeAttributes(d->attributes);
   for (auto nsd: d->namespaceDeclarations) {
-    if (nsd.prefix()=="") {
+    if (nsd.prefix().isEmpty()) {
       dst.writeDefaultNamespace(nsd.namespaceUri().toString());
     } else {
       dst.writeNamespace(nsd.namespaceUri().toString(), nsd.prefix().toString());

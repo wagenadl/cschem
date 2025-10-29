@@ -70,7 +70,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
     t.layer = Layer(a.value("l").toInt());
   else
     t.layer = Layer::Invalid;
-  t.fpcon = a.value("fp") != 0;
+  t.fpcon = a.value("fp").toInt() != 0;
   t.noclear = a.value("noclear").toInt() != 0;
   t.ref = a.value("ref").toString();
   t.rota = FreeRotation(a.value("rot").toInt());

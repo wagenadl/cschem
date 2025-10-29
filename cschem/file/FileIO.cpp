@@ -14,7 +14,7 @@ namespace FileIO {
       QXmlStreamReader sr(&file);
       while (!sr.atEnd()) {
         sr.readNext();
-        if (sr.isStartElement() && sr.name() == "cschem")
+        if (sr.isStartElement() && sr.name() == QStringLiteral("cschem"))
           return Schem(sr);
       }
     }

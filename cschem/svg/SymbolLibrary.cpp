@@ -5,6 +5,7 @@
 #include <QSvgRenderer>
 #include <math.h>
 #include <QFile>
+#include <QPolygonF>
 
 SymbolLibrary::SymbolLibrary() {
 }
@@ -24,7 +25,7 @@ void SymbolLibrary::merge(QString fn) {
   QXmlStreamReader sr(&file);
   while (!sr.atEnd()) {
     sr.readNext();
-    if (sr.isStartElement() && sr.name()=="svg") 
+    if (sr.isStartElement() && sr.name()==QStringLiteral("svg")) 
       merge(sr);
   }
 }

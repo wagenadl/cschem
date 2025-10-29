@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.11.0)
 
 ######################################################################
 # Set the project name and version
-project(CSchem VERSION 0.2.4)
+project(CSchem VERSION 0.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net/cschem")
 
 ######################################################################
@@ -29,7 +29,7 @@ endif()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt5 COMPONENTS Widgets Svg PrintSupport REQUIRED)
+find_package(Qt6 COMPONENTS Widgets Svg SvgWidgets PrintSupport REQUIRED)
 
 ######################################################################
 # Add the executables
@@ -40,11 +40,12 @@ include(cschem/CMakeLists.txt)
 include(cpcb/CMakeLists.txt)
 
 # Libraries to link to - Qt must be mentioned
-target_link_libraries(cschem Qt5::Widgets)
-target_link_libraries(cschem Qt5::Svg)
-target_link_libraries(cschem Qt5::PrintSupport)
-target_link_libraries(cpcb Qt5::Widgets)
-target_link_libraries(cpcb Qt5::Svg)
+target_link_libraries(cschem Qt6::Widgets)
+target_link_libraries(cschem Qt6::Svg)
+target_link_libraries(cschem Qt6::SvgWidgets)
+target_link_libraries(cschem Qt6::PrintSupport)
+target_link_libraries(cpcb Qt6::Widgets)
+target_link_libraries(cpcb Qt6::Svg)
 
 
 if (WIN32)
@@ -57,15 +58,15 @@ if (APPLE)
   set(MACOSX_BUNDLE_ICON_FILE cschem.icns)
   add_custom_command(TARGET cschem POST_BUILD
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
-    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cschem/cschem.icns 
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cschem/cschem.iconset/cschem.icns 
       ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
     COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/symbols
       ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
   )
   add_custom_command(TARGET cpcb POST_BUILD
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
-    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cpcb/cpcb.icns 
-      ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources/cschem.icns
+    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cpcb/cpcb.iconset/cpcb.icns 
+      ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources/cpcb.icns
     COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/pcb-outlines
       ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
   )
@@ -90,12 +91,15 @@ set(CPACK_PACKAGE_EXECUTABLES "cschem;CSchem")
 
 if (WIN32)
   # NSIS packaging - to be updated
-  include(WinPack.CMakeLists.txt)
+  include(tools/WinPack.CMakeLists.txt)
+  include(CPack)
+elseif (APPLE)
+  include(tools/MacDMG.CMakeLists.txt)
 elseif (UNIX)
-  include(UnixInstall.CMakeLists.txt)
-  include(DebPack.CMakeLists.txt)
+  include(tools/UnixInstall.CMakeLists.txt)
+  include(tools/DebPack.CMakeLists.txt)
+  include(CPack)
 endif()
 
 # Packaging
-include(CPack)
 

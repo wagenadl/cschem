@@ -1,0 +1,15 @@
+find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
+
+add_custom_target(dmg DEPENDS cschem.dmg)
+
+add_custom_command(OUTPUT cschem.dmg
+    DEPENDS cschem.app/Contents/MacOS/cschem
+    COMMAND "${MACDEPLOYQT_EXECUTABLE}" cschem.app
+       -codesign=9GKW8J7LXY 
+       -always-overwrite
+    COMMAND "${MACDEPLOYQT_EXECUTABLE}" cpcb.app
+       -codesign=9GKW8J7LXY 
+       -always-overwrite
+#    COMMAND "hdiutil"
+    COMMENT "Running macdeployqt to build cschem.dmg"
+    )

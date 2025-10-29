@@ -27,10 +27,10 @@ Schem::Schem(QXmlStreamReader &src): Schem() {
   while (!src.atEnd()) {
     src.readNext();
     if (src.isStartElement()) {
-      if (src.name()=="circuit") {
+      if (src.name()==QStringLiteral("circuit")) {
         src >> d->circuit;
 	d->valid = d->circuit.isValid();
-      } else if (src.name()=="svg") {
+      } else if (src.name()==QStringLiteral("svg")) {
         d->library.merge(src);
       } else {
         qDebug() << "Unexpected element in cschem: " << src.name();

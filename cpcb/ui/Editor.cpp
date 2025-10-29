@@ -314,7 +314,7 @@ void Editor::keyPressEvent(QKeyEvent *e) {
   }
 }
 
-void Editor::enterEvent(QEvent *) {
+void Editor::enterEvent(QEnterEvent *) {
 }
 
 void Editor::leaveEvent(QEvent *) {

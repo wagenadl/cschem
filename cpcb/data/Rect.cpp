@@ -88,6 +88,10 @@ QDebug operator<<(QDebug d, Rect const &r) {
   return d;
 };
 
+bool Rect::operator==(Rect const &o) const {
+  return left==o.left && top==o.top && width==o.width && height==o.height;
+}
+
 bool Rect::isEmpty() const {
   return height.isNull() || width.isNull();
 }

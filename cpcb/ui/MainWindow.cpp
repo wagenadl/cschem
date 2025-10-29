@@ -631,13 +631,21 @@ bool MWData::saveAsDialog() {
 void MWData::about() {
   QString me = "<b>CPCB</b>";
   QString vsn = Version::toString();
-  QMessageBox::about(mw, "About CPCB",
-		     me + " " + vsn
-		     + "<p>" + "(C) 2018–2024 Daniel A. Wagenaar\n"
-		     + "<p>" + me + " is a program for printed circuit board  layout. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
-		     + "<p>" + me + " is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
-		     + "<p>" + me + " is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"
-		     + "<p>" + "You should have received a copy of the GNU General Public License along with this program. If not, see <a href=\"http://www.gnu.org/licenses/gpl-3.0.en.html\">www.gnu.org/licenses/gpl-3.0.en.html</a>.");
+  QString txt = me + " " + vsn
+    + "<p>" + "(C) 2018–2025 Daniel A. Wagenaar\n"
+    + "<p>" + me + " is a program for printed circuit board  layout. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
+    + "<p>" + me + " is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
+    + "<p>" + me + " is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"
+    + "<p>" + "You should have received a copy of the GNU General Public License along with this program. If not, see <a href=\"http://www.gnu.org/licenses/gpl-3.0.en.html\">www.gnu.org/licenses/gpl-3.0.en.html</a>.";
+  QPixmap pm = QPixmap(":/cpcb.png");
+  pm.setDevicePixelRatio(2);
+  QMessageBox box;
+  box.setWindowTitle("About CPCB");
+  box.setTextFormat(Qt::RichText);
+  box.setText(txt);
+  box.setIconPixmap(pm);
+  box.exec();
+
 }
 
 void MWData::makeParts() {
@@ -689,11 +697,11 @@ void MWData::makeMenus() {
   QAction *a;
   
   auto *file = mb->addMenu("&File");
-  file->addAction("&New", [this]() { newWindow(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_N));
+  file->addAction("&New", QKeySequence(Qt::CTRL | Qt::Key_N),
+                  [this]() { newWindow(); });
 
-  file->addAction("&Open…", [this]() { openDialog(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_O));
+  file->addAction("&Open…", QKeySequence(Qt::CTRL | Qt::Key_O),
+                  [this]() { openDialog(); });
 
   recentfiles = new RecentFiles("cpcb-recent", mw);
   mw->connect(recentfiles, &RecentFiles::selected,
@@ -710,13 +718,13 @@ void MWData::makeMenus() {
           });
   file->addMenu(recentfiles);
   
-  a = file->addAction("&Save", [this]() { saveImmediately(); },
-		      QKeySequence(Qt::CTRL + Qt::Key_S));
+  a = file->addAction("&Save", QKeySequence(Qt::CTRL | Qt::Key_S),
+                      [this]() { saveImmediately(); });
   QObject::connect(editor, &Editor::changedFromSaved,
 		   a, &QAction::setEnabled);
 
-  file->addAction("Save &as…", [this]() { saveAsDialog(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_S));
+  file->addAction("Save &as…", QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_S),
+                  [this]() { saveAsDialog(); });
 
   file->addAction("Re&vert", [this]() { revert(); });
 
@@ -727,180 +735,175 @@ void MWData::makeMenus() {
   file->addAction("&Import BOM from CSV…",
                   [this]() { importBOMDialog(); });
   file->addAction("&Copy PCB image to clipboard",
-                  [this]() { copyPCBImage(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_I));
+                  QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_I),
+                  [this]() { copyPCBImage(); });
 		  
   
   file->addAction("&Quit", []() { QApplication::quit(); });
 
   auto *edit = mb->addMenu("&Edit");
 
-  a = edit->addAction("&Undo", [this]() { editor->undo(); },
-		      QKeySequence(Qt::CTRL + Qt::Key_Z));
+  a = edit->addAction("&Undo", QKeySequence(Qt::CTRL | Qt::Key_Z),
+                      [this]() { editor->undo(); });
   QObject::connect(editor, &Editor::undoAvailable,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = edit->addAction("Redo", [this]() { editor->redo(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z));
+  a = edit->addAction("Redo", QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Z),
+                      [this]() { editor->redo(); });
   QObject::connect(editor, &Editor::redoAvailable,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = edit->addAction("&Cut", [this]() { passthroughSignal("cut"); },
-		      QKeySequence(Qt::CTRL + Qt::Key_X));
+  a = edit->addAction("&Cut", QKeySequence(Qt::CTRL | Qt::Key_X),
+                      [this]() { passthroughSignal("cut"); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = edit->addAction("Cop&y", [this]() { passthroughSignal("copy"); },
-		      QKeySequence(Qt::CTRL + Qt::Key_C));
+  a = edit->addAction("Cop&y", QKeySequence(Qt::CTRL | Qt::Key_C),
+                      [this]() { passthroughSignal("copy"); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  edit->addAction("&Paste", [this]() { passthroughSignal("paste"); },
-		  QKeySequence(Qt::CTRL + Qt::Key_V));
+  edit->addAction("&Paste", QKeySequence(Qt::CTRL | Qt::Key_V),
+                  [this]() { passthroughSignal("paste"); });
 
-  a = edit->addAction("&Delete selected",
-		      [this]() { passthroughSignal("deleet"); },
-		      QKeySequence(Qt::Key_Delete));
+  a = edit->addAction("&Delete selected", QKeySequence(Qt::Key_Delete),
+		      [this]() { passthroughSignal("deleet"); });
   QObject::connect(editor, &Editor::selectionChanged,
                    a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = edit->addAction("Select attached &trace",
-		      [this]() { editor->selectTrace(false); },
-		      QKeySequence(Qt::CTRL + Qt::Key_T));
+  a = edit->addAction("Select attached &trace", QKeySequence(Qt::CTRL | Qt::Key_T),
+		      [this]() { editor->selectTrace(false); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
   a = edit->addAction("Select attached &net",
-		      [this]() { editor->selectTrace(true); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_T));
+                      QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T),
+		      [this]() { editor->selectTrace(true); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
   auto *xforms = edit->addMenu("&Transform");
 
-  a = xforms->addAction("&Rotate clockwise",
-		      [this]() { editor->rotateCW(false, true); },
-		      QKeySequence(Qt::CTRL + Qt::Key_R));
+  a = xforms->addAction("&Rotate clockwise", QKeySequence(Qt::CTRL | Qt::Key_R),
+		      [this]() { editor->rotateCW(false, true); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
   a = xforms->addAction("Rotate clockwise (incl. text)",
-		      [this]() { editor->rotateCW(); },
-		      QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_R));
+                        QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_R),
+                        [this]() { editor->rotateCW(); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
   a = xforms->addAction("Rotate &anticlockwise",
-		      [this]() { editor->rotateCCW(false, true); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_R));
+                        QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_R),
+		      [this]() { editor->rotateCCW(false, true); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
   a = xforms->addAction("Rotate &anticlockwise (incl. text)",
-		      [this]() { editor->rotateCCW(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::ALT + Qt::Key_R));
+                        QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::ALT | Qt::Key_R),
+                        [this]() { editor->rotateCCW(); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = xforms->addAction("Arbitrary rotatio&n…",
-		      [this]() { arbitraryRotation(); },
-		      QKeySequence(Qt::ALT + Qt::Key_R));
+  a = xforms->addAction("Arbitrary rotatio&n…", QKeySequence(Qt::ALT | Qt::Key_R),
+		      [this]() { arbitraryRotation(); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
     
-  a = xforms->addAction("&Flip left–right", [this]() { editor->flipH(false, true); },
-		      QKeySequence(Qt::CTRL + Qt::Key_F));
+  a = xforms->addAction("&Flip left–right", QKeySequence(Qt::CTRL | Qt::Key_F),
+                        [this]() { editor->flipH(false, true); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = xforms->addAction("Flip up–down", [this]() { editor->flipV(false, true); },
-                  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_F));
+  a = xforms->addAction("Flip up–down", QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_F),
+                        [this]() { editor->flipV(false, true); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
 
   a = edit->addAction("Linear pattern",
+                      QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_L),
                       [this]() { LinearPatternDialog::gui(editor,
                                    editor->pcbLayout().board()
-                                     .isEffectivelyMetric(), mw); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_L));
+                                     .isEffectivelyMetric(), mw); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
   a = edit->addAction("Circular pattern",
+                      QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C),
                       [this]() { CircularPatternDialog::gui(editor,
-                                     modebar->isOriginIncremental(), mw); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+                                     modebar->isOriginIncremental(), mw); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
-  a = edit->addAction("&Group", [this]() { editor->formGroup(); },
-		      QKeySequence(Qt::CTRL + Qt::Key_G));
+  a = edit->addAction("&Group", QKeySequence(Qt::CTRL | Qt::Key_G),
+                      [this]() { editor->formGroup(); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  a = edit->addAction("&Ungroup", [this]() { editor->dissolveGroup(); },
-		      QKeySequence(Qt::CTRL + Qt::Key_U));
+  a = edit->addAction("&Ungroup", QKeySequence(Qt::CTRL | Qt::Key_U),
+                      [this]() { editor->dissolveGroup(); });
   QObject::connect(editor, &Editor::selectionIsGroup,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
 
-  a = edit->addAction("&Enter group", [this]() { editor->enterGroup(-1); });
+  a = edit->addAction("&Enter group",
+                      [this]() { editor->enterGroup(-1); });
   QObject::connect(editor, &Editor::selectionIsGroup,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   
-  edit->addAction("Find", [this]() { Find(editor).run(); },
-                  QKeySequence(Qt::Key_Slash));
+  edit->addAction("Find", QKeySequence(Qt::Key_Slash),
+                  [this]() { Find(editor).run(); });
 
-  edit->addAction("Toggle &grid", [this]() { statusbar->toggleGrid(); },
-                  QKeySequence("#"));
-  edit->addAction("Cycle grid", [this]() { statusbar->nextGrid(); },
-                  QKeySequence(Qt::Key_Period));
-  edit->addAction("Reverse cycle grid",
-                  [this]() { statusbar->previousGrid(); },
-                  QKeySequence(Qt::Key_Comma));
-
+  edit->addAction("Toggle &grid", QKeySequence("#"),
+                  [this]() { statusbar->toggleGrid(); });
+  edit->addAction("Cycle grid", QKeySequence(Qt::Key_Period),
+                  [this]() { statusbar->nextGrid(); });
+  edit->addAction("Reverse cycle grid", QKeySequence(Qt::Key_Comma),
+                  [this]() { statusbar->previousGrid(); });
   
   auto *tools = mb->addMenu("&Tools");
-  tools->addAction("&Open library", [this]() { openLibrary(); },
-		  QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Y));
-  tools->addAction("&Insert component…", [this]() { insertComponentDialog(); },
-		   QKeySequence(Qt::CTRL + Qt::Key_I));
-  a = tools->addAction("&Save component…", [this]() { saveComponentDialog(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_G));
+  tools->addAction("&Open library", QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_Y),
+                   [this]() { openLibrary(); });
+  tools->addAction("&Insert component…", QKeySequence(Qt::CTRL | Qt::Key_I),
+                   [this]() { insertComponentDialog(); });
+  a = tools->addAction("&Save component…",
+                       QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_G),
+                       [this]() { saveComponentDialog(); });
   QObject::connect(editor, &Editor::selectionIsGroup,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
   tools->addAction("&Board size…",
 		   [this]() { boardSizeDialog(); });
 		   
-  tools->addAction("Remove &dangling traces",
-		   [this]() { editor->deleteDanglingTraces(); },
-		   QKeySequence(Qt::CTRL + Qt::Key_B));
+  tools->addAction("Remove &dangling traces", QKeySequence(Qt::CTRL | Qt::Key_B),
+		   [this]() { editor->deleteDanglingTraces(); });
 
   tools->addAction("Cleanup &trace intersections",
 		   [this]() { editor->cleanupIntersections(); });
   
-  a = tools->addAction("&Link schematic…", [this]() { linkSchematicDialog(); },
-		  QKeySequence(Qt::CTRL + Qt::Key_L));
+  a = tools->addAction("&Link schematic…", QKeySequence(Qt::CTRL | Qt::Key_L),
+                       [this]() { linkSchematicDialog(); });
   QObject::connect(editor, &Editor::schematicLinked,
 		   a, &QAction::setDisabled);
 
@@ -910,9 +913,8 @@ void MWData::makeMenus() {
   links->setEnabled(false);
   links->addAction("&Open",
                    [this]() { openLinkedSchematic(); });
-  links->addAction("&Unlink",
-                   [this]() { editor->unlinkSchematic(); },
-                   QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U));
+  links->addAction("&Unlink", QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_U),
+                   [this]() { editor->unlinkSchematic(); });
   auto *linkinfo = links->addMenu("&Info");
 
   linklabel = new QLabel(editor->pcbLayout().board().linkedschematic);
@@ -928,9 +930,8 @@ void MWData::makeMenus() {
   linkinfo->addAction(wa);
   
   
-  a = tools->addAction("&Verify nets",
-		      [this]() { verifyNets(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_V));
+  a = tools->addAction("&Verify nets", QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_V),
+		      [this]() { verifyNets(); });
   QObject::connect(editor, &Editor::schematicLinked,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
@@ -938,7 +939,7 @@ void MWData::makeMenus() {
   auto *view = mb->addMenu("&View");
   QAction *act = new QAction("&Scale to fit", mw);
   act->setShortcuts(QList<QKeySequence>()
-                    << QKeySequence(Qt::CTRL + Qt::Key_0)
+                    << QKeySequence(Qt::CTRL | Qt::Key_0)
                     << QKeySequence(Qt::Key_0));
   mw->connect(act, &QAction::triggered, [this]() { editor->scaleToFit(); });
   view->addAction(act);
@@ -946,7 +947,7 @@ void MWData::makeMenus() {
   act = new QAction("Zoom &in", mw);
   act->setShortcuts(QList<QKeySequence>()
                     << QKeySequence(QKeySequence::ZoomIn)
-		    << QKeySequence(Qt::CTRL + Qt::Key_Equal)
+		    << QKeySequence(Qt::CTRL | Qt::Key_Equal)
 		    << QKeySequence(Qt::Key_Equal)
 		    << QKeySequence(Qt::Key_Plus));
   mw->connect(act, &QAction::triggered, [this]() { editor->zoomIn(); });
@@ -959,10 +960,11 @@ void MWData::makeMenus() {
   mw->connect(act, &QAction::triggered, [this]() { editor->zoomOut(); });
   view->addAction(act);
   
-  view->addAction("Show &parts to be placed", [this]() { showParts(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_P));
-  view->addAction("Show &BOM", [this]() { showBOM(); },
-		      QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_B));
+  view->addAction("Show &parts to be placed",
+                  QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_P),
+                  [this]() { showParts(); });
+  view->addAction("Show &BOM", QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_B),
+                  [this]() { showBOM(); });
   
   auto *help = mb->addMenu("&Help");
   help->addAction("&About", [this]() { about(); });

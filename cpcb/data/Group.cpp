@@ -100,7 +100,7 @@ int Group::formSubgroup(QSet<int> const &ids) {
   reftext.fontsize = Dim::fromInch(.05);
   reftext.text = "X?";
   auto reftextmatch = [this](QString txt) {
-    return txt == ref || QRegExp("[A-Z]([0-9]+|\\?)").exactMatch(txt);
+    return txt == ref || QRegularExpression("^[A-Z]([0-9]+|\\?)$").match(txt).hasMatch();
   };
   for (int id: ids) {
     if (contains(id)) {
@@ -704,7 +704,7 @@ bool Group::saveComponent(int id, QString fn, bool forcename) {
 
   while (!sr.atEnd()) {
     sr.readNext();
-    if (sr.isStartElement() && sr.name()=="svg") {
+    if (sr.isStartElement() && sr.name()==QStringLiteral("svg")) {
       sw.writeStartElement("svg");
       sw.writeAttributes(sr.attributes());
       for (auto ns: sr.namespaceDeclarations())
@@ -749,13 +749,13 @@ static int readGroupAndRef(QXmlStreamReader &s, Group &t) {
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
-      if (s.name()=="group") {
+      if (s.name()==QStringLiteral("group")) {
         Object o;
         s >> o;
 	if (o.asGroup().attributes[Group::Attribute::Footprint]=="")
 	  o.asGroup().attributes[Group::Attribute::Footprint] = pkg;
         gid = t.insert(o);
-      } else if (s.name()=="text") {
+      } else if (s.name()==QStringLiteral("text")) {
         Object o;
         s >> o;
         tid = t.insert(o);
@@ -789,7 +789,8 @@ int Group::insertComponent(QString fn) {
     while (!sr.atEnd()) {
       sr.readNext();
       if (sr.isStartElement()) {
-	if (sr.isStartElement() && sr.prefix()=="cpcb" && sr.name()=="part") 
+	if (sr.isStartElement() && sr.prefix()==QStringLiteral("cpcb")
+            && sr.name()==QStringLiteral("part")) 
 	  return readGroupAndRef(sr, *this);
       }
     }
@@ -808,7 +809,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
-      if (s.name()=="gr") {
+      if (s.name()==QStringLiteral("gr")) {
         readGroupAndRef(s, t);
       } else {
         Object o;
