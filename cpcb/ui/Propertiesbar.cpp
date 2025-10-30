@@ -800,6 +800,7 @@ void PBData::hsEdit() {
 }
 
 void PBData::setupUI() {
+  parent->layout()->setContentsMargins(4,4,4,4);
   parent->setStyleSheet("QToolButton:checked { background-color: #ffffff; }"
                         "QLineEdit { padding: 0px 2px 0px 2px; }");
   auto makeGroup = [this](QAction **a) {
