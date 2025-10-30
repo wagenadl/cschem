@@ -116,6 +116,7 @@ void LibViewData::addHeader(QString symbol, QString label) {
 
 LibView::LibView(QWidget *parent): QGraphicsView(parent),
                                    d(new LibViewData(this)) {
+  setBackgroundBrush(Qt::white);
   setScene(d->scene);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

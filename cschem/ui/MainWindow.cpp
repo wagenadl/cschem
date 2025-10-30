@@ -52,6 +52,7 @@ public:
        Zooming with [control]+[scroll wheel]
        is always relative to mouse position. */
     setTransformationAnchor(QGraphicsView::NoAnchor);
+    setBackgroundBrush(Qt::white);
   }
   virtual ~MWView() { }
   virtual void wheelEvent(QWheelEvent *e) override {
