@@ -35,7 +35,6 @@ public:
   void finalizeConnection();
   void startConnectionFromPin(QPointF);
   void startConnectionFromConnection(QPointF);
-  static QRectF minRect();
   void resetSceneRect();
   void growSceneRect(QSet<int> const &eltids);
   QPointF pinPosition(int id, QString pin) const;
@@ -109,9 +108,6 @@ private:
   SceneData *d;
 };
 
-QRectF SceneData::minRect() {
-  return QRectF(-1000, -1000, 2000, 2000);
-}
 
 QPointF SceneData::pinPosition(int id, QString pin) const {
   if (circ().elements.contains(id))
@@ -270,22 +266,24 @@ void SceneData::rebuildAsNeeded(QSet<int> eltids, QSet<int> conids,
   partlist->rebuild();
 }
 
+constexpr int MARGIN = 400;
+
 void SceneData::growSceneRect(QSet<int> const &eltids) {
   QRectF r0;
   for (int id: eltids)
     if  (elts.contains(id))
       r0 |= elts[id]->sceneBoundingRect();
-  r0.adjust(-250, -250, 750, 750);
+  r0.adjust(-MARGIN, -MARGIN, MARGIN, MARGIN);
   scene->setSceneRect(r0 | scene->sceneRect());
 }
 
 void SceneData::resetSceneRect() {
-  QRectF r0 = minRect();
+  QRectF r0;
   for (auto e: elts)
     r0 |= e->sceneBoundingRect();
   for (auto c: conns)
     r0 |= c->sceneBoundingRect();
-  r0.adjust(-250, -250, 750, 750);
+  r0.adjust(-MARGIN, -MARGIN, MARGIN, MARGIN);
   scene->setSceneRect(r0);
 }  
 

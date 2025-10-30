@@ -103,9 +103,7 @@ public:
     partlistview(0), partlistviewdock(0),
     recentfiles(0),
     unsaved(false),
-    recursedepth(0)
-   {
-  }
+    recursedepth(0) { }
 public:
   void fitView();
   void rescale(double);
@@ -133,8 +131,8 @@ void MWData::fitView() {
   QRectF br;
   if (scene)
     br = scene->itemsBoundingRect();
-  double W = 1000;
-  double H = 700;
+  double W = 500;
+  double H = 350;
   if (br.isEmpty())
     br = QRectF(QPointF(-W/2, -H/2), QSizeF(W, H));
   else
@@ -146,6 +144,7 @@ void MWData::fitView() {
   w = br.width();
   if (h < H) 
     br = QRectF(QPointF(br.left(), br.top() - (H-h)/2), QSizeF(w, H));
+  qDebug() << "fitView" << br << w << h << W << h << view->width() << view->height();
   if (view->width() < 300 || view->height() < 300) {
     // tiny window, let's be reasonable
     view->setTransform(QTransform());
@@ -173,6 +172,11 @@ MainWindow::MainWindow(): d(new MWData()) {
   if (h < h0)
     h = h0;
   resize(w, h);
+  qDebug() << "size" << size() << w << h;
+  //  d->fitView();
+  d->view->setTransform(QTransform());
+  d->view->scale(.7, .7);
+  d->view->centerOn(d->scene ? d->scene->itemsBoundingRect().center() : QPointF(0, 0));
 }
 
 void MainWindow::createDocks() {

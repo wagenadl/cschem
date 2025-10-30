@@ -107,7 +107,7 @@ void LibViewData::addHeader(QString symbol, QString label) {
   QGraphicsTextItem *header = new QGraphicsTextItem(label);
   QFont f = header->font();
   f.setStyle(QFont::StyleItalic);
-  f.setPointSize(f.pointSize() * .75);
+  f.setPointSize(f.pointSize() * 1.5);
   header->setFont(f);
   scene->addItem(header);
   headers[symbol] = header;
@@ -202,7 +202,7 @@ void LibView::rebuild() {
   }
 
   d->scene->setSceneRect(r.adjusted(-7, -14, 7, 14));
-  setMinimumWidth(92);
+  setFixedWidth(92);
 }
 
 void LibView::resizeEvent(QResizeEvent *e) {
@@ -213,11 +213,7 @@ void LibView::resizeEvent(QResizeEvent *e) {
 }
 
 void LibView::scale(double x) {
-  return;
-  QGraphicsView::scale(x, x);
-  QRectF r = d->scene->sceneRect();
-  setMinimumWidth(mapFromScene(r.bottomRight()).x()
-		  - mapFromScene(r.topLeft()).x());
+  // no longer supported
 }
 
 LibView::~LibView() {
