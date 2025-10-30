@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="64"
    height="64"
    viewBox="0 0 16.933333 16.933334"
    version="1.1"
    id="svg8"
-   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="IncOrigin.svg">
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="IncOrigin.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -26,21 +26,24 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="10.21875"
-     inkscape:cx="8.9541282"
+     inkscape:cx="-5.4311927"
      inkscape:cy="32"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      units="px"
-     inkscape:window-width="2145"
-     inkscape:window-height="1539"
-     inkscape:window-x="1049"
-     inkscape:window-y="52"
+     inkscape:window-width="1920"
+     inkscape:window-height="1051"
+     inkscape:window-x="438"
+     inkscape:window-y="94"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
      showguides="true"
-     inkscape:guide-bbox="true">
+     inkscape:guide-bbox="true"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid815"
@@ -77,7 +80,7 @@
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />
     <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.0583334;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.05833;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 1.0583333,288.53332 h 5.2916699 m 2.11666,-2.11666 v -5.29167"
        id="path3866-3"
        inkscape:connector-curvature="0"
@@ -89,16 +92,22 @@
        height="1.0583334"
        x="7.9375"
        y="288.00415" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.93429375px;line-height:1.25;font-family:stencilia;-inkscape-font-specification:stencilia;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;stroke-width:0.07000433px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="3.7167842"
-       y="295.88455"
-       id="text1379"><tspan
-         sodipodi:role="line"
-         id="tspan1377"
-         x="3.7167842"
-         y="295.88455"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:7.1605773px;font-family:lato;-inkscape-font-specification:'lato Bold';fill:#ff0000;fill-opacity:1;stroke-width:0.07000433px">INC</tspan></text>
+    <g
+       aria-label="INC"
+       id="text1379"
+       style="font-size:11.9343px;line-height:1.25;font-family:stencilia;-inkscape-font-specification:stencilia;letter-spacing:0px;word-spacing:0px;fill:#ff0000;stroke-width:0.0700043px">
+      <path
+         d="M 5.2598893,295.88455 H 4.2932109 v -5.1771 h 0.9666784 z"
+         style="font-weight:bold;font-size:7.16058px;font-family:lato;-inkscape-font-specification:'lato Bold'"
+         id="path7759" />
+      <path
+         d="m 10.780691,290.70745 v 5.1771 h -0.49408 q -0.114569,0 -0.193335,-0.0358 -0.07519,-0.0394 -0.1467923,-0.12889 l -2.703119,-3.4514 q 0.021482,0.2363 0.021482,0.43679 v 3.1793 H 6.4163177 v -5.1771 h 0.5048209 q 0.060865,0 0.1038284,0.007 0.046544,0.004 0.078766,0.0215 0.035803,0.0143 0.068026,0.0466 0.032223,0.0286 0.071606,0.0788 l 2.7138598,3.46572 q -0.010741,-0.12531 -0.017901,-0.24704 -0.00716,-0.12173 -0.00716,-0.22556 v -3.14708 z"
+         style="font-weight:bold;font-size:7.16058px;font-family:lato;-inkscape-font-specification:'lato Bold'"
+         id="path7761" />
+      <path
+         d="m 15.488774,294.66367 q 0.07877,0 0.139631,0.0609 l 0.379511,0.41173 q -0.315065,0.39025 -0.776923,0.59791 -0.458277,0.20766 -1.102729,0.20766 -0.576427,0 -1.038284,-0.19692 -0.458277,-0.19692 -0.784084,-0.54778 -0.325806,-0.35087 -0.50124,-0.83779 -0.171854,-0.48692 -0.171854,-1.06335 0,-0.58359 0.186175,-1.06692 0.186175,-0.48692 0.522722,-0.83779 0.340128,-0.35087 0.809146,-0.54421 0.469018,-0.19691 1.038284,-0.19691 0.565686,0 1.002481,0.18617 0.440376,0.18618 0.748281,0.48692 l -0.322226,0.44754 q -0.02864,0.043 -0.07519,0.0752 -0.04296,0.0322 -0.121729,0.0322 -0.05371,0 -0.110989,-0.0286 -0.05729,-0.0322 -0.125311,-0.0752 -0.06803,-0.0465 -0.157532,-0.10025 -0.08951,-0.0537 -0.207657,-0.0967 -0.11815,-0.0465 -0.275683,-0.0752 -0.153952,-0.0322 -0.358029,-0.0322 -0.347288,0 -0.637291,0.12531 -0.286423,0.12173 -0.49408,0.35803 -0.207657,0.23272 -0.322226,0.57285 -0.11457,0.33655 -0.11457,0.76976 0,0.4368 0.12173,0.77693 0.12531,0.34012 0.336548,0.57284 0.211237,0.23272 0.49766,0.35803 0.286423,0.12173 0.61581,0.12173 0.196916,0 0.354448,-0.0215 0.161114,-0.0215 0.293584,-0.068 0.136051,-0.0465 0.254201,-0.11815 0.12173,-0.0752 0.239879,-0.18259 0.0358,-0.0322 0.07519,-0.0501 0.03938,-0.0215 0.08235,-0.0215 z"
+         style="font-weight:bold;font-size:7.16058px;font-family:lato;-inkscape-font-specification:'lato Bold'"
+         id="path7763" />
+    </g>
   </g>
 </svg>
