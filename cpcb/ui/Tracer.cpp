@@ -151,7 +151,7 @@ Tracer::~Tracer() {
   delete d;
 }
 
-void Tracer::start(class Point const &p) {
+void Tracer::start(Point const &p) {
   move(p);
   d->tracestart = d->tracecurrent;
   qDebug() << "start" << d->tracestart << d->tracecurrent;

@@ -1032,7 +1032,7 @@ void MWData::makeConnections() {
 		     propbar->setUserOrigin(o);
 		   });
   QObject::connect(modebar, &Modebar::modeChanged,
-		   [this](Mode m) {
+           [](Mode m) {
                      if (m==Mode::PlacePlane) {
                        //qDebug() << "I might make the planes visible now";
                        // statusbar->showPlanes();

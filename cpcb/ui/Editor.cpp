@@ -1298,7 +1298,7 @@ void Editor::dropEvent(QDropEvent *e) {
     int id = QString(md->data(ComponentView::dndformat)).toInt();
     ElementView const *src = ElementView::instance(id);
     Group grp(src->group());
-    Point droppos = Point::fromMils(d->widget2mils.map(e->pos()))
+    Point droppos = Point::fromMils(d->widget2mils.map(e->position().toPoint()))
       .roundedTo(d->layout.board().grid);
     QString ref = src->refText();
     QString pv = src->pvText();
@@ -1321,12 +1321,12 @@ void Editor::dropEvent(QDropEvent *e) {
     QList<QUrl> urls = md->urls();
     bool take = false;
     clearSelection();
-    for (QUrl url: urls) {
+    for (QUrl const &url: urls) {
       if (url.isLocalFile()) {
         QString fn1 = url.toLocalFile();
         if (fn1.toLower().endsWith(".svg"))
           take = insertComponent(fn1,
-			       Point::fromMils(d->widget2mils.map(e->pos())));
+                   Point::fromMils(d->widget2mils.map(e->position().toPoint())));
       }
     }
     if (take) {

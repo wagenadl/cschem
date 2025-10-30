@@ -50,35 +50,35 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
     w->setChecked(true);
     w->setShortcut(seq);
     connect(w, &QToolButton::toggled,
-	    [this, l]() { layerVisibilityEdited(l, layerui[l]->isChecked()); });
+        this, [this, l]() { emit layerVisibilityEdited(l, layerui[l]->isChecked()); });
     addPermanentWidget(w);
   };
-  addlui(Layer::Silk, "Silk", QKeySequence(Qt::CTRL + Qt::Key_1));
-  addlui(Layer::Top, "Top", QKeySequence(Qt::CTRL + Qt::Key_2));
-  addlui(Layer::Bottom, "Bottom", QKeySequence(Qt::CTRL + Qt::Key_3));
-  addlui(Layer::BSilk, "BSilk", QKeySequence(Qt::CTRL + Qt::Key_4));
-  addlui(Layer::Panel, "Panel", QKeySequence(Qt::CTRL + Qt::Key_5));
+  addlui(Layer::Silk, "Silk", QKeySequence(Qt::CTRL | Qt::Key_1));
+  addlui(Layer::Top, "Top", QKeySequence(Qt::CTRL | Qt::Key_2));
+  addlui(Layer::Bottom, "Bottom", QKeySequence(Qt::CTRL | Qt::Key_3));
+  addlui(Layer::BSilk, "BSilk", QKeySequence(Qt::CTRL | Qt::Key_4));
+  addlui(Layer::Panel, "Panel", QKeySequence(Qt::CTRL | Qt::Key_5));
 
   auto *w = new QToolButton;
   planesui = w;
   w->setIcon(QIcon(":icons/Planes.svg"));
   w->setToolTip("Planes visible (Ctrl+7)");
-  w->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_7));
+  w->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_7));
   w->setCheckable(true);
   w->setChecked(true);
   connect(w, &QToolButton::toggled,
-	  [this]() { planesVisibilityEdited(planesui->isChecked()); });
+      this, [this]() { emit planesVisibilityEdited(planesui->isChecked()); });
   addPermanentWidget(w);
 
   w = new QToolButton;
   netsui = w;
   w->setIcon(QIcon(":icons/Nets.svg"));
   w->setToolTip("Nets visible (Ctrl+8)");
-  w->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_8));
+  w->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_8));
   w->setCheckable(true);
   w->setChecked(true);
   connect(w, &QToolButton::toggled,
-	  [this]() { netsVisibilityEdited(netsui->isChecked()); });
+          this, [this]() { emit netsVisibilityEdited(netsui->isChecked()); });
   w->setStyleSheet("QToolButton { margin-right: 8px; }");
   addPermanentWidget(w);
 

@@ -5,16 +5,20 @@
 
 Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   auto addAct2 = [this](Mode m, QString ic, QString lbl, Qt::Key k) {
-    actions[m] = addAction(QIcon(":/icons/"+ic), lbl,
-			   [this, m]() { setMode(m); });
+    QIcon icon(":/icons/" + ic);
+        qDebug() << "icon" << ic << "sizes" << icon.availableSizes();
+    actions[m] = addAction(icon, lbl,
+               this, [this, m]() { setMode(m); });
     actions[m]->setShortcut(QKeySequence(k));
     actions[m]->setCheckable(true);
     actions[m]->setToolTip(lbl + " (" + QKeySequence(k).toString() +")");
     return actions[m];
   };
-  auto addAct = [this, addAct2](Mode m, QString lbl, Qt::Key k) {
+  auto addAct = [addAct2](Mode m, QString lbl, Qt::Key k) {
     return addAct2(m, lbl, lbl, k);
   };
+  qDebug() << "toolbar size" << iconSize();
+  setIconSize(QSize(24, 24));
   m = Mode::Invalid;
   addAct(Mode::Edit, "Edit", Qt::Key_F1);
   addAct(Mode::PlaceTrace, "Trace", Qt::Key_F2);
