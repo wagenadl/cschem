@@ -34,7 +34,9 @@ find_package(Qt6 COMPONENTS Widgets Svg SvgWidgets PrintSupport REQUIRED)
 ######################################################################
 # Add the executables
 add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp)
+set_target_properties(cschem PROPERTIES MACOSX_BUNDLE_ICON_FILE cschem.icns)
 add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp)
+set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_ICON_FILE cpcb.icns)
 configure_file(config.h.in config.h)
 include(cschem/CMakeLists.txt)
 include(cpcb/CMakeLists.txt)
@@ -55,7 +57,7 @@ if (WIN32)
   target_link_libraries(cpcb secur32.lib)
 endif()
 if (APPLE)
-  set(MACOSX_BUNDLE_ICON_FILE cschem.icns)
+  #set(MACOSX_BUNDLE_ICON_FILE cschem.icns)
   add_custom_command(TARGET cschem POST_BUILD
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cschem/cschem.iconset/cschem.icns 

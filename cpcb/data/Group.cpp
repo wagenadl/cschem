@@ -1063,7 +1063,7 @@ bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
   int hole_at_p2 = hole_at(tr.p2);
 
   // find other traces linked at those points
-  auto traces_at = [this, traceid](Point const &p, int excl) {
+  auto traces_at = [this](Point const &p, int excl) {
     QList<int> res;
     for (int id: d->obj.keys()) {
       if (id==excl)

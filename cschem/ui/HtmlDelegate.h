@@ -17,8 +17,8 @@ public:
                             QStyleOptionViewItem const &option,
                             QModelIndex const &index) const override;
   void paint(QPainter *painter, QStyleOptionViewItem const &option,
-             QModelIndex const &index) const;
-  QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const;
+             QModelIndex const &index) const override;
+  QSize sizeHint(QStyleOptionViewItem const &option, QModelIndex const &index) const override;
 };
 
 #endif
