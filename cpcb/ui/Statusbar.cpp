@@ -28,7 +28,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   gridsp->setMode(Expression::Mode::Explicit);
   gridsp->hideTrailingZeros();
   gridui = new QComboBox;
-  gridui->setStyleSheet("QComboBox { padding: 0px 2px 0px 2px; }");
+  gridui->setStyleSheet("QComboBox { padding: 0px 6px 0px 6px; }");
   gridui->setMinimumContentsLength(6);
   gridui->setEditable(true);
   gridui->setInsertPolicy(QComboBox::InsertAtBottom);
