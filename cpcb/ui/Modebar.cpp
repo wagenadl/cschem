@@ -17,7 +17,8 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   auto addAct = [addAct2](Mode m, QString lbl, Qt::Key k) {
     return addAct2(m, lbl, lbl, k);
   };
-  qDebug() << "toolbar size" << iconSize();
+  setFloatable(false);
+  setMovable(false);
   setIconSize(QSize(24, 24));
   m = Mode::Invalid;
   addAct(Mode::Edit, "Edit", Qt::Key_F1);
@@ -47,7 +48,7 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   isconstr = true; // force actual change
   setConstraint(false);
   setAbsInc(false);
-  setStyleSheet("QToolButton:checked { background-color: #ffffcc;}");
+
 }
 
 Modebar::~Modebar() {

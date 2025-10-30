@@ -1062,6 +1062,10 @@ void MWData::fillBars() {
 }
 
 MainWindow::MainWindow(): QMainWindow() {
+  qDebug() << "font" << font().family();
+  setStyleSheet("QWidget { font-family: Sans; font-size: 10.8pt; }"
+                "QToolButton { margin: 1px; padding: 0px; }"
+                "QToolButton:checked { border: 1px solid #888888; border-top-color #666666; border-left-color #666666; margin: 0px; background-color: #ffffcc; }");
   setAttribute(Qt::WA_DeleteOnClose);
   setWindowIcon(QIcon(":/cpcb.png"));
   d = new MWData(this);

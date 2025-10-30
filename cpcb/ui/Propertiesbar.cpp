@@ -800,13 +800,15 @@ void PBData::hsEdit() {
 }
 
 void PBData::setupUI() {
+  parent->setStyleSheet("QToolButton:checked { background-color: #ffffff; }"
+                        "QLineEdit { padding: 0px 2px 0px 2px; }");
   auto makeGroup = [this](QAction **a) {
     Q_ASSERT(parent);
     Q_ASSERT(a);
     QWidget *group = new QWidget;
     auto *lay = new QVBoxLayout;
-    lay->setSpacing(8);
-    lay->setContentsMargins(0, 0, 0, 16);
+    lay->setSpacing(4);
+    lay->setContentsMargins(0, 0, 0, 8);
     group->setLayout(lay);
     *a = parent->addWidget(group);
     return group;
@@ -817,7 +819,7 @@ void PBData::setupUI() {
     Q_ASSERT(group->layout());
     QWidget *container = new QWidget(group);
     auto *lay = new QHBoxLayout;
-    lay->setSpacing(8);
+    lay->setSpacing(2);
     lay->setContentsMargins(0, 0, 0, 0);
     container->setLayout(lay);
     group->layout()->addWidget(container);
@@ -875,26 +877,13 @@ void PBData::setupUI() {
     Q_ASSERT(container);
     Q_ASSERT(container->layout());
     QLabel *s = new QLabel;
-    s->setPixmap(QIcon(":icons/" + icon + ".svg").pixmap(32));
+    s->setPixmap(QIcon(":icons/" + icon + ".svg").pixmap(16));
     s->setToolTip(tip.isEmpty() ? icon : tip);
     container->layout()->addWidget(s);
     return s;
   };
 
-  /*
-  auto makeTextTool = [](QWidget *container, QString text, QString tip="") {
-    Q_ASSERT(container);
-    Q_ASSERT(container->layout());
-    QToolButton *s = new QToolButton;
-    s->setText(text);
-    s->setCheckable(true);
-    if (!tip.isEmpty())
-      s->setToolTip(tip);
-    container->layout()->addWidget(s);
-    return s;
-  };
-  */
-  
+
   auto makeIconTool = [this](QWidget *container, QString icon,
 			     bool chkb=false, bool ae=false, QString tip="",
 			     QKeySequence seq=QKeySequence()) {
@@ -1226,6 +1215,8 @@ void PBData::setupUI() {
 }  
 
 Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) {
+  setFloatable(false);
+  setMovable(false);
   d = new PBData;
   d->parent = this;
   d->editor = editor;

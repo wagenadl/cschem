@@ -18,18 +18,17 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   missingui->hide();
   addWidget(cursorui);
   addWidget(missingui);
-  setStyleSheet("QToolButton:checked { padding: 2px; margin: 2px; background-color: #ffffcc;}");
   setSizeGripEnabled(false);
 
   auto *w1 = new QLabel;
-  w1->setPixmap(QIcon(":icons/Grid.svg").pixmap(cursorui->height()));
+  w1->setPixmap(QIcon(":icons/Grid.svg").pixmap(16)); //cursorui->height()));
   w1->setToolTip("Grid spacing");
   addPermanentWidget(w1);
   gridsp = new DimSpinner;
   gridsp->setMode(Expression::Mode::Explicit);
   gridsp->hideTrailingZeros();
   gridui = new QComboBox;
-  //gridui->setStyleSheet("QComboBox { margin-right: 20px; }");
+  gridui->setStyleSheet("QComboBox { padding: 0px 2px 0px 2px; }");
   gridui->setMinimumContentsLength(6);
   gridui->setEditable(true);
   gridui->setInsertPolicy(QComboBox::InsertAtBottom);
