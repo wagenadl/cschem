@@ -5,16 +5,16 @@ cschem 0.3.0 (November 6, 2025)
   - First build on Mac OS
   - Switched to Qt 6
   - New outlines and symbols
-  - Improved typography for part names
   - Improved pick-n-place files
   - Improved app icons
+  - New main switch to enable/disable saving "additional" fab files
 
   Bugfixes
 
-  - Corrected behavior relating to zero-length traces in CPCB
   - Improved transformation anchor in CSchem
+  - "Unplaced" file no longer saved if "PnP table" not saved
 
-cschem 0.2.4 (July 26, 2024)
+cschem 0.2.4 (Mar 26, 2025)
 
   Features:
 

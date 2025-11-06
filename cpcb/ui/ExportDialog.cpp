@@ -22,6 +22,8 @@ ExportDialog::ExportDialog(QWidget *parent): QDialog(parent) {
   connect(ui->savepnp, &QCheckBox::toggled,
           this, [this](bool x) {
             ui->saveunplaced->setEnabled(x);
+            if (!x)
+              ui->saveunplaced->setChecked(false);
             ui->unplacedfilename->setEnabled(x && ui->saveunplaced->isChecked());
           });
   QSettings stg;
@@ -88,6 +90,9 @@ bool ExportDialog::saveAccordingly(Layout const &pcblayout,
     return false;
   if (!saveGerber(pcblayout))
     return false;
+
+  if (!ui->additionalfiles->isChecked())
+    return true;
 
   BOMTable bom(pcblayout.root());
   bom.augment(schematic.circuit());

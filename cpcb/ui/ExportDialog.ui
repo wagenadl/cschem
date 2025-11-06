@@ -69,7 +69,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_3">
+    <widget class="QGroupBox" name="additionalfiles">
      <property name="font">
       <font>
        <italic>true</italic>
@@ -85,7 +85,7 @@
       <bool>false</bool>
      </property>
      <property name="checkable">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="7" column="0">
