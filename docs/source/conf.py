@@ -24,7 +24,7 @@ copyright = '2023, Daniel A. Wagenaar'
 author = 'Daniel A. Wagenaar'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2'
+release = '0.3.0'
 
 
 # -- General configuration ---------------------------------------------------
