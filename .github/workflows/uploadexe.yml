@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@master
+      - name: 'Install makensis (choco)'
+        run: choco install nsis
       - name: Install CMake
         uses: lukka/get-cmake@latest
       - name: Install Qt
