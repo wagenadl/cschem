@@ -1,4 +1,20 @@
-cschem 0.2.4
+cschem 0.3.0 (November 6, 2025)
+
+  Features
+
+  - First build on Mac OS
+  - Switched to Qt 6
+  - New outlines and symbols
+  - Improved typography for part names
+  - Improved pick-n-place files
+  - Improved app icons
+
+  Bugfixes
+
+  - Corrected behavior relating to zero-length traces in CPCB
+  - Improved transformation anchor in CSchem
+
+cschem 0.2.4 (July 26, 2024)
 
   Features:
 
