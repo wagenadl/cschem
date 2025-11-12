@@ -37,7 +37,8 @@
 #include <QBitmap>
 #include <QPainter>
 #include "ui/RecentFiles.h"
-#include <QMetaMethod> 
+#include <QMetaMethod>
+#include "gerber/SvgExporter.h"
 
 static QMap<QString, MainWindow *> &openFiles() {
   static QMap<QString, MainWindow *> *m = 0;
@@ -78,6 +79,7 @@ public:
   void newWindow();
   void arbitraryRotation();
   bool exportDialog();
+  bool exportSvgDialog();
   bool importBOMDialog();
   bool saveAsDialog();
   bool saveImmediately();
@@ -579,6 +581,39 @@ bool MWData::exportDialog() {
   return dlg.saveAccordingly(editor->pcbLayout(), editor->linkedSchematic());
 }
 
+bool MWData::exportSvgDialog() {
+  if (pwd.isEmpty())
+    pwd = Paths::defaultLocation();
+  QFileDialog dlg;
+  dlg.setWindowTitle("Export layout as svg…");
+  dlg.setAcceptMode(QFileDialog::AcceptSave);
+  dlg.setDefaultSuffix("svg");
+  dlg.setDirectory(pwd);
+  //dlg.setFilter(QDir::AllFiles);
+  dlg.setNameFilter("Scalable vector graphics (*.svg)");
+  if (!filename.isEmpty()) {
+    QFileInfo fi(filename);
+    dlg.selectFile(fi.completeBaseName() + ".svg");
+  }
+  if (!dlg.exec())
+    return false;
+  QStringList fns = dlg.selectedFiles();
+  if (fns.isEmpty())
+    return false;
+
+  pwd = dlg.directory().absolutePath();
+
+  QString fn = fns.first();
+
+  SvgExporter xp;
+  if (!xp.write(editor->pcbLayout(), fn)) {
+    QMessageBox::warning(mw, "CPCB",
+                         "Failed to export svg");
+    return false;
+  }    
+  return true;
+}
+
 bool MWData::importBOMDialog() {
   QString fn = getOpenFilename("csv", "Import BOM…");
   if (fn.isEmpty())
@@ -731,6 +766,9 @@ void MWData::makeMenus() {
   //  auto *fexport = file->addMenu("&Export");
   file->addAction("&Export fabrication files…",
                   [this]() { exportDialog(); });
+
+  file->addAction("Export layout as S&VG…",
+                  [this]() { exportSvgDialog(); });
 
   file->addAction("&Import BOM from CSV…",
                   [this]() { importBOMDialog(); });

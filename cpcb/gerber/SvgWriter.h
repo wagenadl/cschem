@@ -8,6 +8,7 @@
 #include <QFile>
 #include "data/Dim.h"
 #include "data/Rect.h"
+#include "data/Trace.h"
 #include <QColor>
 
 class SvgWriter {
@@ -16,6 +17,8 @@ public:
   ~SvgWriter();
   bool isValid() const;
   SvgWriter &operator<<(QString s);
+  void drawTrace(Point const &p1, Point const &p2, Dim const &width,
+                 QColor const &color);
   void drawRect(Rect const &rect, QColor const &color,
                 Dim width=Dim::fromInch(0.2/96));
   void fillRect(Rect const &rect, QColor color);

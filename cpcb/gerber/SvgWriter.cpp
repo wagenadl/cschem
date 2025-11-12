@@ -69,6 +69,21 @@ QString SvgWriter::color(QColor const &c) {
   return "#" + hexbyte(c.red()) + hexbyte(c.green()) + hexbyte(c.blue());
 }
 
+void SvgWriter::drawTrace(Point const &p1, Point const &p2, Dim const &width,
+                          QColor const &c) {
+  stream << "   <line"
+         << prop("x1", p1.x)
+         << prop("y1", p1.y)
+         << prop("x2", p2.x)
+         << prop("y2", p2.y)
+         << " style=" << '"'
+         << "opacity:1;"
+         << "fill:none;"
+         << "stroke:" << color(c) << ";"
+         << "stroke-width:" << coord(width)
+         << '"' << " />\n";    
+}
+
 void SvgWriter::drawRect(Rect const &rect, QColor const &c,
                          Dim width) {
   stream << "   <rect"
@@ -98,7 +113,7 @@ void SvgWriter::fillRect(Rect const &rect, QColor c) {
 }
 
 void SvgWriter::fillRing(Point const &center, Dim inner, Dim outer,
-                        QColor const &c) {
+                         QColor const &c) {
   QString ro = coord(outer/2);
   QString ri = coord(inner/2);
   stream << "    <path"
