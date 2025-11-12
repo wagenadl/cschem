@@ -41,15 +41,14 @@ void PMWHelper::writeGroup(Group const &g) {
 void PMWHelper::writePad(Pad const &pad) {
   if (pad.layer != Layer::Top)
     return; // don't do anything
-  writer << "<g transform=\"translate("
-         << writer.coord(pad.p.x) << "," << writer.coord(pad.p.y) << "),"
-         << "rotate(" << pad.rota.toString() << ")\">";
+  writer.startGroup(pad.p, pad.rota.degrees());
   Dim x0 = -pad.width/2 + shrinkage;
   Dim y0 = -pad.height/2 + shrinkage;
   Dim x1 = pad.width/2 - shrinkage;
   Dim y1 = pad.height/2 - shrinkage;
-  writer.fillRect(Rect(Point(x0,y0), Point(x1,y1)), QColor(0,0,0));
-  writer << "</g>\n";
+  writer.drawRect(Rect(Point(x0,y0), Point(x1,y1)),
+                  QColor(0,0,0), Dim::fromInch(.25/96));
+  writer.endGroup();
 }
 
 PasteMaskWriter::PasteMaskWriter(): shrinkage(Dim::fromInch(0.005)) {
