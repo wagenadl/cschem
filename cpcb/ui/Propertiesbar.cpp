@@ -472,6 +472,28 @@ void PBData::fillLayer(QSet<int> const &objects, Group const &here) {
 	got = true;
       }
       break;
+    case Object::Type::Arc:
+      if (got) {
+	if (obj.asArc().layer != l) {
+	  l = Layer::Invalid;
+	  break;
+	}
+      } else {
+	l = obj.asArc().layer;
+	got = true;
+      }
+      break;
+    case Object::Type::Plane:
+      if (got) {
+	if (obj.asPlane().layer != l) {
+	  l = Layer::Invalid;
+	  break;
+	}
+      } else {
+	l = obj.asPlane().layer;
+	got = true;
+      }
+      break;
     default:
       break;
     }
@@ -789,10 +811,10 @@ void PBData::hsEdit() {
     }
   }
 
-  // Show layer if we have at least one trace, pad, or text
+  // Show layer if we have at least one trace, pad, text, arc, or plane
   for (int k: objects) {
     Object const &obj(here.object(k));
-    if (obj.isText() || obj.isPad() || obj.isTrace()) {
+    if (obj.isText() || obj.isPad() || obj.isTrace() || obj.isArc() || obj.isPlane()) {
       layera->setEnabled(true);
       break;
     }

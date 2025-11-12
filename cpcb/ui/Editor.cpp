@@ -676,6 +676,12 @@ void Editor::setLayer(Layer l) {
       uc.realize();
       d->currentGroup().object(id).asArc().layer = l;
       break;
+    case Object::Type::Plane:
+      if (l==Layer::Top || l==Layer::Bottom) {
+        uc.realize();
+        d->currentGroup().object(id).asPlane().layer = l;
+      }
+      break;
     default:
       break;
     }
