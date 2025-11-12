@@ -400,6 +400,23 @@ void SvgWriter::renderNPHole(NPHole const &hole) {
 }
 
 void SvgWriter::renderPlane(FilledPlane const &plane) {
+  SvgStyle s;
+  s.fill(layerColor(plane.layer));
+  s.opacity(0.5);
+  SvgPathData pd;
+  bool first = true;
+  for (Point p: plane.perimeter) {
+    if (first)
+      pd.moveTo(p, false);
+    else
+      pd.lineTo(p, false);
+    first = false;
+  }
+  pd.close();
+  stream << "<path"
+         << s.toProp()
+         << pd.toProp()
+         << "/>\n";
 }
 
 
