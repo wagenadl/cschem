@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.11.0)
 
 ######################################################################
 # Set the project name and version
-project(CSchem VERSION 0.3.0)
+project(CSchem VERSION 0.3.2)
 set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net/cschem")
 
 ######################################################################
