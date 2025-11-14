@@ -179,4 +179,30 @@ Segment Hole::slotEnds() const {
   return Segment(p-dp, p+dp);
 }
 
-  
+/*
+Dim Hole::x(Qt::AlignmentFlag a) const {
+  if (a==Qt::AlignLeft)
+    return boundingRect().left();
+  else if (a==Qt::AlignRight)
+    return boundingRect().right();
+  else
+    return p.x;
+}
+
+void Hole::setX(Dim x1, Qt::AlignmentFlag a) {
+  p.x += x1 - x(a);
+}
+
+Dim Hole::y(Qt::AlignmentFlag a) const {
+  if (a==Qt::AlignTop)
+    return boundingRect().top();
+  else if (a==Qt::AlignBottom)
+    return boundingRect().bottom();
+  else
+    return p.y;
+}
+
+void Hole::setY(Dim y1, Qt::AlignmentFlag a) {
+  p.y += y1 - y(a);
+}
+*/

@@ -167,9 +167,14 @@ bool Rect::contains(Point const &p) const {
 
 Rect Rect::translated(Point const &dxy) const {
   Rect r = *this;
-  r.left += dxy.x;
-  r.top += dxy.y;
+  r.translate(dxy);
   return r;
+}
+
+Rect &Rect::translate(Point const &dxy) {
+  left += dxy.x;
+  top += dxy.y;
+  return *this;
 }
 
 Rect Rect::flippedUpDown(Dim y) const {

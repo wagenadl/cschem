@@ -42,7 +42,7 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   auto addlui = [this](Layer l, QString name, QKeySequence seq) {
     auto *w = new QToolButton;
     layerui[l] = w;
-    w->setIcon(QIcon(":icons/" + name + ".svg"));
+    w->setIcon(QIcon(":icons/Layer" + name + ".svg"));
     QString label = (name=="BSilk") ? "Bottom silk" : name;
     w->setToolTip(label + " layer visible (" + seq.toString() + ")");
     w->setCheckable(true);

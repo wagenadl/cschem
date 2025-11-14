@@ -23,6 +23,7 @@ public:
   static Rect fromMils(QRectF const &p);
   bool operator==(Rect const &o) const;
   Rect &normalize();
+  Rect &translate(Point const &p);
   Rect &grow(Dim const &d); // grows by d/2 in all directions
   Rect &operator|=(Rect const &o);
   Rect &operator|=(Point const &p);

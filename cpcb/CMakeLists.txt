@@ -2,6 +2,8 @@
 
 target_include_directories(cpcb PUBLIC cpcb)
 target_include_directories(cpcb PUBLIC cschem)
+target_sources(cpcb PRIVATE cpcb/ui/AlignToggle.h )
+target_sources(cpcb PRIVATE cpcb/ui/AlignToggle.cpp )
 target_sources(cpcb PRIVATE cpcb/data/Arc.h )
 target_sources(cpcb PRIVATE cpcb/data/Board.h )
 target_sources(cpcb PRIVATE cpcb/data/BOMClip.h )
