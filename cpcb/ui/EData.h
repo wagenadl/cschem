@@ -60,7 +60,6 @@ public:
   Prio objectPriority(Object const &obj, Point p, Dim mrg) const;
   NodeID visibleNodeAt(Point p, Dim mrg=Dim()) const;
   NodeID visibleNodeAt(Group const &grp, Point p, Dim mrg) const;
-  void pressOrigin(Point);
   void pressPad(Point);
   void pressArc(Point);
   void pressHole(Point);
@@ -143,7 +142,6 @@ public:
   QTimer *resizeTimer;
   class Tracer *tracer;
   class PlaneEditor *planeeditor;
-  Point userorigin;
   class BOM *bom;
   int undocreatorstackdepth;
 };

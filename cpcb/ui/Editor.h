@@ -36,7 +36,6 @@ public:
   Point hoverPoint() const;
   bool isAsSaved() const;
   double pixelsPerMil() const;
-  Point userOrigin() const;
   class BOM *bom() const;
   QString loadBOM(QString fn); // returns "" if OK, else error string
   Rect selectionBounds() const;
@@ -110,7 +109,6 @@ public slots:
   void cleanupIntersections();
   void setBoardSize(Dim w, Dim h, Board::Shape shp=Board::Shape::Rect);
 signals:
-  void userOriginChanged(Point);
   void insertedPadOrHole();
   void boardChanged(Board const &);
   void hovering(Point);

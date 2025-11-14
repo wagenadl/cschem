@@ -50,8 +50,8 @@
 <file>icons/Arc-90a.svg</file>
 <file>icons/Constrain45.svg</file>
 <file>icons/NoConstrain45.svg</file>
-<file>icons/AbsOrigin.svg</file>
-<file>icons/IncOrigin.svg</file>
+<file>icons/OriginAbs.svg</file>
+<file>icons/OriginInc.svg</file>
 <file>icons/BoardOutline.svg</file>
 <file>icons/NPHole.svg</file>
 <file>icons/CursorCross.svg</file>

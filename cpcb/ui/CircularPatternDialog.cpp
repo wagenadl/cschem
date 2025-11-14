@@ -13,12 +13,12 @@ CircularPatternDialog::~CircularPatternDialog() {
   delete ui;
 }
 
-void CircularPatternDialog::gui(Editor *editor, bool inc, QWidget *parent) {
+void CircularPatternDialog::gui(Editor *editor, Point origin, QWidget *parent) {
   CircularPatternDialog dlg(parent);
-  if (inc)
-    dlg.ui->aroundOrigin->setText("Incremental origin");
-  else
+  if (origin.isNull())
     dlg.ui->aroundOrigin->setText("Absolute origin");
+  else
+    dlg.ui->aroundOrigin->setText("Incremental origin");
   if (!dlg.exec())
     return;
 
@@ -27,13 +27,9 @@ void CircularPatternDialog::gui(Editor *editor, bool inc, QWidget *parent) {
   int count = dlg.ui->count->value();
   bool specific = dlg.ui->spacingSpecific->isChecked(); // else even
   double deg = specific ? dlg.ui->spacing->value() : 360 / count;
-  Point around;
-  if (aroundOrigin) {
-    if (inc)
-      around = editor->userOrigin();
-  } else {
-    around = editor->selectionBounds().center();
-  }
+  Point around = aroundOrigin ? origin
+    : editor->selectionBounds().center();
+
   editor->circularPattern(count, FreeRotation(deg),
                           around, indiv);
 }

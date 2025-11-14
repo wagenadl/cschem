@@ -545,19 +545,6 @@ NodeID EData::visibleNodeAt(Group const &grp, Point p, Dim mrg) const {
   return nid;
 }
 
-void EData::pressOrigin(Point p) {
-  NodeID node = visibleNodeAt(p);
-  Object const &obj(currentGroup().object(node));
-  if (obj.isPad()) 
-    userorigin = obj.asPad().p;
-  else if (obj.isHole()) 
-    userorigin = obj.asHole().p;
-  else if (obj.isArc()) 
-    userorigin = obj.asArc().center;
-  else
-    return;
-  ed->userOriginChanged(userorigin);
-}
 
 EData::Prio EData::objectPriority(Object const &obj, Point p, Dim mrg) const {
   Board const &brd = layout.board();

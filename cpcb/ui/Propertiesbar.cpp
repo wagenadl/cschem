@@ -14,6 +14,7 @@
 #include <QTextEdit>
 #include "data/Object.h"
 #include "AlignToggle.h"
+#include "AbsIncToggle.h"
 #include <QSpinBox>
 
 const Dim minRingWidth(Dim::fromMM(0.3));
@@ -37,6 +38,8 @@ public:
   DimSpinner *y;
   AlignToggle *xalign;
   AlignToggle *yalign;
+  AbsIncToggle *xabsinc;
+  AbsIncToggle *yabsinc;
   
   QWidget *dimg; // group for other dimensions
   QAction *dima; // group for other dimensions
@@ -124,6 +127,7 @@ private:
   void fillLayer(QSet<int> const &objects, Group const &here);
   void fillFontSize(QSet<int> const &objects, Group const &here);    
   void fillGroupProps(QSet<int> const &objects, Group const &here);
+  void clickAbsInc(Qt::Orientation ori);
 public:
   void doFillArcAngle(int arcangle);
 };
@@ -224,9 +228,18 @@ void Propertiesbar::reflectTentativeMove(Point dp) {
 }
 
 void Propertiesbar::setUserOrigin(Point o) {
+  if (!d->x->isEnabled()) 
+    d->x0 = o.x;
+  if (!d->y->isEnabled()) 
+    d->y0 = o.y;
   d->ori = o;
-  d->x->setValue(d->x0 + o.x);
-  d->y->setValue(d->y0 + o.y);
+  d->x->setValue(d->x0 - o.x);
+  d->y->setValue(d->y0 - o.y);
+  emit userOriginChanged(o);
+}
+
+Point Propertiesbar::userOrigin() const {
+  return d->ori;
 }
 
 void PBData::fillLinewidth(QSet<int> const &objects, Group const &here) {
@@ -632,7 +645,7 @@ void PBData::hideAndShow() {
   //qDebug() << "conts" << squarec << arcc;
 
   switch (mode) {
-  case Mode::Invalid: case Mode::SetIncOrigin: case Mode::BoardOutline:
+  case Mode::Invalid: case Mode::BoardOutline:
     break;
   case Mode::Edit:
     hsEdit();
@@ -1020,6 +1033,10 @@ void PBData::setupUI() {
   xc = makeContainer(xyg);
   auto *xc1 = makeSubContainer(xc);
   makeLabel(xc1, "X", "Distance from left");
+  xabsinc = new AbsIncToggle();
+  QObject::connect(xabsinc, &AbsIncToggle::clicked,
+                   parent, [this]() { clickAbsInc(Qt::Horizontal); });
+  xc1->layout()->addWidget(xabsinc);
   xalign = new AlignToggle(Qt::Horizontal);
   QObject::connect(xalign, &AlignToggle::alignmentChanged,
                    parent, [this]() { updateAlignment(); });
@@ -1036,6 +1053,10 @@ void PBData::setupUI() {
   yc = makeContainer(xyg);
   auto *yc1 = makeSubContainer(yc);
   makeLabel(yc1, "Y", "Distance from top");
+  yabsinc = new AbsIncToggle();
+  QObject::connect(yabsinc, &AbsIncToggle::clicked,
+                   [this]() { clickAbsInc(Qt::Vertical); });
+  yc1->layout()->addWidget(yabsinc);
   yalign = new AlignToggle(Qt::Vertical);
   QObject::connect(yalign, &AlignToggle::alignmentChanged,
                    parent, [this]() { updateAlignment(); });  
@@ -1275,6 +1296,9 @@ void PBData::setupUI() {
 
   top->setChecked(true);
   //qDebug() << "post" << xya;
+
+
+  
 }  
 
 Propertiesbar::Propertiesbar(Editor *editor, QWidget *parent): QToolBar(parent) {
@@ -1375,5 +1399,41 @@ void Propertiesbar::stepPinNumber() {
   } else {
     d->text->setText("");
     d->editor->properties().text = "";
+  }
+}
+
+void PBData::clickAbsInc(Qt::Orientation o) {
+  if (o == Qt::Horizontal) {
+    if (x0 == ori.x) {
+      xabsinc->setAbs();
+      parent->setUserOrigin(Point(Dim(), ori.y));
+    } else {
+      xabsinc->setInc();
+      parent->setUserOrigin(Point(x0, ori.y));
+    }
+  } else { // vertical
+    if (y0 == ori.y) {
+      yabsinc->setAbs();
+      parent->setUserOrigin(Point(ori.x, Dim()));
+    } else {
+      yabsinc->setInc();
+      parent->setUserOrigin(Point(ori.x, y0));
+    }
+  }
+
+}
+
+void Propertiesbar::toggleAbsInc() {
+  QSet<int> objects(d->editor->selectedObjects());
+  QSet<Point> points(d->editor->selectedPoints());
+  if ((objects.isEmpty() && points.isEmpty())
+      || (d->x0 == d->ori.x && d->y0 == d->ori.y)) {
+    d->xabsinc->setAbs();
+    d->yabsinc->setAbs();
+    setUserOrigin(Point());
+  } else {
+    d->xabsinc->setInc();
+    d->yabsinc->setInc();
+    setUserOrigin(Point(d->x0, d->y0));
   }
 }

@@ -723,7 +723,7 @@ void MWData::makeToolbars() {
   mw->addToolBar(Qt::RightToolBarArea,
 		 propbar = new Propertiesbar(editor, mw));
   statusbar = new Statusbar(mw);
-  mw->setStatusBar(statusbar);
+  mw->setStatusBar(statusbar);  
 }
 
 void MWData::makeMenus() {
@@ -814,6 +814,10 @@ void MWData::makeMenus() {
                    a, &QAction::setEnabled);
   a->setEnabled(false);
   
+  a = edit->addAction("&Incremental/absolute", QKeySequence(Qt::Key_F11),
+		      [this]() { propbar->toggleAbsInc(); });
+  
+  
   a = edit->addAction("Select attached &trace", QKeySequence(Qt::CTRL | Qt::Key_T),
 		      [this]() { editor->selectTrace(false); });
   QObject::connect(editor, &Editor::selectionChanged,
@@ -887,7 +891,8 @@ void MWData::makeMenus() {
   a = edit->addAction("Circular pattern",
                       QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_C),
                       [this]() { CircularPatternDialog::gui(editor,
-                                     modebar->isOriginIncremental(), mw); });
+                                                            propbar->userOrigin(),
+                                                            mw); });
   QObject::connect(editor, &Editor::selectionChanged,
 		   a, &QAction::setEnabled);
   a->setEnabled(false);
@@ -1015,13 +1020,9 @@ void MWData::makeEditor() {
 
 void MWData::makeConnections() {
   // Editor to status bar and v.v.
-  QObject::connect(editor, &Editor::userOriginChanged,
+  QObject::connect(propbar, &Propertiesbar::userOriginChanged,
 		   [this](Point o) {
-		     if (!modebar->isOriginIncremental())
-		       o = Point();
 		     statusbar->setUserOrigin(o);
-		     propbar->setUserOrigin(o);
-		     modebar->setMode(Mode::Edit);
 		   });
   QObject::connect(editor, &Editor::escapePressed,
 		   [this]() { modebar->setMode(Mode::Edit); });
@@ -1063,12 +1064,6 @@ void MWData::makeConnections() {
 		   propbar, &Propertiesbar::reflectMode);
   QObject::connect(modebar, &Modebar::constraintChanged,
 		   editor, &Editor::setAngleConstraint);
-  QObject::connect(modebar, &Modebar::originChanged,
-		   [this](bool inc) {
-		     Point o = inc ? editor->userOrigin() : Point();
-		     statusbar->setUserOrigin(o);
-		     propbar->setUserOrigin(o);
-		   });
   QObject::connect(modebar, &Modebar::modeChanged,
            [](Mode m) {
                      if (m==Mode::PlacePlane) {

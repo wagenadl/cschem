@@ -36,8 +36,6 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
           Qt::Key_F10);
 
   addSeparator();
-  a_origin = addAct(Mode::SetIncOrigin, "AbsOrigin", Qt::Key_F11);
-
   a_constr = addAction("Angles",
 		       [this]() { setConstraint(!isconstr); });
   QKeySequence ks(Qt::Key_F12);
@@ -47,7 +45,6 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   setMode(Mode::Edit);
   isconstr = true; // force actual change
   setConstraint(false);
-  setAbsInc(false);
 
 }
 
@@ -77,24 +74,6 @@ void Modebar::setMode(Mode m1) {
     m = m1;
     emit modeChanged(m);
   }
-  if (m==Mode::SetIncOrigin)
-    setAbsInc(!isinc);
-}
-
-void Modebar::setAbsInc(bool inc) {
-  isinc = inc;
-  QString ic = isinc ? "Inc" : "Abs";
-  a_origin->setIcon(QIcon(":/icons/" + ic + "Origin"));
-  QString lbl = isinc ? "Incremental" : "Absolute";
-  a_origin->setToolTip(lbl + " origin (" + a_origin->shortcut().toString()
-		       + " toggles)");
-  if (!isinc)
-    setMode(Mode::Edit);
-  emit originChanged(isinc);
-}
-
-bool Modebar::isOriginIncremental() const {
-  return isinc;
 }
 
 Mode Modebar::mode() const {

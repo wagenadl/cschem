@@ -210,9 +210,6 @@ void Editor::mousePressEvent(QMouseEvent *e) {
         Q_ASSERT(d->planeeditor);
         d->planeeditor->mousePress(p, e->button(), e->modifiers());
         break;
-      case Mode::SetIncOrigin:
-	d->pressOrigin(p);
-	break;
       case Mode::PNPOrient:
         d->pressPNPOrient(p, e->modifiers());
       default:
@@ -1546,10 +1543,6 @@ void Editor::setBoardSize(Dim w, Dim h, Board::Shape shp) {
   qDebug() << "setboardsize should create an undo step";
   update();
   emit boardChanged(d->layout.board());
-}
-
-Point Editor::userOrigin() const {
-  return d->userorigin;
 }
 
 void Editor::selectTrace(bool wholenet) {
