@@ -910,3 +910,7 @@ void MainWindow::lvunhover() {
 
 void MainWindow::showEvent(QShowEvent *) {
 }
+
+bool MainWindow::isEmpty() const {
+  return d->scene->schem().isEmpty();
+}

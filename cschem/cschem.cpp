@@ -67,6 +67,9 @@ public:
 
   bool event(QEvent *evt) override {
     if (evt->type() == QEvent::FileOpen) {
+      /* This is how MacOS opens double-clicked files.
+         It might be good to see if any "empty" main windows exist
+      */
       qDebug() << "FileOpen event";
       QFileOpenEvent *evt1 = static_cast<QFileOpenEvent *>(evt);
       const QUrl url = evt1->url();
