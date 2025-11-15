@@ -22,5 +22,19 @@
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
+        
+        <key>CFBundleDocumentTypes</key>
+        <array><dict>
+          <key>CFBundleTypeIconFile</key>
+          <string>cpcb.icns</string>
+          <key>CFBundleTypeName</key>
+          <string>CPCB Layout File</string>
+          <key>CFBundleTypeRole</key>
+          <string>Editor</string>
+          <key>LSItemContentTypes</key>
+          <string>public.cpcb</string>
+          <key>NSExportableTypes</key>
+          <array><string>public.cpcb</string></array>
+        </dict></array>
 </dict>
 </plist>

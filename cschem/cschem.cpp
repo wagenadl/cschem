@@ -14,7 +14,7 @@
 #include <QSysInfo>
 #include <QCommandLineParser>
 #include "svg/SvgExporter.h"
-
+#include <QFileOpenEvent>
 
 bool exportSvg(QString ofn, QString ifn) {
   Schem s = FileIO::loadSchematic(ifn);
@@ -56,12 +56,35 @@ void ensureSymbolLibrary() {
   }
 }
 
+class CSchemApplication: public QApplication {
+public:
+  CSchemApplication(int &argc, char **argv): QApplication(argc, argv) {
+    setOrganizationName("cschem");
+    setOrganizationDomain("danielwagenaar.net");
+    setApplicationName("cschem");
+    setApplicationDisplayName("CSchem");
+  }
+
+  bool event(QEvent *evt) override {
+    if (evt->type() == QEvent::FileOpen) {
+      qDebug() << "FileOpen event";
+      QFileOpenEvent *evt1 = static_cast<QFileOpenEvent *>(evt);
+      const QUrl url = evt1->url();
+      if (url.isLocalFile()) {
+        qDebug() << "Is local file";
+        MainWindow *mw = new MainWindow;
+        if (!mw->load(url.toLocalFile())) {
+          mw->deleteLater();
+          qDebug() << "Failed to load";
+        }
+      }
+    }
+    return QApplication::event(evt);
+  }
+};
+
 int main(int argc, char **argv) {
-  QApplication app(argc, argv);
-  app.setOrganizationName("cschem");
-  app.setOrganizationDomain("danielwagenaar.net");
-  app.setApplicationName("cschem");
-  app.setApplicationDisplayName("CSchem");
+  CSchemApplication app(argc, argv);
   Paths::setExecutablePath(argv[0]);
 
   ensureSymbolLibrary();
@@ -80,8 +103,6 @@ int main(int argc, char **argv) {
   cli.addVersionOption();
   cli.addPositionalArgument("filename", "Specify file to open", "[filename.cschem]");
   cli.addOption(cli_svg);
-  // cli.addOption(cli_png);
-  // cli.addOption(cli_res);
   cli.addOption(cli_ofn);
 
   cli.process(app);
@@ -93,11 +114,7 @@ int main(int argc, char **argv) {
     for (QString fn: args)
       ok = exportSvg(cli.value("o"), fn) && ok;
 
-//  if (cli.isSet("export-png"))
-//    for (QString fn: args)
-//      ok = exportPng(cli.value("o"), cli.value("resolution").toInt(), fn) && ok;
-
-  if (cli.isSet("export-svg")) // || cli.isSet("export-png"))
+  if (cli.isSet("export-svg"))
     return ok ? 0 : 1;
   
   QList<MainWindow *> mws;

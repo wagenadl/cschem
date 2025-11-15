@@ -22,5 +22,18 @@
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
 	<true/>
+        <key>CFBundleDocumentTypes</key>
+        <array><dict>
+          <key>CFBundleTypeIconFile</key>
+          <string>cschem.icns</string>
+          <key>CFBundleTypeName</key>
+          <string>CSchem Schematic File</string>
+          <key>CFBundleTypeRole</key>
+          <string>Editor</string>
+          <key>LSItemContentTypes</key>
+          <string>public.cschem</string>
+          <key>NSExportableTypes</key>
+          <array><string>public.cschem</string></array>
+        </dict></array>
 </dict>
 </plist>

@@ -9,6 +9,7 @@
 #include <QDir>
 #include "data/Paths.h"
 #include <QSysInfo>
+#include <QFileOpenEvent>
 
 void ensureOutlineLibrary() {
   QDir recentdir(Paths::recentSymbolsLocation());
@@ -34,13 +35,36 @@ void ensureOutlineLibrary() {
   }
 }
   
+class CPCBApplication: public QApplication {
+public:
+  CPCBApplication(int &argc, char **argv): QApplication(argc, argv) {
+    setOrganizationName("cschem");
+    setOrganizationDomain("danielwagenaar.net");
+    setApplicationName("cpcb");
+    setApplicationDisplayName("CPCB");
+  }
+
+  bool event(QEvent *evt) override {
+    if (evt->type() == QEvent::FileOpen) {
+      qDebug() << "FileOpen event";
+      QFileOpenEvent *evt1 = static_cast<QFileOpenEvent *>(evt);
+      const QUrl url = evt1->url();
+      if (url.isLocalFile()) {
+        qDebug() << "Is local file";
+        MainWindow *mw = new MainWindow;
+        if (!mw->open(url.toLocalFile())) {
+          mw->deleteLater();
+          qDebug() << "Failed to load";
+        }
+      }
+    }
+    return QApplication::event(evt);
+  }
+};
+
 
 int main(int argc, char **argv) {
-  QApplication app(argc, argv);
-  app.setOrganizationName("cschem");
-  app.setOrganizationDomain("danielwagenaar.net");
-  app.setApplicationName("cpcb");
-  app.setApplicationDisplayName("CPCB");
+  CPCBApplication app(argc, argv);
   Paths::setExecutablePath(argv[0]);
   
   app.setStyleSheet("QToolButton:!checked { border: none; }\n"

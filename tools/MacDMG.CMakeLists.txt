@@ -10,6 +10,9 @@ add_custom_command(OUTPUT cschem.dmg
     COMMAND "${MACDEPLOYQT_EXECUTABLE}" cpcb.app
        -codesign=9GKW8J7LXY 
        -always-overwrite
-#    COMMAND "hdiutil"
+    COMMAND "rm -rf apps"
+    COMMAND "mkdir apps"
+    COMMAND "mv cschem.app cpcb.app apps/"
+    COMMAND "hdiutil create -srcfolder apps cschem.dmg"
     COMMENT "Running macdeployqt to build cschem.dmg"
     )
