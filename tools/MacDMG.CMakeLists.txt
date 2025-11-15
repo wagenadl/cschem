@@ -4,15 +4,16 @@ add_custom_target(dmg DEPENDS cschem.dmg)
 
 add_custom_command(OUTPUT cschem.dmg
     DEPENDS cschem.app/Contents/MacOS/cschem
+    COMMAND "rm" "-rf" "cschem" "cschem.dmg"
     COMMAND "${MACDEPLOYQT_EXECUTABLE}" cschem.app
        -codesign=9GKW8J7LXY 
        -always-overwrite
     COMMAND "${MACDEPLOYQT_EXECUTABLE}" cpcb.app
        -codesign=9GKW8J7LXY 
        -always-overwrite
-    COMMAND "rm -rf apps"
-    COMMAND "mkdir apps"
-    COMMAND "mv cschem.app cpcb.app apps/"
-    COMMAND "hdiutil create -srcfolder apps cschem.dmg"
+    COMMAND "mkdir" "cschem"
+    COMMAND "mv" "cschem.app" "cschem/CSchem.app"
+    COMMAND "mv" "cpcb.app" "cschem/CPCB.app"
+    COMMAND "hdiutil" "create" "-srcfolder" "cschem" "cschem.dmg"
     COMMENT "Running macdeployqt to build cschem.dmg"
     )

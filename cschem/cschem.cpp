@@ -73,7 +73,9 @@ public:
       if (url.isLocalFile()) {
         qDebug() << "Is local file";
         MainWindow *mw = new MainWindow;
-        if (!mw->load(url.toLocalFile())) {
+        if (mw->load(url.toLocalFile())) {
+	  mw->show();
+        } else {
           mw->deleteLater();
           qDebug() << "Failed to load";
         }

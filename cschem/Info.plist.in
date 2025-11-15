@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
+  <dict>
 	<key>CFBundleExecutable</key>
 	<string>cschem</string>
 	<key>CFBundleGetInfoString</key>
@@ -16,8 +16,6 @@
 	<string>????</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.12</string>
-	<key>NOTE</key>
-	<string>See http://www.danielwagenaar.net/cschem.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSSupportsAutomaticGraphicsSwitching</key>
@@ -25,15 +23,29 @@
         <key>CFBundleDocumentTypes</key>
         <array><dict>
           <key>CFBundleTypeIconFile</key>
-          <string>cschem.icns</string>
+          <string>cschem</string>
           <key>CFBundleTypeName</key>
           <string>CSchem Schematic File</string>
           <key>CFBundleTypeRole</key>
           <string>Editor</string>
           <key>LSItemContentTypes</key>
-          <string>public.cschem</string>
-          <key>NSExportableTypes</key>
-          <array><string>public.cschem</string></array>
+          <array><string>net.danielwagenaar.cschem-doc</string></array>
+          <key>LSHandlerRank</key>
+          <string>Owner</string>
         </dict></array>
-</dict>
+        <key>UTExportedTypeDeclarations</key>
+           <array><dict>
+             <key>UTTypeConfirmsTo</key>
+             <array><string>public.xml</string></array>
+             <key>UTTypeDescription</key>
+             <string>CSchem Schematic File</string>
+             <key>UTTypeIdentifier</key>
+             <string>net.danielwagenaar.cschemi-doc</string>
+             <key>UTTypeTagSpecification</key>
+             <dict>
+                <key>public.filename-extension</key>
+                <array><string>cschem</string></array>
+             </dict>
+           </dict></array>
+  </dict>
 </plist>

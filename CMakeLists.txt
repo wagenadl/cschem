@@ -30,15 +30,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt6 COMPONENTS Widgets Svg SvgWidgets PrintSupport REQUIRED)
-
+set(QT_MAC_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 ######################################################################
 # Add the executables
 add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp)
 set_target_properties(cschem PROPERTIES MACOSX_BUNDLE_ICON_FILE cschem.icns)
-set_target_properties(cschem PROPERTIES MACOSX_BUNDLE_INFO_PLIST cschem/Info.plist)
+set_target_properties(cschem PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${QT_MAC_SOURCE_DIR}/cschem/Info.plist.in)
 add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp)
 set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_ICON_FILE cpcb.icns)
-set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_INFO_PLIST cpcb/Info.plist)
+set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${QT_MAC_SOURCE_DIR}/cpcb/Info.plist.in)
 configure_file(config.h.in config.h)
 include(cschem/CMakeLists.txt)
 include(cpcb/CMakeLists.txt)
