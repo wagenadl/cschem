@@ -62,3 +62,10 @@ perfectly on top of one another, the bottom layer connection is easily
 overlooked.) If you absolutely must connect two filled planes using a
 single hole, you can create two separate holes first and drag them on
 top of each other. (But don't tell anyone I said that.)
+
+Moving a filled plane to another layer
+--------------------------------------
+
+This can be done in “Edit mode” just as for any objects. By careful:
+the layer association of filled plane–connected pads and holes does not
+automatically transfer.
