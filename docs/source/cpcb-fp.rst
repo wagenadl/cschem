@@ -1,3 +1,5 @@
+.. _cpcb-fp-label:
+
 Working with filled planes
 ==========================
 

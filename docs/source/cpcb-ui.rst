@@ -1,47 +1,54 @@
 CPCB's user interface
 =====================
 
-CPCB has a relatively spare user interface with several toolbars
+
+.. image:: cpcb-ui.svg
+           :scale: 120%
+           :align: center
+
+CPCB comprises several toolbars arranged
 around the PCB being edited. These toolbars are:
 
   *Mode bar*
-
     CPCB makes heavy use of “editing modes.” At any time, CPCB is in
     one of several modes, and a toolbar on the left of the main window
     is used to switch between modes and to indicate the current mode.
 
   *Properties bar*
-
     A toolbar on the right shows the various editable properties of
     selected objects or objects to be placed.
 
   *Status bar*
-
     A small  bar at the bottom of the window shows cursor
     position, grid settings, and which features are currently being shown.
 
   *Menu bar*    
-
     Along the top of the window a standard menu bar is shown.
 
-One other panel is shown only  when CPCB is used to edit a PCB design that
-is linked to a CSchem schematic:
+Two other panels are not shown by default but may be opened through the “View” menu:
 
   *Components panel*
 
-    Here are shown all the not-yet-placed components. You can drag
-    component footprints in from a Filer window [#f1]_ into this panel,
-    or from this panel onto the main PCB.
+    Opened automatically when CPCB is used to edit a PCB design that
+    is linked to a CSchem schematic, this shows all the not-yet-placed
+    components. You can drag component footprints in from a Filer
+    window [#f1]_ into this panel, or from this panel onto the main
+    PCB.
+
+  *Bill of materials (BOM)*
+
+    This panel can be used to associate part numbers and catalog
+    numbers with components in the layout.
 
 Editing modes
 -------------
 
-CPCB uses different “modes” for placing, moving, and modifying holes, traces,
-and other objects. Because changing modes is such a frequent task,
-keyboard shortcuts are available for each of the modes. The modes are
-(from top to bottom in the “mode bar”):
+CPCB uses different “modes” for placing, moving, and modifying holes,
+traces, and other objects. Because changing modes is such a frequent
+task, keyboard shortcuts are available for each of the modes. The
+modes are (from top to bottom in the “mode bar”):
 
-  *Selection mode (F1)*
+  |icon-mode-sel| *Selection mode (F1)*  
 
     This is a highly multifunctional mode:
 
@@ -66,27 +73,26 @@ keyboard shortcuts are available for each of the modes. The modes are
     - Double-clicking on a piece of text allows the text to be
       edited.
 
-  *Trace mode (F2)*
+  |icon-mode-trace| *Trace mode (F2)*
 
     In this mode, new traces are placed on the PCB by clicking with
     the mouse. The Properties bar can be used to determine the width
     of the traces as well as which layer they will be placed
     on. Traces can be placed on copper and silkscreen layers alike.
 
-  *Plated hole mode (F3)*
+  |icon-mode-hole| *Plated hole mode (F3)*
 
     In this mode, mouse clicks place plated holes on the board. Holes
     always connect the top and bottom layers of the PCB. The
     Properties bar can be used to determine the hole diameter and the
     diameter of the surrounding pad. Holes can have either round or
-    rectangular pads. Instead of a simple drill hole, straight milled
-    slots can be placed in this mode as well; the slot length is
-    determined on the Properties bar. Usually, holes are part of
-    components, in which case the “Pin” box in the Properties bar
-    shows the pin name or number for the hole. This mode should not be
-    used to create vias; see below.
+    rectangular pads. This mode can also be used to create plated
+    slots, by using the “Slot length” box in the Properties bar
+    (below). Commonly, holes are part of components, in which case the
+    “Pin” box in the Properties bar shows the pin name or number for
+    the hole. This mode should not be used to create vias; see below.
       
-  *Pad mode (F4)*
+  |icon-mode-pad| *Pad mode (F4)*
 
     In this mode, copper pads are placed on the PCB. Pads are
     generally used as part of surface-mount components, in which case
@@ -95,18 +101,18 @@ keyboard shortcuts are available for each of the modes. The modes are
     CPCB doesn't stop you if you want to place a pad on the silkscreen
     layer.
   
-  *Text mode (F5)*
+  |icon-mode-text| *Text mode (F5)*
 
     In this mode, clicking on the board opens a small dialog window in
     which you type the text to be placed. Text is normally placed on
     the silkscreen layer, but may be placed on copper layers as well.
   
-  *Arc mode (F6)*
+  |icon-mode-arc| *Arc mode (F6)*
 
     In this mode, circles or arcs are placed, typically on the
     silkscreen mode as part of component outline drawings.
 
-  *Filled plane mode (F7)*
+  |icon-mode-plane| *Filled plane mode (F7)*
 
     Filled planes are filled areas on either copper layer. In filled
     plane mode, new planes can be created, existing planes can be
@@ -114,39 +120,37 @@ keyboard shortcuts are available for each of the modes. The modes are
     filled planes by double clicking. Use the Layer selector in the
     Properties bar (just above the Layer visibility toggles in the
     status bar) to determine the layer for a filled plane or filled
-    plane connection.
+    plane connection. Working with filled planes is explained in more
+    detail on :ref:`a separate page <cpcb-fp-label>`.
       
-  *Pickup mode (F8)*
+  |icon-mode-pickup| *Pickup mode (F8)*
 
     In this mode, clicking on an existing trace picks up that trace so
     that you can conveniently reconnect it to another point on the
     PCB.
      
-  *Nonplated hole mode (F9)*
+  |icon-mode-nphole| *Nonplated hole mode (F9)*
 
     Nonplated holes are holes without copper plating. This mode can
-    also be used to create straight milled slots.
+    also be used to create straight milled slots by using the “Slot
+    length” property.
 
-  *PNP mode (F10)*
+  |icon-mode-pnp|  *PNP mode (F10)*
 
-     TBD
+    In pick-and-place mode, you can mark up your layout to indicate
+    the orientation of parts for assembly. This has no effect on the
+    layout itself, but only on the “pick-and-place” files produced
+    during Gerber export. Make the little blue triangles point in the
+    direction that is “up” in the datasheet for your part, and PCB
+    assemblers will likely get the hint. When in doubt, choose an
+    assembler that provides a preview before committing to a
+    purchase. That way, you can go back to your layout and correct any
+    mistakes before they get cast into hardware.
 
-The Mode bar contains two additional buttons that do not correspond to
-editing modes:
+The Mode bar contains one additional button that does not correspond to
+an editing mode:
 
-  *Origin selection (F11)*
-
-    When CPCB first starts, it uses absolute coordinates with (0,0) at
-    the top-left of the board. Pressing F11 switches to incremental
-    coordinates and invites the user to click on a hole or pad to set
-    the origin for incremental coordinates. After an incremental
-    origin is selected, CPCB automatically reverts to Selection
-    mode. To return to absolute coordinates, press F11 again. (When
-    entering incremental coordinate mode, you don't *have* to
-    pick a new origin; just press F1 to return to Selection mode with
-    the previous incremental origin reinstated.)
-
-  *Angle constraint (F12)*
+  |icon-mode-angle| *Angle constraint (F12)*
 
     Use this to toggle between placing traces with
     arbitrary angles and placing traces that are constrained to be
@@ -165,47 +169,64 @@ Many items in the Properties bar may speak for themselves, but
 here is a list with a few notes. From top to bottom:
 
   *X*
+    The x-coordinate of the selected object or objects. You can
+    type in the box to move the selection to a new location.
 
-    Shows the x-coordinate of the center of a hole, pad, or arc, or
-    the left edge of a piece of text. When multiple objects are
-    selected, the leftmost x-coordinate is shown [#f4]_. You can type
-    in the box to move the selection to a new location.
+    To the left of the box are an “Abs/Inc” toggle and an “Anchor”
+    toggle:
+
+    |icon-toggle-abs|
+        The “Abs/Inc” toggle may be used to switch between absolute
+        coordinates (from the left edge of the board) to “incremental”
+        coordinates relative to a feature on the board.
+
+    |icon-toggle-anchor|
+        By default, the coordinates of the “principal point” of an
+        object are shown and edited in the *X* box. For a hole or a pad,
+        that is the center of that hole or pad, for text that is the left
+        edge of the text, for a component that is the center of its
+    lowest-numbered pin, etc. By clicking on the “Anchor” toggle, you
+    can instead display and edit the left edge, geometric center, or
+    right edge of a selection.
   
   *Y*
-
     The y-coordinate equivalent of previous item. When multiple
     objects are selected, the topmost y-coordinate is shown.
+
+    The “Abs/Inc” and “Anchor” toggles for *Y* are independent of
+    those for *X*.
   
-  *Line width*
+  |icon-para-linewidth| *Line width*
 
     This item represents the width of traces and arcs.
 
-  *Diameter*
-
+  |icon-para-diameter| *Diameter*
+  
     The diameter of (plated and nonplated) holes as well as arcs.
   
-  *Slot length*
-
-    The extra length of a milled slot. (The full
-    length of a slot is the stated “Slot length” plus the diameter.)
-    Meaningful for plated and nonplated holes.
+  |icon-para-slotlength| *Slot length*
+  
+    The extra length of a milled slot. (The full length of a slot is
+    the stated “Slot length” plus the diameter.) Applies to both
+    plated and nonplated holes.
     
   *OD*
-
+  
     Outer diameter of the round pad surrounding a plated hole, or
     length of the square pad surrounding such a hole. If the hole is
     in fact a slot, the pad is expanded along with the hole.
   
   *Shape*
-
+  
     Selects whether the pad surrounding a hole is round or
-    rectangular [#f5]_.
+    square.
     
-  *W*
-
+  *Width*
+  
     The width of an SMT pad (along the x-axis).
 
-  *H*
+  *Height*
+  
      The height of an SMT pad (along the y-axis).
 
   *Ref.* or *Pin* or *Text*
@@ -214,12 +235,12 @@ here is a list with a few notes. From top to bottom:
     component; the “Pin number” for a hole or pad; or the contents of
     a text object.
     
-  *Fs*
-
+  *Font size*
+  
     Font size for text objects.
 
-  *Arc style*
-
+  |icon-para-arcstyle| *Arc style*
+  
     Selector for different kinds of arcs.
 
 
@@ -233,12 +254,24 @@ input is interpreted.
 Rotating, flipping, and moving between layers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-At the very bottom of the Properties bar, there are two more rows of
-buttons: The first allows rotating and flipping of selected objects in
-Select mode. It doubles to determine the orientation of newly created
-objects in Text and Arc modes. The second row determines on what layer
-newly created objects appear and can also be used to move objects
-between layers.
+|icon-action-rotate| |icon-para-orient| At the very bottom of the
+Properties bar, there are two more rows of buttons: The first allows
+rotating and flipping of selected objects in Select mode. It doubles
+to determine the orientation of newly created objects in Text and Arc
+modes. The second row determines on what layer newly created objects
+appear and can also be used to move objects between layers.
+
+Creating vias
+~~~~~~~~~~~~~
+
+At present, the only way to create a via (a plated hole that is
+covered by solder mask instead of being exposed and tinned) is to move
+one segment of a multi-segment trace from the top layer to the bottom
+or vice versa. Vias are represented as red-green dappled plated
+holes. The initial size of newly created vias is algorithmically
+determined by the width of the trace, but may be adjusted using the
+Properties bar. Vias can, of course, be copied and pasted like any
+other object.
 
 The Status bar
 --------------
@@ -276,7 +309,7 @@ Components panel
 When a PCB layout is linked to a CSchem schematic, one additional user
 interface component is shown alongside the PCB: A list of all the
 components of the schematic that have not yet been placed on the
-PCB. The function of this pane is explained under :ref:`comppanel`.
+PCB. The function of this panel is explained under :ref:`comppanel`.
 
  
 Footnotes
@@ -296,10 +329,79 @@ Footnotes
   value. Even in that case, typing in a new value overrides the
   properties of all applicable selected objects.
   
-.. [#f4] At present, this
-    is true even when those objects are contained in a group. In a
-    future version, the x-coordinate of a group may be defined as the
-    x-coordinate of its lowest numbered pin.
+.. |icon-mode-sel| image:: icon-mode-sel.png
+                         :width: 32px
+                         :height: 32px
 
-.. [#f5] “Rectangular” really means “square”
-    except if the hole has nonzero slot length.
+.. |icon-mode-trace| image:: icon-mode-trace.png
+                         :width: 32px
+                         :height: 32px
+                                  
+.. |icon-mode-hole| image:: icon-mode-hole.png
+                         :width: 32px
+                         :height: 32px
+                                  
+.. |icon-mode-pad| image:: icon-mode-pad.png
+                         :width: 32px
+                         :height: 32px
+
+.. |icon-mode-text| image:: icon-mode-text.png
+                         :width: 32px
+                         :height: 32px
+
+.. |icon-mode-arc| image:: icon-mode-arc.png
+                         :width: 32px
+                         :height: 32px
+
+.. |icon-mode-plane| image:: icon-mode-plane.png
+                         :width: 32px
+                         :height: 32px
+
+.. |icon-mode-nphole| image:: icon-mode-nphole.png
+                         :width: 32px
+                         :height: 32px
+
+.. |icon-mode-pickup| image:: icon-mode-pickup.png
+                         :width: 32px
+                         :height: 32px
+                                  
+.. |icon-mode-pnp| image:: icon-mode-pnp.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-mode-angle| image:: icon-mode-angle.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-para-linewidth| image:: icon-para-linewidth.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-para-diameter| image:: icon-para-diameter.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-para-slotlength| image:: icon-para-slotlength.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-para-arcstyle| image:: icon-para-arcstyle.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-para-orient| image:: icon-para-orient.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-action-rotate| image:: icon-action-rotate.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-toggle-abs| image:: icon-toggle-abs.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
+.. |icon-toggle-anchor| image:: icon-toggle-anchor.png
+                         :width: 32px
+                         :height: 32px
+                                                                    
