@@ -49,6 +49,7 @@ public:
   bool load(QString filename); // true unless error
   void create(class Schem const &schem);
   bool saveAs(QString filename); // true unless error
+  bool isEmpty() const;
 private:
   void createActions();
   void createView();

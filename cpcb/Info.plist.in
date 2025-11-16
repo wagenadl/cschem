@@ -2,39 +2,52 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleExecutable</key>
-	<string>cpcb</string>
-	<key>CFBundleGetInfoString</key>
-	<string>Created by Qt/QMake</string>
-	<key>CFBundleIconFile</key>
-	<string>cpcb</string>
-	<key>CFBundleIdentifier</key>
-	<string>net.danielwagenaar.cpcb</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>LSMinimumSystemVersion</key>
-	<string>10.12</string>
-	<key>NOTE</key>
-	<string>See http://www.danielwagenaar.net/cschem.</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>NSSupportsAutomaticGraphicsSwitching</key>
-	<true/>
-        
-        <key>CFBundleDocumentTypes</key>
-        <array><dict>
-          <key>CFBundleTypeIconFile</key>
-          <string>cpcb</string>
-          <key>CFBundleTypeName</key>
-          <string>CPCB Layout File</string>
-          <key>CFBundleTypeRole</key>
-          <string>Editor</string>
-          <key>LSItemContentTypes</key>
-          <array><string>public.cpcb</string></array>
-          <key>NSExportableTypes</key>
-          <array><string>public.cpcb</string></array>
-        </dict></array>
+  <key>CFBundleExecutable</key>
+  <string>cpcb</string>
+  <key>CFBundleGetInfoString</key>
+  <string>lease visit https://cschem.readthedocs.io</string>
+  <key>CFBundleIconFile</key>
+  <string>cpcb</string>
+  <key>CFBundleIdentifier</key>
+  <string>net.danielwagenaar.cpcb</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleSignature</key>
+  <string>????</string>
+  <key>LSMinimumSystemVersion</key>
+  <string>10.12</string>
+  <key>NSPrincipalClass</key>
+  <string>NSApplication</string>
+  <key>NSSupportsAutomaticGraphicsSwitching</key>
+  <true/>
+   
+  <key>CFBundleDocumentTypes</key>
+  <array><dict>
+    <key>CFBundleTypeName</key>
+    <string>CPCB Layout File</string>
+    <key>CFBundleTypeRole</key>
+    <string>Editor</string>
+    <key>LSItemContentTypes</key>
+    <array><string>net.danielwagenaar.cpcb-doc</string></array>
+    <key>CFBundleTypeIconSystemGenerated</key>
+    <integer>1</integer>
+    <key>LSHandlerRank</key>
+    <string>Owner</string>
+  </dict></array>
+  
+  <key>UTExportedTypeDeclarations</key>
+  <array><dict>
+    <key>UTTypeConfirmsTo</key>
+    <array><string>public.xml</string></array>
+    <key>UTTypeDescription</key>
+    <string>CPCB Layout File</string>
+    <key>UTTypeIdentifier</key>
+    <string>net.danielwagenaar.cpcb-doc</string>
+    <key>UTTypeTagSpecification</key>
+    <dict>
+      <key>public.filename-extension</key>
+      <array><string>cpcb</string></array>
+    </dict>
+  </dict></array>
 </dict>
 </plist>
