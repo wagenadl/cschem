@@ -98,6 +98,7 @@ public:
   Point tracePoint(Point p, bool *onsomething_return=0) const;
   static QCursor crossCursor();
   static QCursor tinyCursor();
+  bool isVisible(Object const &obj) const;
 public:
   Editor *ed;
   Layout layout;

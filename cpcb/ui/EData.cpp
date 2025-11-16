@@ -971,3 +971,33 @@ QCursor EData::tinyCursor() {
   got = true;
   return cursor;
 }
+
+bool EData::isVisible(Object const &obj) const {
+  Board const &brd = layout.board();
+  switch (obj.type()) {
+  case Object::Type::Hole:
+    return brd.layervisible[Layer::Top] || brd.layervisible[Layer::Bottom];
+  case Object::Type::Pad:
+    return brd.layervisible[obj.asPad().layer];
+  case Object::Type::Arc:
+    return brd.layervisible[obj.asArc().layer];
+  case Object::Type::Text:
+    return brd.layervisible[obj.asText().layer];
+  case Object::Type::Trace:
+    return brd.layervisible[obj.asTrace().layer];
+  case Object::Type::Plane:
+    return brd.planesvisible && brd.layervisible[obj.asPlane().layer];
+  case Object::Type::Group: {
+    Group const &grp(obj.asGroup());
+    for (int id: grp.keys())
+      if (isVisible(grp.object(id)))
+        return true;
+    }
+    return false;
+  case Object::Type::NPHole:
+    return true;
+  case Object::Type::Null:
+    return false;
+  }
+  return false; // just to avoid compiler warning
+}

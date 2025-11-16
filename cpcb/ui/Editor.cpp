@@ -576,7 +576,7 @@ void Editor::selectArea(Rect r, bool add) {
   for (int id: here.keys()) {
     Object const &obj(here.object(id));
     if (!d->selection.contains(id)) {
-      if (r.contains(obj.boundingRect())) {
+      if (r.contains(obj.boundingRect()) && d->isVisible(obj)) {
         if (obj.isText() && obj.asText().groupAffiliation()>0) {
           // don't rectangle select a group reference text
         } else if (obj.isGroup()) {
@@ -594,7 +594,7 @@ void Editor::selectArea(Rect r, bool add) {
   }
   for (int id: here.keys()) {
     Object const &obj(here.object(id));
-    if (obj.type()==Object::Type::Trace) {
+    if (obj.type()==Object::Type::Trace && d->isVisible(obj)) {
       Trace const &t(obj.asTrace());
       if (r.contains(t.p1) && !d->selpts[t.layer].contains(t.p1))
 	d->purepts[t.layer] << t.p1;
