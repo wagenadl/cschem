@@ -132,8 +132,16 @@ void Editor::wheelEvent(QWheelEvent *e) {
   if (e->modifiers() & Qt::ControlModifier) {
     d->zoom(pow(2, e->angleDelta().y()/240.));
   } else {
-    QPoint delta = e->pixelDelta()*2;
-    d->mils2widget.translate(delta.x()/d->mils2px, delta.y()/d->mils2px);
+    if (e->deviceType()==QInputDevice::DeviceType::TouchPad) {
+      QPoint delta = e->pixelDelta() * 2;
+      d->mils2widget.translate(delta.x()/d->mils2px, delta.y()/d->mils2px);
+    } else { // scroll wheel
+      int delta = e->angleDelta().y();
+      if (e->modifiers() & Qt::ShiftModifier) 
+        d->mils2widget.translate(delta/d->mils2px, 0);
+      else
+        d->mils2widget.translate(0, delta/d->mils2px);
+    }
     d->widget2mils = d->mils2widget.inverted();
     update();
   }

@@ -56,22 +56,23 @@ public:
   }
   virtual ~MWView() { }
   virtual void wheelEvent(QWheelEvent *e) override {
-    QPoint delta = e->pixelDelta();
     auto anchor = transformationAnchor();
     if (e->modifiers() & Qt::ControlModifier) {
-      int dy = delta.y();
-      double scl = std::pow(2, dy/240.0);
+      double scl = std::pow(2, e->angleDelta().y() / 240.0);
       setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
       scale(scl, scl);
-    } else if (e->modifiers() & Qt::ShiftModifier) {
-      int dx = delta.x() + delta.y();
-      setTransformationAnchor(QGraphicsView::NoAnchor);
-      translate(dx, 0);  
     } else {
-      int dx = delta.x();
-      int dy = delta.y();
       setTransformationAnchor(QGraphicsView::NoAnchor);
-      translate(dx, dy);  
+      if (e->deviceType()==QInputDevice::DeviceType::TouchPad) {
+        QPoint delta = e->pixelDelta() * 2;
+        translate(delta.x(), delta.y());
+      } else { // scroll wheel
+        int delta = e->angleDelta().y();
+        if (e->modifiers() & Qt::ShiftModifier) 
+          translate(delta, 0);  
+        else
+          translate(0, delta);
+      }
     }
     setTransformationAnchor(anchor); 
   }
