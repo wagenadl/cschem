@@ -368,6 +368,7 @@ void EData::pressHole(Point p) {
     t.od = props.od;
     t.id = props.id;
     t.square = props.square;
+    t.via = props.via;
     t.ref = props.text;
     here.insert(Object(t));
     ed->insertedPadOrHole();

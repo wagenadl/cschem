@@ -58,6 +58,7 @@ public:
   QWidget *squarec;
   QAction *circle; // for hole
   QAction *square; // for hole
+  QAction *via;
 
   QWidget *textg;
   QAction *texta;
@@ -303,6 +304,7 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
       Dim od1 = obj.asHole().od;
       Dim sl1 = obj.asHole().slotlength;
       bool sq = obj.asHole().square;
+      bool vi = obj.asHole().via;
       if (got) {
 	if (id1 != id->value())
 	  id->setNoValue();
@@ -314,12 +316,16 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
 	  circle->setChecked(false);
 	else if (!sq && square->isChecked())
 	  square->setChecked(false);
+        if (vi != via->isChecked()) 
+          via->setEnabled(false);
       } else {
 	id->setValue(id1);
 	od->setValue(od1);
 	slotlength->setValue(sl1);
         square->setChecked(sq);
         circle->setChecked(!sq);
+        via->setEnabled(true);
+        via->setChecked(vi);
 	got = true;
       }
     } else if (obj.isNPHole()) {
@@ -373,7 +379,6 @@ void PBData::fillDiamAndShape(QSet<int> const &objects, Group const &here) {
     editor->properties().square = true;
   if (circle->isChecked())
     editor->properties().square = false;
-  //qDebug() << "ischecked" << circle->isChecked() << square->isChecked();
 }
 
 void PBData::fillRefText(QSet<int> const &objects, Group const &here) {
@@ -661,6 +666,7 @@ void PBData::hideAndShow() {
     odc->setEnabled(true);
     slotlengthc->setEnabled(true);
     squarec->setEnabled(true);
+    via->setEnabled(true);
     texta->setEnabled(true);
     text->setEnabled(true);
     textl->setText("Pin");
@@ -943,6 +949,13 @@ void PBData::setupUI() {
     return s;
   };
 
+  auto addLine = [this](QWidget *container) {
+    auto *line = new QFrame(container);
+    line->resize(3, 100);
+    line->setFrameShape(QFrame::VLine);
+    line->setFrameShadow(QFrame::Sunken);
+    container->layout()->addWidget(line);
+  };
 
   auto makeIconTool = [this](QWidget *container, QString icon,
 			     bool chkb=false, bool ae=false, QString tip="",
@@ -1118,11 +1131,14 @@ void PBData::setupUI() {
 		     editor->setOD(d);
 		   });
 
+  //  auto *holec = makeContainer(dimg);
   squarec = makeContainer(dimg);
   makeLabel(squarec, "Shape");
   circle = makeIconTool(squarec, "Round", true, true, "Round");
   circle->setChecked(true);
   square = makeIconTool(squarec, "Square", true, true, "Square");
+  addLine(squarec);
+  via = makeIconTool(squarec, "Via", true, false, "Via");
 
   QObject::connect(square, &QAction::triggered,
 		   [this]() {
@@ -1131,6 +1147,10 @@ void PBData::setupUI() {
   QObject::connect(circle, &QAction::triggered,
 		   [this]() {
 		     editor->setSquare(false);
+		   });
+  QObject::connect(via, &QAction::triggered,
+		   [this](bool chk) {
+		     editor->setVia(chk);
 		   });
 
   ((QVBoxLayout*)(dimg->layout()))->addSpacing(8);
@@ -1321,6 +1341,7 @@ void Propertiesbar::reflectMode(Mode m) {
     d->square->setChecked(sq);
     d->circle->setChecked(!sq);
     d->editor->setSquare(sq);
+    d->editor->setVia(d->via->isChecked());
     if (d->od->value() < d->id->value() + minRingWidth)
       d->od->setValue(d->id->value() + minRingWidth);
   }

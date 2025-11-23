@@ -68,6 +68,7 @@ public slots:
   void setWidth(Dim);
   void setHeight(Dim);
   void setSquare(bool);
+  void setVia(bool);
   void setRefText(QString);
   void setFontSize(Dim);
   void setArcAngle(int angle);

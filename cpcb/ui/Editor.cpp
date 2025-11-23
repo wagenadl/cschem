@@ -786,6 +786,19 @@ void Editor::setHeight(Dim x) {
   }
 }
 
+void Editor::setVia(bool b) {
+  d->props.via = b;
+  UndoCreator uc(d);
+  Group &here(d->currentGroup());
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Hole) {
+      uc.realize();
+      obj.asHole().via = b;
+    }
+  }
+}
+
 void Editor::setSquare(bool b) {
   d->props.square = b;
   UndoCreator uc(d);
