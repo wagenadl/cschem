@@ -39,13 +39,13 @@ bool exportPng(QString ofn, int res, QString ifn) {
 
 void ensureSymbolLibrary() {
   QDir userlib(Paths::userSymbolRoot());
-  //  qDebug() << "userlib" << userlib.absolutePath();
+  qDebug() << "userlib" << userlib.absolutePath();
   if (!userlib.exists())
     userlib.mkpath(".");
 
+  QString sysloc(Paths::systemSymbolRoot());
+  qDebug() << "sysloc" << sysloc;
   if (!userlib.exists("System")) {
-    QString sysloc(Paths::systemSymbolRoot());
-    qDebug() << "sysloc" << sysloc;
     if (!sysloc.isEmpty()) {
       QString linkname = userlib.absoluteFilePath("System");
       if (QSysInfo::productType() == "windows")

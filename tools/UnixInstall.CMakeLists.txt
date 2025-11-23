@@ -7,34 +7,41 @@ install(FILES man/cschem.1 DESTINATION share/man/man1)
 install(FILES man/cpcb.1 DESTINATION share/man/man1)
 install(FILES README.md DESTINATION share/doc/cschem)
 install(FILES CHANGELOG DESTINATION share/doc/cschem)
-##install(FILES ${CMAKE_BINARY_DIR}/cschem-userguide.pdf DESTINATION share/doc/cschem)
-##install(FILES ${CMAKE_BINARY_DIR}/cpcb-userguide.pdf DESTINATION share/doc/cschem)
 
 # Symbol and outline libraries
 install(DIRECTORY symbols DESTINATION share/cschem/cschem)
 install(DIRECTORY pcb-outlines DESTINATION share/cschem/cpcb)
 
 # Icons
-foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256)
-  install(FILES cschem/cschem.iconset/cschem_${RES}x${RES}.png
+foreach(RES IN ITEMS 48 256)
+  install(FILES tools/icons/constructed/cschem_${RES}x${RES}.png
     DESTINATION share/icons/hicolor/${RES}x${RES}/apps
     RENAME cschem.png)
-  install(FILES cschem/cschem.iconset/cschem_${RES}x${RES}.png
+  install(FILES tools/icons/constructed/cschem_${RES}x${RES}.png
     DESTINATION share/icons/hicolor/${RES}x${RES}/mimetypes
     RENAME application-cschem-cschem.png)
 endforeach()
-
-foreach(RES IN ITEMS 8 16 22 24 32 48 64 128 256)
-  install(FILES cpcb/cpcb.iconset/cpcb_${RES}x${RES}.png
+foreach(RES IN ITEMS 48 256)
+  install(FILES tools/icons/constructed/cpcb_${RES}x${RES}.png
     DESTINATION share/icons/hicolor/${RES}x${RES}/apps
     RENAME cpcb.png)
-  install(FILES cpcb/cpcb.iconset/cpcb_${RES}x${RES}.png
+  install(FILES tools/icons/constructed/cpcb_${RES}x${RES}.png
     DESTINATION share/icons/hicolor/${RES}x${RES}/mimetypes
     RENAME application-cschem-cpcb.png)
 endforeach()
+install(FILES tools/icons/source/cschem.svg
+  DESTINATION share/icons/hicolor/scalable/apps)
+install(FILES tools/icons/source/cpcb.svg
+  DESTINATION share/icons/hicolor/scalable/apps)
+install(FILES tools/icons/source/cschem.svg
+  DESTINATION share/icons/hicolor/scalable/mimetypes
+  RENAME application-cschem-cschem.png)
+install(FILES tools/icons/source/cpcb.svg
+  DESTINATION share/icons/hicolor/scalable/mimetypes
+  RENAME application-cschem-cpcb.png)
 
 # Desktop and mimetype files
-install(PROGRAMS cschem/cschem.desktop DESTINATION share/applications)
-install(FILES cschem/cschem.xml DESTINATION share/mime/packages)
-install(PROGRAMS cpcb/cpcb.desktop DESTINATION share/applications)
-install(FILES cpcb/cpcb.xml DESTINATION share/mime/packages)
+install(PROGRAMS tools/cschem.desktop DESTINATION share/applications)
+install(FILES tools/cschem.xml DESTINATION share/mime/packages)
+install(PROGRAMS tools/cpcb.desktop DESTINATION share/applications)
+install(FILES tools/cpcb.xml DESTINATION share/mime/packages)

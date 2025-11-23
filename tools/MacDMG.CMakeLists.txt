@@ -1,19 +1,45 @@
+# Mac build extras
+set_target_properties(cschem PROPERTIES MACOSX_BUNDLE_ICON_FILE cschem.icns)
+set_target_properties(cschem PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${QT_MAC_SOURCE_DIR}/cschem/Info.plist.in)
+set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_ICON_FILE cpcb.icns)
+set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${QT_MAC_SOURCE_DIR}/cpcb/Info.plist.in)
+
+add_custom_command(TARGET cschem POST_BUILD
+  COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
+  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/tools/icons/constructed/cschem.icns 
+    ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
+  COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/symbols
+    ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
+  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/tools/cschem.entitlements
+    ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources/
+)
+add_custom_command(TARGET cpcb POST_BUILD
+  COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
+  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/tools/icons/constructed/cpcb.icns 
+    ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources/cpcb.icns
+  COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/pcb-outlines
+    ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
+  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/tools/cschem.entitlements
+    ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources/
+)
+
+# Mac bundle packaging
 find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 
 add_custom_target(dmg DEPENDS cschem.dmg)
 
 add_custom_command(OUTPUT cschem.dmg
-    DEPENDS cschem.app/Contents/MacOS/cschem
-    COMMAND "rm" "-rf" "cschem" "cschem.dmg"
+    DEPENDS cschem.app/Contents/MacOS/cschem cpcb.app/Contents/MacOS/cpcb
+    COMMAND rm -rf cschem cschem.dmg
     COMMAND "${MACDEPLOYQT_EXECUTABLE}" cschem.app
        -codesign=9GKW8J7LXY 
        -always-overwrite
     COMMAND "${MACDEPLOYQT_EXECUTABLE}" cpcb.app
        -codesign=9GKW8J7LXY 
        -always-overwrite
-    COMMAND "mkdir" "cschem"
-    COMMAND "mv" "cschem.app" "cschem/CSchem.app"
-    COMMAND "mv" "cpcb.app" "cschem/CPCB.app"
-    COMMAND "hdiutil" "create" "-srcfolder" "cschem" "cschem.dmg"
+    COMMAND mkdir cschem
+    COMMAND mv cschem.app cschem/CSchem.app
+    COMMAND mv cpcb.app cschem/CPCB.app
+    COMMAND hdiutil create -srcfolder cschem cschem.dmg
     COMMENT "Running macdeployqt to build cschem.dmg"
     )

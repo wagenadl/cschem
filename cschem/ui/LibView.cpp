@@ -213,7 +213,7 @@ void LibView::resizeEvent(QResizeEvent *e) {
   QGraphicsView::scale(x, x);
 }
 
-void LibView::scale(double x) {
+void LibView::scale(double /*x*/) {
   // no longer supported
 }
 

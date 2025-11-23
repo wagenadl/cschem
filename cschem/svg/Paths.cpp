@@ -11,23 +11,19 @@ namespace Paths {
   static QDir installPath;
 
   void setExecutablePath(QString /*s*/) {
-    //QFileInfo exe(s);
-    //QDir dir = exe.dir();
     QString appdir = QCoreApplication::applicationDirPath();
     QDir dir(appdir);
     dir.makeAbsolute();
-    //    qDebug() << "dir" << dir;
-    //dir.cdUp();
     if (dir.path().endsWith("build"))
       dir.cdUp();
     installPath = dir;
-    //qDebug() << "installpath" << installPath;
+    // qDebug() << "installpath" << installPath;
   }
 
   QString userSymbolRoot() {
     QString root
       = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    //qDebug() << "usersymbolroot" << root << "symbols";
+    qDebug() << "usersymbolroot" << root << "symbols";
     return QDir(root).absoluteFilePath("symbols");
   }
 
@@ -51,6 +47,6 @@ namespace Paths {
   }
 
   QString defaultLocation() {
-    return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
   }
 };

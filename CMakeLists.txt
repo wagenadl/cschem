@@ -19,8 +19,8 @@ set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net/cschem")
 # Specify the C++ standard [must be done _before_ adding executable!]
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON) # I thought this would do the trick...
-if (UNIX) 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+if (UNIX AND NOT APPLE) 
   add_compile_options(-fPIC) # ... but in fact, this is required on Linux
   add_compile_options(-W -Wall)
 endif()
@@ -34,11 +34,7 @@ set(QT_MAC_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 ######################################################################
 # Add the executables
 add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp)
-set_target_properties(cschem PROPERTIES MACOSX_BUNDLE_ICON_FILE cschem.icns)
-set_target_properties(cschem PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${QT_MAC_SOURCE_DIR}/cschem/Info.plist.in)
 add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp)
-set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_ICON_FILE cpcb.icns)
-set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${QT_MAC_SOURCE_DIR}/cpcb/Info.plist.in)
 configure_file(config.h.in config.h)
 include(cschem/CMakeLists.txt)
 include(cpcb/CMakeLists.txt)
@@ -51,39 +47,14 @@ target_link_libraries(cschem Qt6::PrintSupport)
 target_link_libraries(cpcb Qt6::Widgets)
 target_link_libraries(cpcb Qt6::Svg)
 
-
-if (WIN32)
-  target_sources(cschem PRIVATE cschem/cschem.iconset/cschem.rc)
-  target_sources(cpcb PRIVATE cpcb/cpcb.iconset/cpcb.rc)
-  target_link_libraries(cschem secur32.lib)
-  target_link_libraries(cpcb secur32.lib)
-endif()
-if (APPLE)
-  #set(MACOSX_BUNDLE_ICON_FILE cschem.icns)
-  add_custom_command(TARGET cschem POST_BUILD
-    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
-    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cschem/cschem.iconset/cschem.icns 
-      ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
-    COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/symbols
-      ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
-  )
-  add_custom_command(TARGET cpcb POST_BUILD
-    COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
-    COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/cpcb/cpcb.iconset/cpcb.icns 
-      ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources/cpcb.icns
-    COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/pcb-outlines
-      ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
-  )
-endif()
-
 # Produce configuration files
 configure_file(config.h.in config.h)
 
 # Include paths - Qt must be mentioned
 target_include_directories(cschem PUBLIC "${PROJECT_BINARY_DIR}")
-target_include_directories(cschem PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
+target_include_directories(cschem PUBLIC "${Qt6Widgets_INCLUDE_DIRS}")
 target_include_directories(cpcb PUBLIC "${PROJECT_BINARY_DIR}")
-target_include_directories(cpcb PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
+target_include_directories(cpcb PUBLIC "${Qt6Widgets_INCLUDE_DIRS}")
 
 ######################################################################
 # General packaging / installation
@@ -94,7 +65,6 @@ set(CPACK_PACKAGE_DESCRIPTION
 set(CPACK_PACKAGE_EXECUTABLES "cschem;CSchem")
 
 if (WIN32)
-  # NSIS packaging - to be updated
   include(tools/WinPack.CMakeLists.txt)
   include(CPack)
 elseif (APPLE)
