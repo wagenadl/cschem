@@ -182,12 +182,12 @@ here is a list with a few notes. From top to bottom:
 
     |icon-toggle-anchor|
         By default, the coordinates of the “principal point” of an
-        object are shown and edited in the *X* box. For a hole or a pad,
-        that is the center of that hole or pad, for text that is the left
-        edge of the text, for a component that is the center of its
-    lowest-numbered pin, etc. By clicking on the “Anchor” toggle, you
-    can instead display and edit the left edge, geometric center, or
-    right edge of a selection.
+        object are shown and edited in the *X* box. For a hole or a
+        pad, that is the center of that hole or pad, for text that is
+        the left edge of the text, for a component that is the center
+        of its lowest-numbered pin, etc. By clicking on the “Anchor”
+        toggle, you can instead display and edit the left edge,
+        geometric center, or right edge of a selection.
   
   *Y*
     The y-coordinate equivalent of previous item. When multiple
@@ -219,7 +219,7 @@ here is a list with a few notes. From top to bottom:
   *Shape*
   
     Selects whether the pad surrounding a hole is round or
-    square.
+    square. Also here: whether the hole is a via or a normal through-hole.
     
   *Width*
   
@@ -262,16 +262,19 @@ modes. The second row determines on what layer newly created objects
 appear and can also be used to move objects between layers.
 
 Creating vias
-~~~~~~~~~~~~~
+^^^^^^^^^^^^^
 
-At present, the only way to create a via (a plated hole that is
-covered by solder mask instead of being exposed and tinned) is to move
-one segment of a multi-segment trace from the top layer to the bottom
-or vice versa. Vias are represented as red-green dappled plated
-holes. The initial size of newly created vias is algorithmically
-determined by the width of the trace, but may be adjusted using the
-Properties bar. Vias can, of course, be copied and pasted like any
-other object.
+|icon-para-via| Vias are plated holes that are covered by solder mask
+instead of being exposed and tinned. They serve to connect between
+layers of a PCB rather than to insert components. You can turn a
+normal hole into a via or vice versa by clicking the “Via” button in
+the “Shape” section of the Properties bar. Vias are automatically
+created to preserve connection when you move one segment of a
+multi-segment trace from the top layer to the bottom or vice
+versa. Vias are represented as red-green dappled plated holes. The
+initial size of newly created vias is algorithmically determined by
+the width of the trace, but may be adjusted using the Properties
+bar. 
 
 The Status bar
 --------------
@@ -283,10 +286,18 @@ choices prepopulate the menu, and you can define your own custom grid
 spacing in either inches or millimeters simply by typing in any line.)
 
 A group of icons on the right of the Status bar serves as indicators
-and toggles for visibility of (from left to right): the silkscreen
-layer; the top copper layer; the bottom copper layer; filled planes;
-and nets.  The last two deserve further explanation:
+and toggles for visibility of (from left to right): the top silkscreen
+layer; the top copper layer; the bottom copper layer; the bottom
+silkscreen layer; the panel preview layer; filled planes; and nets.
+The last three deserve further explanation:
 
+
+- The “Panel” layer is used to preview what a front panel for your
+  project could look like. Not all connectors included as components
+  with CPCB currently include a rendering of panel cutouts. Those that
+  do include a horizontal line that marks the top of the board in
+  addition to the actual cutouts. Those horizontal lines should all be
+  aligned on `y` = 0 in the layout.
 
 - Filled planes may be placed on either top or bottom copper
   layers. They are only visible when both the layer on which they
@@ -390,6 +401,10 @@ Footnotes
                          :height: 32px
                                                                     
 .. |icon-para-orient| image:: icon-para-orient.png
+                         :width: 32px
+                         :height: 32px
+
+.. |icon-para-via| image:: icon-para-via.png
                          :width: 32px
                          :height: 32px
                                                                     

@@ -17,6 +17,7 @@ icons: source/icon-mode-sel.png \
        source/icon-para-slotlength.png \
        source/icon-para-arcstyle.png \
        source/icon-para-orient.png \
+       source/icon-para-via.png \
        source/icon-action-rotate.png \
        source/icon-toggle-abs.png \
        source/icon-toggle-anchor.png 
@@ -52,6 +53,8 @@ source/icon-para-slotlength.png: ../cpcb/ui/icons/SlotLength.svg
 source/icon-para-arcstyle.png: ../cpcb/ui/icons/Arc240.svg
 	inkscape -o $@ -C $^
 source/icon-para-orient.png: ../cpcb/ui/icons/OrientUp.svg
+	inkscape -o $@ -C $^
+source/icon-para-via.png: ../cpcb/ui/icons/Via.svg
 	inkscape -o $@ -C $^
 source/icon-action-rotate.png: ../cpcb/ui/icons/RotateCCW.svg
 	inkscape -o $@ -C $^
