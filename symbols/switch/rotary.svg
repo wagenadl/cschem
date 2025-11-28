@@ -26,8 +26,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.5721645"
-     inkscape:cx="44.206571"
-     inkscape:cy="113.21971"
+     inkscape:cx="-61.698378"
+     inkscape:cy="113.85577"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -82,7 +82,7 @@
     <circle
        transform="scale(-1,1)"
        r="7"
-       inkscape:label="pin:D13"
+       inkscape:label="pin:A"
        cy="666.94824"
        cx="-1027.8572"
        id="circle1670-6-3-7"
@@ -90,7 +90,7 @@
     <circle
        transform="rotate(-90)"
        r="7"
-       inkscape:label="pin:V33"
+       inkscape:label="pin:com"
        cy="1083.8572"
        cx="-596.94824"
        id="circle1670-6-8"
@@ -98,7 +98,7 @@
     <circle
        transform="scale(-1,1)"
        r="7"
-       inkscape:label="pin:EN"
+       inkscape:label="pin:B"
        cy="666.94824"
        cx="-1139.8571"
        id="circle1690-6-2"
