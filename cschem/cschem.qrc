@@ -2,6 +2,6 @@
   <qresource>
     <file alias="symbols.svg">symbols.svg</file>
     <file alias="packages.xml">packages.xml</file>
-    <file alias="cschem.png">../tools/icons/constructed/cschem_128x128.png</file>
+    <file alias="cschem.png">../tools/icons/generated/cschem_128x128.png</file>
   </qresource>
 </RCC>

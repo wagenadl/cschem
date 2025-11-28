@@ -6,7 +6,7 @@ set_target_properties(cpcb PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${QT_MAC_SOURCE_D
 
 add_custom_command(TARGET cschem POST_BUILD
   COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
-  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/tools/icons/constructed/cschem.icns 
+  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/tools/icons/generated/cschem.icns 
     ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
   COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/symbols
     ${CMAKE_CURRENT_BINARY_DIR}/cschem.app/Contents/Resources
@@ -15,7 +15,7 @@ add_custom_command(TARGET cschem POST_BUILD
 )
 add_custom_command(TARGET cpcb POST_BUILD
   COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
-  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/tools/icons/constructed/cpcb.icns 
+  COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/tools/icons/generated/cpcb.icns 
     ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources/cpcb.icns
   COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/pcb-outlines
     ${CMAKE_CURRENT_BINARY_DIR}/cpcb.app/Contents/Resources
