@@ -3,51 +3,51 @@
 <plist version="1.0">
   <dict>
   <key>CFBundleExecutable</key>
-  <string>cschem</string>
+    <string>cschem</string>
   <key>CFBundleGetInfoString</key>
-  <string>Please visit https://cschem.readthedocs.io</string>
+    <string>Please visit https://cschem.readthedocs.io</string>
   <key>CFBundleIconFile</key>
-  <string>cschem</string>
+    <string>cschem</string>
   <key>CFBundleIdentifier</key>
-  <string>net.danielwagenaar.cschem</string>
+    <string>net.danielwagenaar.cschem</string>
   <key>CFBundlePackageType</key>
-  <string>APPL</string>
+    <string>APPL</string>
   <key>CFBundleSignature</key>
-  <string>????</string>
+    <string>????</string>
   <key>LSMinimumSystemVersion</key>
-  <string>10.12</string>
+    <string>10.12</string>
   <key>NSPrincipalClass</key>
-  <string>NSApplication</string>
+    <string>NSApplication</string>
   <key>NSSupportsAutomaticGraphicsSwitching</key>
-  <true/>
+    <true/>
         
   <key>CFBundleDocumentTypes</key>
-  <array><dict>
-    <key>CFBundleTypeName</key>
-    <string>CSchem Schematic File</string>
-    <key>CFBundleTypeRole</key>
-    <string>Editor</string>
-    <key>LSItemContentTypes</key>
-    <array><string>net.danielwagenaar.cschem-doc</string></array>
-    <key>CFBundleTypeIconSystemGenerated</key>
-    <integer>1</integer>
-    <key>LSHandlerRank</key>
-    <string>Owner</string>
-  </dict></array>
-  
+    <array><dict>
+      <key>CFBundleTypeName</key>
+      <string>CSchem Schematic File</string>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>LSItemContentTypes</key>
+      <array><string>net.danielwagenaar.cschem-doc</string></array>
+      <key>CFBundleTypeIconSystemGenerated</key>
+      <integer>1</integer>
+      <key>LSHandlerRank</key>
+      <string>Owner</string>
+    </dict></array>
+    
   <key>UTExportedTypeDeclarations</key>
-  <array><dict>
-    <key>UTTypeConfirmsTo</key>
-    <array><string>public.xml</string></array>
-    <key>UTTypeDescription</key>
-    <string>CSchem Schematic File</string>
-    <key>UTTypeIdentifier</key>
-    <string>net.danielwagenaar.cschem-doc</string>
-    <key>UTTypeTagSpecification</key>
-    <dict>
-      <key>public.filename-extension</key>
-      <array><string>cschem</string></array>
-    </dict>
-  </dict></array>
+    <array><dict>
+      <key>UTTypeConfirmsTo</key>
+      <array><string>public.xml</string></array>
+      <key>UTTypeDescription</key>
+      <string>CSchem Schematic File</string>
+      <key>UTTypeIdentifier</key>
+      <string>net.danielwagenaar.cschem-doc</string>
+      <key>UTTypeTagSpecification</key>
+      <dict>
+        <key>public.filename-extension</key>
+        <array><string>cschem</string></array>
+      </dict>
+    </dict></array>
 </dict>
 </plist>
