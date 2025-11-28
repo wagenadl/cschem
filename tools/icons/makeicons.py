@@ -12,7 +12,7 @@ tmppath = tmpdir.name
 resos = [16, 32, 48, 64, 128, 256, 512, 1024]
 macresos = resos
 macresos2 = [16, 32, 64, 128, 256, 512]
-winresos = [16, 32, 64, 128, 256, 512]
+winresos = [16, 32, 64, 128]
 linuxresos = [48, 128, 256]
 
 # various sizes
