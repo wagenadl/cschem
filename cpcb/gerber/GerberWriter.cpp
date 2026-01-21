@@ -858,9 +858,9 @@ static void writeSMDPads(GerberFile &out,
                          Board const &brd,
                          Collector const &col,
                          Layer l,
-                         bool copper, bool mask) { // paste if neither
+                         bool copper, bool mask, bool silk) { // paste if neither
   Gerber::Apertures const
-    &padaps(out.apertures(mask
+    &padaps(out.apertures((mask || silk)
                           ? Gerber::Apertures::Func::Material
                           : Gerber::Apertures::Func::SMDPad));
   QMap<Point, QList<Pad>> const &pads(col.smdPads(l));
@@ -904,8 +904,8 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
     writeComponentPads(out, layout.board(), collector, l, true, ismask);
   }
 
-  if (iscopper || ismask || ispaste)
-    writeSMDPads(out, layout.board(), collector, l, iscopper, ismask);
+  if (iscopper || ismask || ispaste || issilk)
+    writeSMDPads(out, layout.board(), collector, l, iscopper, ismask, issilk);
 
   return true;
 }
