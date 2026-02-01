@@ -6,7 +6,7 @@
    height="172.25014"
    width="125.99997"
    sodipodi:docname="container-logic-6.svg"
-   inkscape:version="1.1.2 (1:1.1+202202050950+0a00cf5339)"
+   inkscape:version="1.4.2 (1:1.4.2+202505120737+ebf0e940d0)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -24,7 +24,7 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1920"
-     inkscape:window-height="1059"
+     inkscape:window-height="1051"
      id="namedview1501"
      showgrid="true"
      inkscape:snap-smooth-nodes="false"
@@ -33,7 +33,7 @@
      inkscape:snap-bbox-midpoints="true"
      inkscape:zoom="4.9493334"
      inkscape:cx="24.851832"
-     inkscape:cy="84.051723"
+     inkscape:cy="83.849676"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -44,7 +44,9 @@
      fit-margin-left="7"
      fit-margin-right="7"
      fit-margin-bottom="7"
-     inkscape:pagecheckerboard="0">
+     inkscape:pagecheckerboard="0"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid2308"
@@ -416,7 +418,7 @@ mpan (&lt;https://commons.wikimedia.org/wiki/User:Wikimpan&gt;; &lt;https://mpan
        inkscape:transform-center-x="65.942797"
        inkscape:transform-center-y="2.3834746">
       <title
-         id="title1505-7-6-1">cp:2/1.B</title>
+         id="title1505-7-6-1">cp:2/1.Y</title>
     </circle>
     <circle
        style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:0.435;isolation:auto;color-interpolation:sRGB;color-interpolation-filters:linearRGB;fill:#009800;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.00157;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"

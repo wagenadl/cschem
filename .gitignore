@@ -14,3 +14,5 @@ debian/cschem
 debian/files
 debian/.*
 debian/cschem.*
+tags
+.cache
