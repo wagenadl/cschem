@@ -12,7 +12,7 @@ tmppath = tmpdir.name
 resos = [16, 32, 48, 64, 128, 256, 512, 1024]
 macresos = resos
 macresos2 = [16, 32, 64, 128, 256, 512]
-winresos = [16, 32, 64, 128, 256, 512]
+winresos = [16, 32, 64, 128]
 linuxresos = [48, 128, 256]
 
 # various sizes
@@ -26,12 +26,12 @@ for res in macresos:
     os.system(f"cp {tmppath}/{res}.png {tmppath}/{base}.iconset/icon_{res}x{res}.png")
 for res in macresos2:
     os.system(f"cp {tmppath}/{res*2}.png {tmppath}/{base}.iconset/icon_{res}x{res}@2x.png")
-os.system(f"icnsutil -c icns -o constructed/{base}.icns {tmppath}/{base}.iconset")
+os.system(f"icnsutil -c icns -o generated/{base}.icns {tmppath}/{base}.iconset")
 
 # build win icons
 pngs = [f"{tmppath}/{res}.png" for res in winresos]
-os.system(f"icotool -c -o constructed/{base}.ico " + " ".join(pngs))
+os.system(f"icotool -c -o generated/{base}.ico " + " ".join(pngs))
 
 # copy linux icons
 for res in linuxresos:
-    os.system(f"cp {tmppath}/{res}.png constructed/{base}_{res}x{res}.png")
+    os.system(f"cp {tmppath}/{res}.png generated/{base}_{res}x{res}.png")

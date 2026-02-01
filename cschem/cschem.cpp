@@ -1,13 +1,10 @@
 // qschem.cpp
 
-#include "svg/SymbolLibrary.h"
 #include "file/FileIO.h"
 #include "circuit/Schem.h"
 #include <QApplication>
 #include <QGraphicsView>
-#include "ui/Scene.h"
 #include "ui/MainWindow.h"
-#include "circuit/Net.h"
 #include <QDebug>
 #include "svg/Paths.h"
 #include <QDir>
@@ -33,7 +30,7 @@ bool exportSvg(QString ofn, QString ifn) {
 }
 
 bool exportPng(QString ofn, int res, QString ifn) {
-  qDebug() << "exportpng" << ifn << ofn << res;
+  qDebug() << "exportpng not implemented" << ifn << ofn << res;
   return false;
 }
 

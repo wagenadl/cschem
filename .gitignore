@@ -16,3 +16,4 @@ debian/.*
 debian/cschem.*
 tags
 .cache
+CMakeLists.txt.user

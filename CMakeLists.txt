@@ -31,10 +31,18 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt6 COMPONENTS Widgets Svg SvgWidgets PrintSupport REQUIRED)
 set(QT_MAC_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
+
+# Clangd
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set_source_files_properties(tags PROPERTIES GENERATED true)
+add_custom_command(OUTPUT tags
+    COMMAND ctags -R --c++-kinds=+p --fields=+iaS --extra=+q . 
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
 ######################################################################
 # Add the executables
-add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp)
-add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp)
+add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp tags)
+add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp tags)
 configure_file(config.h.in config.h)
 include(cschem/CMakeLists.txt)
 include(cpcb/CMakeLists.txt)
@@ -55,6 +63,7 @@ target_include_directories(cschem PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(cschem PUBLIC "${Qt6Widgets_INCLUDE_DIRS}")
 target_include_directories(cpcb PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(cpcb PUBLIC "${Qt6Widgets_INCLUDE_DIRS}")
+
 
 ######################################################################
 # General packaging / installation
