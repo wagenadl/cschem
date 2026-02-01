@@ -82,7 +82,7 @@ QString PartNumbering::prettyValue(QString value, QString name) {
 }
 
  
-static QRegularExpression wfn("^([A-Z]|JP)((\\d+)(.(\\d+))?)?$");
+static QRegularExpression wfn("^([A-Z]|JP|TP)((\\d+)(.(\\d+))?)?$");
 // e.g., "A1.2"
 
 bool PartNumbering::isNameWellFormed(QString name) {
