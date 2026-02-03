@@ -33,6 +33,7 @@ void BoardSizeDialog::shrink() {
     if (brd.isEffectivelyMetric()) {
       ui->width->setMetric(true);
       ui->height->setMetric(true);
+      ui->cornerradius->setMetric(true);
     }
     ui->width->setValue(brd.width);
     ui->height->setValue(brd.height);
