@@ -14,4 +14,6 @@ debian/cschem
 debian/files
 debian/.*
 debian/cschem.*
+tags
+.cache
 CMakeLists.txt.user

@@ -7,7 +7,7 @@
    viewBox="0 0 125.99988 91.750026"
    version="1.1"
    id="svg852"
-   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   inkscape:version="1.4.2 (1:1.4.2+202505120737+ebf0e940d0)"
    sodipodi:docname="rotary.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -56,7 +56,8 @@
        spacingy="7.0000001"
        originx="119"
        originy="350"
-       empspacing="4" />
+       empspacing="4"
+       units="px" />
     <sodipodi:guide
        position="-315.00001,-27.249947"
        orientation="1,0"
@@ -90,7 +91,11 @@
     <circle
        transform="rotate(-90)"
        r="7"
+<<<<<<< HEAD
+       inkscape:label="pin:COM"
+=======
        inkscape:label="pin:com"
+>>>>>>> a05898ae867e55a65798f3d64b1197c9bdfc10a8
        cy="1083.8572"
        cx="-596.94824"
        id="circle1670-6-8"

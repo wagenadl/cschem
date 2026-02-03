@@ -144,19 +144,12 @@ void EData::drawBoard(QPainter &p) const {
   p.setBrush(QBrush(ORenderer::boardColor()));
   double lw = layout.board().width.toMils();
   double lh = layout.board().height.toMils();
-  if (layout.board().shape == Board::Shape::Round) {
-    if (lw==lh) {
-      p.drawEllipse(QPointF(lw/2, lh/2), lw/2, lh/2);
-    } else if (lw<lh) {
-      p.setPen(QPen(ORenderer::boardColor(), lw, Qt::SolidLine, Qt::RoundCap));
-      p.drawLine(QPointF(lw/2, lw/2), QPointF(lw/2, lh - lw/2));
-    } else {
-      p.setPen(QPen(ORenderer::boardColor(), lh, Qt::SolidLine, Qt::RoundCap));
-      p.drawLine(QPointF(lh/2, lh/2), QPointF(lw - lh/2, lh/2));
-    }
-  } else {
+  double cr = layout.board().cornerradius.toMils();
+  if (cr > 0) 
+    p.drawRoundedRect(QRectF(QPointF(0,0), QPointF(lw, lh)),
+                      cr, cr);
+  else 
     p.drawRect(QRectF(QPointF(0,0), QPointF(lw, lh)));
-  }
 }
 
 void EData::drawGrid(QPainter &p) const {

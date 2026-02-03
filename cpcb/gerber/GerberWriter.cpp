@@ -126,67 +126,59 @@ bool GWData::writeBoardOutline() {
   out << "%LPD*%\n"; // positive
   out << "D10*\n"; // use aperture
   Board const &brd(layout.board());
-  switch (brd.shape) {
-  case Board::Shape::Rect:
+  if (brd.cornerradius == Dim()) {
     out << "X0Y0D02*\n"; // move to origin
     out << "X" << Gerber::coord(brd.width) << "D01*\n"; 
     out << "Y" << Gerber::coord(brd.height) << "D01*\n";
     out << "X0D01*\n";
     out << "Y0D01*\n"; // return to origin
-    break;
-  case Board::Shape::Round:
-    if (brd.width==brd.height) {
-      // simple circle: use left edge as start/end
+  } else {
+    // rect. start at left of top edge
+    out << "G01"
+        << "X" << Gerber::coord(brd.cornerradius)
+        << "Y" << Gerber::coord(brd.height)
+          << "D02*\n";
       out << "G01"
-          << "X0Y" << Gerber::coord(brd.height/2) << "D02*\n";
-      out << "G03"
-          << "X0Y" << Gerber::coord(brd.height/2)
-	  << "I" <<  Gerber::coord(brd.width/2)
-	  << "J0" << "D01*\n";
-    } else if (brd.width<brd.height) {
-      // vertically oriented obrect. start at top of left edge
-      out << "G01"
-          << "X0Y" << Gerber::coord(brd.width/2) << "D02*\n";
-      out << "G03"
-          << "X" << Gerber::coord(brd.width)
-          << "Y" << Gerber::coord(brd.width/2)
-	  << "I" << Gerber::coord(brd.width/2) << "J0"
-          << "D01*\n"; // draw top half circle
-      out << "G01" 
-          << "X" << Gerber::coord(brd.width)
-          << "Y" << Gerber::coord(brd.height - brd.width/2)
-          << "D01*\n"; // draw right edge
-      out << "G03"
-          << "X0"
-          << "Y" << Gerber::coord(brd.height - brd.width/2)
-	  << "I" << Gerber::coord(-brd.width/2) << "J0"
-          << "D01*\n"; // draw bottom half circle
-      out << "G01" 
-          << "X0" << "Y" << Gerber::coord(brd.width/2)
-          << "D01*\n"; // draw left edge
-    } else {
-      // horizontally oriented obrect. start at left of bottom edge
-      out << "G01"
-          << "X" << Gerber::coord(brd.height/2) << "Y0" << "D02*\n";
-      out << "G02"
-          << "X" << Gerber::coord(brd.height/2)
-          << "Y" << Gerber::coord(brd.height)
-	  << "I0" << "J" << Gerber::coord(brd.height/2)
-          << "D01*\n"; // draw left half circle
-      out << "G01" 
-          << "X" << Gerber::coord(brd.width - brd.height/2)
+          << "X" << Gerber::coord(brd.width - brd.cornerradius)
           << "Y" << Gerber::coord(brd.height)
           << "D01*\n"; // draw top edge
+      out << "G75*\n";
       out << "G02"
-          << "X" << Gerber::coord(brd.width - brd.height/2)
+          << "X" << Gerber::coord(brd.width)
+          << "Y" << Gerber::coord(brd.height - brd.cornerradius)
+	  << "I0"
+          << "J" << Gerber::coord(-brd.cornerradius)
+          << "D01*\n"; // draw top right quarter circle
+      out << "G01"
+          << "X" << Gerber::coord(brd.width)
+          << "Y" << Gerber::coord(brd.cornerradius)
+          << "D01*\n"; // draw right edge
+      out << "G02"
+          << "X" << Gerber::coord(brd.width - brd.cornerradius)
           << "Y0"
-	  << "I0" << "J" << Gerber::coord(-brd.height/2)
-          << "D01*\n"; // draw right half circle
-      out << "G01" 
-          << "X" << Gerber::coord(brd.height/2) << "Y0"
+	  << "I" << Gerber::coord(-brd.cornerradius)
+          << "J0"
+          << "D01*\n"; // draw bottom right quarter circle
+      out << "G01"
+          << "X" << Gerber::coord(brd.cornerradius)
+          << "Y0"
           << "D01*\n"; // draw bottom edge
-    }
-    break;
+      out << "G02"
+          << "X0"
+          << "Y" << Gerber::coord(brd.cornerradius)
+	  << "I0"
+          << "J" << Gerber::coord(brd.cornerradius)
+          << "D01*\n"; // draw bottom left quarter circle
+      out << "G01"
+          << "X0"
+          << "Y" << Gerber::coord(brd.height - brd.cornerradius)
+          << "D01*\n"; // draw left edge
+      out << "G02"
+          << "X" << Gerber::coord(brd.cornerradius)
+          << "Y" << Gerber::coord(brd.height)
+	  << "I" << Gerber::coord(brd.cornerradius)
+          << "J0"
+          << "D01*\n"; // draw top left quarter circle
   }
   out << "M02*\n"; // terminate file
   return true;

@@ -11,12 +11,6 @@
 
 class Board {
 public:
-  enum class Shape {
-    Rect,
-    Round,
-    // Complex,
-  };
-public:
   Board();
   bool isEffectivelyMetric() const;
   static Dim fpConOverlap();
@@ -28,9 +22,9 @@ public:
   static Dim fpConWidth(Dim w, Dim h); // width for filled-plane connection
   QString shapeName() const;
 public:
-  Shape shape;
   Dim width;
   Dim height;
+  Dim cornerradius; 
   bool metric;
   Dim grid;
   QMap<Layer, bool> layervisible;

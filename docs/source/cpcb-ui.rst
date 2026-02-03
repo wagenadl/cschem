@@ -270,11 +270,10 @@ layers of a PCB rather than to insert components. You can turn a
 normal hole into a via or vice versa by clicking the “Via” button in
 the “Shape” section of the Properties bar. Vias are automatically
 created to preserve connection when you move one segment of a
-multi-segment trace from the top layer to the bottom or vice
-versa. Vias are represented as red-green dappled plated holes. The
-initial size of newly created vias is algorithmically determined by
-the width of the trace, but may be adjusted using the Properties
-bar. 
+multi-segment trace between copper layers. Vias are represented as
+red-green dappled plated holes. The initial size of newly created vias
+is algorithmically determined by the width of the trace, but may be
+adjusted using the Properties bar.
 
 The Status bar
 --------------
@@ -307,11 +306,11 @@ The last three deserve further explanation:
   electrically connected. When nets are visible, these collections are
   highlighted when the mouse hovers over any of their
   members. Additionally, if your PCB design is linked to a CSchem
-  schematic, holes or pads that should be part of a net (but
-  aren't yet) are highlighted in blue, and holes or pads that should
-  not be part of a net (but are) are highlighted in pink. The message
-  area on the left of the status bar may also show pertinent
-  information about nets.
+  schematic, holes or pads that should be part of a net but are not
+  yet connected are highlighted in blue, and connected holes or pads
+  that should not in fact be part of a net are highlighted in
+  pink. The message area on the left of the status bar may also show
+  pertinent information about nets.
 
 
 Components panel
@@ -331,7 +330,7 @@ Footnotes
 
 .. [#f2] When a pad or hole
         is part of a component that is linked to an element on a
-        CSchem schematic, a combobox with predefined choices appears;
+        CSchem schematic, a list of predefined choices appears;
         otherwise, a free-form name editor appears.
 
 .. [#f3] When multiple items
