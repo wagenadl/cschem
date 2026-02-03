@@ -32,12 +32,14 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 COMPONENTS Widgets Svg SvgWidgets PrintSupport REQUIRED)
 set(QT_MAC_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
-# Clangd
-set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-set_source_files_properties(tags PROPERTIES GENERATED true)
-add_custom_command(OUTPUT tags
-    COMMAND ctags -R --c++-kinds=+p --fields=+iaS --extra=+q . 
+if  (UNIX AND NOT APPLE) 
+  # Clangd - but only on Linux; VS Code can fend for itself
+  set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+  set_source_files_properties(tags PROPERTIES GENERATED true)
+  add_custom_command(OUTPUT tags
+    COMMAND ctags -R --kinds-c++=+p --fields=+iaS --extra=+q . 
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+endif()
 
 ######################################################################
 # Add the executables
