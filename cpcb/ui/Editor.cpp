@@ -1557,10 +1557,10 @@ void Editor::cleanupIntersections() {
   }
 }
 
-void Editor::setBoardSize(Dim w, Dim h, Board::Shape shp) {
+void Editor::setBoardSize(Dim w, Dim h, Dim cr) {
   d->layout.board().width = w;
   d->layout.board().height = h;
-  d->layout.board().shape = shp;
+  d->layout.board().cornerradius = cr;
   qDebug() << "setboardsize should create an undo step";
   update();
   emit boardChanged(d->layout.board());

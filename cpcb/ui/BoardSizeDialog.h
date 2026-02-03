@@ -17,9 +17,10 @@ public:
   void setLayout(class Layout const &);
   Dim boardWidth() const;
   Dim boardHeight() const;
-  Board::Shape boardShape() const;
+  Dim cornerRadius() const;
 public slots:
   void shrink();
+  void round();
 private:
   class Ui_BoardSizeDialog *ui;
   Rect minrect;

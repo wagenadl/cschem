@@ -272,7 +272,8 @@ void MWData::boardSizeDialog() {
   BoardSizeDialog bsd;
   bsd.setLayout(editor->pcbLayout());
   if (bsd.exec()) {
-    editor->setBoardSize(bsd.boardWidth(), bsd.boardHeight(), bsd.boardShape());
+    editor->setBoardSize(bsd.boardWidth(), bsd.boardHeight(),
+                         bsd.cornerRadius());
   }
 }
 
