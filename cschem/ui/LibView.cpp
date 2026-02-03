@@ -97,6 +97,7 @@ double LibViewData::nextY() const {
 void LibViewData::addSymbol(QString symbol) {
   Symbol const &smb = lib->symbol(symbol);
   SvgItem *item = new LibViewElement(symbol, smb.popupName(), view);
+  qDebug() << "addsym" << symbol << item;
   item->setRenderer(smb.renderer());
   scene->addItem(item);
   items[symbol] = item;
@@ -159,6 +160,7 @@ void LibView::rebuild() {
 	    [](QString a, QString b) { return symbolLessThan(a,b); });
   QString lastheader = "";
   for (QString s: symbols) {
+    qDebug() << "libview" << s;
     if (!(s.startsWith("port:") || s.startsWith("part:")))
       continue;
     QString header;
