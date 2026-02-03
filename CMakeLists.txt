@@ -32,7 +32,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 COMPONENTS Widgets Svg SvgWidgets PrintSupport REQUIRED)
 set(QT_MAC_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
-if  (UNIX AND NOT APPLE) 
+if (UNIX AND NOT APPLE) 
   # Clangd - but only on Linux; VS Code can fend for itself
   set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
   set_source_files_properties(tags PROPERTIES GENERATED true)
@@ -43,8 +43,13 @@ endif()
 
 ######################################################################
 # Add the executables
-add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp tags)
-add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp tags)
+if (UNIX AND NOT APPLE) 
+  add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp tags)
+  add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp tags)
+else()
+  add_executable(cschem WIN32 MACOSX_BUNDLE cschem/cschem.cpp)
+  add_executable(cpcb WIN32 MACOSX_BUNDLE cpcb/main.cpp)
+endif()
 configure_file(config.h.in config.h)
 include(cschem/CMakeLists.txt)
 include(cpcb/CMakeLists.txt)
