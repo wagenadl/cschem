@@ -51,6 +51,8 @@ Point FPWData::inferredOffset(Group const &grp) const {
   */
   Dim xoffset;
   Dim yoffset;
+  bool havex = false;
+  bool havey = false;
   QMap<Point, int> concount; // counts of attachment to each point
   for (int key: grp.keys()) {
     Object const &obj(grp.object(key));
@@ -64,10 +66,14 @@ Point FPWData::inferredOffset(Group const &grp) const {
       if (trc.layer==Layer::Panel
 	  && concount[trc.p1]<=1
 	  && concount[trc.p2]<=1) {
-	if (trc.p1.x==trc.p2.x)
-	  xoffset = trc.p1.x;
-	else if (trc.p1.y==trc.p2.y)
-	  yoffset = trc.p1.y;
+	//if (trc.p1.x==trc.p2.x)
+        //	  xoffset = trc.p1.x;
+        //	else
+        if (trc.p1.y==trc.p2.y) {
+          if (!havey || trc.p1.y > yoffset)
+            yoffset = trc.p1.y;
+          havey = true;
+        }
       }
     }
   }
@@ -121,7 +127,8 @@ void FPWData::writeSvgFooter() {
   out << "</svg>\n";
 }
 
-void FPWData::writeGroup(Group const &g, Point /*offset*/, Point const &masteroff) {
+void FPWData::writeGroup(Group const &g, Point /*offset*/,
+                         Point const &masteroff) {
   // the offset is subtracted from all objects
   Point off = masteroff - inferredOffset(g).flippedLeftRight();
   for (int id: g.keys()) {
@@ -183,12 +190,29 @@ void FPWData::writeArc(Arc const &arc, Point const &offset) {
     return;
   Point p = offset + arc.center.flippedLeftRight();
   Dim r = arc.radius;
-  out << "<circle"
-      << " style=\"fill:none;stroke:#ff0000;stroke-opacity:1;stroke-width:.25;\""
-      << prop("cx", p.x)
-      << prop("cy", p.y)
-      << prop("r", r)
-      << " />\n";
+  if (arc.angle >= 360) {
+    out << "<circle"
+        << " style=\"fill:none;stroke:#ff0000;stroke-opacity:1;stroke-width:.25;\""
+        << prop("cx", p.x)
+        << prop("cy", p.y)
+        << prop("r", r)
+        << " />\n";
+  } else {
+    FreeRotation start = arc.rota;
+    FreeRotation end = arc.rota;
+    end += arc.angle;
+    Point p1 = p - Point(r * start.sin(), r * start.cos());
+    Point p2 = p - Point(r * end.sin(), r * end.cos());
+    QString M = QString("M %1,%2").arg(coord(p1.x)).arg(coord(p1.y));
+    QString A = QString(" A %1,%2").arg(coord(r)).arg(coord(r));
+    QString R = QString(" %1").arg(arc.angle);
+    QString large = arc.angle >= 180 ? " 1 0" : " 0 0";
+    QString E = QString(" %1,%2").arg(coord(p2.x)).arg(coord(p2.y));
+    out << "<path"
+        << " style=\"fill:none;stroke:#ff0000;stroke-opacity:1;stroke-width:.25;\""
+        << " d=\"" + M + A + R + large + E + "\""
+        << " />\n";
+  }
 }
 
 
