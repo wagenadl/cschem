@@ -260,8 +260,10 @@ void Tracer::move(Point const &p) {
   d->onsomething = d->onlp.layer != Layer::Invalid;
   if (d->onsomething) {
     Object const &obj(d->ed->currentGroup().object(d->onnode));
-    d->onendpoint = obj.isPad() || obj.isHole()
-      || (obj.isTrace() && (d->onlp.point==obj.asTrace().p1 || d->onlp.point==obj.asTrace().p2));
+    d->onendpoint = obj.isPad()
+      || obj.isHole()
+      || (obj.isTrace() && (d->onlp.point==obj.asTrace().p1
+                            || d->onlp.point==obj.asTrace().p2));
     if (d->onendpoint)
       d->tracecurrent = d->onlp.point;
     else
