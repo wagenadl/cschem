@@ -23,25 +23,29 @@ public:
   }
   Point constrainTrace(Point p, Segment const &s) const {
     if (s.p1==s.p2)
-      return constrain(p); // hopeless for length zero segment
+      return constrain(s.p1); // hopeless for length zero segment
     Dim grid = ed->layout.board().grid;
     Dim sdx = s.p2.x - s.p1.x;
     Dim sdy = s.p2.y - s.p1.y;
     double sdx_ = sdx.raw();
     double sdy_ = sdy.raw();
-    auto adjusty = [&p, s, sdy, sdx_]() { p.y = s.p1.y + sdy * ((p.x - s.p1.x).raw()/sdx_); };
-    auto adjustx = [&p, s, sdx, sdy_]() { p.x = s.p1.x + sdx * ((p.y - s.p1.y).raw()/sdy_); };
+    auto adjusty = [&p, s, sdy, sdx_]() {
+      p.y = s.p1.y + sdy * ((p.x - s.p1.x).raw()/sdx_);
+    };
+    auto adjustx = [&p, s, sdx, sdy_]() {
+      p.x = s.p1.x + sdx * ((p.y - s.p1.y).raw()/sdy_);
+    };
 
     if (startonpin && !startongrid) {
       Point delta = p - tracestart;
       if (delta.x.abs() < grid/2) {
         p.x = tracestart.x;
         adjusty();
-        return p;
+        return s.projectionOntoSegment(p);
       } else if (delta.y.abs() < grid/2) {
         p.y = tracestart.y;
         adjustx();
-        return p;
+        return s.projectionOntoSegment(p);
       }
     }
     if (abs(sdy_) < abs(sdx_)) {
@@ -53,7 +57,7 @@ public:
       p.y = p.roundedTo(grid).y;
       adjustx();
     }
-    return p;
+    return s.projectionOntoSegment(p);
   }
   Point constrain(Point p) const {
     // constrain 45° angles or grid
@@ -154,7 +158,7 @@ Tracer::~Tracer() {
 void Tracer::start(Point const &p) {
   move(p);
   d->tracestart = d->tracecurrent;
-  qDebug() << "start" << d->tracestart << d->tracecurrent;
+  //  qDebug() << "start" << d->tracestart << d->tracecurrent;
   if (d->onendpoint) {
     Object const &obj(d->ed->currentGroup().object(d->onnode));
     d->startonpin = obj.isPad() || obj.isHole();
@@ -272,9 +276,9 @@ void Tracer::move(Point const &p) {
     d->onendpoint = false;
     d->tracecurrent = d->constrain(p);
   }
-  qDebug() << "Tracer::move" << p << d->onnode
-           << d->onlp.layer << d->onlp.point 
-           << d->onsomething << d->tracecurrent;
+  //qDebug() << "Tracer::move" << p << d->onnode
+  //         << d->onlp.layer << d->onlp.point 
+  //         << d->onsomething << d->tracecurrent;
 }
 
 void Tracer::render(QPainter &p) {

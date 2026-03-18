@@ -578,7 +578,6 @@ QString Group::humanName(NodeID const &ids) const {
 NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
                      Dim *distance_return) const {
   NodeID ids;
-  bool gotplane = false;
   Dim dist = Dim::infinity();
   for (int id: d->obj.keys()) {
     Object const &obj(object(id));
@@ -589,7 +588,6 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
         Dim dist1;
 	NodeID ids1 = g.nodeAt(p, mrg, lay, notrace, &dist1);
         if (dist1<dist) {
-          gotplane = false;
           ids = ids1;
           ids.push_front(id);
           dist = dist1;
@@ -598,7 +596,6 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
       case Object::Type::Hole: {
         Dim dist1 = p.distance(obj.asHole().p);
         if (dist1 < dist) {
-          gotplane = false;
           ids = NodeID().plus(id);
           dist = dist1;
         }
@@ -607,7 +604,6 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
         if (lay==Layer::Invalid || lay==obj.asPad().layer) {
           Dim dist1 = p.distance(obj.asPad().p);
           if (dist1 < dist) {
-            gotplane = false;
             ids = NodeID().plus(id);
             dist = dist1;
           }
@@ -615,18 +611,16 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
         break;
       case Object::Type::Trace:
         if (!notrace
-            && (ids.isEmpty() || gotplane)
 	    && (lay==obj.asTrace().layer
 		|| (lay==Layer::Invalid
 		    && layerIsCopper(obj.asTrace().layer)))) {
-          gotplane = false;
           ids = NodeID().plus(id); // this could still be overwritten!
         }
         break;
       case Object::Type::Plane:
-        if (!notrace && ids.isEmpty()
+        if (!notrace
+            && ids.isEmpty()
 	    && (lay==obj.asPlane().layer || lay==Layer::Invalid)) {
-          gotplane = true;
           ids = NodeID().plus(id); // this could still be overwritten!
         }
         break;
