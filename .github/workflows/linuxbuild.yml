@@ -18,3 +18,26 @@ jobs:
         run: make
       - name: Build .deb
         run: make deb
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-deb-package
+          path: build/cschem*.deb
+          retention-days: 1
+  release:
+    name: Publish installer
+    runs-on: ubuntu-latest
+    if: (github.ref_type == 'tag') && startsWith(github.ref, 'v')
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: linux-deb-package
+      - name: Upload .deb
+        uses: softprops/action-gh-release@v2
+        with:
+          files: cschem*.deb
+          token: ${{github.TOKEN}}
