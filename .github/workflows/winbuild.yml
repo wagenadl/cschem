@@ -5,6 +5,10 @@ on:
   
 name: Build binaries on Windows
 
+permissions:
+  contents: write
+  id-token: write
+
 
 jobs:
   build:
@@ -29,3 +33,23 @@ jobs:
       - name: Create installer
         working-directory: ./build
         run: cpack
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-installer
+          path: build/CSchem*.exe
+          retention-days: 1
+  release:
+    name: Publish installer
+    runs-on: windows-latest
+    if: (github.ref_type == 'tag') && startsWith(github.ref, 'v')
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: windows-installer
+      - name: Upload .exe
+        uses: softprops/action-gh-release@v2
+        with:
+          files: CSchem*.exe
+          token: ${{github.TOKEN}}
