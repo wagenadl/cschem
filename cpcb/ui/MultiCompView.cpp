@@ -29,7 +29,6 @@ public:
     ed = 0;
   }
   void rebuild();
-  void perhapsSaveDefault(QString);
   void setMinWidth();
 public:
   MultiCompView *mcv;
@@ -55,23 +54,6 @@ static QString cleansedFilename(QString fn) {
   return fn;
 }
 
-void MCVData::perhapsSaveDefault(QString ref) {
-  QString sym;
-  for (Element const &elt: schem.circuit().elements)
-    if (elt.name==ref)
-      if (sym.isEmpty() || elt.isContainer())
-	sym = elt.symbol();
-  if (evs.contains(ref)) {
-    Group const &grp = evs[ref]->group();
-    if (!grp.isEmpty()) {
-      Group root;
-      int id = root.insert(Object(grp));
-      QDir::root().mkpath(Paths::recentSymbolsLocation());
-      root.saveComponent(id, Paths::recentSymbolsLocation() + "/"
-			 + cleansedFilename(sym) + ".svg");
-    }
-  }
-}
 
 void MCVData::setMinWidth() {
   int mw = 100;
@@ -126,8 +108,6 @@ void MCVData::rebuild() {
         evs[ref]->linkEditor(ed);
 	int idx = evs.keys().indexOf(ref);
 	lay->insertWidget(idx, evs[ref]);
-	QObject::connect(evs[ref], &ElementView::changed,
-			 [this, ref]() { perhapsSaveDefault(ref); });
       }
       evs[ref]->setRefText(ref);
       QString pv = newelts[ref].value;
@@ -148,16 +128,6 @@ void MCVData::rebuild() {
 				  + " " + pin + ")");
       } else {
 	evs[ref]->setFallbackText("??");
-      }
-      if (trulynew) {
-	QDir dir(Paths::recentSymbolsLocation());
-	QString fn = cleansedFilename(sym) + ".svg";
-	if (dir.exists(fn)) {
-	  Group root;
-	  int id = root.insertComponent(dir.absoluteFilePath(fn));
-	  if (id>0)
-	    evs[ref]->setGroup(root.object(id).asGroup());
-	}
       }
     }
   }

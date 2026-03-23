@@ -32,6 +32,10 @@ namespace Paths {
       = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QStringList allroots
       = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    allroots.append(installPath.absolutePath());
+    QDir up(installPath);
+    up.cdUp();
+    allroots.append(up.absolutePath());
     //qDebug() << "systemsymbolroot" << allroots << installPath;
     for (QString const &root: allroots) {
       if (root==userroot)
@@ -39,11 +43,10 @@ namespace Paths {
       //qDebug() << "allroots" << root;
       if (QDir(root).exists("symbols"))
         return QDir(root).absoluteFilePath("symbols");
+      if (QDir(root).exists("cschem/symbols"))
+        return QDir(root).absoluteFilePath("cschem/symbols");
     }
-    if (QDir(installPath).exists("symbols"))
-      return installPath.absoluteFilePath("symbols");
-    else
-      return QString();
+    return QString();
   }
 
   QString defaultLocation() {

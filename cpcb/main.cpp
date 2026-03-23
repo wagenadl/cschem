@@ -12,10 +12,6 @@
 #include <QFileOpenEvent>
 
 void ensureOutlineLibrary() {
-  QDir recentdir(Paths::recentSymbolsLocation());
-  if (!recentdir.exists())
-    recentdir.mkpath(".");
-  
   QDir userlib(Paths::userComponentRoot());
   if (!userlib.exists())
     userlib.mkpath(".");

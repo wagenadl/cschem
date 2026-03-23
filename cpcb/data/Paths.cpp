@@ -31,12 +31,6 @@ namespace Paths {
     return QDir(root).absoluteFilePath("pcb-outlines");
   }
   
-  QString recentSymbolsLocation() {
-  QString root
-    = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-  return QDir(root).absoluteFilePath("recent-symbol-instances");
-  }
-  
   QString defaultLocation() {
     return QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
   }
@@ -46,18 +40,20 @@ namespace Paths {
       = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QStringList allroots
       = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+    allroots.append(installPath.absolutePath());
+    QDir up(installPath);
+    up.cdUp();
+    allroots.append(up.absolutePath());
     qDebug() << "allroots = " << allroots;
     for (QString const &root: allroots) {
       if (root==userroot)
         continue;
       if (QDir(root).exists("pcb-outlines"))
         return QDir(root).absoluteFilePath("pcb-outlines");
+      if (QDir(root).exists("cpcb/pcb-outlines"))
+        return QDir(root).absoluteFilePath("cpcb/pcb-outlines");
     }
-    qDebug() << "installpath = " << installPath;
-    if (installPath.exists("pcb-outlines"))
-      return installPath.absoluteFilePath("pcb-outlines");
-    else
-      return QString();
+    return QString();
   }
 };
   
