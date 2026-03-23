@@ -36,6 +36,7 @@
 #include "VerifySchematic.h"
 #include <QScrollBar>
 #include <cmath>
+#include "MWView.h"
 
 static QMap<QString, MainWindow *> &openFiles() {
   static QMap<QString, MainWindow *> *m = 0;
@@ -43,58 +44,6 @@ static QMap<QString, MainWindow *> &openFiles() {
     m = new QMap<QString, MainWindow *>();
   return *m;
 }
-
-class MWView: public QGraphicsView {
-public:
-  MWView(QWidget *parent=0): QGraphicsView(parent) {
-    /* Use either AnchorUnderMouse or AnchorViewCenter to set anchor for
-       zooming with [control]+[+/-].
-       Zooming with [control]+[scroll wheel]
-       is always relative to mouse position. */
-    setTransformationAnchor(QGraphicsView::NoAnchor);
-    setBackgroundBrush(Qt::white);
-  }
-  virtual ~MWView() { }
-  virtual void wheelEvent(QWheelEvent *e) override {
-    auto anchor = transformationAnchor();
-    if (e->modifiers() & Qt::ControlModifier) {
-      double scl = std::pow(2, e->angleDelta().y() / 240.0);
-      setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-      scale(scl, scl);
-    } else {
-      setTransformationAnchor(QGraphicsView::NoAnchor);
-      if (e->deviceType()==QInputDevice::DeviceType::TouchPad) {
-        QPoint delta = e->pixelDelta() * 2;
-        translate(delta.x(), delta.y());
-      } else { // scroll wheel
-        int delta = e->angleDelta().y();
-        if (e->modifiers() & Qt::ShiftModifier) 
-          translate(delta, 0);  
-        else
-          translate(0, delta);
-      }
-    }
-    setTransformationAnchor(anchor); 
-  }
-  virtual void keyPressEvent(QKeyEvent *e) override {
-    QGraphicsView::keyPressEvent(e);
-    /*
-    // This does not work, because bizarrely, press and release is
-    // reported as press. a second press and release is reported as release.
-    qDebug() << "KeyPress" << e->key() << int(Qt::Key_Alt);
-    if (e->key()==Qt::Key_Alt)
-        setDragMode(QGraphicsView::ScrollHandDrag);
-    */
-  }
-  virtual void keyReleaseEvent(QKeyEvent *e) override {
-    QGraphicsView::keyReleaseEvent(e);
-    /*
-    qDebug() << "KeyRelease" << e->key() << int(Qt::Key_Alt);
-    if (e->key()==Qt::Key_Alt)
-        setDragMode(QGraphicsView::NoDrag);
-    */
-  }
-};
 
 class MWData {
 public:
@@ -109,6 +58,7 @@ public:
 public:
   void fitView();
   void rescale(double);
+  void setlibscale();
 public:
   MWView *view;
   Scene *scene;
@@ -123,10 +73,15 @@ public:
   int recursedepth;
 };
 
+void MWData::setlibscale() {
+  libview->setScale(view->transform().m11());
+}
+
 QString MWData::lastdir;
 
 void MWData::rescale(double x) {
   view->scale(x, x);
+  setlibscale();
 }
 
 void MWData::fitView() {
@@ -146,7 +101,6 @@ void MWData::fitView() {
   w = br.width();
   if (h < H) 
     br = QRectF(QPointF(br.left(), br.top() - (H-h)/2), QSizeF(w, H));
-  qDebug() << "fitView" << br << w << h << W << h << view->width() << view->height();
   if (view->width() < 300 || view->height() < 300) {
     // tiny window, let's be reasonable
     view->setTransform(QTransform());
@@ -155,6 +109,7 @@ void MWData::fitView() {
   } else {
     view->fitInView(br, Qt::KeepAspectRatio);
   }
+  setlibscale();
 }
 
 MainWindow::MainWindow(): d(new MWData()) {
@@ -174,11 +129,10 @@ MainWindow::MainWindow(): d(new MWData()) {
   if (h < h0)
     h = h0;
   resize(w, h);
-  qDebug() << "size" << size() << w << h;
-  //  d->fitView();
   d->view->setTransform(QTransform());
   d->view->scale(.7, .7);
   d->view->centerOn(d->scene ? d->scene->itemsBoundingRect().center() : QPointF(0, 0));
+  d->setlibscale();
 }
 
 void MainWindow::createDocks() {
@@ -191,6 +145,10 @@ void MainWindow::createDocks() {
           this, &MainWindow::lvunhover);
   d->libviewdock = new QDockWidget("Library", this);
   d->libviewdock->setWidget(d->libview);
+  connect(d->libview, &LibView::rescaled,
+          this, [this]() {
+            d->libviewdock->setFixedWidth(d->libview->width());
+          });
   showLibrary();
 
   d->partlistview = new PartListView();
@@ -229,6 +187,8 @@ void MainWindow::createView() {
   // .. more like components, which are always antialised by the svgrenderer
   d->view->setInteractive(true);
   d->view->setMouseTracking(true);
+  connect(d->view, &MWView::rescaled,
+          this, [this]() { d->setlibscale(); });
   setCentralWidget(d->view);
 }
 
@@ -625,7 +585,7 @@ void MainWindow::aboutAction() {
   QString me = "<b>" + Style::programName() + "</b>";
   QString vsn = Style::versionName();
   QString txt = me + " " + vsn
-    + "<p>" + "(C) 2018–2025 Daniel A. Wagenaar\n"
+    + "<p>" + "(C) 2018–2026 Daniel A. Wagenaar\n"
     + "<p>" + me + " is a program for electronic circuit layout with high-quality SVG export. More information is available at <a href=\"http://www.danielwagenaar.net/cschem\">www.danielwagenaar.net/cschem</a>.\n"
     + "<p>" + me + " is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n"
     + "<p>" + me + " is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n"

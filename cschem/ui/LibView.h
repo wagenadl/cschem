@@ -10,18 +10,20 @@ class LibView: public QGraphicsView {
   Q_OBJECT;
 public:
   explicit LibView(QWidget *parent=0);
-  void scale(double);
   ~LibView();
 signals:
   void activated(QString, QString);
   void hoveron(QString, QString);
   void hoveroff();
+  void rescaled();
 public slots:
   void clear();
+  void setScale(float scl);
   void rebuild();
   void setLibrary(class SymbolLibrary const *lib);
 public:
   void resizeEvent(QResizeEvent *e) override;
+  void wheelEvent(QWheelEvent *e) override;
   void activate(QString, QString); // causes the signal to be emitted
   void hover(QString, QString);
   void unhover();
