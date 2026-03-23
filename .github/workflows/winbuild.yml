@@ -38,7 +38,7 @@ jobs:
   release:
     name: Publish installer
     runs-on: windows-latest
-    if: (github.ref_type == 'tag') && startsWith(github.ref, 'v')
+    if: (github.ref_type == 'tag') && startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: write
       id-token: write
