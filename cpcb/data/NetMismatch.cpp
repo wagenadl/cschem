@@ -53,7 +53,7 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
         contained << it.key();
     }
     QList<NodeID> ids = root.findNodesByName(name);
-    qDebug() << "looking for" << name << "gave" << ids;
+    //    qDebug() << "looking for" << name << "gave" << ids;
     if (ids.isEmpty())
       missingEntirely << name;
     else
