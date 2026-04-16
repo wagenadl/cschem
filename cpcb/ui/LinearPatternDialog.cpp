@@ -28,7 +28,7 @@ void LinearPatternDialog::gui(Editor *editor, bool metric, QWidget *parent) {
   Dim hspacing = dlg.ui->hspacing->value();
   if (dlg.ui->left->isChecked())
     hspacing = -hspacing;
-  Dim vspacing = dlg.ui->hspacing->value();
+  Dim vspacing = dlg.ui->vspacing->value();
   if (dlg.ui->up->isChecked())
     vspacing = -vspacing;
 

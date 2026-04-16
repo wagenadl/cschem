@@ -171,7 +171,7 @@ void PlaneEditor::mouseRelease(Point p,
                                Qt::MouseButton b,
                                Qt::KeyboardModifiers m) {
   mouseMove(p, b, m);
-  if (d->moving) {
+  if (d->moving && d->hoverptidx >= 0) {
     Polyline postmovepoly
       = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
     Point postmovept = postmovepoly[d->hoverptidx];
