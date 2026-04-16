@@ -2,6 +2,7 @@
 
 #include "Segment.h"
 #include "pi.h"
+#include <stdint.h>
 
 Rect Segment::boundingRect() const {
   Rect r = Rect(p1, p2);
@@ -34,8 +35,14 @@ Point Segment::projectionOntoSegment(Point p) const {
     return p1;
   else if (frc.num>=frc.denom)
     return p2;
-  else
-    return p1 + (p2-p1)*frc.num / frc.denom;
+  double x = (p2-p1).x.raw();
+  double y = (p2-p1).y.raw();
+  double n = frc.num;
+  if (x*n < 4e18 && y*n < 4e18 && x*n > -4e18 && y*n > -4e18)
+    return p1 + (p2-p1) * frc.num / frc.denom;
+  int64_t n_ = frc.num / 256;
+  int64_t d = frc.denom / 256;
+  return p1 + (p2-p1) * n_ / d;
 }
 
 bool Segment::betweenEndpoints(Point p, Dim mrg) const {

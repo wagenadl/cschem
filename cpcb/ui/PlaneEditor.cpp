@@ -79,9 +79,12 @@ void PEData::updateHoverPtIdx() {
 }
 
 void PEData::updateHoverEdgeIdx() {
-  hoveredgeidx = hoverptidx>=0
-    ? -1
-    : onEdge(hoverpt.roundedTo(ed->layout.board().grid), &hoverpt);
+  if (hoverptidx >= 0) {
+    hoveredgeidx = -1;
+  } else {
+    Point p = hoverpt.roundedTo(ed->layout.board().grid);
+    hoveredgeidx = onEdge(p, &hoverpt);
+  }
 }
 
 int PEData::onVertex(Point p) const {
@@ -153,7 +156,7 @@ void PlaneEditor::mousePress(Point p, Qt::MouseButton b,
       d->premovept = d->premovepoly[d->hoverptidx];
     } else if (d->hoveredgeidx>=0) {
       d->moving = true;
-      d->movingedge = d->shiftheld;
+      d->movingedge = !d->shiftheld;
       d->presspt = p;
       d->premovepoly
         = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
@@ -171,19 +174,22 @@ void PlaneEditor::mouseRelease(Point p,
                                Qt::MouseButton b,
                                Qt::KeyboardModifiers m) {
   mouseMove(p, b, m);
-  if (d->moving && d->hoverptidx >= 0) {
-    Polyline postmovepoly
-      = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
-    Point postmovept = postmovepoly[d->hoverptidx];
-    // first, restore...
-    ed->currentGroup().object(d->hovernode).asPlane().perimeter
-      = d->premovepoly;
-    if (postmovept != d->premovept) {
-      // then create undo point...
-      UndoCreator uc(ed, true);
-      // finally remake
+  if (d->moving) {
+    if (d->movingedge) {
+    } else {
+      Polyline postmovepoly
+        = ed->currentGroup().object(d->hovernode).asPlane().perimeter;
+      Point postmovept = postmovepoly[d->hoverptidx];
+      // first, restore...
       ed->currentGroup().object(d->hovernode).asPlane().perimeter
-        = postmovepoly;
+        = d->premovepoly;
+      if (postmovept != d->premovept) {
+        // then create undo point...
+        UndoCreator uc(ed, true);
+        // finally remake
+        ed->currentGroup().object(d->hovernode).asPlane().perimeter
+          = postmovepoly;
+      }
     }
     d->moving = false;
     ed->ed->update();
@@ -207,7 +213,7 @@ void PlaneEditor::mouseRelease(Point p,
 void PlaneEditor::mouseMove(Point p,
                             Qt::MouseButton,
                             Qt::KeyboardModifiers m) {
-  d->shiftheld = !(m & Qt::ShiftModifier);
+  d->shiftheld = m & Qt::ShiftModifier;
   Point p0 = d->hoverpt;
   d->hoverpt = p;
   if (d->moving) {
@@ -282,11 +288,9 @@ void PlaneEditor::doubleClick(Point p,
                               Qt::KeyboardModifiers m) {
   Group const &here(ed->currentGroup());
   NodeID nid = here.nodeAt(p, ed->pressMargin(), ed->props.layer, false);
-  qDebug() << "doubleclick" << nid;
   if (nid.isEmpty())
     return;
   Object const &obj(here.object(nid));
-  qDebug() << "  obj" << obj.isTrace();
   if (obj.isPad()) {
     UndoCreator uc(ed, true);
     Pad &pad(ed->currentGroup().object(nid).asPad());
@@ -334,7 +338,6 @@ void PlaneEditor::doubleClick(Point p,
       trace.noclear = !trace.noclear;
       ed->updateOnWhat(true); // rebuild net
       ed->ed->update();
-      qDebug() << "double click trace" << trace.noclear;
     }
   }
 }
@@ -359,7 +362,7 @@ void PlaneEditor::render(QPainter &p) {
       p.setBrush(QColor(255, 255, 255, 128));
       p.drawEllipse(peri[d->hoverptidx], rad, rad);
     } else if (d->hoveredgeidx>=0) {
-      if (d->moving ? d->movingedge : d->shiftheld) {
+      if (d->moving ? d->movingedge : !d->shiftheld) {
 	QPointF p0 = peri[d->hoveredgeidx];
 	QPointF p1 = peri[(d->hoveredgeidx+1) % peri.size()];
 	p.setPen(QPen(QColor(255, 255, 255, 128), rad*2));
