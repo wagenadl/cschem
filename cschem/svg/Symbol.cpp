@@ -264,7 +264,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
     if (label.isEmpty())
       label = elt.label();
     qDebug() << "scanpins" << label;
-    if (label.startsWith("pin:")) {
+    if (label=="pin" || label.startsWith("pin:")) {
       QString name = label.mid(4);
       if (pins.contains(name)) {
         setError("Invalid repeated pin name “" + name + "”");
