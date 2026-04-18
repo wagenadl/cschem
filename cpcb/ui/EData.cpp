@@ -12,6 +12,7 @@
 
 constexpr int MOVETHRESHOLD_PIX = 4;
 constexpr int MARGIN_PIX = 5;
+#define GRIDCOLOR QColor(255, 255, 255, 128)
 
 EData::EData(Editor *ed): ed(ed) {
   autofit = false;
@@ -166,7 +167,7 @@ void EData::drawGrid(QPainter &p) const {
   double wy0 = 0;
   double wy1 = layout.board().height.toMils();
   constexpr int major = 5;
-  p.setPen(QPen(QColor(255, 255, 255), 1.0/mils2px));
+  p.setPen(QPen(GRIDCOLOR, 1.0/mils2px));
   QPointF dpx(2,0);
   QPointF dpy(0,2);
   if (wgdy*mils2px >= 10 && wgdy*mils2px >= 10) {
