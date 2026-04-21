@@ -5,6 +5,7 @@
 namespace CSV {
   QString quote(QString s) {
     s.replace("\"", "\"\"");
+    s.replace("\n", " ");
     return "\"" + s + "\"";
  }
 
