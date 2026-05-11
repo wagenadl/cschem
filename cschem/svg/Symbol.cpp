@@ -165,7 +165,7 @@ Symbol::Symbol() {
 }
 
 Symbol::Symbol(XmlElement const &elt, QString name) {
-  qDebug() << "Symbol" << name;
+  //  qDebug() << "Symbol" << name;
   d = new SymbolData;
   d->elt = elt;
   d->elt.removeAttribute("transform");
@@ -179,11 +179,11 @@ Symbol::Symbol(XmlElement const &elt, QString name) {
     d->setError("Symbol has no name.");
   else
     d->setValid();
-  qDebug() << "  scanning" << d->valid;
+  // qDebug() << "  scanning" << d->valid;
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
       d->scanPins(e.element());
-  qDebug() << "  scanned" << d->valid << d->pins.isEmpty();
+  // qDebug() << "  scanned" << d->valid << d->pins.isEmpty();
   if (d->valid && d->pins.isEmpty() && d->cpins.isEmpty())
     d->setError("No pins found in symbol definition for “" + d->name + "”.");
   d->ensureBBox();
@@ -263,7 +263,7 @@ void SymbolData::scanPins(XmlElement const &elt) {
     QString label = elt.title();
     if (label.isEmpty())
       label = elt.label();
-    qDebug() << "scanpins" << label;
+    // qDebug() << "scanpins" << label;
     if (label=="pin" || label.startsWith("pin:")) {
       QString name = label.mid(4);
       if (pins.contains(name)) {

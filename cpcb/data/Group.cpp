@@ -431,7 +431,6 @@ QStringList Group::pinNames() const {
 
 Point Group::anchor() const {
   QStringList names = pinNames();
-  qDebug() << "anchor" << names;
   if (names.isEmpty())
     return boundingRect().center();
   else

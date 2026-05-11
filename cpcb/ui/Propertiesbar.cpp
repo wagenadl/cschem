@@ -575,7 +575,6 @@ void PBData::getPropertiesFromSelection() {
   QSet<Point> points(editor->selectedPoints());
   Group const &here(editor->currentGroup());
 
-  qDebug() << "getpropertiesfromselection" << objects.size() << points.size();
   getRectFromObjectsAndPoints(objects, here, points);
   getP0fromGroup(objects, here)
     || getP0fromPoints(points)
