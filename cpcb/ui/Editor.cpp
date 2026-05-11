@@ -12,7 +12,6 @@
 #include <QResizeEvent>
 #include <QTimer>
 #include <algorithm>
-#include "PatternHelper.h"
 
 #include "ui/BOM.h"
 
@@ -925,23 +924,20 @@ void Editor::linearPattern(int hcount, Dim hspacing,
   uc.realize();
   Group &here(d->currentGroup());
 
-  PatternHelper helper(here, d->selection);
-
   for (int x=0; x<hcount; x++) {
     for (int y=0; y<vcount; y++) {
       if (x==0 && y==0)
         continue;
       Point shift(x*hspacing, y*vspacing);
+      Group copy;
       for (int id: d->selection) {
         Object obj = here.object(id);
         obj.translate(shift);
-        int newid = here.insert(obj);
-        helper.addItem(id, newid);
+        copy.insert(obj);
       }
+      here.merge(copy);
     }
   }
-
-  helper.apply();
 }
 
 void Editor::circularPattern(int count, FreeRotation const &angle,
@@ -952,10 +948,9 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
   uc.realize();
   Group &here(d->currentGroup());
 
-  PatternHelper helper(here, d->selection);
-
   FreeRotation a(0.0);
   for (int k=1; k<count; k++) {
+    Group copy;
     a += angle;
     Point shift;
     if (!individual) {
@@ -969,12 +964,10 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
         obj.freeRotate(a, center);
       else 
         obj.translate(shift);
-      int newid = here.insert(obj);
-      helper.addItem(id, newid);
+      copy.insert(obj);
     }
+    here.merge(copy);
   }
-
-  helper.apply();
 }
 
 void Editor::rotateCW(bool noundo, bool nottext) {
