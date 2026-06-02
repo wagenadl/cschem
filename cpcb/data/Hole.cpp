@@ -47,7 +47,7 @@ QPainterPath Hole::outlinePath(Layer l) const {
   } else {
     path.addEllipse(QPointF(0, 0), od_/2, od_/2);
   }
-  if (l!=Layer::Invalid && l==fpcon) {
+  if (l!=Layer::Invalid && l==fpcon && !noclear) {
     double w = Board::fpConWidth(od, od).toMils();
     double dl = (Board::padClearance(od, od) + Board::fpConOverlap()).toMils();
     path.addRect(-od_/2 - dl - sl/2, -w/2, od_ + sl + 2*dl, w);
@@ -141,7 +141,7 @@ bool Hole::touches(Trace const &t) const {
 }
 
 bool Hole::touches(FilledPlane const &fp) const {
-  if (fpcon==fp.layer) {
+  if (fpcon==fp.layer || noclear) {
     if (fp.perimeter.contains(p, od/2))
       return true;
     return false; // this is not quite good enough
