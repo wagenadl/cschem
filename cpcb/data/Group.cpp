@@ -431,7 +431,6 @@ QStringList Group::pinNames() const {
 
 Point Group::anchor() const {
   QStringList names = pinNames();
-  qDebug() << "anchor" << names;
   if (names.isEmpty())
     return boundingRect().center();
   else
@@ -492,9 +491,9 @@ QSet<Point> Group::pinPoints() const {
     case Object::Type::Pad:
       pp << obj.asPad().p;
       break;
-    case Object::Type::Group: 
-      pp |= obj.asGroup().pinPoints();
-      break;
+    //case Object::Type::Group: 
+    //  pp |= obj.asGroup().pinPoints();
+    //  break;
     default:
       break;
     }
@@ -516,9 +515,9 @@ QSet<Point> Group::pinPoints(Layer l) const {
       if (l==pad.layer)
 	pp << pad.p;
     } break;
-    case Object::Type::Group: 
-      pp |= obj.asGroup().pinPoints(l);
-      break;
+    //case Object::Type::Group: 
+    //  pp |= obj.asGroup().pinPoints(l);
+    //  break;
     default:
       break;
     }

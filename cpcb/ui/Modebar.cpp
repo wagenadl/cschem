@@ -6,7 +6,6 @@
 Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   auto addAct2 = [this](Mode m, QString ic, QString lbl, Qt::Key k) {
     QIcon icon(":/icons/" + ic);
-        qDebug() << "icon" << ic << "sizes" << icon.availableSizes();
     actions[m] = addAction(icon, lbl,
                this, [this, m]() { setMode(m); });
     actions[m]->setShortcut(QKeySequence(k));

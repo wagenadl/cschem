@@ -5,7 +5,17 @@
 namespace CSV {
   QString quote(QString s) {
     s.replace("\"", "\"\"");
-    return "\"" + s + "\"";
+    s.replace("Ω", "ohm");
+    QString out = "";
+    for (QChar c: s) {
+      if (c.unicode() <= 32)
+        out += " ";
+      else if (c.unicode() <= 126)
+        out += c;
+      else
+        out += '.';
+    }
+    return "\"" + out + "\"";
  }
 
   QString encode(QList<QStringList> table) {
