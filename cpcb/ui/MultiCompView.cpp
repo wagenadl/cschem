@@ -48,11 +48,11 @@ static QString simplifiedSymbol(QString pv) {
   return pv;
 }
 
-static QString cleansedFilename(QString fn) {
-  QRegularExpression re("[^A-Za-z0-9]");
-  fn.replace(re, "-");
-  return fn;
-}
+//static QString cleansedFilename(QString fn) {
+//  QRegularExpression re("[^A-Za-z0-9]");
+//  fn.replace(re, "-");
+//  return fn;
+//}
 
 
 void MCVData::setMinWidth() {
