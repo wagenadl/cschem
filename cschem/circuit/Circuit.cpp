@@ -402,4 +402,3 @@ void Circuit::verifyIDs() const {
 QString Circuit::humanPinName(PinID pin) const {
   return elements[pin.element()].humanPinName(pin.pin());
 }
-
