@@ -930,11 +930,16 @@ void Editor::linearPattern(int hcount, Dim hspacing,
         continue;
       Point shift(x*hspacing, y*vspacing);
       Group copy;
+      QMap<int, int> idmap;
       for (int id: d->selection) {
         Object obj = here.object(id);
         obj.translate(shift);
-        copy.insert(obj);
+        int copyid = copy.insert(obj);
+        idmap[id] = copyid;
       }
+      for (int id: d->selection) 
+        if (copy.object(idmap[id]).isGroup())
+          copy.object(idmap[id]).asGroup().setRefTextId(idmap[here.object(id).asGroup().refTextId()]);
       here.merge(copy);
     }
   }
@@ -951,6 +956,7 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
   FreeRotation a(0.0);
   for (int k=1; k<count; k++) {
     Group copy;
+    QMap<int, int> idmap;
     a += angle;
     Point shift;
     if (!individual) {
@@ -964,8 +970,12 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
         obj.freeRotate(a, center);
       else 
         obj.translate(shift);
-      copy.insert(obj);
+      int copyid = copy.insert(obj);
+      idmap[id] = copyid;
     }
+    for (int id: d->selection) 
+      if (copy.object(idmap[id]).isGroup())
+        copy.object(idmap[id]).asGroup().setRefTextId(idmap[here.object(id).asGroup().refTextId()]);
     here.merge(copy);
   }
 }

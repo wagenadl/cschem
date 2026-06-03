@@ -985,6 +985,7 @@ QSet<int> Group::merge(Group const &g) {
     int ourid = insert(g.object(id));
     ids << ourid;
     idmap[id] = ourid;
+    qDebug() << "merge" << id << " -> " << ourid;
   }
 
   // ensure no duplicate refs
@@ -1009,7 +1010,9 @@ QSet<int> Group::merge(Group const &g) {
 	group.ref = ::altRef(group.ref, refs);
       refs << group.ref;
       if (group.refTextId()>0) {
-	int txtid = idmap[group.refTextId()];
+        qDebug() << "  group " << id << " -> " << idmap[id];
+	int txtid = idmap[g.object(id).asGroup().refTextId()];
+        qDebug() << "  reftext" << g.object(id).asGroup().refTextId() << " -> " << txtid << " / " << group.refTextId();
 	Text &text(object(txtid).asText());
 	group.setRefTextId(txtid);
 	text.setGroupAffiliation(idmap[id]);
