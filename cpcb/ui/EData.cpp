@@ -951,7 +951,7 @@ QCursor EData::crossCursor() {
   if (got)
     return cursor;
   QPixmap pm(QIcon(":icons/CursorCross.svg").pixmap(QSize(32, 32), 2));
-  cursor = QCursor(pm, pm.width()/2, pm.height()/2);
+  cursor = QCursor(pm); //, pm.width()/2, pm.height()/2);
   got = true;
   return cursor;
 }
@@ -962,7 +962,7 @@ QCursor EData::tinyCursor() {
   if (got)
     return cursor;
   QPixmap pm(QIcon(":icons/CursorCross.svg").pixmap(QSize(16, 16), 2));
-  cursor = QCursor(pm, pm.width()/2, pm.height()/2);
+  cursor = QCursor(pm); //, pm.width()/2, pm.height()/2);
   got = true;
   return cursor;
 }
