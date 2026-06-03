@@ -40,10 +40,13 @@ ExportDialog::~ExportDialog() {
 bool ExportDialog::runDialog(QString pcbfilename, QString exportdir) {
   pwd = exportdir;
   QFileInfo fi(pcbfilename);
+  QDir dir(fi.dir());
+  if (dir.exists("fab")) 
+    dir.cd("fab");
   if (pcbfilename.isEmpty())
     ui->gerberfilename->setText("");
   else
-    ui->gerberfilename->setText(fi.absolutePath()
+    ui->gerberfilename->setText(dir.absolutePath()
                                 + "/" + fi.completeBaseName() + ".zip");
   return exec();
 }
