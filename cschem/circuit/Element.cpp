@@ -152,7 +152,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Element const &c) {
 QString Element::report() const {
   return QString("e#%1: [%2 at %3,%4 (%5) - %6 %7]")
     .arg(id).arg(symbol())
-    .arg(position.x()).arg(position.y()).arg(rotation)
+    .arg(position.x()).arg(position.y()).arg(int(rotation))
     .arg(value).arg(name);
 }
 
