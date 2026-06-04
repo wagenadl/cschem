@@ -51,7 +51,7 @@ Point FPWData::inferredOffset(Group const &grp) const {
   */
   Dim xoffset;
   Dim yoffset;
-  bool havex = false;
+  //bool havex = false;
   bool havey = false;
   QMap<Point, int> concount; // counts of attachment to each point
   for (int key: grp.keys()) {

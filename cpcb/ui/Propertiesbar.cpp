@@ -17,7 +17,6 @@
 #include "AbsIncToggle.h"
 #include <QSpinBox>
 
-const Dim minRingWidth(Dim::fromMM(0.3));
 
 class NarrowEditor: public QLineEdit {
 public:
@@ -1089,6 +1088,7 @@ void PBData::setupUI() {
   linewidthc = makeContainer(dimg);
   makeIcon(linewidthc, "Width", "Line width");
   linewidth = makeDimSpinner(linewidthc);
+  linewidth->setMinimumValue(Board::minLineWidth());
   linewidth->setValue(Dim::fromInch(.010));
   QObject::connect(linewidth, &DimSpinner::valueEdited,
 		   [this](Dim d) { editor->setLineWidth(d); });
@@ -1099,13 +1099,13 @@ void PBData::setupUI() {
   //makeLabel(idc, "⌀", "Hole diameter");
   makeIcon(idc, "Diameter", "Hole diameter");
   id = makeDimSpinner(idc);
-  id->setMinimumValue(Dim::fromMM(0.3));
+  id->setMinimumValue(Board::minHoleID());
   id->setValue(Dim::fromInch(.040));
   QObject::connect(id, &DimSpinner::valueEdited,
 		   [this](Dim d) {
 		     if (od->hasValue()
-			 && (od->value() < d + minRingWidth))
-		       od->setValue(d + minRingWidth, true);
+			 && (od->value() < Board::minHoleOD(d)))
+		       od->setValue(Board::minHoleOD(d), true);
 		     editor->setID(d); });
 
   slotlengthc = makeContainer(dimg);
@@ -1120,13 +1120,14 @@ void PBData::setupUI() {
   odc = makeContainer(dimg);
   makeLabel(odc, "OD", "Pad diameter");
   od = makeDimSpinner(odc);
-  od->setMinimumValue(Dim::fromInch(0.020));
+  od->setMinimumValue(Board::minHoleOD(Board::minHoleID()));
   od->setValue(Dim::fromInch(.065));
   QObject::connect(od, &DimSpinner::valueEdited,
 		   [this](Dim d) {
 		     if (id->hasValue()
-			 && (id->value() > d - minRingWidth))
-		       id->setValue(d - minRingWidth, true);
+			 && (d < Board::minHoleOD(id->value())))
+		       id->setValue(id->value() + d - Board::minHoleOD(id->value()),
+                                    true);
 		     editor->setOD(d);
 		   });
 
@@ -1341,8 +1342,8 @@ void Propertiesbar::reflectMode(Mode m) {
     d->circle->setChecked(!sq);
     d->editor->setSquare(sq);
     d->editor->setVia(d->via->isChecked());
-    if (d->od->value() < d->id->value() + minRingWidth)
-      d->od->setValue(d->id->value() + minRingWidth);
+    if (d->od->value() < Board::minHoleOD(d->id->value()))
+      d->od->setValue(Board::minHoleOD(d->id->value()));
   }
   if (m==Mode::PlaceArc || m==Mode::PlaceText) {
     if (!d->anyLayerChecked()) {

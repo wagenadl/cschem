@@ -1106,12 +1106,8 @@ bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
     Hole h;
     h.via = true;
     h.p = p;
-    Dim id = 0.5*w;
-    Dim minID(Dim::fromMM(.3));
-    h.id = max(id, minID);
-    Dim od = w;
-    Dim minOD = h.id + Dim::fromMM(.3);
-    h.od = max(od, minOD);
+    h.id = max(0.5 * w, Board::minHoleID());
+    h.od = max(w, Board::minHoleOD(h.id));
     insert(Object(h));
   };
   if (hole_at_p1<0 && layers_at_p1.contains(tr.layer)) {

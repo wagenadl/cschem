@@ -20,6 +20,9 @@ public:
   static Dim maskMargin(Dim od); // margin for solder mask around object
   static Dim maskMargin(Dim w, Dim h); // margin for solder mask around object
   static Dim fpConWidth(Dim w, Dim h); // width for filled-plane connection
+  static Dim minLineWidth();
+  static Dim minHoleID();
+  static Dim minHoleOD(Dim id);
   QString shapeName() const;
 public:
   Dim width;

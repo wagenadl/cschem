@@ -125,16 +125,16 @@ Dim Board::fpConOverlap() {
   return Dim::fromMils(1);
 }
 
-Dim Board::traceClearance(Dim) {
-  return Dim::fromMils(15);
+Dim Board::traceClearance(Dim w) {
+  return min(Dim::fromMM(0.2) + (w - Dim::fromMM(0.2)) / 5, Dim::fromMM(.5));
 }
 
-Dim Board::padClearance(Dim, Dim) {
-  return Dim::fromMils(15);
+Dim Board::padClearance(Dim w, Dim h) {
+  return traceClearance(min(w, h));
 }
 
 Dim Board::fpConWidth(Dim w, Dim h) {
-  return min(.5*min(w,h), Dim::fromMils(15));
+  return min(0.5*min(w, h), Dim::fromMM(0.2));
 }
 
 Dim Board::maskMargin(Dim) {
@@ -143,7 +143,19 @@ Dim Board::maskMargin(Dim) {
 
 Dim Board::maskMargin(Dim, Dim) {
   return Dim::fromMils(10);
-}  
+}
+
+Dim Board::minLineWidth() {
+  return Dim::fromMM(0.1);
+}
+
+Dim Board::minHoleID() {
+  return Dim::fromMM(0.2);
+}
+
+Dim Board::minHoleOD(Dim id) {
+  return id + Dim::fromMM(0.25);
+}
 
 bool Board::isEffectivelyMetric() const {
   return grid.isNull() ? metric : grid.isMetric();

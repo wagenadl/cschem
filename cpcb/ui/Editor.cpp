@@ -638,6 +638,7 @@ void Editor::setArcAngle(int angle) {
 }
 
 void Editor::setLineWidth(Dim l) {
+  l = max(l, Board::minLineWidth());
   d->props.linewidth = l;
   Group &here(d->currentGroup());
   UndoCreator uc(d);
@@ -695,8 +696,7 @@ void Editor::setLayer(Layer l) {
 }
 
 void Editor::setID(Dim x) {
-  if (x < Dim::fromInch(.005))
-    x = Dim::fromInch(.005);
+  x = max(x, Board::minHoleID());
   d->props.id = x;
 
   Group &here(d->currentGroup());
@@ -705,9 +705,10 @@ void Editor::setID(Dim x) {
     Object &obj(here.object(id));
     if (obj.isHole()) {
       uc.realize();
+      Dim id = 
       obj.asHole().id = x;
-      if (obj.asHole().od < x + Dim::fromInch(.015))
-	obj.asHole().od = x + Dim::fromInch(.015);
+      if (obj.asHole().od < Board::minHoleOD(x))
+	obj.asHole().od = Board::minHoleOD(x);
     } else if (obj.isNPHole()) {
       uc.realize();
       obj.asNPHole().d = x;
@@ -737,8 +738,7 @@ void Editor::setSlotLength(Dim x) {
   
   
 void Editor::setOD(Dim x) {
-  if (x < Dim::fromInch(.02))
-    x = Dim::fromInch(.02);
+  x = max(x, Board::minHoleOD(Board::minHoleID()));
   d->props.od = x;
   UndoCreator uc(d);
 
@@ -748,15 +748,14 @@ void Editor::setOD(Dim x) {
     if (obj.type()==Object::Type::Hole) {
       uc.realize();
       obj.asHole().od = x;
-      if (obj.asHole().id > x - Dim::fromInch(.015))
-	obj.asHole().id = x - Dim::fromInch(.015);
+      if (x < Board::minHoleOD(obj.asHole().id))
+	obj.asHole().id -= Board::minHoleOD(obj.asHole().id) - x;
     }      
   }
 }
 
 void Editor::setWidth(Dim x) {
-  if (x < Dim::fromInch(.01))
-    x = Dim::fromInch(.01);
+  x = max(x, Board::minLineWidth());
   d->props.w = x;
 
   Group &here(d->currentGroup());
@@ -771,8 +770,7 @@ void Editor::setWidth(Dim x) {
 }
 
 void Editor::setHeight(Dim x) {
-  if (x < Dim::fromInch(.01))
-    x = Dim::fromInch(.01);
+  x = max(x, Board::minLineWidth());
   d->props.h = x;
   UndoCreator uc(d);
   Group &here(d->currentGroup());
