@@ -1103,6 +1103,7 @@ void PBData::setupUI() {
   id->setValue(Dim::fromInch(.040));
   QObject::connect(id, &DimSpinner::valueEdited,
 		   [this](Dim d) {
+                     d = max(d, Board::minHoleID());                     
 		     if (od->hasValue()
 			 && (od->value() < Board::minHoleOD(d)))
 		       od->setValue(Board::minHoleOD(d), true);
@@ -1120,14 +1121,14 @@ void PBData::setupUI() {
   odc = makeContainer(dimg);
   makeLabel(odc, "OD", "Pad diameter");
   od = makeDimSpinner(odc);
-  od->setMinimumValue(Board::minHoleOD(Board::minHoleID()));
+  od->setMinimumValue(Board::minHoleOD());
   od->setValue(Dim::fromInch(.065));
   QObject::connect(od, &DimSpinner::valueEdited,
 		   [this](Dim d) {
+                     d = max(d, Board::minHoleOD());
 		     if (id->hasValue()
-			 && (d < Board::minHoleOD(id->value())))
-		       id->setValue(id->value() + d - Board::minHoleOD(id->value()),
-                                    true);
+			 && (id->value() > Board::maxHoleID(d)))
+                         id->setValue(Board::maxHoleID(d), true);
 		     editor->setOD(d);
 		   });
 

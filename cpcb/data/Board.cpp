@@ -153,8 +153,16 @@ Dim Board::minHoleID() {
   return Dim::fromMM(0.2);
 }
 
+Dim Board::minHoleOD() {
+  return minHoleOD(minHoleID());
+}
+
 Dim Board::minHoleOD(Dim id) {
   return id + Dim::fromMM(0.25);
+}
+
+Dim Board::maxHoleID(Dim od) {
+  return od - (minHoleOD() - minHoleID());
 }
 
 bool Board::isEffectivelyMetric() const {

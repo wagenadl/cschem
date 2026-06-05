@@ -22,6 +22,8 @@ public:
   static Dim fpConWidth(Dim w, Dim h); // width for filled-plane connection
   static Dim minLineWidth();
   static Dim minHoleID();
+  static Dim minHoleOD();
+  static Dim maxHoleID(Dim od); 
   static Dim minHoleOD(Dim id);
   QString shapeName() const;
 public:

@@ -705,7 +705,6 @@ void Editor::setID(Dim x) {
     Object &obj(here.object(id));
     if (obj.isHole()) {
       uc.realize();
-      Dim id = 
       obj.asHole().id = x;
       if (obj.asHole().od < Board::minHoleOD(x))
 	obj.asHole().od = Board::minHoleOD(x);
@@ -738,7 +737,7 @@ void Editor::setSlotLength(Dim x) {
   
   
 void Editor::setOD(Dim x) {
-  x = max(x, Board::minHoleOD(Board::minHoleID()));
+  x = max(x, Board::minHoleOD());
   d->props.od = x;
   UndoCreator uc(d);
 
@@ -748,8 +747,8 @@ void Editor::setOD(Dim x) {
     if (obj.type()==Object::Type::Hole) {
       uc.realize();
       obj.asHole().od = x;
-      if (x < Board::minHoleOD(obj.asHole().id))
-	obj.asHole().id -= Board::minHoleOD(obj.asHole().id) - x;
+      if (obj.asHole().id > Board::maxHoleID(x))
+	obj.asHole().id = Board::maxHoleID(x);
     }      
   }
 }
