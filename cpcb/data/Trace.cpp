@@ -87,7 +87,10 @@ bool Trace::touches(FilledPlane const &fp) const {
     return false;
   QPainterPath pp;
   pp.addPolygon(fp.perimeter.toMils());
-  return pp.intersects(outlinePath());
+  bool got = pp.intersects(outlinePath());
+  //  if (fp.layer == Layer::Bottom)
+  //qDebug() << "trace touch fp" << got;
+  return got;
 }
 
 

@@ -9,6 +9,7 @@
 #include "svg/Symbol.h"
 #include <QIcon>
 #include <QMessageBox>
+#include <qnamespace.h>
 
 constexpr int MOVETHRESHOLD_PIX = 4;
 constexpr int MARGIN_PIX = 5;
@@ -951,7 +952,11 @@ QCursor EData::crossCursor() {
   if (got)
     return cursor;
   QPixmap pm(QIcon(":icons/CursorCross.svg").pixmap(QSize(32, 32), 2));
-  cursor = QCursor(pm); //, pm.width()/2, pm.height()/2);
+#if QT_VERSION < 0x060500
+  cursor = QCursor(pm, pm.width()/2, pm.height()/2);
+#else
+  cursor = QCursor(pm);
+#endif
   got = true;
   return cursor;
 }
@@ -962,7 +967,11 @@ QCursor EData::tinyCursor() {
   if (got)
     return cursor;
   QPixmap pm(QIcon(":icons/CursorCross.svg").pixmap(QSize(16, 16), 2));
-  cursor = QCursor(pm); //, pm.width()/2, pm.height()/2);
+#if QT_VERSION < 0x060500
+  cursor = QCursor(pm, pm.width()/2, pm.height()/2);
+#else
+  cursor = QCursor(pm);
+#endif
   got = true;
   return cursor;
 }

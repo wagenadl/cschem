@@ -166,14 +166,19 @@ bool Pad::touches(class Trace const &t) const {
 }
 
 bool Pad::touches(FilledPlane const &fp) const {
-  if (layer!=fp.layer)
+  if (layer != fp.layer)
     return false;
   if (noclear) {
-    return fp.perimeter.contains(p);
+    bool got = fp.perimeter.contains(p);
+    //qDebug() << "pad touches fp" << got;
+    return got;
     /* Warning: This is WRONG if an attached trace creates clearance */
   } else if (fpcon) {
     Dim r = width > height ? width/2 : height/2;
-    return fp.perimeter.contains(p, r);
+    bool got = fp.perimeter.contains(p, r);
+    //    if (fp.layer == Layer::Bottom)
+    //      qDebug() << "pad touches fp'" << got;
+    return got;
   } else {
     return false;
   }

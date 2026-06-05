@@ -80,10 +80,11 @@ bool Segment::onSegment(Point p, Dim mrg) const {
   double b = sqrt(sq(y2-y1) + sq(x2-x1));
   double m = mrg.toMils();
   // Instead of testing a/b < m, I test a < m*b to avoid misery when p1==p2.
+  qDebug() << "onsegment" << p1 << p2 << p << (a < m*b);
   return a < m*b;
 }
 
-bool Segment::intersects(Segment const &t, Point *intersection) const {
+bool Segment::intersects(Segment const &t, Point *intersection, bool parallelok) const {
   auto ret = [intersection](bool res, Point p) {
          if (intersection)
            *intersection = p;
@@ -119,6 +120,8 @@ bool Segment::intersects(Segment const &t, Point *intersection) const {
   double dy_ = t.p2.y.toMils() - y1_;
   double nrm = dx*dy_ - dy*dx_;
   if (fabs(nrm)<1e-6) {
+    if (!parallelok)
+      return false;
     // parallel; "intersects" iff directly overlapping
     if (onSegment(t.p1, Dim::fromMM(.001)))
       return yes(t.p1);

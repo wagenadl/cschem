@@ -24,7 +24,7 @@ public:
   // ONSEGMENT returns true even if ONP1 or ONP2 would return true as well.
   bool betweenEndpoints(Point p, Dim mrg=Dim()) const;
   // Like ONSEGMENT, but not true when on either endpoint
-  bool intersects(Segment const &t, Point *intersection=0) const;
+  bool intersects(Segment const &t, Point *intersection=0, bool parallelok=true) const;
   // The returned intersection point is on the segment if the result is true,
   // otherwise it is on the line extended from the segment.
   Point projectionOntoSegment(Point p) const;
