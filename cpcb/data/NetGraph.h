@@ -12,10 +12,13 @@ public:
   ~NetGraph();
   QSet<NodeID> net(NodeID seed) const;
   QList<QSet<NodeID>> allNets() const;
+  Nodename someNodename(QSet<NodeID> const &net, NodeID seed=NodeID()) const;
+private:
+  Group const &root;
+  class NetGraphData *d;
 private:
   NetGraph(NetGraph const &) = delete;
   NetGraph &operator=(NetGraph const &) = delete;
-  class NetGraphData *d;
 };
 
 #endif

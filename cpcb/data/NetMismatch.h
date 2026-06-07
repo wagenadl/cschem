@@ -12,7 +12,8 @@ class NetMismatch {
 public:
   NetMismatch();
   void reset();
-  void recalculate(class PCBNet const &net, class LinkedNet const &linkednet,
+  void recalculate(QSet<NodeID> const &net, NodeID const &seed,
+                   class LinkedNet const &linkednet,
 		   class Group const &root);
   void recalculateAll(class LinkedSchematic const &ls,
 		      class Group const &root);

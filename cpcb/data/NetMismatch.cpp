@@ -21,7 +21,8 @@ void NetMismatch::reset() {
   overcompleteNets.clear();
 }
 
-void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
+void NetMismatch::recalculate(QSet<NodeID> const &net, const NodeID &seed,
+                              LinkedNet const &linkednet,
 			      Group const &root) {
   /* Any of net.nodes that are not in linkednet.nodes should be colored PINK.
      Any nodes in linkednet.nodes that are not in net.nodes should be colored
@@ -31,16 +32,15 @@ void NetMismatch::recalculate(PCBNet const &net, LinkedNet const &linkednet,
   reset();
   
   QMap<NodeID, Nodename> pcbnames;
-  for (NodeID const &pcbnode: net.nodes()) {
-    Nodename name = root.nodeName(pcbnode);
-    if (name.isValid() && name.pin()!="") {
-      pcbnames[pcbnode] = name;
-      if (!linkednet.containsMatch(name)) {
-        wronglyInNet << pcbnode;
-      }
+  for (NodeID const &nid: net) {
+    Nodename name = root.nodeName(nid);
+    if (name.pin() != "") {
+      pcbnames[nid] = name;
+      if (!linkednet.containsMatch(name)) 
+        wronglyInNet << nid;
     }
   }
-  wronglyInNet.remove(net.seed());
+  wronglyInNet.remove(seed);
   if (pcbnames.size()==1) {
     for (auto id: root.findNodesByName((pcbnames.begin().value())))
       wronglyInNet.remove(id);
@@ -103,69 +103,56 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
   reset();
 
   // Collect all PCB nets
-  QMap<NodeID, PCBNet> seed2net;
-  QSet<NodeID> allids;
-  for (NodeID id: root.allPins()) {
-    if (allids.contains(id))
-      continue;
-    Nodename n = root.nodeName(id);
-    if (n.pin()=="")
-      continue;
-    // only use pins with a name or number as seed
-    PCBNet net = PCBNet(root, id);
-    allids |= net.nodes();
-    seed2net[id] = net;
+  QList<QSet<NodeID>> nets = NetGraph(root).allNets();
+  int K = nets.size();
+  QList<NodeID> seeds(K); // in same order
+  QList<Nodename> netnames(K); // ditto
+  for (int k=0; k<K; k++) {
+    for (NodeID const &nid: nets[k]) {
+      Nodename n = root.nodeName(nid);
+      if (n.pin() != "") {
+        seeds[k] = nid;
+        netnames[k] = n;
+        break;
+      }
+    }
   }
-  qDebug() << "Collected" << allids;
-
-    QTime t0(QTime::currentTime());
-  qDebug() << "test of netgraph" << t0;
-  NetGraph ng(root);
-  qDebug() << "built" <<  t0.msecsTo(QTime::currentTime());
-  auto nets = ng.allNets();
-  qDebug() << "count" << nets.size();
-  qDebug() << "fiear" << nets[0];
-  qDebug() << "done" << t0.msecsTo(QTime::currentTime());
+  // Now we have names for our nets. Not necessarily for all, but unnamed nets
+  // cannot have importance (?)
 
   // For each linked schematic net, find corresponding pcb net
-  QSet<NodeID> donenets;
+  QSet<int> donenets; // into the "nets" list
   for (LinkedNet const &lnet: ls.nets()) {
     bool got = false;
-    for (NodeID const &node: seed2net.keys()) {
-      Nodename seed = seed2net[node].someNode();
-      if (!lnet.containsMatch(seed))
+    for (int k=0; k<K; k++) {
+      if (!lnet.containsMatch(netnames[k]))
         continue;
-      // schematic net "lnet" matches pcb net for "seed"
-      if (donenets.contains(node)) {
+      // schematic net "lnet" matches pcb net k
+      if (donenets.contains(k)) {
         // we've already studied this pcb net!?
         qDebug() << "Double match";
         continue;
       }
       if (got) {
         qDebug() << "lnet already taken";
-        missingFromNet |= seed2net[node].nodes();
+        missingFromNet |= nets[k];
         incompleteNets << lnet.name;
-        donenets << node;
+        donenets << k;
       } else {
         NetMismatch nm1;
-        nm1.recalculate(seed2net[node], lnet, root);
+        nm1.recalculate(nets[k], seeds[k], lnet, root);
         wronglyInNet |= nm1.wronglyInNet;
         missingFromNet |= nm1.missingFromNet;
         missingEntirely |= nm1.missingEntirely;
         incompleteNets |= nm1.incompleteNets;
         overcompleteNets |= nm1.overcompleteNets;
-        donenets << node;
+        donenets << k;
         got = true;
         if (!nm1.wronglyInNet.isEmpty()
             || !nm1.missingFromNet.isEmpty()
             || !nm1.missingEntirely.isEmpty()) {
           qDebug() << "problematic linked net" << lnet;
-          qDebug() << "  node" << node ;
-          qDebug() << "  seed" << seed ;
-          qDebug() << "=== pcbnet report:";
-          seed2net[node].report();
-          qDebug() << "=== netmismatch report:";
-          nm1.report(root);
+          qDebug() << "  node" << seeds[k];
         }
       }
     }
@@ -173,18 +160,20 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
       qDebug() << "No match for " << lnet;
     }
   }
-  for (NodeID const &node: seed2net.keys()) {
-    if (!donenets.contains(node)) {
-      QSet<NodeID> const &nodes = seed2net[node].nodes();
-      bool havename = false;
-      for (NodeID const &n: nodes) {
-        Nodename name = root.nodeName(n);
-        if (name.pin()!="") {
-          if (havename) {
-            wronglyInNet |= nodes;
-            break;
-          } else {
-            havename = true;
+  
+  // any uncaptured nets are superfluous. but if they comprise zero or one named pins, no one cares
+  for (int k=0; k<K; k++) {
+    if (!donenets.contains(k)) {
+      if (netnames[k].pin() != "") {
+        // if this net contains more than one named pin, that's a problem
+        int count = 0;
+        for (NodeID const &nid: nets[k]) {
+          if (root.nodeName(nid).pin() != "") {
+            count ++;
+            if (count >= 2) {
+              wronglyInNet |= nets[k];
+              break;
+            }
           }
         }
       }

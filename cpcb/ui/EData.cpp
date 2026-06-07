@@ -10,6 +10,7 @@
 #include <QIcon>
 #include <QMessageBox>
 #include <qnamespace.h>
+#include "data/NetGraph.h"
 
 constexpr int MOVETHRESHOLD_PIX = 4;
 constexpr int MARGIN_PIX = 5;
@@ -45,11 +46,11 @@ Group &EData::currentGroup() {
 
 bool EData::updateOnWhat(bool force) {
   Dim mrg = pressMargin();
-  NodeID ids = visibleNodeAt(hoverpt, mrg);
-  bool isnew = ids != onnode;
-  onnode = ids;
+  NodeID nid = visibleNodeAt(hoverpt, mrg);
+  bool isnew = nid != onnode;
+  onnode = nid;
   if (isnew || force) {
-    Nodename nn(currentGroup().nodeName(ids));
+    Nodename nn(currentGroup().nodeName(nid));
     Nodename alias(linkedschematic.pinAlias(nn));
     if (alias.isValid())
       onobject = alias.humanName();
@@ -57,19 +58,21 @@ bool EData::updateOnWhat(bool force) {
       onobject = nn.humanName();
   }
   if (netsvisible && (isnew || force))
-    updateNet(ids);
+    updateNet(onnode);
   return isnew;
 }
 
 void EData::updateNet(NodeID seed) {
   QTime t0 = QTime::currentTime();
   qDebug() << "edata: updatenet" << t0;
-  net = PCBNet(layout.root().subgroup(crumbs), seed);
+  netseed = seed;
+  NetGraph graph(layout.root().subgroup(crumbs));
+  net = graph.net(seed);
 
   linkednet = LinkedNet();
-  if (linkedschematic.isValid() && !net.nodes().isEmpty()
+  if (linkedschematic.isValid() && !net.isEmpty()
       && crumbs.isEmpty()) {
-    Nodename seed = net.someNode();
+    Nodename seed = graph.someNodename(net, onnode);
     for (LinkedNet const &lnet: linkedschematic.nets()) {
       if (lnet.containsMatch(seed)) {
 	linkednet = lnet;
@@ -79,7 +82,7 @@ void EData::updateNet(NodeID seed) {
   }
 
   if (linkedschematic.isValid() && crumbs.isEmpty()) 
-    netmismatch.recalculate(net, linkednet, layout.root());
+    netmismatch.recalculate(net, onnode, linkednet, layout.root());
   else
     netmismatch.reset();
   qDebug() << "   updatenet done" << t0.msecsTo(QTime::currentTime());
@@ -216,8 +219,8 @@ void EData::drawObjects(QPainter &p) const {
     rndr.setLayer(l, s);
     for (int id: here.keys()) {
       QSet<NodeID> subnet;
-      if (netsvisible && mode!=Mode::PNPOrient)
-	for (NodeID nid: net.nodes())
+      if (netsvisible && mode != Mode::PNPOrient)
+	for (NodeID nid: net)
 	  if (!nid.isEmpty() && nid.first()==id)
 	    subnet << nid.tail();
       if (mode!=Mode::PNPOrient || here.object(id).isGroup())

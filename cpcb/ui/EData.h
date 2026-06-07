@@ -136,7 +136,8 @@ public:
   int stepsfromsaved;
   QString onobject;
   NodeID onnode;
-  PCBNet net;
+  QSet<NodeID> net;
+  NodeID netseed;
   LinkedNet linkednet;
   NetMismatch netmismatch;
   QSize lastsize;

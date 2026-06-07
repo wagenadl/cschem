@@ -77,7 +77,9 @@ public:
 };
 
 
-NetGraph::NetGraph(Group const &root): d(new NetGraphData(root)) {}
+NetGraph::NetGraph(Group const &root): root(root) {
+  d = new NetGraphData(root);
+}
 
 NetGraph::~NetGraph() {
   delete d;
@@ -102,5 +104,32 @@ QList<QSet<NodeID>> NetGraph::allNets() const {
   QList<QSet<NodeID>> res(K);
   for (int v = 0; v < V; v++) 
     res[component[v]] << d->nodeids[v];
+  return res;
+}
+
+Nodename NetGraph::someNodename(QSet<NodeID> const &net, NodeID seed) const {
+  Nodename res;
+  if (seed.size()) {
+    res = root.nodeName(seed);
+    if (res.pin() != "")
+      return res;
+  }
+  bool tolerable = res.isValid();
+  for (NodeID const &nid: net) {
+    Nodename name = root.nodeName(nid);
+    if (tolerable) {
+      // only take if improves
+      if (name.isValid() && name.pin() != "")
+        return name;
+    } else {
+      // take if good, store if ok
+      if (name.isValid()) {
+        if (name.pin() != "")
+          return name;
+        res = name;
+        tolerable = true;
+      }
+    }
+  }
   return res;
 }
