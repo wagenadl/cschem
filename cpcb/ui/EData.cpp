@@ -62,6 +62,8 @@ bool EData::updateOnWhat(bool force) {
 }
 
 void EData::updateNet(NodeID seed) {
+  QTime t0 = QTime::currentTime();
+  qDebug() << "edata: updatenet" << t0;
   net = PCBNet(layout.root().subgroup(crumbs), seed);
 
   linkednet = LinkedNet();
@@ -80,6 +82,7 @@ void EData::updateNet(NodeID seed) {
     netmismatch.recalculate(net, linkednet, layout.root());
   else
     netmismatch.reset();
+  qDebug() << "   updatenet done" << t0.msecsTo(QTime::currentTime());
 }
 
 void EData::invalidateStuckPoints() const {

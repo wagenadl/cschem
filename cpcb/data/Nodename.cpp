@@ -61,7 +61,8 @@ bool Nodename::matches(Nodename const &o) const {
       return pinNumber() == o.pinNumber();
     else
       return false;
-  } else {
+  } else if ((comp_.contains('.') || pin_.contains('.'))
+             && (o.comp_.contains('.') || o.pin_.contains('.'))) {
     QString contcomp = comp_;
     QString subcomp = "";
     QString pinname = pinName();
@@ -95,6 +96,8 @@ bool Nodename::matches(Nodename const &o) const {
       }
     }
     return contcomp==ocontcomp && subcomp==osubcomp && pinname==opinname;
+  } else {
+    return false;
   }
 }
 

@@ -745,3 +745,60 @@ QSet<Point> Object::pinPoints(Layer lay) const {
   }
   return pp;
 }
+
+bool Object::touches(Object const &oth) const {
+  if (d->typ == Type::Group) {
+    Group const &g = asGroup();
+    for (int id: g.keys())
+      if (g.object(id).touches(oth))
+        return true;
+    return false;
+  } else if (oth.d->typ == Type::Group) {
+    Group const &og = oth.asGroup();
+    for (int id: og.keys())
+      if (touches(og.object(id)))
+        return true;
+    return false;
+  }
+
+  switch (d->typ) {
+  case Type::Hole:
+    switch (oth.d->typ) {
+    case Type::Hole: return asHole().touches(oth.asHole());
+    case Type::Pad: return asHole().touches(oth.asPad());
+    case Type::Trace: return asHole().touches(oth.asTrace());
+    case Type::Plane: return asHole().touches(oth.asPlane());
+    default:
+      return false;
+    }
+  case Type::Pad:
+    switch (oth.d->typ) {
+    case Type::Hole: return oth.asHole().touches(asPad());
+    case Type::Pad: return asPad().touches(oth.asPad());
+    case Type::Trace: return asPad().touches(oth.asTrace());
+    case Type::Plane: return asPad().touches(oth.asPlane());
+    default:
+      return false;
+    }
+  case Type::Trace:
+    switch (oth.d->typ) {
+    case Type::Hole: return oth.asHole().touches(asTrace());
+    case Type::Pad: return oth.asPad().touches(asTrace());
+    case Type::Trace: return asTrace().touches(oth.asTrace());
+    case Type::Plane: return asTrace().touches(oth.asPlane());
+    default:
+      return false;
+    }
+  case Type::Plane:
+    switch (oth.d->typ) {
+    case Type::Hole: return oth.asHole().touches(asPlane());
+    case Type::Pad: return oth.asPad().touches(asPlane());
+    case Type::Trace: return oth.asTrace().touches(asPlane());
+    case Type::Plane: return asPlane().touches(oth.asPlane());
+    default:
+      return false;
+    }
+  default:
+    return false;
+  }
+}

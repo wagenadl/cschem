@@ -76,15 +76,16 @@ bool Segment::onSegment(Point p, Dim mrg) const {
   // https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
   // The distance between point p and line through p1 and p2 is given by
   // a/b where a and b are:
-  double a = fabs((y2-y1)*x0 - (x2-x1)*y0 + x2*y1 - y2*x1);
-  double b = sqrt(sq(y2-y1) + sq(x2-x1));
-  double m = mrg.toMils();
+  double a = sq((y2-y1)*x0 - (x2-x1)*y0 + x2*y1 - y2*x1);
+  double b = sq(y2-y1) + sq(x2-x1);
+  double m = sq(mrg.toMils());
   // Instead of testing a/b < m, I test a < m*b to avoid misery when p1==p2.
-  qDebug() << "onsegment" << p1 << p2 << p << (a < m*b);
+  //  qDebug() << "onsegment" << p1 << p2 << p << (a < m*b) << a << b << m;
   return a < m*b;
 }
 
-bool Segment::intersects(Segment const &t, Point *intersection, bool parallelok) const {
+bool Segment::intersects(Segment const &t, Point *intersection,
+                         bool parallelok) const {
   auto ret = [intersection](bool res, Point p) {
          if (intersection)
            *intersection = p;

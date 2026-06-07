@@ -71,6 +71,7 @@ public:
   FilledPlane &asPlane();
   Type type() const;
   bool touches(Point p, Dim mrg=Dim()) const;
+  bool touches(Object const &oth) const;
   Rect boundingRect() const;
   Layer layer() const;
   void translate(Point const &);

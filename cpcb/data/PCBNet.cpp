@@ -2,12 +2,13 @@
 
 #include "PCBNet.h"
 #include "Object.h"
+#include <QTime>
 
 // Alternate implementation of PCBNet
 
 class Builder {
 public: 
-  Builder(Group const &root): root(root) { }
+  Builder(Group const &root): root(root) { inscount = 0; testcount = 0; }
   void insertRecursively(NodeID);
   void insertFriendsOfTrace(Trace const &t, NodeID groupid);
   void insertFriendsOfHole(Hole const &h, NodeID groupid);
@@ -16,15 +17,20 @@ public:
 public:
   Group const &root;
   QSet<NodeID> net;
+  int inscount;
+  int testcount;
 };
 
 void Builder::insertRecursively(NodeID nid) {
-  //  qDebug() << "insertrecursively" << nid;
+  static int depth = 0;
   if (net.contains(nid))
     return;
   net << nid;
+  inscount += 1;
   // now find everything that thouches nid
   Object const &obj(root.object(nid));
+  //  qDebug() << "insertrecursively" << depth << nid << int(obj.type());
+  depth ++;
   //  qDebug() << "   that is" << obj;
   switch (obj.type()) {
   case Object::Type::Trace: 
@@ -42,6 +48,7 @@ void Builder::insertRecursively(NodeID nid) {
   default:
     break;
   }
+  --depth;
 }
 
 void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
@@ -50,6 +57,7 @@ void Builder::insertFriendsOfTrace(Trace const &tr, NodeID grpid) {
   bool discountwire = univ.attributes[Group::Attribute::Footprint]
     .contains("trace");
   for (int id: univ.keys()) {
+    testcount ++;
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
       continue;
@@ -86,6 +94,7 @@ void Builder::insertFriendsOfHole(Hole const &h, NodeID grpid) {
   bool discountwire = univ.attributes[Group::Attribute::Footprint]
     .contains("trace");
   for (int id: univ.keys()) {
+    testcount ++;
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
       continue;
@@ -122,6 +131,7 @@ void Builder::insertFriendsOfPad(Pad const &pad, NodeID grpid) {
   bool discountwire = univ.attributes[Group::Attribute::Footprint]
     .contains("trace");
   for (int id: univ.keys()) {
+    testcount ++;
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
       continue;
@@ -157,6 +167,7 @@ void Builder::insertFriendsOfPlane(FilledPlane const &fp, NodeID grpid) {
   bool discountwire = univ.attributes[Group::Attribute::Footprint]
     .contains("trace");
   for (int id: univ.keys()) {
+    testcount ++;
     NodeID nid = grpid.plus(id);
     if (net.contains(nid))
       continue;
@@ -193,12 +204,15 @@ PCBNet::PCBNet(): somenode("", "") {
 
 PCBNet::PCBNet(Group const &root, NodeID seed): root_(root), seed_(seed),
 						somenode("", "") {
-  // qDebug() << "PCBNet from" << seed;
+  QTime t0 = QTime::currentTime();
+  qDebug() << "PCBNet from" << seed << t0;
   havesomenode = false;
   // flood fill using things that touch seed
   Builder bld(root);
   bld.insertRecursively(seed);
   nodes_ = bld.net;
+  qDebug() << "  net built" << QTime::currentTime().msecsTo(t0);
+  qDebug() << "inserted" << bld.inscount << "tested" << bld.testcount;
   // report();
 }
 

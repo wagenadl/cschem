@@ -4,8 +4,11 @@
 #include "PCBNet.h"
 #include "LinkedNet.h"
 #include "Group.h"
-#include "PinMapper.h"
+
 #include  "LinkedSchematic.h"
+#include "NetGraph.h"
+
+#include <QTime>
 
 NetMismatch::NetMismatch() {
 }
@@ -114,6 +117,15 @@ void NetMismatch::recalculateAll(LinkedSchematic const &ls,
     seed2net[id] = net;
   }
   qDebug() << "Collected" << allids;
+
+    QTime t0(QTime::currentTime());
+  qDebug() << "test of netgraph" << t0;
+  NetGraph ng(root);
+  qDebug() << "built" <<  t0.msecsTo(QTime::currentTime());
+  auto nets = ng.allNets();
+  qDebug() << "count" << nets.size();
+  qDebug() << "fiear" << nets[0];
+  qDebug() << "done" << t0.msecsTo(QTime::currentTime());
 
   // For each linked schematic net, find corresponding pcb net
   QSet<NodeID> donenets;
