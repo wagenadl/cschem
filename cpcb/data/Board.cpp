@@ -134,7 +134,7 @@ Dim Board::padClearance(Dim w, Dim h) {
 }
 
 Dim Board::fpConWidth(Dim w, Dim h) {
-  return min(0.5*min(w, h), Dim::fromMM(0.2));
+  return min(0.5*min(w, h), Dim::fromMM(0.5));
 }
 
 Dim Board::maskMargin(Dim) {

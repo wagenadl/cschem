@@ -605,12 +605,13 @@ static void writeTraceClearance(GerberFile &out, Board const &board,
 
 static void writeRoundHoleClearance(GerberFile &out, Board const &board,
                                     QMap<Dim, QList<Hole>> const &holes,
-                                    Gerber::Apertures const &aps) {
+                                    Gerber::Apertures const &aps,
+                                    Layer layer) {
   for (Dim od: holes.keys()) {
     Dim mrg = 2*board.padClearance(od, od);
     out << aps.select(Gerber::Circ(od + mrg));
     for (Hole const &hole: holes[od]) {
-      if (hole.noclear)
+      if (hole.noclear && (hole.fpcon == layer || hole.fpcon == Layer::Invalid))
         continue;
       if (hole.isSlot()) 
         writeSlotSegment(out, hole);
@@ -674,7 +675,8 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
   out << "%LPC*%\n"; // negative
 
   writeTraceClearance(out, layout.board(), collector.traces(l), aps);
-  writeRoundHoleClearance(out, layout.board(), collector.roundHolePads(l), aps);
+  writeRoundHoleClearance(out, layout.board(), collector.roundHolePads(l),
+                          aps, l);
   writeSqHoleClearance(out, layout.board(), collector.squareHolePads(l), aps);
   writeSMDClearance(out, layout.board(), collector.smdPads(l), aps);
   

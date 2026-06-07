@@ -165,7 +165,8 @@ QColor ORenderer::brushColor(bool selected, bool innet) const {
 void ORenderer::drawHole(Hole const &hole, bool selected, bool innet) {
   if (subl == Sublayer::Plane)
     return;
-  if (subl == Sublayer::Clearance && hole.noclear)
+  if (subl == Sublayer::Clearance && hole.noclear &&
+      (hole.fpcon==layer || hole.fpcon==Layer::Invalid))
     return;
   bool inv = layer==Layer::Invalid; // this is used for drilling
   bool tb = layer==Layer::Bottom || layer==Layer::Top;
@@ -200,39 +201,18 @@ void ORenderer::drawHole(Hole const &hole, bool selected, bool innet) {
     : brushColor(selected, innet);
   
   // draw fpcon
-  if (subl==Sublayer::Extra && layer!=Layer::Invalid
+  if (subl==Sublayer::Extra && layer != Layer::Invalid
       && hole.fpcon==layer && !pnporient) {
     c = c.darker(150);
     double dym = od/2 + pc + fpover;
     double dxm = dym + dx;
     if (hole.noclear) {
-      /*
-      if (dx>0) {
-        p->setPen(QPen(c, od + 2*pc + 2*fpover, Qt::SolidLine, Qt::RoundCap));
-        QPointF dxy(dx*cs, dx*sn);
-        p->drawLine(p0 - dxy, p0 + dxy);
-      } else {
-        p->setBrush(c);
-        p->setPen(QPen(Qt::NoPen));
-        if (hole.square) {
-          QPointF dp(dxm, dym);
-          QRectF r(-dp, dp);
-          if (hole.rota) {
-            QTransform xf; xf.rotate(hole.rota);
-            p->drawPolygon(xf.map(r).translated(p0));
-          } else {
-            p->drawRect(r.translated(p0));
-          }
-        } else {
-          p->drawEllipse(p0, dym, dym);
-        }
-      }
-      */
     } else {
       // draw four rays
       QPointF dmaj(cs*dxm, sn*dxm);
       QPointF dmin(-sn*dym, cs*dym);
-      p->setPen(QPen(c, pc, Qt::SolidLine, Qt::FlatCap));
+      p->setPen(QPen(c, brd.fpConWidth(hole.od, hole.od).toMils(),
+                     Qt::SolidLine, Qt::FlatCap));
       p->drawLine(p0 - dmaj, p0 + dmaj);
       p->drawLine(p0 - dmin, p0 + dmin);
     }

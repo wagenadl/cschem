@@ -315,19 +315,17 @@ void PlaneEditor::doubleClick(Point p,
     UndoCreator uc(ed, true);
     Hole &hole(ed->currentGroup().object(nid).asHole());
     if (m & Qt::ControlModifier) {
-      if (hole.noclear) {
-        hole.noclear = false;
-      } else {
-        hole.noclear = true;
-        hole.fpcon = ed->props.layer;
-      }
-    } else {
-      if (hole.fpcon==ed->props.layer) {
+      if (hole.fpcon == ed->props.layer && hole.noclear)
         hole.fpcon = Layer::Invalid;
-        hole.noclear = false;
-      } else {
+      else
         hole.fpcon = ed->props.layer;
-      }
+      hole.noclear = true;
+    } else {
+      hole.noclear = false;
+      if (hole.fpcon == ed->props.layer) 
+        hole.fpcon = Layer::Invalid;
+      else 
+        hole.fpcon = ed->props.layer;
     }
     ed->updateOnWhat(true); // rebuild net
     ed->ed->update();
