@@ -4,7 +4,7 @@
 #include "Group.h"
 #include "Intersection.h"
 #include "Object.h"
-#include "PCBNet.h"
+#include "NetGraph.h"
 
 class RepairData {
 public:
@@ -102,21 +102,6 @@ bool TraceRepair::fixTraceIntersections(int trid, Dim grid) {
     }
   }
 }
-/*
-      Trace const &tcross(ocross.asTrace());
-      Dim lcr = Point::distance(tcross.p1, tcross.p2);
-      if (p!=tcross.p1 && p!=tcross.p2
-          && p.distance(tcross.p1)<lcr && p.distance(tcross.p2)<lcr) {
-        // we are crossing somewhere in the middle of the crossing trace
-        // => break the crossing trace up
-	Trace tc1(tcross);
-	tc1.p2 = p;
-	Trace tc2(tcross);
-	tc2.p1 = p;
-	remove(id);
-	insert(Object(tc1));
-	insert(Object(tc2));
-*/
  
 bool TraceRepair::fixPinTouchings(int trid) {
   bool got = false;
@@ -176,17 +161,18 @@ bool TraceRepair::dropDanglingTraces() {
       }
     }
     for (int id: dropme) {
-      NodeID seed; seed<<id;
-      PCBNet net(d->grp, seed);
+      NodeID seed; seed << id;
+      QSet<NodeID> net(NetGraph(d->grp).net(seed));
       Object obj(d->grp.object(id));
       d->grp.remove(id);
-      QList<NodeID> nodes(net.nodes().values());
-      if (nodes.size()>=2) {
-        NodeID alt = nodes.takeFirst();
-        if (alt==seed)
-          alt = nodes.takeFirst();
-        PCBNet altnet(d->grp, alt);
-        if (altnet.nodes().size() != net.nodes().size() - 1) {
+      int N = net.size();
+      if (N >= 2) {
+        NodeID alt = *net.begin();
+        net.erase(net.begin());
+        if (alt == seed)
+          alt = *net.begin();
+        QSet<NodeID> altnet(NetGraph(d->grp).net(alt));
+        if (altnet.size() != N - 1) {
           // shouldn't have removed this node, so put it back
           d->grp.insert(obj);
         } else {

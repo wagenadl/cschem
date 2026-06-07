@@ -6,17 +6,12 @@
 
 #include "EProps.h"
 #include "Mode.h"
-#include "data/PCBFileIO.h"
 #include "data/Layout.h"
-#include "data/FreeRotation.h"
 #include "data/Object.h"
 #include "ORenderer.h"
 #include "data/LinkedSchematic.h"
-#include "ComponentView.h"
 #include "ElementView.h"
 #include "data/UndoStep.h"
-#include "data/Clipboard.h"
-#include "data/PCBNet.h"
 #include "data/LinkedNet.h"
 #include "data/NetMismatch.h"
 

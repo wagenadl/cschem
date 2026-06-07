@@ -1,7 +1,6 @@
 // NetMismatch.cpp
 
 #include "NetMismatch.h"
-#include "PCBNet.h"
 #include "LinkedNet.h"
 #include "Group.h"
 

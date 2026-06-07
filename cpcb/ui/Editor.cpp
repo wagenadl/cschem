@@ -12,6 +12,8 @@
 #include <QResizeEvent>
 #include <QTimer>
 #include <algorithm>
+#include "data/PCBFileIO.h"
+#include "data/Clipboard.h"
 
 #include "ui/BOM.h"
 
