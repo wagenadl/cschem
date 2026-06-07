@@ -9,7 +9,17 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/breadth_first_search.hpp>
+#include <boost/geometry.hpp>
+#include <boost/geometry/index/rtree.hpp>
+#include <boost/geometry/index/predicates.hpp>
+#include <vector>
 
+namespace bg  = boost::geometry;
+namespace bgi = boost::geometry::index;
+
+using RPoint = bg::model::point<long int, 2, bg::cs::cartesian>;
+using RBox   = bg::model::box<RPoint>;
+using RValue = std::pair<RBox, int>; // box + original index
 
 
 typedef boost::adjacency_list<
@@ -36,9 +46,9 @@ struct ConnectionRecorder: public boost::default_bfs_visitor {
 class NetGraphData {
 public:
   QVector<NodeID> nodeids;
-  QVector<Rect> bboxes;
+  QVector<RBox> bboxes;
   QVector<Object const *> objects;
-  QMap<NodeID, int> revmap;
+  QHash<NodeID, int> revmap;
   SparseGraph g;
 public:
   void addgroup(NodeID nid, Group const &g) {
@@ -52,27 +62,37 @@ public:
                  || obj.type() == Object::Type::Trace
                  || obj.type() == Object::Type::Plane) {
         revmap[nid1] = nodeids.size();
+        Rect r = obj.boundingRect();
+        bboxes << RBox(RPoint(r.left.raw(), r.top.raw()), RPoint(r.right().raw(), r.bottom().raw()));
         nodeids << nid1;
-        bboxes << obj.boundingRect();
         objects << &obj;
       }
     }
   }
 
-  bool connected(int v1, int v2) {
-    if (!bboxes[v1].intersects(bboxes[v2]))
-      return false;
-    return objects[v1]->touches(*objects[v2]);
-  }
         
   NetGraphData(Group const &root) {
+    nodeids.reserve(10000);
+    bboxes.reserve(10000);
+    objects.reserve(10000);
     addgroup(NodeID(), root);
     int V = nodeids.size();
+
+    bgi::rtree<RValue, bgi::quadratic<16>> rtree;
+    for (int v=0; v<V; v++) 
+      rtree.insert({bboxes[v], v});
+    
     g = SparseGraph(V);
-    for (int v1=0; v1<V; v1++)
-      for (int v2=v1+1; v2<V; v2++)
-        if (connected(v1, v2))
-          boost::add_edge(v1, v2, g);
+    for (int v1=0; v1<V-1; v1++) {
+      RBox const &box = bboxes[v1];
+      rtree.remove({box, v1});
+      std::vector<RValue> hits;      
+      rtree.query(bgi::satisfies([&](RValue const &v) { return bg::intersects(v.first, box); }),
+                  std::back_inserter(hits));
+      for (auto const &rv: hits)
+        if (objects[v1]->touches(*objects[rv.second]))
+          boost::add_edge(v1, rv.second, g);
+    }
   }
 };
 
