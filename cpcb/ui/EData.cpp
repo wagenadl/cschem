@@ -202,6 +202,7 @@ void EData::drawGrid(QPainter &p) const {
 }
 
 void EData::drawObjects(QPainter &p) const {
+  QTime t0 = QTime::currentTime();
   Group const &here(currentGroup());
   validateStuckPoints();  
 
@@ -243,16 +244,9 @@ void EData::drawObjects(QPainter &p) const {
         onesublayer(l, ORenderer::Sublayer::Extra);
         onesublayer(l, ORenderer::Sublayer::Main);
         rndr.setPainter(&p);
-        //p.setCompositionMode(QPainter::CompositionMode_SourceOver);
         p.setTransform(QTransform());
         p.drawPixmap(QPoint(0,0), pm);
         p.setTransform(mils2widget, true);
-//      } else if (l==Layer::Bottom) {
-//         p.setCompositionMode(QPainter::CompositionMode_Source);
-//        onesublayer(l, ORenderer::Sublayer::Plane);
-//        onesublayer(l, ORenderer::Sublayer::Clearance);
-//        onesublayer(l, ORenderer::Sublayer::Extra);
-//        onesublayer(l, ORenderer::Sublayer::Main);
       } else {
         onesublayer(l, ORenderer::Sublayer::Extra);
         onesublayer(l, ORenderer::Sublayer::Main);
@@ -278,8 +272,10 @@ void EData::drawObjects(QPainter &p) const {
   if (brd.layervisible[Layer::Panel])
     onelayer(Layer::Panel);
 
+  qDebug() << "drawobjects1" << t0.msecsTo(QTime::currentTime());
   if (netsvisible && mode!=Mode::PNPOrient && crumbs.isEmpty())
     drawNetMismatch(rndr);
+  qDebug() << "drawobjects2" << t0.msecsTo(QTime::currentTime());
 
   onelayer(Layer::Invalid); // magic to punch holes
 }
@@ -543,7 +539,7 @@ NodeID EData::visibleNodeAt(Group const &grp, Point p, Dim mrg) const {
 
   nid << id;
   if (grp.object(id).isGroup()) 
-    nid += visibleNodeAt(grp.object(id).asGroup(), p, mrg);
+    nid.append(visibleNodeAt(grp.object(id).asGroup(), p, mrg));
   return nid;
 }
 
