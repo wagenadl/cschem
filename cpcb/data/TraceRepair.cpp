@@ -98,7 +98,7 @@ bool TraceRepair::fixTraceIntersections(int trid, Dim grid) {
       trc1.p2 = res.point;
       int id1 = d->grp.insert(Object(t1));
       fixTraceIntersections(id1, grid);
-      fixTraceIntersections(res.node[0], grid);
+      fixTraceIntersections(res.node.first(), grid);
     }
   }
 }

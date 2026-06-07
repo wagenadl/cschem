@@ -197,7 +197,7 @@ void PlaneEditor::mouseRelease(Point p,
     FilledPlane fp = ed->currentGroup().object(d->hovernode).asPlane();
     Polyline postmovepoly = fp.perimeter;
     // first, restore
-    ed->currentGroup().remove(d->hovernode[0]); // by construction, not deep
+    ed->currentGroup().remove(d->hovernode.first()); // by construction, not deep
     // then:
     if (postmovepoly[2].x!=postmovepoly[0].x
         && postmovepoly[2].y!=postmovepoly[0].y) { // if nonempty

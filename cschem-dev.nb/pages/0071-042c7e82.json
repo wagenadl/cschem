@@ -1,0 +1,105 @@
+{ "typ": "page",
+  "cre": "2026-06-07T09:41:50.438",
+  "mod": "2026-06-07T12:07:34.531",
+  "cui": "2edabb2b1502c998",
+  "stampTime": 0,
+  "startPage": 71,
+  "unlocked": false,
+  "uuid": "042c7e82",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2026-06-07T09:41:50.435",
+      "mod": "2026-06-07T09:41:50.457",
+      "uuid": "7cb9acf9",
+      "cc": [
+        { "typ": "res",
+          "cre": "2026-06-07T09:41:50.456",
+          "mod": "2026-06-07T09:41:50.457",
+          "archive": "70_-c77e0f02.html",
+          "desc": "",
+          "preview": "70_-c77e0f02p.png",
+          "source": "page://0.0.0.70/71630e7d/5",
+          "tag": "70",
+          "title": "",
+          "uuid": "c77e0f02"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2026-06-07T09:41:50.439",
+      "mod": "2026-06-07T09:41:50.457",
+      "uuid": "55ad84e4",
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T09:41:50.439",
+          "mod": "2026-06-07T09:41:50.457",
+          "lines": [
+            0
+          ],
+          "text": "Better PCB net analysis (cont’d)",
+          "uuid": "28c79055",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2026-06-07T09:41:50.456",
+              "mod": "2026-06-07T09:41:50.457",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "1a4fbf2e",
+              "x": -46.8281,
+              "y": 45.06,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2026-06-07T09:41:50.456",
+                  "mod": "2026-06-07T09:41:50.456",
+                  "lines": [
+                    0
+                  ],
+                  "text": "p. 70 >",
+                  "uuid": "95d5b102",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2026-06-07T09:41:50.456",
+                      "mod": "2026-06-07T09:41:50.456",
+                      "end": 5,
+                      "res": [
+                        "70"
+                      ],
+                      "start": 3,
+                      "style": 4,
+                      "uuid": "e8765cb0"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T09:41:52.546",
+      "mod": "2026-06-07T12:07:34.531",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "d20b06ac",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T09:41:52.546",
+          "mod": "2026-06-07T12:07:34.531",
+          "lines": [
+            0,
+            56,
+            109
+          ],
+          "text": "With that, I got the updateNet() to about 50 ms and the verifyNets() nearly instantanously as well. However, paintEvent() still takes a long time. Why?",
+          "uuid": "69bc4189"
+        }
+      ]
+    }
+  ]
+}

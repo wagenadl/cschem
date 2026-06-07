@@ -233,9 +233,9 @@ Object &Group::object(int key) {
 
 Object const &Group::object(NodeID const &id) const {
   static Object nil;
-  if (id.isEmpty() || !contains(id[0]))
+  if (id.isEmpty() || !contains(id.first()))
     return nil;
-  Object const &obj(object(id[0]));
+  Object const &obj(object(id.first()));
   if (id.size()==1)
     return obj;
   if (obj.isGroup())
@@ -252,7 +252,7 @@ Object &Group::object(NodeID const &id) {
   }
   d.detach();
   d->hasbbox = false;
-  Object &obj(object(id[0]));
+  Object &obj(object(id.first()));
   if (id.size()==1)
     return obj;
   if (obj.isGroup()) {
