@@ -4,15 +4,15 @@
 
 #define NODEID_H
 
-#include <list>
+#include <vector>
 #include "VectorCf.h"
 #include "LayerPoint.h"
 
-class NodeID: public std::list<int> {
+class NodeID: public std::vector<int> {
 public:
   NodeID() {}
-  NodeID(std::list<int>::const_iterator a,
-         std::list<int>::const_iterator b): std::list<int>(a, b) {}
+  NodeID(std::vector<int>::const_iterator a,
+         std::vector<int>::const_iterator b): std::vector<int>(a, b) {}
   bool operator==(NodeID const &x) const { return vectorEq(*this, x); }
   bool operator<(NodeID const &x) const { return vectorLt(*this, x); }
   LayerPoint location(class Group const &root,
@@ -29,6 +29,7 @@ public:
   void removeLast() { if (begin()!=end()) erase(--end()); }
   int takeFirst() { if (begin()==end()) return -1; int x = *begin(); erase(begin()); return x;}
   int takeLast() { if (begin()==end()) return -1; int x = *rbegin(); erase(begin()); return x;}
+  void push_front(int x) { insert(begin(), x); }
 };
 
 inline uint qHash(NodeID const &id) {

@@ -587,8 +587,8 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
         Dim dist1;
 	NodeID ids1 = g.nodeAt(p, mrg, lay, notrace, &dist1);
         if (dist1<dist) {
-          ids = ids1;
-          ids.push_front(id);
+          ids = NodeID().plus(id);
+          ids.append(ids1);
           dist = dist1;
         }
       } break;
