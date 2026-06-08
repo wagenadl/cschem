@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2026-06-07T09:41:50.438",
-  "mod": "2026-06-07T12:07:34.531",
+  "mod": "2026-06-07T16:52:42.088",
   "cui": "2edabb2b1502c998",
   "stampTime": 0,
   "startPage": 71,
@@ -98,6 +98,51 @@
           ],
           "text": "With that, I got the updateNet() to about 50 ms and the verifyNets() nearly instantanously as well. However, paintEvent() still takes a long time. Why?",
           "uuid": "69bc4189"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T16:51:33.981",
+      "mod": "2026-06-07T16:52:00.594",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "bb22c962",
+      "y0": 145.498,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T16:51:33.981",
+          "mod": "2026-06-07T16:52:00.594",
+          "lines": [
+            0,
+            64,
+            130
+          ],
+          "text": "I  made it a lot better by replacing NodeID with a std::vector. I also tried std::list and std::deque, but vector was faster than either.",
+          "uuid": "b80aeffa"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T16:52:05.617",
+      "mod": "2026-06-07T16:52:42.088",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "552baa52",
+      "y0": 218.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T16:52:05.617",
+          "mod": "2026-06-07T16:52:42.088",
+          "lines": [
+            0,
+            59
+          ],
+          "text": "Then I made the NetGraph slightly faster by using an rtree to find overlapping rectangles.",
+          "uuid": "2d52a42c"
         }
       ]
     }

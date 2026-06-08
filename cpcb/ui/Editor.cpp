@@ -331,7 +331,6 @@ void Editor::leaveEvent(QEvent *) {
 }
 
 void Editor::paintEvent(QPaintEvent *) {
-  QTime t0 = QTime::currentTime();
   QPainter p(this);
   p.setTransform(d->mils2widget, true);
   d->drawBoard(p);
@@ -342,7 +341,6 @@ void Editor::paintEvent(QPaintEvent *) {
     d->tracer->render(p);
   if (d->planeeditor)
     d->planeeditor->render(p);
-  qDebug() << "repaint took" << t0.msecsTo(QTime::currentTime()) << "ms";
 }
 
 void Editor::setGrid(Dim g) {

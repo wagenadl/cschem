@@ -64,9 +64,9 @@ bool EData::updateOnWhat(bool force) {
 
 void EData::updateNet(NodeID seed) {
   QTime t0 = QTime::currentTime();
-  qDebug() << "edata: updatenet" << t0;
   netseed = seed;
-  NetGraph graph(layout.root().subgroup(crumbs));
+  Group g0;
+  NetGraph graph(seed.isEmpty() ? g0 : layout.root().subgroup(crumbs));
   net = graph.net(seed);
 
   linkednet = LinkedNet();
@@ -85,7 +85,6 @@ void EData::updateNet(NodeID seed) {
     netmismatch.recalculate(net, onnode, linkednet, layout.root());
   else
     netmismatch.reset();
-  qDebug() << "   updatenet done" << t0.msecsTo(QTime::currentTime());
 }
 
 void EData::invalidateStuckPoints() const {
@@ -202,7 +201,6 @@ void EData::drawGrid(QPainter &p) const {
 }
 
 void EData::drawObjects(QPainter &p) const {
-  QTime t0 = QTime::currentTime();
   Group const &here(currentGroup());
   validateStuckPoints();  
 
@@ -272,10 +270,8 @@ void EData::drawObjects(QPainter &p) const {
   if (brd.layervisible[Layer::Panel])
     onelayer(Layer::Panel);
 
-  qDebug() << "drawobjects1" << t0.msecsTo(QTime::currentTime());
   if (netsvisible && mode!=Mode::PNPOrient && crumbs.isEmpty())
     drawNetMismatch(rndr);
-  qDebug() << "drawobjects2" << t0.msecsTo(QTime::currentTime());
 
   onelayer(Layer::Invalid); // magic to punch holes
 }
