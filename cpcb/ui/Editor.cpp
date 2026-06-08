@@ -14,6 +14,7 @@
 #include "data/PCBFileIO.h"
 #include "data/Clipboard.h"
 #include "data/TicToc.h"
+#include <QAbstractEventDispatcher>
 
 #include "ui/BOM.h"
 
@@ -1560,8 +1561,8 @@ void Editor::deleteDanglingTraces() {
 void Editor::cleanupIntersections() {
   Group here = currentGroup();
   TraceRepair tr(here);
-  bool tri = tr.fixAllTraceIntersections(pcbLayout().board().grid);
-  bool pni = tr.fixAllPinTouchings();
+  bool tri = tr.fixTraceIntersections(); //pcbLayout().board().grid);
+  bool pni = tr.fixPinTouchings();
   if (tri || pni) {
     clearSelection();
     UndoCreator uc(d, true);

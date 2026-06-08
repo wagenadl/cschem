@@ -15,8 +15,9 @@ public:
   Nodename someNodename(QSet<NodeID> const &net, NodeID seed=NodeID()) const;
   QSet<NodeID> dangling() const;
   QSet<NodeID> adjacent(NodeID seed) const;
+  Group const &root() const { return _root; }
 private:
-  Group const &root;
+  Group const &_root;
   class NetGraphData *d;
 private:
   NetGraph(NetGraph const &) = delete;

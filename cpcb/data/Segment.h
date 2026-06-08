@@ -27,11 +27,12 @@ public:
   bool intersects(Segment const &t, Point *intersection=0, bool parallelok=true) const;
   // The returned intersection point is on the segment if the result is true,
   // otherwise it is on the line extended from the segment.
-  Point projectionOntoSegment(Point p) const;
-  // returns p1 or p2 if projection onto line would be outside of segment
+  Point projectionOntoSegment(Point p, bool constrain=true) const;
+  // if constrain, returns p1 or p2 if projection onto line would be outside of segment
   double angle(Segment const &t) const; // putting t after us. angle [-pi,+pi).
   double angle() const; // our angle wrt +ve x, [-pi,+pi).
   bool intersects(Rect r) const;
+  bool projectsWithin(Point p, Dim mrg=Dim()) const;
 protected:
   Fraction projectionCoefficient(Point p) const;
 };

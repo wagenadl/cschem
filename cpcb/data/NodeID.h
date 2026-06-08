@@ -13,6 +13,7 @@ public:
   NodeID() {}
   NodeID(std::vector<int>::const_iterator a,
          std::vector<int>::const_iterator b): std::vector<int>(a, b) {}
+  NodeID(int node): std::vector<int>{node} {}
   bool operator==(NodeID const &x) const { return vectorEq(*this, x); }
   bool operator<(NodeID const &x) const { return vectorLt(*this, x); }
   LayerPoint location(class Group const &root,

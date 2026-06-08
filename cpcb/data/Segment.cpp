@@ -29,12 +29,14 @@ Fraction Segment::projectionCoefficient(Point p) const {
 }
 
 
-Point Segment::projectionOntoSegment(Point p) const {
+Point Segment::projectionOntoSegment(Point p, bool constrain) const {
   Fraction frc(projectionCoefficient(p));
-  if (frc.num<=0)
-    return p1;
-  else if (frc.num>=frc.denom)
-    return p2;
+  if (constrain) {
+    if (frc.num<=0)
+      return p1;
+    else if (frc.num>=frc.denom)
+      return p2;
+  }
   double x = (p2-p1).x.raw();
   double y = (p2-p1).y.raw();
   double n = frc.num;
@@ -132,9 +134,43 @@ bool Segment::intersects(Segment const &t, Point *intersection,
       return yes(p1);
     else if (t.onSegment(p2, Dim::fromMM(.001))) 
       return yes(p2);
-    else 
-      return no((p1 + p2 + t.p1 + t.p2) / 4);
+
+    // see if either of our endpoints projects within other segment
+    // or vice versa
+    // could be [------(==|==)----]
+    //       or (------[==|==]----)
+    //       or (------[==|==)----]
+    // in all cases, | is the answer
+    QList<Point> usedp;
+    Fraction tp1(projectionCoefficient(t.p1));
+    if (tp1.num >=0 && tp1.num <= tp1.denom)
+      usedp << t.p1;
+    Fraction tp2(projectionCoefficient(t.p2));
+    if (tp2.num >=0 && tp2.num <= tp2.denom)
+      usedp << t.p2;
+    Fraction fp1(t.projectionCoefficient(p1));
+    if (fp1.num >=0 && fp1.num <= fp1.denom)
+      usedp << p1;
+    Fraction fp2(t.projectionCoefficient(p2));
+    if (fp2.num >=0 && fp2.num <= fp2.denom)
+      usedp << p2;
+    if (usedp.size()) { // this will be 2
+      Point p;
+      for (Point const &p1: usedp)
+        p += p1;
+      return no(p / usedp.size());
+    }
+    // no overlap (-----)  |  [-----]
+    // find nearest point
+    Point our_center = (p1 + p2) / 2;
+    Point their_center = (t.p1 + t.p2) / 2;
+    Point their_nearest = t.p1.distance(our_center) < t.p2.distance(our_center)
+      ? t.p1 : t.p2;
+    Point our_nearest = p1.distance(their_center) < p2.distance(their_center)
+      ? p1 : p2;
+    return no((their_nearest + our_nearest) / 2);
   }
+  
   double a = (dy_*(x1_-x1) - dx_*(y1_-y1)) / nrm;
   double a_ = (dy*(x1_-x1) - dx*(y1_-y1)) / nrm;
   Point p(Dim::fromMils(x1 + a*dx), Dim::fromMils(y1 + a*dy));
@@ -167,6 +203,11 @@ bool Segment::intersects(Rect r) const {
     || intersects(Segment(r.bottomRight(), r.bottomLeft()))
     || intersects(Segment(r.bottomLeft(), r.topLeft()));
 }
+
+bool Segment::projectsWithin(Point p, Dim mrg) const {
+  return onSegment(projectionOntoSegment(p, false), mrg);
+}
+
 
 QDebug operator<<(QDebug d, Segment const &t) {
   d << "Segment(" << t.p1 << t.p2 << ")";

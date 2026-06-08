@@ -93,29 +93,37 @@ bool Trace::touches(FilledPlane const &fp) const {
   return got;
 }
 
-
-bool Trace::touches(Trace const &t, Point *pt) const {
+std::optional<Point> Trace::touchPoint(Trace const &t) const {
   if (layer != t.layer)
-    return false;
+    return std::optional<Point>();
   if (!boundingRect().intersects(t.boundingRect()))
-    return false;
+    return std::optional<Point>();
   if (!outlinePath().intersects(t.outlinePath()))
-    return false;
+    return std::optional<Point>();
+  
+  if (onP1(t.p1) || onP1(t.p2))
+    return p1;
+  if (onP2(t.p1) || onP2(t.p2))
+    return p2;
 
   Point intersect;
-  auto yes = [pt](Point p) {
-               if (pt)
-                 *pt = p;
-               return true;
-             };
-  intersects(t, &intersect); // this may not yield true, but if it doesn't
+  bool got = intersects(t, &intersect); // this may not yield true, but if it doesn't
   // ... it should still be close enough
-  if (onP1(intersect, t.width/2)) 
-    return yes(p1);
-  else if (onP2(intersect, t.width/2))
-    return yes(p2);
+  Dim w = max(width, t.width);
+  if (onP1(intersect, w/2)) 
+    return p1;
+  else if (onP2(intersect, w/2))
+    return p2;
+  else // if (got)
+    return intersect;
+  // 
+}
+
+bool Trace::touches(Trace const &t) const {
+  if (touchPoint(t))
+    return true;
   else
-    return yes(intersect);
+    return false;
 }
 
 bool Trace::operator==(Trace const &t) const {

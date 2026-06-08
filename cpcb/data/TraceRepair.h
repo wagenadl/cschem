@@ -11,17 +11,11 @@ class TraceRepair {
 public:
   TraceRepair(class Group &group);
   ~TraceRepair();
-  bool fixTraceIntersections(int id, Dim grid=Dim());
-  // id must be a trace in the group
-  // intersections are snapped to nearest grid point, if nonzero
-  // returns true if anything done
-  bool fixAllTraceIntersections(Dim grid=Dim());
-  bool fixPinTouchings(int id);
-  // id must be a trace in the group
-  // returns true if anything done
-  bool fixAllPinTouchings();
+
+  bool fixTraceIntersections();
+  bool fixPinTouchings();
   bool dropDanglingTraces();
-  // returns true if anything done
+  // return true if anything done
 private:
   class RepairData *d;
 };
