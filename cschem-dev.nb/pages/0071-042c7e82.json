@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2026-06-07T09:41:50.438",
-  "mod": "2026-06-07T16:52:42.088",
+  "mod": "2026-06-07T17:44:53.890",
   "cui": "2edabb2b1502c998",
   "stampTime": 0,
   "startPage": 71,
@@ -143,6 +143,123 @@
           ],
           "text": "Then I made the NetGraph slightly faster by using an rtree to find overlapping rectangles.",
           "uuid": "2d52a42c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:25:59.985",
+      "mod": "2026-06-07T17:26:51.398",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5de02e70",
+      "y0": 269.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:25:59.985",
+          "mod": "2026-06-07T17:26:51.398",
+          "lines": [
+            0,
+            48,
+            108,
+            170
+          ],
+          "text": "This is good. Perfectly workable on my PC. Next improvement would be to have EData copy the Group, pass the work on to a thread that can be canceled, and take the result off-line.",
+          "uuid": "872d08c9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:40:07.541",
+      "mod": "2026-06-07T17:44:08.590",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ef566984",
+      "y0": 365.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:40:07.541",
+          "mod": "2026-06-07T17:44:08.590",
+          "lines": [
+            0,
+            59,
+            121,
+            186,
+            249,
+            311,
+            369
+          ],
+          "text": "Not needed. Instead, inserted a 1-ms delay between receipt of mouse move event and call of updateonnet. Then, if another mouse move event comes first, I cancel the timer and restart it. That way, the system is very responsive, but there is no build-up of a backlog, because the request to updateonnet is always moved to the back of the queue if there is a pending move event.",
+          "uuid": "36289263"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:44:09.159",
+      "mod": "2026-06-07T17:44:17.340",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "af83b77f",
+      "y0": 532.154,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:44:09.159",
+          "mod": "2026-06-07T17:44:17.340",
+          "lines": [
+            0
+          ],
+          "text": "Claude tells me that it may be better to do this through",
+          "uuid": "d723fb98"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:44:17.997",
+      "mod": "2026-06-07T17:44:19.225",
+      "h": 54.787,
+      "ind": 6,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0723c782",
+      "y0": 559.32,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:44:17.997",
+          "mod": "2026-06-07T17:44:17.997",
+          "lines": [
+            0,
+            46,
+            87
+          ],
+          "text": "connect(QAbstractEventDispatcher::instance(), &QAbstractEventDispatcher::aboutToBlock,\n        this, &MyClass::onIdle);",
+          "uuid": "71f84bb5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:44:27.334",
+      "mod": "2026-06-07T17:44:53.890",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "304ca4fb",
+      "y0": 614.107,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:44:27.334",
+          "mod": "2026-06-07T17:44:53.890",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "where “onIdle” would contain a simple test to see whether there is a pending updateonnet.",
+          "uuid": "b3d88640"
         }
       ]
     }

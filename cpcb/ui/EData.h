@@ -141,6 +141,7 @@ public:
   class PlaneEditor *planeeditor;
   class BOM *bom;
   int undocreatorstackdepth;
+  QTimer *netupdatetimer;
 };
 
 

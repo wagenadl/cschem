@@ -28,6 +28,10 @@ Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   setFocusPolicy(Qt::StrongFocus);
   scaleToFit();
   d->bom = new BOM(this);
+  d->netupdatetimer->setInterval(1);
+  d->netupdatetimer->setSingleShot(true);
+  connect(d->netupdatetimer, &QTimer::timeout,
+          this, [this]() { this->updateOnNet(); });
 }
 
 Editor::~Editor() {
@@ -246,9 +250,14 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
   emit hovering(p);
 
   if (!d->moving && !d->tracer)
-    updateOnNet();
+    delayedUpdateOnNet();
   if (d->planeeditor)
     d->planeeditor->mouseMove(p, e->button(), e->modifiers());
+}
+
+void Editor::delayedUpdateOnNet() {
+  d->netupdatetimer->stop();
+  d->netupdatetimer->start();
 }
 
 void Editor::pretendOnNet(NodeID ids) {
