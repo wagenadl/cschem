@@ -10,7 +10,6 @@
 #include <QApplication>
 #include <QInputDialog>
 #include <QResizeEvent>
-#include <QTimer>
 #include <algorithm>
 #include "data/PCBFileIO.h"
 #include "data/Clipboard.h"
@@ -28,10 +27,10 @@ Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   setFocusPolicy(Qt::StrongFocus);
   scaleToFit();
   d->bom = new BOM(this);
-  d->netupdatetimer->setInterval(1);
-  d->netupdatetimer->setSingleShot(true);
-  connect(d->netupdatetimer, &QTimer::timeout,
-          this, [this]() { this->updateOnNet(); });
+  connect(QAbstractEventDispatcher::instance(),
+          &QAbstractEventDispatcher::aboutToBlock,
+          this, [this]() { onIdle(); });
+  
 }
 
 Editor::~Editor() {
@@ -156,14 +155,7 @@ void Editor::resizeEvent(QResizeEvent *) {
   //  qDebug() << "editor::resizeevent" << e->oldSize() << e->size();
   if (!d->autofit)
     return;
-  if (!d->resizeTimer) {
-    d->resizeTimer = new QTimer(this);
-    d->resizeTimer->setInterval(10);
-    d->resizeTimer->setSingleShot(true);
-    connect(d->resizeTimer, &QTimer::timeout,
-	    [this]() { d->perhapsRefit(); });
-  }
-  d->resizeTimer->start();
+  d->pendingresize = true;
 }
 
 void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
@@ -250,14 +242,20 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
   emit hovering(p);
 
   if (!d->moving && !d->tracer)
-    delayedUpdateOnNet();
+    d->pendingonnetupdate = true;
   if (d->planeeditor)
     d->planeeditor->mouseMove(p, e->button(), e->modifiers());
 }
 
-void Editor::delayedUpdateOnNet() {
-  d->netupdatetimer->stop();
-  d->netupdatetimer->start();
+void Editor::onIdle() {
+  if (d->pendingonnetupdate) {
+    d->pendingonnetupdate = false;
+    updateOnNet();
+  }
+  if (d->pendingresize) {
+    d->pendingresize = false;
+    d->perhapsRefit();
+  }
 }
 
 void Editor::pretendOnNet(NodeID ids) {

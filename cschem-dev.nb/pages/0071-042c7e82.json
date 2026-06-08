@@ -1,6 +1,6 @@
 { "typ": "page",
   "cre": "2026-06-07T09:41:50.438",
-  "mod": "2026-06-07T17:44:53.890",
+  "mod": "2026-06-07T17:50:37.530",
   "cui": "2edabb2b1502c998",
   "stampTime": 0,
   "startPage": 71,
@@ -260,6 +260,27 @@
           ],
           "text": "where “onIdle” would contain a simple test to see whether there is a pending updateonnet.",
           "uuid": "b3d88640"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:50:33.956",
+      "mod": "2026-06-07T17:50:37.530",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "e365e830",
+      "y0": 664.439,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:50:33.956",
+          "mod": "2026-06-07T17:50:37.530",
+          "lines": [
+            0
+          ],
+          "text": "That feels very snappy.",
+          "uuid": "042f774b"
         }
       ]
     }

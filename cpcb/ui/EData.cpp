@@ -11,7 +11,6 @@
 #include <QMessageBox>
 #include <qnamespace.h>
 #include "data/NetGraph.h"
-#include <QTimer>
 
 constexpr int MOVETHRESHOLD_PIX = 4;
 constexpr int MARGIN_PIX = 5;
@@ -26,12 +25,10 @@ EData::EData(Editor *ed): ed(ed) {
   stuckptsvalid = false;
   stepsfromsaved = false;
   netsvisible = true;
-  resizeTimer = 0;
   tracer = 0;
   planeeditor = 0;
   bom = 0;
   undocreatorstackdepth = 0;
-  netupdatetimer = new QTimer(ed);
 }
 
 Dim EData::pressMargin() const {

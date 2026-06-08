@@ -136,12 +136,12 @@ public:
   LinkedNet linkednet;
   NetMismatch netmismatch;
   QSize lastsize;
-  QTimer *resizeTimer;
   class Tracer *tracer;
   class PlaneEditor *planeeditor;
   class BOM *bom;
   int undocreatorstackdepth;
-  QTimer *netupdatetimer;
+  bool pendingonnetupdate = false;
+  bool pendingresize = false;
 };
 
 

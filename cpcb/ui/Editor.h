@@ -151,7 +151,7 @@ private:
   // SELECTPOINTSOFCOMPONENT adds points of holes and pads in group, but
   // not of contained traces and subgroups.
   friend class UndoCreator;
-  void delayedUpdateOnNet();
+  void onIdle();
 private:
   class EData *d;
 };
