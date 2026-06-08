@@ -61,6 +61,30 @@ bool TraceRepair::fixTraceIntersections() {
   bool any = false;
   QList<int> universe = d->grp.keys();
   TicToc tmr;
+  qDebug() << "looking for contained";
+  while (!universe.isEmpty()) {
+    QSet<int> deleted;
+    NetGraph ng(d->grp);
+    qDebug() << "fixtr got graph" << tmr.lap();
+    for (int id: universe) {
+      if (deleted.contains(id))
+        continue; // wait for next round, already altered
+      Object const &obj(d->grp.object(id));
+      if (!obj.isTrace())
+        continue;
+      Trace const &us(obj.asTrace());
+      Intersection isec(ng, NodeID(id));
+      for (NodeID const &res: isec.fullyContained()) {
+        deleted << res.first();
+        d->grp.remove(res.first());
+      }
+    }
+    universe = d->grp.keys();
+    if (deleted.isEmpty())
+      break;
+  }
+  
+  qDebug() << "looking for intersections";
   while (!universe.isEmpty()) {
     QSet<int> newuniverse;
     NetGraph ng(d->grp);
