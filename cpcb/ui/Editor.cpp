@@ -13,6 +13,7 @@
 #include <algorithm>
 #include "data/PCBFileIO.h"
 #include "data/Clipboard.h"
+#include "data/TicToc.h"
 
 #include "ui/BOM.h"
 
@@ -1541,12 +1542,16 @@ void Editor::deleet() {
 }
 
 void Editor::deleteDanglingTraces() {
+  TicToc t;
   Group here = currentGroup();
   TraceRepair tr(here);
+  qDebug() << "constructed tracerepair" << t.lap();
   if (tr.dropDanglingTraces()) {
+    qDebug() << "  dropped" << t.lap();
     clearSelection();
     UndoCreator uc(d, true);
     d->currentGroup() = here;
+    qDebug() << "  all done" << t.lap() << t.total();
     d->updateOnWhat(true);
     update();
   }

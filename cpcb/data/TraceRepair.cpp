@@ -5,6 +5,7 @@
 #include "Intersection.h"
 #include "Object.h"
 #include "NetGraph.h"
+#include "TicToc.h"
 
 class RepairData {
 public:
@@ -129,63 +130,41 @@ bool TraceRepair::fixPinTouchings(int trid) {
 }
 
 bool TraceRepair::dropDanglingTraces() {
-  QSet<Point> fixedpoints = d->grp.pinPoints();
-  QMap<Point, int> tracepoints;
-  for (int id: d->grp.keys()) {
-    Object const &obj(d->grp.object(id));
-    if (obj.isTrace()) {
-      Trace const &t(obj.asTrace());
-      if (t.layer==Layer::Top || t.layer==Layer::Bottom) {
-	tracepoints[t.p1]++;
-	tracepoints[t.p2]++;
-      }
-    }
-  } 
-  bool anyever = false;
+  TicToc tmr;
+
+  bool any = false;
   while (true) {
-    bool anynow = false;
+    NetGraph ng(d->grp);
+    auto dangling = ng.dangling();
+    qDebug() << "dangling" << tmr.lap();
+
     QSet<int> dropme;
-    for (int id: d->grp.keys()) {
-      Object const &obj(d->grp.object(id));
-      if (obj.isTrace()) {
-	Trace const &t(obj.asTrace());
-	if (t.layer==Layer::Top || t.layer==Layer::Bottom) {
-	  if (!(tracepoints[t.p1]>=2 || fixedpoints.contains(t.p1))
-	      || !(tracepoints[t.p2]>=2 || fixedpoints.contains(t.p2))
-	      || t.p1 == t.p2) {
-	    dropme << id;
-	    tracepoints[t.p1]--;
-	    tracepoints[t.p2]--;
-	  }
-	}
+    for (NodeID const &nid: dangling) {
+      if (nid.size() > 1)
+        continue; // don't drop inside groups
+      Object const &obj(d->grp.object(nid));
+      switch (obj.type()) {
+      case Object::Type::Trace:
+        if (layerIsCopper(obj.asTrace().layer))
+          dropme << nid.first();
+        break;
+      case Object::Type::Hole:
+        if (obj.asHole().via)
+          dropme << nid.first();
+        break;
+      default:
+        break;
       }
     }
-    for (int id: dropme) {
-      NodeID seed; seed << id;
-      QSet<NodeID> net(NetGraph(d->grp).net(seed));
-      Object obj(d->grp.object(id));
-      d->grp.remove(id);
-      int N = net.size();
-      if (N >= 2) {
-        NodeID alt = *net.begin();
-        net.erase(net.begin());
-        if (alt == seed)
-          alt = *net.begin();
-        QSet<NodeID> altnet(NetGraph(d->grp).net(alt));
-        if (altnet.size() != N - 1) {
-          // shouldn't have removed this node, so put it back
-          d->grp.insert(obj);
-        } else {
-          anynow = true;
-        }
-      } else {
-        anynow = true;
-      }
-    }
-    if (!anynow)
+    if (dropme.isEmpty())
       break;
-    anyever = true;
+    any = true;
+    qDebug() << "dropping" << dropme.size() << "items" << tmr.lap();
+
+    for (int id: dropme) 
+      d->grp.remove(id);
   }
-  return anyever;
+  qDebug() << "dangledone" << tmr.lap() << tmr.total();
+  return any;
 }
     

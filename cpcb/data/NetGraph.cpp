@@ -12,6 +12,8 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/index/rtree.hpp>
 #include <boost/geometry/index/predicates.hpp>
+#include <boost/graph/named_function_params.hpp>
+#include <boost/graph/properties.hpp>
 #include <vector>
 
 namespace bg  = boost::geometry;
@@ -180,5 +182,25 @@ Nodename NetGraph::someNodename(QSet<NodeID> const &net, NodeID seed) const {
       }
     }
   }
+  return res;
+}
+
+QSet<NodeID> NetGraph::dangling() const {
+  QSet<NodeID> res;  
+  for (auto v: boost::make_iterator_range(boost::vertices(d->g))) {
+    int n = boost::degree(v, d->g);
+    if (n <= 1)
+      res << d->nodeids[v];
+  }
+  return res;
+}
+
+QSet<NodeID> NetGraph::adjacent(NodeID seed) const {
+  QSet<NodeID> res;
+  if (!d->revmap.contains(seed))
+    return res;
+  int v = d->revmap[seed];
+  for (auto n: boost::make_iterator_range(boost::adjacent_vertices(v, d->g)))
+    res << d->nodeids[n];
   return res;
 }

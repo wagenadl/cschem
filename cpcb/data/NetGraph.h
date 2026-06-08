@@ -13,6 +13,8 @@ public:
   QSet<NodeID> net(NodeID seed) const;
   QList<QSet<NodeID>> allNets() const;
   Nodename someNodename(QSet<NodeID> const &net, NodeID seed=NodeID()) const;
+  QSet<NodeID> dangling() const;
+  QSet<NodeID> adjacent(NodeID seed) const;
 private:
   Group const &root;
   class NetGraphData *d;
