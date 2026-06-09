@@ -33,8 +33,8 @@ public:
   void push_front(int x) { insert(begin(), x); }
 };
 
-inline uint qHash(NodeID const &id) {
-  uint hsh = 0;
+inline size_t qHash(NodeID const &id) {
+  size_t hsh = 0;
   for (int bit: id) {
     hsh = 2346781*hsh ^ bit;
   }

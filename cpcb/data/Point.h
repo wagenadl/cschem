@@ -61,7 +61,7 @@ public:
 
 
 QDebug operator<<(QDebug, Point const &);
-inline uint qHash(Point const &p) {
+inline size_t qHash(Point const &p) {
   return qHash(QPair<double,double>(p.x.toMils(),p.y.toMils()));
 }
 

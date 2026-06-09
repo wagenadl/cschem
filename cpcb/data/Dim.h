@@ -57,9 +57,9 @@ public:
   qint64 raw() const { return d; }
   Dim nonneg() const { return d > 0 ? *this : Dim(); } // this dim or zero, whichever is greater
 public:
-  static Dim fromMM(float x) { return Dim(int(std::round(PerMM*x))); }
-  static Dim fromMils(float x) { return Dim(int(std::round(PerMil*x))); }
-  static Dim fromInch(float x) { return Dim(int(std::round(PerInch*x))); }
+  static Dim fromMM(double x) { return Dim(int(std::round(PerMM*x))); }
+  static Dim fromMils(double x) { return Dim(int(std::round(PerMil*x))); }
+  static Dim fromInch(double x) { return Dim(int(std::round(PerInch*x))); }
   static Dim fromUM(qint64 x) { return Dim(PerUM*x); }
   static Dim fromString(QString x, bool *ok=0) { return Dim(x.toInt(ok)); }
   static Dim quadrature(Dim const &a, Dim const &b) {
@@ -69,7 +69,7 @@ private:
   Dim(qint64 d): d(d) { }
   friend Dim operator*(double, Dim const &);
   friend QDebug operator<<(QDebug d, Dim const &x);
-  friend uint qHash(Dim const &d);
+  friend size_t qHash(Dim const &d);
 };
 
 inline Dim const &max(Dim const &a, Dim const &b) {
@@ -97,6 +97,6 @@ inline QDebug operator<<(QDebug d, Dim const &x) {
   return d;
 }
 
-inline uint qHash(Dim const &d) { return qHash(d.d); }
+inline size_t qHash(Dim const &d) { return qHash(d.d); }
 
 #endif

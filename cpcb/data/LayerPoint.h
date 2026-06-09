@@ -31,8 +31,8 @@ public:
   Point point;
 };
 
-inline uint qHash(LayerPoint const &lp) {
-  uint hsh = int(lp.layer);
+inline size_t qHash(LayerPoint const &lp) {
+  size_t hsh = int(lp.layer);
   return 2347891231*hsh ^ qHash(lp.point);
 }
 

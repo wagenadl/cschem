@@ -18,7 +18,7 @@ enum class Layer {
 
 QColor const &layerColor(Layer, bool selected=false);
 QList<Layer> const &layers();
-inline uint qHash(Layer l) { return qHash(int(l)); }
+inline size_t qHash(Layer l) { return qHash(int(l)); }
 inline bool layerIsCopper(Layer l) { return l==Layer::Top || l==Layer::Bottom; }
 QDebug operator<<(QDebug, Layer const &);
 
