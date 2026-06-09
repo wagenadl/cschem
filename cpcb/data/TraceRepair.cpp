@@ -52,20 +52,20 @@ bool TraceRepair::fixPinTouchings() {
         if (us.distanceToLine(p) >= Dim::fromMM(0.2)) // too far
           continue;
         if (us.onP1(p)) {
-          qDebug() << "near p1" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p1.distance(p);
+          //qDebug() << "near p1" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p1.distance(p);
           Trace &us(d->grp.object(NodeID(id)).asTrace());
           us.p1 = p;
           newuniverse << id;
           break;
         } else if (us.onP2(p)) {
-          qDebug() << "near p2" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p2.distance(p);
+          //qDebug() << "near p2" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p2.distance(p);
           Trace &us(d->grp.object(NodeID(id)).asTrace());
           us.p2 = p;
           newuniverse << id;
           break;
         } else if (us.projectsWithin(p)) {
           // pin touches us, but not near endpoint
-          qDebug() << "middle" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p1.distance(p) << us.p2.distance(p) << us.distanceToLine(p);
+          //qDebug() << "middle" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p1.distance(p) << us.p2.distance(p) << us.distanceToLine(p);
           Trace &us(d->grp.object(NodeID(id)).asTrace());
           Trace t1 = us;
           us.p2 = p;
@@ -76,7 +76,7 @@ bool TraceRepair::fixPinTouchings() {
         }
       }
     }
-    qDebug() << "count" << newuniverse.values() << tmr.lap();
+    qDebug() << "count" << newuniverse.size() << tmr.lap();
     universe = newuniverse.values();
     if (!newuniverse.isEmpty())
       any = true;
@@ -85,7 +85,153 @@ bool TraceRepair::fixPinTouchings() {
 }
 
 bool TraceRepair::fixTraceIntersections() {
-  return false;
+  bool any = false;
+  QList<int> universe = d->grp.keys();
+  TicToc tmr;
+  int iter = 0;
+  while (!universe.isEmpty()) {
+    QSet<int> newuniverse;
+    QSet<int> deleted;
+    NetGraph ng(d->grp);
+    qDebug() << "fixtr got graph" << tmr.lap();
+    for (int id: universe) {
+      if (newuniverse.contains(id) || deleted.contains(id))
+        continue;
+      Object const &obj(d->grp.object(id));
+      if (!obj.isTrace())
+        continue;
+      Trace const &us(obj.asTrace());
+      for (NodeID const &nid: ng.adjacent(NodeID(id))) {
+        if (nid.size() != 1)
+          continue;
+        if (nid.first() == id) {
+          qDebug() << "self";
+          continue;
+        }
+        if (newuniverse.contains(nid.first()) || deleted.contains(nid.first()))
+          continue;
+        Object const &obj1(d->grp.object(nid));
+        if (!obj1.isTrace())
+          continue;
+        Trace const &them(obj1.asTrace());
+        /* We have to consider collinear and crossing separately
+           (1) Collinear
+               Using [ and ] to indicate our end points and ( and ) for theirs, we have to consider two cases
+                 (a) [--------(=====)------]
+                 (b) [--------(=======]--------)
+               For (1a), if they are thicker than us, we split, else they are dropped.
+               For (1b), if they are thicker than us, our end point is moved, else theirs.
+           (2) Crossing
+               By construction, the intersection point lies on both lines
+               If intersection point within us but not near end point, we split
+               If intersection point within them but not near end point, they split
+           (3) Parallel but not too close
+               Ignore
+        */
+        std::optional<Point> isec(us.intersection(them));
+        if (isec) {
+          // crossing
+          if (them.betweenEndpoints(*isec, them.width/2)) {
+            // they split
+            Trace &them(d->grp.object(nid).asTrace());
+            qDebug() << "they split" << us.p1 << us.p2 << "|" << *isec << "|" << them.p1 << them.p2;
+            Trace t1 = them;
+            them.p2 = *isec;
+            t1.p1 = *isec;
+            int id1 = d->grp.insert(Object(t1));
+            newuniverse << id << id1;
+          }
+          if (us.betweenEndpoints(*isec, us.width/2)) {
+            // we split
+            Trace &us(d->grp.object(NodeID(id)).asTrace());
+            qDebug() << "we split" << us.p1 << us.p2 << "|" << *isec << "|" << them.p1 << them.p2;
+            Trace t1 = us;
+            us.p2 = *isec;
+            t1.p1 = *isec;
+            int id1 = d->grp.insert(Object(t1));
+            newuniverse << id << id1;
+            break; // we are changed
+          }
+        } else {
+          // collinear?
+          Dim mrg = min(Dim::fromMM(0.2), (us.width + them.width) / 2 );
+          if (us.collinear(them, mrg)) {
+            if (us.onSegment(them.p1, mrg) && us.onSegment(them.p2, mrg)) {
+              // they are fully contained
+              if (them.width <= us.width) {
+                // delete them
+                qDebug() << "delete them" << us.p1 << us.p2 << "|" << them.p1 << them.p2 << "|" << id << nid;
+                deleted << nid.first();
+                d->grp.remove(nid.first());
+              } else {
+                // we split or truncate
+                Trace &us(d->grp.object(NodeID(id)).asTrace());
+                qDebug() << "we split or truncate" << us.p1 << us.p2 << "|" << them.p1 << them.p2;
+                if (them.onP1(us.p1)) {
+                  us.p1 = them.p2;
+                } else if (them.onP2(us.p1)) {
+                  us.p1 = them.p1;
+                } else if (them.onP1(us.p2)) {
+                  us.p2 = them.p2;
+                } else if (them.onP2(us.p2)) {
+                  us.p2 = them.p1;
+                } else if (them.p1.distance(us.p1) < them.p2.distance(us.p1)) {
+                  // our p1 closer to their p1 (so our p2 closer to their p2, because they are fully contained)
+                  Trace t = us;
+                  us.p2 = them.p1;
+                  t.p1 = them.p2;
+                  qDebug() << "   add" << t;
+                  newuniverse << d->grp.insert(Object(t));
+                } else {
+                  Trace t = us;
+                  us.p2 = them.p2;
+                  t.p1 = them.p1;
+                  qDebug() << "   add" << t;
+                  newuniverse << d->grp.insert(Object(t));
+                }
+                newuniverse << id;
+                qDebug() << "    we became" << us;
+                break; // we are changed
+              }
+            } else {
+              if (them.width > us.width)
+                continue; // do this in their iteration instead
+              if (us.p1 == them.p1 || us.p2 == them.p1
+                  || us.p1 == them.p2 || us.p2 == them.p2)
+                continue; // ok neighbors
+              Trace &them(d->grp.object(nid).asTrace());
+              qDebug() << "they truncate" << us.p1 << us.p2 << "|" << them.p1 << them.p2;
+              if (us.onSegment(them.p1)) {
+                // their p2 extends either beyond our p1 or our p2. move their p1 to the side of extension
+                if (them.p2.distance(us.p1) < them.p2.distance(us.p2))
+                  them.p1 = us.p1;
+                else
+                  them.p1 = us.p2;
+              } else if (us.onSegment(them.p2)) {
+                // their p1 extends either beyond our p1 or our p2
+                if (them.p1.distance(us.p1) < them.p1.distance(us.p2))
+                  them.p2 = us.p1;
+                else
+                  them.p2 = us.p2;
+              }
+              qDebug() << "    they became" << them;
+              newuniverse << nid.first();
+            }
+          }
+        }
+      }
+    }
+    qDebug() << "new uni" << newuniverse.size() << "delete" << deleted.size() << tmr.lap();
+    if (!newuniverse.isEmpty() || !deleted.isEmpty())
+      any = true;
+    universe = newuniverse.values();
+    iter ++;
+    if (iter >= 10) {
+      qDebug() << "STOP";
+      break;
+    }
+  }
+  return any;
 }
 /*
   bool any = false;

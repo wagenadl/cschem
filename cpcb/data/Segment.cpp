@@ -10,11 +10,11 @@ Rect Segment::boundingRect() const {
 }
 
 bool Segment::onP1(Point p, Dim mrg) const {
-  return p.distance(p1) < mrg;
+  return p.distance(p1) <= mrg;
 }
 
 bool Segment::onP2(Point p, Dim mrg) const {
-  return p.distance(p2) < mrg;
+  return p.distance(p2) <= mrg;
 }
 
 Fraction Segment::projectionCoefficient(Point p) const {
@@ -62,7 +62,7 @@ bool Segment::betweenEndpoints(Point p, Dim mrg) const {
     return false;
   if (onP2(p, mrg))
     return false;
-  return onSegment(p, mrg);
+  return onSegment(p, mrg / 2);
 }
 
 bool Segment::onSegment(Point p, Dim mrg) const {
