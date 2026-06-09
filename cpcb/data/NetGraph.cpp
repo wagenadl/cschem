@@ -48,7 +48,7 @@ struct ConnectionRecorder: public boost::default_bfs_visitor {
                      QVector<NodeID> const &map): nodes(nodes), map(map) {}
   template <typename Vertex, typename GraphType>
   void discover_vertex(Vertex v, const GraphType &) const {
-    if (v >=0 && v < map.size())
+    if (v >= 0 && v < (long unsigned)(map.size()))
       nodes << map[v];
     else
       qDebug() << "map does not contain" << v;

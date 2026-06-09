@@ -122,7 +122,7 @@ int PEData::onEdge(Point p, Point *p_out) const {
     Segment s(fp.perimeter[n], fp.perimeter[(n+1)%N]);
     if (s.betweenEndpoints(p, mrg)) {
       if (p_out)
-        *p_out = s.projectionOntoSegment(p);
+        *p_out = s.nearestPoint(p);
       return n;
     }
   }

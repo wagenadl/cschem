@@ -802,3 +802,12 @@ bool Object::touches(Object const &oth) const {
     return false;
   }
 }
+
+Point Object::point() const {
+  if (d->typ == Type::Hole)
+    return asHole().p;
+  else if (d->typ == Type::Pad)
+    return asPad().p;
+  else
+    return Point();
+}

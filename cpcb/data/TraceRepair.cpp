@@ -2,7 +2,6 @@
 
 #include "TraceRepair.h"
 #include "Group.h"
-#include "Intersection.h"
 #include "Object.h"
 #include "NetGraph.h"
 #include "TicToc.h"
@@ -22,6 +21,15 @@ TraceRepair::~TraceRepair() {
 }
 
 bool TraceRepair::fixPinTouchings() {
+  /* If any trace touches a hole or a pad but not at an endpoint, we will either
+     move that endpoint if it is already overlapping with the pin, or
+     split the trace.
+
+     This is an iterative procedure, and in extreme situations, may
+     change the connectivity.  We do not check for that.
+
+     Even holes or pads inside groups count.
+  */
   bool any = false;
   QList<int> universe = d->grp.keys();
   TicToc tmr;
@@ -30,26 +38,45 @@ bool TraceRepair::fixPinTouchings() {
     NetGraph ng(d->grp);
     qDebug() << "fixpt got graph" << tmr.lap();
     for (int id: universe) {
-      if (newuniverse.contains(id))
-        continue; // wait for next round, already altered
       Object const &obj(d->grp.object(id));
       if (!obj.isTrace())
         continue;
       Trace const &us(obj.asTrace());
-      Intersection isec(ng, NodeID(id));
-      for (Intersection::Result const &res: isec.touchingPins(false)) {
-        if (!us.onP1(res.point) && !us.onP2(res.point)) {
+      for (NodeID const &nid: ng.adjacent(NodeID(id))) {
+        Object const &obj1(d->grp.object(nid));
+        if (!obj1.isHoleOrPad())
+          continue;
+        Point p = obj1.point();
+        if (p == us.p1 || p == us.p2)
+          continue; // already on an endpoint
+        if (us.distanceToLine(p) >= Dim::fromMM(0.2)) // too far
+          continue;
+        if (us.onP1(p)) {
+          qDebug() << "near p1" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p1.distance(p);
           Trace &us(d->grp.object(NodeID(id)).asTrace());
-          qDebug() << "split us" << us.p1 << res.point << us.p2 << res.point.distance(us.p1) << res.point.distance(us.p2) << us.width/2;
-          Trace t1(us);
-          us.p2 = res.point;
-          t1.p1 = res.point;
-          int id1 = d->grp.insert(Object(t1)); // insert new part
-          newuniverse << id << id1; // recheck both parts
-          break; // only handle one pin at a time for a given trace
+          us.p1 = p;
+          newuniverse << id;
+          break;
+        } else if (us.onP2(p)) {
+          qDebug() << "near p2" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p2.distance(p);
+          Trace &us(d->grp.object(NodeID(id)).asTrace());
+          us.p2 = p;
+          newuniverse << id;
+          break;
+        } else if (us.projectsWithin(p)) {
+          // pin touches us, but not near endpoint
+          qDebug() << "middle" << us.p1 << us.p2 << us.width << us.p1.distance(us.p2) << ":" << p << us.p1.distance(p) << us.p2.distance(p) << us.distanceToLine(p);
+          Trace &us(d->grp.object(NodeID(id)).asTrace());
+          Trace t1 = us;
+          us.p2 = p;
+          t1.p1 = p;
+          int id1 = d->grp.insert(Object(t1));
+          newuniverse << id << id1;
+          break;
         }
       }
     }
+    qDebug() << "count" << newuniverse.values() << tmr.lap();
     universe = newuniverse.values();
     if (!newuniverse.isEmpty())
       any = true;
@@ -58,6 +85,9 @@ bool TraceRepair::fixPinTouchings() {
 }
 
 bool TraceRepair::fixTraceIntersections() {
+  return false;
+}
+/*
   bool any = false;
   QList<int> universe = d->grp.keys();
   TicToc tmr;
@@ -129,7 +159,8 @@ bool TraceRepair::fixTraceIntersections() {
   }
   return any;
 }
- 
+*/
+
 bool TraceRepair::dropDanglingTraces() {
   TicToc tmr;
 

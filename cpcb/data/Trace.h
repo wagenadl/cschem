@@ -33,7 +33,6 @@ public:
   bool touches(class FilledPlane const &fp) const;
   bool touches(Rect r) const;
   bool operator==(Trace const &) const;
-  std::optional<Point> touchPoint(Trace const &t) const;
 };
 
 QDebug operator<<(QDebug, Trace const &);

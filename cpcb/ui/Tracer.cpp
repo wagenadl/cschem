@@ -41,11 +41,11 @@ public:
       if (delta.x.abs() < grid/2) {
         p.x = tracestart.x;
         adjusty();
-        return s.projectionOntoSegment(p);
+        return s.nearestPoint(p);
       } else if (delta.y.abs() < grid/2) {
         p.y = tracestart.y;
         adjustx();
-        return s.projectionOntoSegment(p);
+        return s.nearestPoint(p);
       }
     }
     if (abs(sdy_) < abs(sdx_)) {
@@ -57,7 +57,7 @@ public:
       p.y = p.roundedTo(grid).y;
       adjustx();
     }
-    return s.projectionOntoSegment(p);
+    return s.nearestPoint(p);
   }
   Point constrain(Point p) const {
     // constrain 45° angles or grid

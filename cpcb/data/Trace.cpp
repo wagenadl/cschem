@@ -93,37 +93,24 @@ bool Trace::touches(FilledPlane const &fp) const {
   return got;
 }
 
-std::optional<Point> Trace::touchPoint(Trace const &t) const {
-  if (layer != t.layer)
-    return std::optional<Point>();
-  if (!boundingRect().intersects(t.boundingRect()))
-    return std::optional<Point>();
-  if (!outlinePath().intersects(t.outlinePath()))
-    return std::optional<Point>();
-  
-  if (onP1(t.p1) || onP1(t.p2))
-    return p1;
-  if (onP2(t.p1) || onP2(t.p2))
-    return p2;
-
-  Point intersect;
-  bool got = intersects(t, &intersect); // this may not yield true, but if it doesn't
-  // ... it should still be close enough
-  Dim w = max(width, t.width);
-  if (onP1(intersect, w/2)) 
-    return p1;
-  else if (onP2(intersect, w/2))
-    return p2;
-  else // if (got)
-    return intersect;
-  // 
-}
-
 bool Trace::touches(Trace const &t) const {
-  if (touchPoint(t))
-    return true;
-  else
+  if (layer != t.layer)
     return false;
+  if (!boundingRect().intersects(t.boundingRect()))
+    return false;
+  if (!outlinePath().intersects(t.outlinePath()))
+    return false;
+  Dim mrg = (width + t.width) / 2;
+  std::optional<Point> isec = intersection(t);
+  if (isec) {
+    return distanceToSegment(*isec) < mrg;
+  } else {
+    // parallel
+    return distanceToSegment(t.p1) < mrg
+    || distanceToSegment(t.p2) < mrg
+    || t.distanceToSegment(p1) < mrg
+    || t.distanceToSegment(p2) < mrg;
+  }
 }
 
 bool Trace::operator==(Trace const &t) const {
@@ -131,6 +118,6 @@ bool Trace::operator==(Trace const &t) const {
 }
 
 bool Trace::touches(Rect r) const {
-  r.grow(width);
+  r.grow(width / 2);
   return intersects(r);
 }

@@ -46,9 +46,9 @@ bool Polyline::contains(Point p, Dim mrg) const {
   int n = 0;
   //  bool ok;
   for (int k=0; k<K-1; k++)
-    if (s0.intersects(Segment(operator[](k), operator[](k+1)), 0, false))
+    if (s0.intersects(Segment(operator[](k), operator[](k+1))))
       n++;
-  if (s0.intersects(Segment(operator[](0), operator[](K-1)), 0, false))
+  if (s0.intersects(Segment(operator[](0), operator[](K-1))))
     n++;
   
   return (n&1) ? true : false;
