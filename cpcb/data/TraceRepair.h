@@ -14,6 +14,7 @@ public:
 
   bool fixTraceIntersections();
   bool fixPinTouchings();
+  bool fixTraceFragments();
   bool dropDanglingTraces();
   // return true if anything done
 private:
