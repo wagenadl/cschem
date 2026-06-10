@@ -279,3 +279,100 @@ bool TraceRepair::dropDanglingTraces() {
   return any;
 }
     
+bool TraceRepair::fixTraceFragments() {
+  /* A trace T is a fragment that can be absorbed into another trace U if all
+     of the following are true:
+     - T and U are collinear
+     - T and U have the same width
+     - One of T's endpoints (P = T.p1 or T.p2) lies exactly on an endpoint of U
+     - T does not touch any pins or pads at P
+     - Other than U, T does not touch any traces at P
+
+     We iterate over all traces T, checking whether they meet the conditions.
+     If so, absorb T into U and mark U for re-evaluation in a subsequent pass.
+     Once nothing is left to evaluate, we are done.
+  */
+
+  bool any;
+  int joincount = 0;
+  QList<int> universe = d->grp.keys();
+  TicToc tmr;
+  while (!universe.isEmpty()) {
+    QSet<int> newuniverse;
+    NetGraph ng(d->grp);
+    //    qDebug() << "fragments" << tmr.lap();
+    for (int id: universe) {
+      if (newuniverse.contains(id))
+        continue; // save for next round
+      Object const &obj(d->grp.object(id));
+      if (!obj.isTrace())
+        continue;
+      Trace const &us(obj.asTrace());
+      int adjcountatp1 = 0;
+      int adjcountatp2 = 0;
+      NodeID col;
+      int at = 0; // 1 for p1 2 for p2
+      for (NodeID const &nid: ng.adjacent(NodeID(id))) {
+        Object const &obj1(d->grp.object(nid));
+        if (obj1.isHoleOrPad()) {
+          Point p(obj1.point());
+          if (us.onP1(p))
+            adjcountatp1 ++;
+          if (us.onP2(p))
+            adjcountatp2 ++;
+        } else if (obj1.isTrace()) {
+          Trace const &them(obj1.asTrace());
+          if (us.onP1(them.p1) || us.onP1(them.p2)) {
+            adjcountatp1 ++;
+            if (us.width == them.width
+                && (us.p1 == them.p1 || us.p1 == them.p2)
+                && us.collinear(them)) {
+              col = nid;
+              at = 1;
+            }
+          }
+          if (us.onP2(them.p1) || us.onP2(them.p2)) {
+            adjcountatp2 ++;
+            //            qDebug() << "?" << them << us.collinear(them);
+            if (us.width == them.width
+                && (us.p2 == them.p1 || us.p2 == them.p2)
+                && us.collinear(them)) {
+              col = nid;
+              at = 2;
+            }
+          }
+        }          
+      }
+      //      qDebug() << "us" << us << adjcountatp1 << adjcountatp2 << at << col;
+      if (at == 1 && adjcountatp1 == 1) {
+        // we are absorbable at p1
+        Trace &them(d->grp.object(col).asTrace());
+        //        qDebug() << "  absorb" << us << "into" << them << "at p1";
+        if (us.onP1(them.p1))
+          them.p1 = us.p2;
+        else
+          them.p2 = us.p2;
+        newuniverse << col.first();
+        d->grp.remove(id);
+        joincount ++;
+      } else if (at == 2 && adjcountatp2 == 1) {
+        // we are absorbable at p2
+        Trace &them(d->grp.object(col).asTrace());
+        //        qDebug() << "  absorb" << us << "into" << them << "at p2";
+        if (us.onP2(them.p1))
+          them.p1 = us.p1;
+        else
+          them.p2 = us.p1;
+        newuniverse << col.first();
+        d->grp.remove(id);
+        joincount ++;
+      }
+    }
+    universe = newuniverse.values();
+    if (universe.size())
+      any = true;
+  }
+  qDebug() << "trace-fragment";
+  qDebug() << "joined: " << joincount;
+  return any;
+}

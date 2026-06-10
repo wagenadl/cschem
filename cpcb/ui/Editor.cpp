@@ -1557,9 +1557,10 @@ void Editor::deleteDanglingTraces() {
 void Editor::cleanupIntersections() {
   Group here = currentGroup();
   TraceRepair tr(here);
-  bool tri = tr.fixTraceIntersections(); //pcbLayout().board().grid);
+  bool tri = tr.fixTraceIntersections();
   bool pni = tr.fixPinTouchings();
-  if (tri || pni) {
+  bool frg = tr.fixTraceFragments();
+  if (tri || pni || frg) {
     clearSelection();
     UndoCreator uc(d, true);
     d->currentGroup() = here;

@@ -76,7 +76,7 @@ bool Segment::parallel(Segment const &t) const {
 bool Segment::collinear(Segment const &t, Dim lmrg) const {
   if (intersection(t))
     return false;
-  return distanceToLine(t.p1) < lmrg;
+  return distanceToLine(t.p1) <= lmrg;
 }
   
 
