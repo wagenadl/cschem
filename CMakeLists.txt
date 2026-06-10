@@ -32,6 +32,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 COMPONENTS Widgets Svg SvgWidgets PrintSupport REQUIRED)
 set(QT_MAC_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR})
 
+
 if (UNIX AND NOT APPLE) 
   # Clangd - but only on Linux; VS Code can fend for itself
   set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
@@ -70,6 +71,11 @@ target_include_directories(cschem PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(cschem PUBLIC "${Qt6Widgets_INCLUDE_DIRS}")
 target_include_directories(cpcb PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(cpcb PUBLIC "${Qt6Widgets_INCLUDE_DIRS}")
+
+# Boost stuff
+find_package(Boost REQUIRED)
+target_include_directories(cschem PRIVATE ${Boost_INCLUDE_DIRS})
+target_include_directories(cpcb PRIVATE ${Boost_INCLUDE_DIRS})
 
 
 ######################################################################
