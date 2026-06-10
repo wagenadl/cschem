@@ -21,7 +21,6 @@ jobs:
           platform_version: '2022'
           toolset: msvc
       - name: Install NSIS
-        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           choco install nsis -y
@@ -30,7 +29,6 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.11.1'
-          setup-python: false
           modules: "qtpositioning"
       - name: Set up MSVC developer environment
         uses: ilammy/msvc-dev-cmd@v1
