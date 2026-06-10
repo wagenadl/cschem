@@ -18,8 +18,6 @@ jobs:
         id: install-boost
         with:
           boost_version: 1.90.0
-      - name: 'Install makensis (choco)'
-        run: choco install nsis
       - name: Install CMake
         uses: lukka/get-cmake@latest
       - name: Install Qt
