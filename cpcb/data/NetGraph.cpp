@@ -188,7 +188,7 @@ Nodename NetGraph::someNodename(QSet<NodeID> const &net, NodeID seed) const {
 QSet<NodeID> NetGraph::dangling() const {
   QSet<NodeID> res;  
   for (auto v: boost::make_iterator_range(boost::vertices(d->g))) {
-    int n = boost::degree(v, d->g);
+    size_t n = boost::degree(v, d->g);
     if (n <= 1)
       res << d->nodeids[v];
   }

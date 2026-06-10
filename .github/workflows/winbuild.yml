@@ -18,10 +18,19 @@ jobs:
         id: install-boost
         with:
           boost_version: 1.90.0
+          platform_version: '2022'
+          toolset: msvc
+      - name: Install NSIS
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install nsis -y
+          Add-Content $env:GITHUB_PATH "C:\Program Files (x86)\NSIS"
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: '6.10.0'
+          version: '6.11.1'
+          setup-python: false
           modules: "qtpositioning"
       - name: Set up MSVC developer environment
         uses: ilammy/msvc-dev-cmd@v1
