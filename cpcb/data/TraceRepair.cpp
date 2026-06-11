@@ -30,10 +30,7 @@ bool TraceRepair::fixPinTouchings() {
 
      Even holes or pads inside groups count.
   */
-  bool any;
-  int movecount = 0;
-  Dim maxmove = Dim();
-  int splitcount = 0;
+  bool any = false;
   QList<int> universe = d->grp.keys();
   while (!universe.isEmpty()) {
     QSet<int> newuniverse;
@@ -54,17 +51,17 @@ bool TraceRepair::fixPinTouchings() {
           continue;
         if (us.onP1(p)) {
           Trace &us(d->grp.object(NodeID(id)).asTrace());
-          maxmove = max(maxmove, us.p1.distance(p));
+          _result.maxmove = max(_result.maxmove, us.p1.distance(p));
           us.p1 = p;
           newuniverse << id;
-          movecount++;
+          _result.nmoved_pin ++;
           break;
         } else if (us.onP2(p)) {
           Trace &us(d->grp.object(NodeID(id)).asTrace());
-          maxmove = max(maxmove, us.p2.distance(p));
+          _result.maxmove = max(_result.maxmove, us.p2.distance(p));
           us.p2 = p;
           newuniverse << id;
-          movecount++;
+          _result.nmoved_pin ++;
           break;
         } else if (us.projectsWithin(p)) {
           // pin touches us, but not near endpoint
@@ -74,7 +71,7 @@ bool TraceRepair::fixPinTouchings() {
           t1.p1 = p;
           int id1 = d->grp.insert(Object(t1));
           newuniverse << id << id1;
-          splitcount++;
+          _result.nsplit_pin ++;
           break;
         }
       }
@@ -83,18 +80,11 @@ bool TraceRepair::fixPinTouchings() {
     if (universe.size())
       any = true;
   }
-  qDebug() << "trace-pin";
-  qDebug() << "moved: " << movecount;
-  qDebug() << "max:   " << maxmove.toMM() << "mm";
-  qDebug() << "split: " << splitcount;
   return any;
 }
 
 bool TraceRepair::fixTraceIntersections() {
   bool any = false;
-  int delcount = 0;
-  int splitcount = 0;
-  int movecount = 0;
   QList<int> universe = d->grp.keys();
   int iter = 0;
   while (!universe.isEmpty()) {
@@ -145,7 +135,7 @@ bool TraceRepair::fixTraceIntersections() {
             t1.p1 = *isec;
             int id1 = d->grp.insert(Object(t1));
             newuniverse << id << id1;
-            splitcount++;
+            _result.nsplit_intersect ++;
           }
           if (us.betweenEndpoints(*isec, us.width/2)) {
             // we split
@@ -155,7 +145,7 @@ bool TraceRepair::fixTraceIntersections() {
             t1.p1 = *isec;
             int id1 = d->grp.insert(Object(t1));
             newuniverse << id << id1;
-            splitcount++;
+            _result.nsplit_intersect ++;
             break; // we are changed
           }
         } else {
@@ -168,40 +158,47 @@ bool TraceRepair::fixTraceIntersections() {
                 // delete them
                 deleted << nid.first();
                 d->grp.remove(nid.first());
-                delcount++;
+                _result.ndeleted_overlap ++;
               } else {
                 // we split or truncate
                 Trace &us(d->grp.object(NodeID(id)).asTrace());
                 if (them.onP1(us.p1)) {
+                  qDebug() << "moving us p1 to them.p2" << us << them;
                   us.p1 = them.p2;
-                  movecount++;
+                  _result.nmoved_overlap ++;
                 } else if (them.onP2(us.p1)) {
+                  qDebug() << "moving us p1 to them.p1" << us << them;
                   us.p1 = them.p1;
-                  movecount++;
+                  _result.nmoved_overlap ++;
                 } else if (them.onP1(us.p2)) {
+                  qDebug() << "moving us p2 to them.p2" << us << them;
                   us.p2 = them.p2;
-                  movecount++;
+                  _result.nmoved_overlap ++;
                 } else if (them.onP2(us.p2)) {
+                  qDebug() << "moving us p2 to them.p1" << us << them;
                   us.p2 = them.p1;
-                  movecount++;
+                  _result.nmoved_overlap ++;
                 } else if (them.p1.distance(us.p1) < them.p2.distance(us.p1)) {
                   // our p1 closer to their p1 (so our p2 closer to their p2, because they are fully contained)
                   Trace t = us;
+                  qDebug() << "split us at us.p1/them.p1" << us << them;
                   us.p2 = them.p1;
                   t.p1 = them.p2;
                   newuniverse << d->grp.insert(Object(t));
-                  movecount++;
+                  _result.nmoved_overlap ++;
                 } else {
                   Trace t = us;
+                  qDebug() << "split us at us.p1/them.p2" << us << them;
                   us.p2 = them.p2;
                   t.p1 = them.p1;
                   newuniverse << d->grp.insert(Object(t));
-                  movecount++;
+                  _result.nmoved_overlap ++;
                 }
                 newuniverse << id;
                 break; // we are changed
               }
             } else {
+              // not fully contained, but overlapping collinear
               if (them.width > us.width)
                 continue; // do this in their iteration instead
               if (us.p1 == them.p1 || us.p2 == them.p1
@@ -210,19 +207,25 @@ bool TraceRepair::fixTraceIntersections() {
               Trace &them(d->grp.object(nid).asTrace());
               if (us.onSegment(them.p1)) {
                 // their p2 extends either beyond our p1 or our p2. move their p1 to the side of extension
+                qDebug() << "moving them.p1" << us << them;
                 if (them.p2.distance(us.p1) < them.p2.distance(us.p2))
                   them.p1 = us.p1;
                 else
                   them.p1 = us.p2;
+                _result.nmoved_overlap ++;
+                newuniverse << nid.first();
               } else if (us.onSegment(them.p2)) {
+                qDebug() << "moving them.p2" << us << them;
                 // their p1 extends either beyond our p1 or our p2
                 if (them.p1.distance(us.p1) < them.p1.distance(us.p2))
                   them.p2 = us.p1;
                 else
                   them.p2 = us.p2;
+                _result.nmoved_overlap ++;
+                newuniverse << nid.first();
+              } else {
+                qDebug() << "not moving them" << us << them;
               }
-              movecount++;
-              newuniverse << nid.first();
             }
           }
         }
@@ -232,49 +235,82 @@ bool TraceRepair::fixTraceIntersections() {
       any = true;
     universe = newuniverse.values();
     iter ++;
+    qDebug() << "iter" << iter;
+      qDebug() << "newuniverse" << newuniverse;
+      for (int id: newuniverse) {
+        Object const &obj = d->grp.object(id);
+        if (obj.isTrace()) {
+          qDebug() << "  " << id << ":" << obj.asTrace();
+        }
+      }
+      qDebug() << "deleted" << deleted;
     if (iter >= 10) {
-      qDebug() << "STOP";
+      qDebug() << "STOP - Too many iterations in TraceRepair";
       break;
     }
   }
-  qDebug() << "trace-trace";
-  qDebug() << "moved:   " << movecount;
-  qDebug() << "split:   " << splitcount;
-  qDebug() << "deleted: " << delcount;
   return any;
 }
 
 
 bool TraceRepair::dropDanglingTraces() {
   bool any = false;
-  while (true) {
+  QList<int> universe = d->grp.keys();
+  while (!universe.isEmpty()) {
+    QSet<int> newuniverse;
     NetGraph ng(d->grp);
-    auto dangling = ng.dangling();
-
     QSet<int> dropme;
-    for (NodeID const &nid: dangling) {
-      if (nid.size() > 1)
-        continue; // don't drop inside groups
-      Object const &obj(d->grp.object(nid));
-      switch (obj.type()) {
-      case Object::Type::Trace:
-        if (layerIsCopper(obj.asTrace().layer))
-          dropme << nid.first();
-        break;
-      case Object::Type::Hole:
-        if (obj.asHole().via)
-          dropme << nid.first();
-        break;
-      default:
-        break;
+    for (int id: universe) {
+      Object const &obj(d->grp.object(id));
+      if (obj.isHole() && obj.asHole().via) {
+        auto adj = ng.adjacent(NodeID(id));
+        if (adj.size() <= 1) {
+          dropme << id;
+          _result.ndeleted_dangling_via ++;
+          for (NodeID const &nid: adj)
+            newuniverse << nid.first();
+        }
+      } else if (obj.isTrace()) {
+        Trace const &tr = obj.asTrace();
+        auto adj = ng.adjacent(NodeID(id));
+        if (adj.size() <= 1) {
+          dropme << id;
+          _result.ndeleted_dangling ++;
+          for (NodeID const &nid: adj)
+            newuniverse << nid.first();
+        } else {
+          int atp1 = 0;
+          int atp2 = 0;
+          for (NodeID const &nid: adj) {
+            Object const &obj1(d->grp.object(nid));
+            if (obj1.isTrace()) {
+              Trace const &tr1(obj1.asTrace());
+              if (tr.onP1(tr1.p1) || tr.onP1(tr1.p2))
+                atp1 ++;
+              else if (tr.onP2(tr1.p1) || tr.onP2(tr1.p2))
+                atp2 ++;
+            } else if (obj1.isHoleOrPad()) {
+              Point p = obj1.point();
+              if (tr.onP1(p))
+                atp1 ++;
+              else if (tr.onP2(p))
+                atp2 ++;
+            }
+          }
+          if (atp1 == adj.size() || atp2 == adj.size()) {
+            dropme << id;
+            _result.ndeleted_dangling ++;
+            for (NodeID const &nid: adj)
+              newuniverse << nid.first();
+          }
+        }
       }
     }
-    if (dropme.isEmpty())
-      break;
-    any = true;
-
     for (int id: dropme) 
       d->grp.remove(id);
+    if (dropme.size())
+      any = true;
+    universe = newuniverse.values();
   }
   return any;
 }
@@ -293,8 +329,7 @@ bool TraceRepair::fixTraceFragments() {
      Once nothing is left to evaluate, we are done.
   */
 
-  bool any;
-  int joincount = 0;
+  bool any = false;
   QList<int> universe = d->grp.keys();
   TicToc tmr;
   while (!universe.isEmpty()) {
@@ -354,7 +389,7 @@ bool TraceRepair::fixTraceFragments() {
           them.p2 = us.p2;
         newuniverse << col.first();
         d->grp.remove(id);
-        joincount ++;
+        _result.njoined ++;
       } else if (at == 2 && adjcountatp2 == 1) {
         // we are absorbable at p2
         Trace &them(d->grp.object(col).asTrace());
@@ -365,14 +400,12 @@ bool TraceRepair::fixTraceFragments() {
           them.p2 = us.p1;
         newuniverse << col.first();
         d->grp.remove(id);
-        joincount ++;
+        _result.njoined ++;
       }
     }
     universe = newuniverse.values();
     if (universe.size())
       any = true;
   }
-  qDebug() << "trace-fragment";
-  qDebug() << "joined: " << joincount;
   return any;
 }

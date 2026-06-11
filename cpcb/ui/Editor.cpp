@@ -15,6 +15,7 @@
 #include "data/Clipboard.h"
 #include "data/TicToc.h"
 #include <QAbstractEventDispatcher>
+#include <QMessageBox>
 
 #include "ui/BOM.h"
 
@@ -1551,7 +1552,15 @@ void Editor::deleteDanglingTraces() {
     d->currentGroup() = here;
     d->updateOnWhat(true);
     update();
-  }
+    QString msg = "Found and removed dangling connections:\n\n";
+    TraceRepair::Result r = tr.result();
+    msg += QString("  Traces: %1\n").arg(r.ndeleted_dangling);
+    msg += QString("  Vias: %1").arg(r.ndeleted_dangling_via);
+    QMessageBox::information(this, "CPCB", msg);
+  } else {
+    QString msg = "No dangling connections found to remove.";
+    QMessageBox::information(this, "CPCB", msg);
+  }    
 }
 
 void Editor::cleanupIntersections() {
@@ -1566,7 +1575,25 @@ void Editor::cleanupIntersections() {
     d->currentGroup() = here;
     d->updateOnWhat(true);
     update();
-  }
+    qDebug() << tri << pni << frg;
+    QString msg = "Found and repaired issues with traces:\n\n";
+    TraceRepair::Result r = tr.result();
+    msg += QString("  Split traces at pins: %1\n").arg(r.nsplit_pin);
+    msg += QString("  Split traces at intersections: %1\n").arg(r.nsplit_intersect);
+    msg += QString("  Moved endpoints to pins: %1\n").arg(r.nmoved_pin);
+    msg += QString("  Deleted overlapping traces: %1\n").arg(r.ndeleted_overlap);
+    msg += QString("  Truncated overlapping traces: %1\n").arg(r.nmoved_overlap);
+    msg += QString("  Joined continuous traces: %1\n\n").arg(r.njoined);
+    if (d->layout.board().grid.isInch()) 
+      msg += QString("  Max move: %1 in").arg(r.maxmove.toInch(), 0, 'f', 3);
+    else
+      msg += QString("  Max move: %1 mm\n").arg(r.maxmove.toMM(), 0, 'f', 2);
+    
+    QMessageBox::information(this, "CPCB", msg);
+  } else {
+    QString msg = "No trace issues found to repair.";
+    QMessageBox::information(this, "CPCB", msg);
+  }    
 }
 
 void Editor::setBoardSize(Dim w, Dim h, Dim cr) {
