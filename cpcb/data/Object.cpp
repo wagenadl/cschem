@@ -345,37 +345,37 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Object const &o) {
 }
 
 QXmlStreamReader &operator>>(QXmlStreamReader &s, Object &o) {
-  QStringRef name = s.name();
-  if (name=="hole") {
+  auto name = s.name();
+  if (name==QStringLiteral("hole")) {
     Hole t;
     s >> t;
     o = Object(t);
-  } else if (name=="nphole") {
+  } else if (name==QStringLiteral("nphole")) {
     NPHole t;
     s >> t;
     qDebug() << "read nphole" << t;
     o = Object(t);
-  } else if (name=="pad") {
+  } else if (name==QStringLiteral("pad")) {
     Pad t;
     s >> t;
     o = Object(t);
-  } else if (name=="arc") {
+  } else if (name==QStringLiteral("arc")) {
     Arc t;
     s >> t;
     o = Object(t);
-  } else if (name=="text") {
+  } else if (name==QStringLiteral("text")) {
     Text t;
     s >> t;
     o = Object(t);
-  } else if (name=="trace") {
+  } else if (name==QStringLiteral("trace")) {
     Trace t;
     s >> t;
     o = Object(t);
-  } else if (name=="group") {
+  } else if (name==QStringLiteral("group")) {
     Group t;
     s >> t;
     o = Object(t);
-  } else if (name=="plane") {
+  } else if (name==QStringLiteral("plane")) {
     FilledPlane t;
     s >> t;
     o = Object(t);
@@ -744,4 +744,70 @@ QSet<Point> Object::pinPoints(Layer lay) const {
     break;
   }
   return pp;
+}
+
+bool Object::touches(Object const &oth) const {
+  if (d->typ == Type::Group) {
+    Group const &g = asGroup();
+    for (int id: g.keys())
+      if (g.object(id).touches(oth))
+        return true;
+    return false;
+  } else if (oth.d->typ == Type::Group) {
+    Group const &og = oth.asGroup();
+    for (int id: og.keys())
+      if (touches(og.object(id)))
+        return true;
+    return false;
+  }
+
+  switch (d->typ) {
+  case Type::Hole:
+    switch (oth.d->typ) {
+    case Type::Hole: return asHole().touches(oth.asHole());
+    case Type::Pad: return asHole().touches(oth.asPad());
+    case Type::Trace: return asHole().touches(oth.asTrace());
+    case Type::Plane: return asHole().touches(oth.asPlane());
+    default:
+      return false;
+    }
+  case Type::Pad:
+    switch (oth.d->typ) {
+    case Type::Hole: return oth.asHole().touches(asPad());
+    case Type::Pad: return asPad().touches(oth.asPad());
+    case Type::Trace: return asPad().touches(oth.asTrace());
+    case Type::Plane: return asPad().touches(oth.asPlane());
+    default:
+      return false;
+    }
+  case Type::Trace:
+    switch (oth.d->typ) {
+    case Type::Hole: return oth.asHole().touches(asTrace());
+    case Type::Pad: return oth.asPad().touches(asTrace());
+    case Type::Trace: return asTrace().touches(oth.asTrace());
+    case Type::Plane: return asTrace().touches(oth.asPlane());
+    default:
+      return false;
+    }
+  case Type::Plane:
+    switch (oth.d->typ) {
+    case Type::Hole: return oth.asHole().touches(asPlane());
+    case Type::Pad: return oth.asPad().touches(asPlane());
+    case Type::Trace: return oth.asTrace().touches(asPlane());
+    case Type::Plane: return asPlane().touches(oth.asPlane());
+    default:
+      return false;
+    }
+  default:
+    return false;
+  }
+}
+
+Point Object::point() const {
+  if (d->typ == Type::Hole)
+    return asHole().p;
+  else if (d->typ == Type::Pad)
+    return asPad().p;
+  else
+    return Point();
 }

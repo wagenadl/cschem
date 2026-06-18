@@ -21,7 +21,7 @@ LayerPoint NodeID::location(Group const &root,
     else if (trc.onP2(near, margin))
       return LayerPoint(trc.layer, trc.p2);
     else
-      return LayerPoint(trc.layer, trc.projectionOntoSegment(near));
+      return LayerPoint(trc.layer, trc.nearestPoint(near));
   }
   case Object::Type::Group:
     return tail().location(obj.asGroup(), near);

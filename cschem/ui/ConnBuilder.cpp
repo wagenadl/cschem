@@ -56,7 +56,7 @@ public:
 
 void ConnBuilderData::reset() {
   fromId = -1;
-  fromPin = -1;
+  fromPin = "";
   toId = -1;
   toPin = "";
   majorcon = -1;

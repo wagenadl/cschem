@@ -13,7 +13,7 @@ namespace PCBFileIO {
       QXmlStreamReader sr(&file);
       while (!sr.atEnd()) {
         sr.readNext();
-        if (sr.isStartElement() && sr.name() == "cpcb") {
+        if (sr.isStartElement() && sr.name() == QStringLiteral("cpcb")) {
           Layout l;
 	  sr >> l;
 	  return l;

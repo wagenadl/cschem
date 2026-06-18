@@ -5,16 +5,20 @@
 
 Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   auto addAct2 = [this](Mode m, QString ic, QString lbl, Qt::Key k) {
-    actions[m] = addAction(QIcon(":/icons/"+ic), lbl,
-			   [this, m]() { setMode(m); });
+    QIcon icon(":/icons/" + ic);
+    actions[m] = addAction(icon, lbl,
+               this, [this, m]() { setMode(m); });
     actions[m]->setShortcut(QKeySequence(k));
     actions[m]->setCheckable(true);
     actions[m]->setToolTip(lbl + " (" + QKeySequence(k).toString() +")");
     return actions[m];
   };
-  auto addAct = [this, addAct2](Mode m, QString lbl, Qt::Key k) {
+  auto addAct = [addAct2](Mode m, QString lbl, Qt::Key k) {
     return addAct2(m, lbl, lbl, k);
   };
+  setFloatable(false);
+  setMovable(false);
+  setIconSize(QSize(24, 24));
   m = Mode::Invalid;
   addAct(Mode::Edit, "Edit", Qt::Key_F1);
   addAct(Mode::PlaceTrace, "Trace", Qt::Key_F2);
@@ -31,8 +35,6 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
           Qt::Key_F10);
 
   addSeparator();
-  a_origin = addAct(Mode::SetIncOrigin, "AbsOrigin", Qt::Key_F11);
-
   a_constr = addAction("Angles",
 		       [this]() { setConstraint(!isconstr); });
   QKeySequence ks(Qt::Key_F12);
@@ -42,8 +44,7 @@ Modebar::Modebar(QWidget *parent): QToolBar("Mode", parent) {
   setMode(Mode::Edit);
   isconstr = true; // force actual change
   setConstraint(false);
-  setAbsInc(false);
-  setStyleSheet("QToolButton:checked { background-color: #ffffcc;}");
+
 }
 
 Modebar::~Modebar() {
@@ -72,24 +73,6 @@ void Modebar::setMode(Mode m1) {
     m = m1;
     emit modeChanged(m);
   }
-  if (m==Mode::SetIncOrigin)
-    setAbsInc(!isinc);
-}
-
-void Modebar::setAbsInc(bool inc) {
-  isinc = inc;
-  QString ic = isinc ? "Inc" : "Abs";
-  a_origin->setIcon(QIcon(":/icons/" + ic + "Origin"));
-  QString lbl = isinc ? "Incremental" : "Absolute";
-  a_origin->setToolTip(lbl + " origin (" + a_origin->shortcut().toString()
-		       + " toggles)");
-  if (!isinc)
-    setMode(Mode::Edit);
-  emit originChanged(isinc);
-}
-
-bool Modebar::isOriginIncremental() const {
-  return isinc;
 }
 
 Mode Modebar::mode() const {

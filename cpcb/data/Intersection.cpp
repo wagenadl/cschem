@@ -3,85 +3,91 @@
 #include "Intersection.h"
 #include "Object.h"
 
-Intersection::Intersection(Group const &group, int traceid):
-  group(group), trace(group.object(traceid).asTrace()), traceid(traceid) {
+Intersection::Intersection(NetGraph const &graph, NodeID traceid):
+  graph(graph), traceid(traceid) {
 }
 
-Intersection::Intersection(Group const &group, Trace const &trace):
-  group(group), trace(trace), traceid(-1) {
-}
-
-Intersection::Result Intersection::touchingPin(bool allowends) const {
-  for (int id: group.keys()) {
-    Object const &obj(group.object(id));
+QList<Intersection::Result> Intersection::touchingPins(bool allowends) const {
+  Group const &group(graph.root());
+  QList<Intersection::Result> res;
+  if (!group.object(traceid).isTrace()) {
+    qDebug() << "Not a trace" << traceid;
+    return res;
+  }
+  Trace const &trace(group.object(traceid).asTrace());
+  QSet<NodeID> adj(graph.adjacent(traceid));
+  for (NodeID const &nid: adj) {
+    Object const &obj(group.object(nid));
     switch (obj.type()) {
-    case Object::Type::Group: {
-      Result res = Intersection(obj.asGroup(), trace).touchingPin(allowends);
-      if (!res.node.isEmpty()) {
-	res.node.push_front(id);
-	return res;
-      }
+    case Object::Type::Hole: {
+      Hole const &hole = obj.asHole();
+      if (allowends || (hole.p != trace.p1 && hole.p != trace.p2))
+        res << Result(nid, hole.p);
     } break;
-    case Object::Type::Hole:
-      if (obj.asHole().touches(trace)) {
-	Result res;
-	res.point = obj.asHole().p;
-	if (allowends || (res.point != trace.p1 && res.point != trace.p2)) {
-	  res.node << id;
-	  return res;
-	}
-      }
-      break;
-    case Object::Type::Pad:
-      if (obj.asPad().touches(trace)) {
-	Result res;
-	res.point = obj.asPad().p;
-	if (allowends || (res.point != trace.p1 && res.point != trace.p2)) {
-	  res.node << id;
-	  return res;
-	}
-      }
-      break;
+    case Object::Type::Pad: {
+      Pad const &pad = obj.asPad();
+      if (allowends || (pad.p != trace.p1 && pad.p != trace.p2))
+        res << Result(nid, pad.p);
+    } break;      
     default:
       break;
     }
   }
-  return Result();
+  return res;
 }
 
-Intersection::Result Intersection::touchingTrace(bool allowends) const {
-  for (int id: group.keys()) {
-    if (id==traceid)
+QList<NodeID> Intersection::fullyContained() const {
+  Group const &group(graph.root());
+  QList<NodeID> res;
+  if (!group.object(traceid).isTrace()) {
+    qDebug() << "Not a trace" << traceid;
+    return res;
+  }
+  Trace const &trace(group.object(traceid).asTrace());
+  QSet<NodeID> adj(graph.adjacent(traceid));
+  for (NodeID const &nid: adj) {
+    if (nid.size() != 1)
+      continue; // we do not go into groups
+    Object const &obj(group.object(nid));
+    if (!obj.isTrace())
       continue;
-    Object const &obj(group.object(id));
+    Trace const &other(obj.asTrace());
+    if (trace.projectsWithin(other.p1, Dim::fromMils(1))
+        && trace.projectsWithin(other.p2, Dim::fromMils(1)))
+      res << nid;
+  }
+  return res;
+}
+
+QList<Intersection::Result> Intersection::touchingTraces(bool allowends) const {
+  Group const &group(graph.root());
+  QList<Intersection::Result> res;
+  if (!group.object(traceid).isTrace()) {
+    qDebug() << "Not a trace" << traceid;
+    return res;
+  }
+  Trace const &trace(group.object(traceid).asTrace());
+  QSet<NodeID> adj(graph.adjacent(traceid));
+  for (NodeID const &nid: adj) {
+    if (nid.size() != 1)
+      continue; // we do not go into groups
+    Object const &obj(group.object(nid));
     switch (obj.type()) {
-    //case Object::Type::Group: {
-    //  // should we go inside subgroups at all?
-    //  Result res = Intersection(obj.asGroup(), trace).touchingTrace(allowends);
-    //  if (!res.node.isEmpty()) {
-    //    res.node.push_front(id);
-    //    return res;
-    //  }
-    //} break;
     case Object::Type::Trace: {
       Trace const &tr1(obj.asTrace());
-      if (traceid<0 && tr1==trace)
-        continue; // alt. form of preventing self touch
-      Point p;
-      if (tr1.touches(trace, &p)) {
-        if (allowends
-            || (p!=tr1.p1 && p!=tr1.p2)
-            || (p!=trace.p1 && p!=trace.p2)) {
-          Result res;
-          res.node << id;
-          res.point = p;
-          return res;
-        }
+      std::optional<Point> op(tr1.touchPoint(trace));
+      if (!op) {
+        qDebug() << "Missing intersection";
+        break;
       }
+      if (allowends
+          || (*op != tr1.p1 && *op != tr1.p2)
+          || (*op != trace.p1 && *op != trace.p2)) 
+        res << Result(nid, *op);
     } break;
     default:
       break;
     }
   }
-  return Result();
+  return res;
 }

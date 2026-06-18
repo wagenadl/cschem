@@ -126,67 +126,59 @@ bool GWData::writeBoardOutline() {
   out << "%LPD*%\n"; // positive
   out << "D10*\n"; // use aperture
   Board const &brd(layout.board());
-  switch (brd.shape) {
-  case Board::Shape::Rect:
+  if (brd.cornerradius == Dim()) {
     out << "X0Y0D02*\n"; // move to origin
     out << "X" << Gerber::coord(brd.width) << "D01*\n"; 
     out << "Y" << Gerber::coord(brd.height) << "D01*\n";
     out << "X0D01*\n";
     out << "Y0D01*\n"; // return to origin
-    break;
-  case Board::Shape::Round:
-    if (brd.width==brd.height) {
-      // simple circle: use left edge as start/end
+  } else {
+    // rect. start at left of top edge
+    out << "G01"
+        << "X" << Gerber::coord(brd.cornerradius)
+        << "Y" << Gerber::coord(brd.height)
+          << "D02*\n";
       out << "G01"
-          << "X0Y" << Gerber::coord(brd.height/2) << "D02*\n";
-      out << "G03"
-          << "X0Y" << Gerber::coord(brd.height/2)
-	  << "I" <<  Gerber::coord(brd.width/2)
-	  << "J0" << "D01*\n";
-    } else if (brd.width<brd.height) {
-      // vertically oriented obrect. start at top of left edge
-      out << "G01"
-          << "X0Y" << Gerber::coord(brd.width/2) << "D02*\n";
-      out << "G03"
-          << "X" << Gerber::coord(brd.width)
-          << "Y" << Gerber::coord(brd.width/2)
-	  << "I" << Gerber::coord(brd.width/2) << "J0"
-          << "D01*\n"; // draw top half circle
-      out << "G01" 
-          << "X" << Gerber::coord(brd.width)
-          << "Y" << Gerber::coord(brd.height - brd.width/2)
-          << "D01*\n"; // draw right edge
-      out << "G03"
-          << "X0"
-          << "Y" << Gerber::coord(brd.height - brd.width/2)
-	  << "I" << Gerber::coord(-brd.width/2) << "J0"
-          << "D01*\n"; // draw bottom half circle
-      out << "G01" 
-          << "X0" << "Y" << Gerber::coord(brd.width/2)
-          << "D01*\n"; // draw left edge
-    } else {
-      // horizontally oriented obrect. start at left of bottom edge
-      out << "G01"
-          << "X" << Gerber::coord(brd.height/2) << "Y0" << "D02*\n";
-      out << "G02"
-          << "X" << Gerber::coord(brd.height/2)
-          << "Y" << Gerber::coord(brd.height)
-	  << "I0" << "J" << Gerber::coord(brd.height/2)
-          << "D01*\n"; // draw left half circle
-      out << "G01" 
-          << "X" << Gerber::coord(brd.width - brd.height/2)
+          << "X" << Gerber::coord(brd.width - brd.cornerradius)
           << "Y" << Gerber::coord(brd.height)
           << "D01*\n"; // draw top edge
+      out << "G75*\n";
       out << "G02"
-          << "X" << Gerber::coord(brd.width - brd.height/2)
+          << "X" << Gerber::coord(brd.width)
+          << "Y" << Gerber::coord(brd.height - brd.cornerradius)
+	  << "I0"
+          << "J" << Gerber::coord(-brd.cornerradius)
+          << "D01*\n"; // draw top right quarter circle
+      out << "G01"
+          << "X" << Gerber::coord(brd.width)
+          << "Y" << Gerber::coord(brd.cornerradius)
+          << "D01*\n"; // draw right edge
+      out << "G02"
+          << "X" << Gerber::coord(brd.width - brd.cornerradius)
           << "Y0"
-	  << "I0" << "J" << Gerber::coord(-brd.height/2)
-          << "D01*\n"; // draw right half circle
-      out << "G01" 
-          << "X" << Gerber::coord(brd.height/2) << "Y0"
+	  << "I" << Gerber::coord(-brd.cornerradius)
+          << "J0"
+          << "D01*\n"; // draw bottom right quarter circle
+      out << "G01"
+          << "X" << Gerber::coord(brd.cornerradius)
+          << "Y0"
           << "D01*\n"; // draw bottom edge
-    }
-    break;
+      out << "G02"
+          << "X0"
+          << "Y" << Gerber::coord(brd.cornerradius)
+	  << "I0"
+          << "J" << Gerber::coord(brd.cornerradius)
+          << "D01*\n"; // draw bottom left quarter circle
+      out << "G01"
+          << "X0"
+          << "Y" << Gerber::coord(brd.height - brd.cornerradius)
+          << "D01*\n"; // draw left edge
+      out << "G02"
+          << "X" << Gerber::coord(brd.cornerradius)
+          << "Y" << Gerber::coord(brd.height)
+	  << "I" << Gerber::coord(brd.cornerradius)
+          << "J0"
+          << "D01*\n"; // draw top left quarter circle
   }
   out << "M02*\n"; // terminate file
   return true;
@@ -613,12 +605,13 @@ static void writeTraceClearance(GerberFile &out, Board const &board,
 
 static void writeRoundHoleClearance(GerberFile &out, Board const &board,
                                     QMap<Dim, QList<Hole>> const &holes,
-                                    Gerber::Apertures const &aps) {
+                                    Gerber::Apertures const &aps,
+                                    Layer layer) {
   for (Dim od: holes.keys()) {
     Dim mrg = 2*board.padClearance(od, od);
     out << aps.select(Gerber::Circ(od + mrg));
     for (Hole const &hole: holes[od]) {
-      if (hole.noclear)
+      if (hole.noclear && (hole.fpcon == layer || hole.fpcon == Layer::Invalid))
         continue;
       if (hole.isSlot()) 
         writeSlotSegment(out, hole);
@@ -682,7 +675,8 @@ bool GWData::writeTrackAndPadClearance(GerberFile &out, Gerber::Layer layer) {
   out << "%LPC*%\n"; // negative
 
   writeTraceClearance(out, layout.board(), collector.traces(l), aps);
-  writeRoundHoleClearance(out, layout.board(), collector.roundHolePads(l), aps);
+  writeRoundHoleClearance(out, layout.board(), collector.roundHolePads(l),
+                          aps, l);
   writeSqHoleClearance(out, layout.board(), collector.squareHolePads(l), aps);
   writeSMDClearance(out, layout.board(), collector.smdPads(l), aps);
   
@@ -858,9 +852,9 @@ static void writeSMDPads(GerberFile &out,
                          Board const &brd,
                          Collector const &col,
                          Layer l,
-                         bool copper, bool mask) { // paste if neither
+                         bool copper, bool mask, bool silk) { // paste if neither
   Gerber::Apertures const
-    &padaps(out.apertures(mask
+    &padaps(out.apertures((mask || silk)
                           ? Gerber::Apertures::Func::Material
                           : Gerber::Apertures::Func::SMDPad));
   QMap<Point, QList<Pad>> const &pads(col.smdPads(l));
@@ -904,8 +898,8 @@ bool GWData::writeTracksAndPads(GerberFile &out, Gerber::Layer layer) {
     writeComponentPads(out, layout.board(), collector, l, true, ismask);
   }
 
-  if (iscopper || ismask || ispaste)
-    writeSMDPads(out, layout.board(), collector, l, iscopper, ismask);
+  if (iscopper || ismask || ispaste || issilk)
+    writeSMDPads(out, layout.board(), collector, l, iscopper, ismask, issilk);
 
   return true;
 }

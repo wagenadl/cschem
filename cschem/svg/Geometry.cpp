@@ -10,20 +10,9 @@
 #include <QMap>
 #include <QFontMetricsF>
 #include <math.h>
-
-class OrderedPoint: public QPoint {
-public:
-  OrderedPoint(QPoint o) { x = o.x(); y = o.y(); }
-  bool operator<(OrderedPoint const &o) const {
-    if (x != o.x)
-      return x < o.x;
-    else
-      return y < o.y;
-  }
-public:
-  int x;
-  int y;
-};
+#include <algorithm>
+#include "svg/SegmentDB.h"
+  
 
 class GeometryData {
 public:
@@ -31,7 +20,7 @@ public:
     circ(circ), lib(lib) {
   }
   void ensurePinDB();
-  void ensureConnectionDB();
+  void ensureSegmentDB();
   QPoint pinPosition(int elt, QString pin) const;
   QPoint pinPosition(Element const &elt, QString pin) const;
   QMap<QString, QPoint> pinPositions(Element const &elt) const;
@@ -45,8 +34,8 @@ public:
 public:
   Circuit circ;
   SymbolLibrary lib;
-  mutable QMap<OrderedPoint, PinID> pindb;
-  mutable QMap<OrderedPoint, int> condb;
+  mutable QMultiHash<QPoint, PinID> pindb;
+  mutable SegmentDB segdb;
 };
 
 Geometry::Geometry(Circuit const &circ, SymbolLibrary const &lib):
@@ -407,40 +396,20 @@ bool Geometry::isZeroLength(Connection const &con) const {
 int Geometry::connectionAt(QPoint p) const {
   if (!d)
     return -1;
-  d->ensureConnectionDB();
-  if (d->condb.contains(p))
-    return d->condb[p];
-  else
-    return -1;
+  d->ensureSegmentDB();
+  return d->segdb.find(p);
 }
 
-void GeometryData::ensureConnectionDB() {
-  if (!condb.isEmpty())
+void GeometryData::ensureSegmentDB() {
+  if (segdb.any())
     return;
 
   for (auto &con: circ.connections) {
     int id = con.id;
     QPolygon poly(connectionPath(con));
     int N = poly.size();
-    for (int n=0; n<N-1; n++) {
-      QPoint p0 = poly[n];
-      QPoint p1 = poly[n+1];
-      if (p0.x()!=p1.x() && p0.y()!=p1.y())
-	continue; // skip diagonal segment
-      if (p0.x()<p1.x()) {
-	for (int x=p0.x(); x<=p1.x(); x++)
-	  condb[QPoint(x, p0.y())] = id;
-      } else if (p0.x()>p1.x()) {
-	for (int x=p1.x(); x<=p0.x(); x++)
-	  condb[QPoint(x, p0.y())] = id;
-      } else if (p0.y()<p1.y()) {
-	for (int y=p0.y(); y<=p1.y(); y++)
-	  condb[QPoint(p0.x(), y)] = id;
-      } else {
-	for (int y=p1.y(); y<=p0.y(); y++)
-	  condb[QPoint(p0.x(), y)] = id;
-      }
-    }
+    for (int n=0; n<N-1; n++) 
+      segdb.insert(id, poly[n], poly[n+1]);
   }
 }
 
@@ -590,4 +559,25 @@ QRectF GeometryData::elementBBox(Element const &elt) const {
   QRectF bb0(prt.shiftedBBox());
   QRectF bb = xf.mapRect(bb0);
   return bb;
+}
+
+
+QMultiHash<QPoint, PinID> Geometry::allPoints(QSet<int> elts,
+                                              bool inc_not_exc) const {
+  QMultiHash<QPoint, PinID> map;
+  d->ensurePinDB();
+  for (auto it = d->pindb.begin(); it != d->pindb.end(); ++it) 
+    if (elts.contains(it.value().element()) == inc_not_exc)
+      map.insert(it.key(), it.value());
+  return map;
+}
+
+
+SegmentDB Geometry::allSegments(QSet<int> cons,
+                                bool inc_not_exc) const {
+  d->ensureSegmentDB();
+  if (inc_not_exc || !cons.isEmpty())
+    return d->segdb.restricted(cons, inc_not_exc);
+  else
+    return d->segdb;
 }

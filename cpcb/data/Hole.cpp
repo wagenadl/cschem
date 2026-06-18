@@ -47,7 +47,7 @@ QPainterPath Hole::outlinePath(Layer l) const {
   } else {
     path.addEllipse(QPointF(0, 0), od_/2, od_/2);
   }
-  if (l!=Layer::Invalid && l==fpcon) {
+  if (l != Layer::Invalid && l==fpcon && !noclear) {
     double w = Board::fpConWidth(od, od).toMils();
     double dl = (Board::padClearance(od, od) + Board::fpConOverlap()).toMils();
     path.addRect(-od_/2 - dl - sl/2, -w/2, od_ + sl + 2*dl, w);
@@ -141,8 +141,10 @@ bool Hole::touches(Trace const &t) const {
 }
 
 bool Hole::touches(FilledPlane const &fp) const {
-  if (fpcon==fp.layer) {
-    if (fp.perimeter.contains(p, od/2))
+  if (fpcon==fp.layer || (noclear && fpcon==Layer::Invalid)) {
+    if (!fp.boundingRect().intersects(boundingRect()))
+      return false;
+    if (fp.perimeter.contains(p, od/2)) 
       return true;
     return false; // this is not quite good enough
   } else {
@@ -179,4 +181,30 @@ Segment Hole::slotEnds() const {
   return Segment(p-dp, p+dp);
 }
 
-  
+/*
+Dim Hole::x(Qt::AlignmentFlag a) const {
+  if (a==Qt::AlignLeft)
+    return boundingRect().left();
+  else if (a==Qt::AlignRight)
+    return boundingRect().right();
+  else
+    return p.x;
+}
+
+void Hole::setX(Dim x1, Qt::AlignmentFlag a) {
+  p.x += x1 - x(a);
+}
+
+Dim Hole::y(Qt::AlignmentFlag a) const {
+  if (a==Qt::AlignTop)
+    return boundingRect().top();
+  else if (a==Qt::AlignBottom)
+    return boundingRect().bottom();
+  else
+    return p.y;
+}
+
+void Hole::setY(Dim y1, Qt::AlignmentFlag a) {
+  p.y += y1 - y(a);
+}
+*/

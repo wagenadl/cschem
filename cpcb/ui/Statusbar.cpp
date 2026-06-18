@@ -18,18 +18,17 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   missingui->hide();
   addWidget(cursorui);
   addWidget(missingui);
-  setStyleSheet("QToolButton:checked { padding: 2px; margin: 2px; background-color: #ffffcc;}");
   setSizeGripEnabled(false);
 
   auto *w1 = new QLabel;
-  w1->setPixmap(QIcon(":icons/Grid.svg").pixmap(cursorui->height()));
+  w1->setPixmap(QIcon(":icons/Grid.svg").pixmap(16)); //cursorui->height()));
   w1->setToolTip("Grid spacing");
   addPermanentWidget(w1);
   gridsp = new DimSpinner;
   gridsp->setMode(Expression::Mode::Explicit);
   gridsp->hideTrailingZeros();
   gridui = new QComboBox;
-  //gridui->setStyleSheet("QComboBox { margin-right: 20px; }");
+  gridui->setStyleSheet("QComboBox { padding: 0px 6px 0px 6px; }");
   gridui->setMinimumContentsLength(6);
   gridui->setEditable(true);
   gridui->setInsertPolicy(QComboBox::InsertAtBottom);
@@ -43,42 +42,42 @@ Statusbar::Statusbar(QWidget *parent): QStatusBar(parent) {
   auto addlui = [this](Layer l, QString name, QKeySequence seq) {
     auto *w = new QToolButton;
     layerui[l] = w;
-    w->setIcon(QIcon(":icons/" + name + ".svg"));
+    w->setIcon(QIcon(":icons/Layer" + name + ".svg"));
     QString label = (name=="BSilk") ? "Bottom silk" : name;
     w->setToolTip(label + " layer visible (" + seq.toString() + ")");
     w->setCheckable(true);
     w->setChecked(true);
     w->setShortcut(seq);
     connect(w, &QToolButton::toggled,
-	    [this, l]() { layerVisibilityEdited(l, layerui[l]->isChecked()); });
+        this, [this, l]() { emit layerVisibilityEdited(l, layerui[l]->isChecked()); });
     addPermanentWidget(w);
   };
-  addlui(Layer::Silk, "Silk", QKeySequence(Qt::CTRL + Qt::Key_1));
-  addlui(Layer::Top, "Top", QKeySequence(Qt::CTRL + Qt::Key_2));
-  addlui(Layer::Bottom, "Bottom", QKeySequence(Qt::CTRL + Qt::Key_3));
-  addlui(Layer::BSilk, "BSilk", QKeySequence(Qt::CTRL + Qt::Key_4));
-  addlui(Layer::Panel, "Panel", QKeySequence(Qt::CTRL + Qt::Key_5));
+  addlui(Layer::Silk, "Silk", QKeySequence(Qt::CTRL | Qt::Key_1));
+  addlui(Layer::Top, "Top", QKeySequence(Qt::CTRL | Qt::Key_2));
+  addlui(Layer::Bottom, "Bottom", QKeySequence(Qt::CTRL | Qt::Key_3));
+  addlui(Layer::BSilk, "BSilk", QKeySequence(Qt::CTRL | Qt::Key_4));
+  addlui(Layer::Panel, "Panel", QKeySequence(Qt::CTRL | Qt::Key_5));
 
   auto *w = new QToolButton;
   planesui = w;
   w->setIcon(QIcon(":icons/Planes.svg"));
   w->setToolTip("Planes visible (Ctrl+7)");
-  w->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_7));
+  w->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_7));
   w->setCheckable(true);
   w->setChecked(true);
   connect(w, &QToolButton::toggled,
-	  [this]() { planesVisibilityEdited(planesui->isChecked()); });
+      this, [this]() { emit planesVisibilityEdited(planesui->isChecked()); });
   addPermanentWidget(w);
 
   w = new QToolButton;
   netsui = w;
   w->setIcon(QIcon(":icons/Nets.svg"));
   w->setToolTip("Nets visible (Ctrl+8)");
-  w->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_8));
+  w->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_8));
   w->setCheckable(true);
   w->setChecked(true);
   connect(w, &QToolButton::toggled,
-	  [this]() { netsVisibilityEdited(netsui->isChecked()); });
+          this, [this]() { emit netsVisibilityEdited(netsui->isChecked()); });
   w->setStyleSheet("QToolButton { margin-right: 8px; }");
   addPermanentWidget(w);
 

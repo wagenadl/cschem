@@ -28,11 +28,11 @@ public:
   Point center;
   Dim radius; 
   Dim linewidth;
-  int angle; // span, degrees
-  FreeRotation rota; /*  0: centered around +ve x (right)
-                        90: centered around +ve y (down)
-                       180: centered around -ve x (left)
-                       270: centered around -ve y (up)
+  int angle; // span, degrees, clockwise
+  FreeRotation rota; /*  0: starts at -ve y (up)
+                        90: starts at +ve x (right)
+                       180: starts at +ve y (down)
+                       270: starts at -ve x (left)
                      */ 
   Layer layer;
 public:

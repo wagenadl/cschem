@@ -4,7 +4,7 @@
 
 Board::Board() {
   metric = false;
-  shape = Shape::Rect;
+  cornerradius = Dim();
   width = Dim::fromInch(4);
   height = Dim::fromInch(3);
   grid = Dim::fromInch(0.050);
@@ -16,19 +16,13 @@ Board::Board() {
   planesvisible = true;
 }
 
-QString Board::shapeName() const {
-  if (shape==Shape::Rect)
-    return "rect";
-  if (shape==Shape::Round)
-    return "round";
-  qDebug() << "Unknown board shape";
-  return "";
-}
-
 QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Board const &t) {
   s.writeStartElement("board");
   s.writeStartElement("outline");
-  s.writeAttribute("shape", t.shapeName());
+  s.writeAttribute("cornerradius", t.cornerradius.toString());
+  s.writeAttribute("shape", 
+                   (t.cornerradius > t.width / 3
+                    || t.cornerradius > t.height / 3) ? "round" : "rect");
   s.writeAttribute("w", t.width.toString());
   s.writeAttribute("h", t.height.toString());
   s.writeEndElement(); // outline
@@ -51,18 +45,15 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &s, Board const &t) {
 
 static void readOutline(QXmlStreamReader &s, Board &t) {
   auto a = s.attributes();
-  t.shape = Board::Shape::Rect;
-  if (a.hasAttribute("shape")) {
-    QString shp = a.value("shape").toString();
-    if (shp=="rect")
-      t.shape = Board::Shape::Rect;
-    else if (shp=="round")
-      t.shape = Board::Shape::Round;
-    else
-      qDebug() << "Unknown board shape in xml";
-  }
   t.width = Dim::fromString(a.value("w").toString());
   t.height = Dim::fromString(a.value("h").toString());
+  if (a.hasAttribute("cornerradius"))
+    t.cornerradius = Dim::fromString(a.value("cornerradius").toString());
+  else if (a.hasAttribute("shape")
+           && (a.value("shape").toString() == "round"))
+    t.cornerradius = t.width < t.height ? t.width / 2 : t.height / 2;
+  else
+    t.cornerradius = Dim();
 }
 
 static void readOptions(QXmlStreamReader &s, Board &t) {
@@ -95,11 +86,11 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Board &t) {
     while (!s.atEnd()) {
       s.readNext();
       if (s.isStartElement()) {
-	if (s.name()=="outline")
+	if (s.name()==QStringLiteral("outline"))
 	  readOutline(s, t);
-	else if (s.name()=="options")
+	else if (s.name()==QStringLiteral("options"))
 	  readOptions(s, t);
-	else if (s.name()=="links")
+	else if (s.name()==QStringLiteral("links"))
 	  readLinks(s, t);
 	else
 	  qDebug() << "Unexpected element in <board>: " << s.name();
@@ -134,16 +125,16 @@ Dim Board::fpConOverlap() {
   return Dim::fromMils(1);
 }
 
-Dim Board::traceClearance(Dim) {
-  return Dim::fromMils(15);
+Dim Board::traceClearance(Dim w) {
+  return min(Dim::fromMM(0.2) + (w - Dim::fromMM(0.2)) / 5, Dim::fromMM(.5));
 }
 
-Dim Board::padClearance(Dim, Dim) {
-  return Dim::fromMils(15);
+Dim Board::padClearance(Dim w, Dim h) {
+  return traceClearance(min(w, h));
 }
 
 Dim Board::fpConWidth(Dim w, Dim h) {
-  return min(.5*min(w,h), Dim::fromMils(15));
+  return min(0.5*min(w, h), Dim::fromMM(0.5));
 }
 
 Dim Board::maskMargin(Dim) {
@@ -152,7 +143,27 @@ Dim Board::maskMargin(Dim) {
 
 Dim Board::maskMargin(Dim, Dim) {
   return Dim::fromMils(10);
-}  
+}
+
+Dim Board::minLineWidth() {
+  return Dim::fromMM(0.1);
+}
+
+Dim Board::minHoleID() {
+  return Dim::fromMM(0.2);
+}
+
+Dim Board::minHoleOD() {
+  return minHoleOD(minHoleID());
+}
+
+Dim Board::minHoleOD(Dim id) {
+  return id + Dim::fromMM(0.25);
+}
+
+Dim Board::maxHoleID(Dim od) {
+  return od - (minHoleOD() - minHoleID());
+}
 
 bool Board::isEffectivelyMetric() const {
   return grid.isNull() ? metric : grid.isMetric();

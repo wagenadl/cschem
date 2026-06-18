@@ -100,7 +100,7 @@ int Group::formSubgroup(QSet<int> const &ids) {
   reftext.fontsize = Dim::fromInch(.05);
   reftext.text = "X?";
   auto reftextmatch = [this](QString txt) {
-    return txt == ref || QRegExp("[A-Z]([0-9]+|\\?)").exactMatch(txt);
+    return txt == ref || QRegularExpression("^[A-Z]([0-9]+|\\?)$").match(txt).hasMatch();
   };
   for (int id: ids) {
     if (contains(id)) {
@@ -233,9 +233,9 @@ Object &Group::object(int key) {
 
 Object const &Group::object(NodeID const &id) const {
   static Object nil;
-  if (id.isEmpty() || !contains(id[0]))
+  if (id.isEmpty() || !contains(id.first()))
     return nil;
-  Object const &obj(object(id[0]));
+  Object const &obj(object(id.first()));
   if (id.size()==1)
     return obj;
   if (obj.isGroup())
@@ -252,7 +252,7 @@ Object &Group::object(NodeID const &id) {
   }
   d.detach();
   d->hasbbox = false;
-  Object &obj(object(id[0]));
+  Object &obj(object(id.first()));
   if (id.size()==1)
     return obj;
   if (obj.isGroup()) {
@@ -431,7 +431,6 @@ QStringList Group::pinNames() const {
 
 Point Group::anchor() const {
   QStringList names = pinNames();
-  qDebug() << "anchor" << names;
   if (names.isEmpty())
     return boundingRect().center();
   else
@@ -492,9 +491,9 @@ QSet<Point> Group::pinPoints() const {
     case Object::Type::Pad:
       pp << obj.asPad().p;
       break;
-    case Object::Type::Group: 
-      pp |= obj.asGroup().pinPoints();
-      break;
+    //case Object::Type::Group: 
+    //  pp |= obj.asGroup().pinPoints();
+    //  break;
     default:
       break;
     }
@@ -516,9 +515,9 @@ QSet<Point> Group::pinPoints(Layer l) const {
       if (l==pad.layer)
 	pp << pad.p;
     } break;
-    case Object::Type::Group: 
-      pp |= obj.asGroup().pinPoints(l);
-      break;
+    //case Object::Type::Group: 
+    //  pp |= obj.asGroup().pinPoints(l);
+    //  break;
     default:
       break;
     }
@@ -578,7 +577,6 @@ QString Group::humanName(NodeID const &ids) const {
 NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
                      Dim *distance_return) const {
   NodeID ids;
-  bool gotplane = false;
   Dim dist = Dim::infinity();
   for (int id: d->obj.keys()) {
     Object const &obj(object(id));
@@ -589,16 +587,14 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
         Dim dist1;
 	NodeID ids1 = g.nodeAt(p, mrg, lay, notrace, &dist1);
         if (dist1<dist) {
-          gotplane = false;
-          ids = ids1;
-          ids.push_front(id);
+          ids = NodeID().plus(id);
+          ids.append(ids1);
           dist = dist1;
         }
       } break;
       case Object::Type::Hole: {
         Dim dist1 = p.distance(obj.asHole().p);
         if (dist1 < dist) {
-          gotplane = false;
           ids = NodeID().plus(id);
           dist = dist1;
         }
@@ -607,7 +603,6 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
         if (lay==Layer::Invalid || lay==obj.asPad().layer) {
           Dim dist1 = p.distance(obj.asPad().p);
           if (dist1 < dist) {
-            gotplane = false;
             ids = NodeID().plus(id);
             dist = dist1;
           }
@@ -615,18 +610,16 @@ NodeID Group::nodeAt(Point p, Dim mrg, Layer lay, bool notrace,
         break;
       case Object::Type::Trace:
         if (!notrace
-            && (ids.isEmpty() || gotplane)
 	    && (lay==obj.asTrace().layer
 		|| (lay==Layer::Invalid
 		    && layerIsCopper(obj.asTrace().layer)))) {
-          gotplane = false;
           ids = NodeID().plus(id); // this could still be overwritten!
         }
         break;
       case Object::Type::Plane:
-        if (!notrace && ids.isEmpty()
+        if (!notrace
+            && ids.isEmpty()
 	    && (lay==obj.asPlane().layer || lay==Layer::Invalid)) {
-          gotplane = true;
           ids = NodeID().plus(id); // this could still be overwritten!
         }
         break;
@@ -704,7 +697,7 @@ bool Group::saveComponent(int id, QString fn, bool forcename) {
 
   while (!sr.atEnd()) {
     sr.readNext();
-    if (sr.isStartElement() && sr.name()=="svg") {
+    if (sr.isStartElement() && sr.name()==QStringLiteral("svg")) {
       sw.writeStartElement("svg");
       sw.writeAttributes(sr.attributes());
       for (auto ns: sr.namespaceDeclarations())
@@ -749,13 +742,13 @@ static int readGroupAndRef(QXmlStreamReader &s, Group &t) {
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
-      if (s.name()=="group") {
+      if (s.name()==QStringLiteral("group")) {
         Object o;
         s >> o;
 	if (o.asGroup().attributes[Group::Attribute::Footprint]=="")
 	  o.asGroup().attributes[Group::Attribute::Footprint] = pkg;
         gid = t.insert(o);
-      } else if (s.name()=="text") {
+      } else if (s.name()==QStringLiteral("text")) {
         Object o;
         s >> o;
         tid = t.insert(o);
@@ -789,7 +782,8 @@ int Group::insertComponent(QString fn) {
     while (!sr.atEnd()) {
       sr.readNext();
       if (sr.isStartElement()) {
-	if (sr.isStartElement() && sr.prefix()=="cpcb" && sr.name()=="part") 
+	if (sr.isStartElement() && sr.prefix()==QStringLiteral("cpcb")
+            && sr.name()==QStringLiteral("part")) 
 	  return readGroupAndRef(sr, *this);
       }
     }
@@ -808,7 +802,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Group &t) {
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
-      if (s.name()=="gr") {
+      if (s.name()==QStringLiteral("gr")) {
         readGroupAndRef(s, t);
       } else {
         Object o;
@@ -991,6 +985,7 @@ QSet<int> Group::merge(Group const &g) {
     int ourid = insert(g.object(id));
     ids << ourid;
     idmap[id] = ourid;
+    qDebug() << "merge" << id << " -> " << ourid;
   }
 
   // ensure no duplicate refs
@@ -1015,7 +1010,9 @@ QSet<int> Group::merge(Group const &g) {
 	group.ref = ::altRef(group.ref, refs);
       refs << group.ref;
       if (group.refTextId()>0) {
-	int txtid = idmap[group.refTextId()];
+        qDebug() << "  group " << id << " -> " << idmap[id];
+	int txtid = idmap[g.object(id).asGroup().refTextId()];
+        qDebug() << "  reftext" << g.object(id).asGroup().refTextId() << " -> " << txtid << " / " << group.refTextId();
 	Text &text(object(txtid).asText());
 	group.setRefTextId(txtid);
 	text.setGroupAffiliation(idmap[id]);
@@ -1062,7 +1059,7 @@ bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
   int hole_at_p2 = hole_at(tr.p2);
 
   // find other traces linked at those points
-  auto traces_at = [this, traceid](Point const &p, int excl) {
+  auto traces_at = [this](Point const &p, int excl) {
     QList<int> res;
     for (int id: d->obj.keys()) {
       if (id==excl)
@@ -1109,12 +1106,8 @@ bool Group::adjustViasAroundTrace(int traceid, Layer newlayer) {
     Hole h;
     h.via = true;
     h.p = p;
-    Dim id = 0.5*w;
-    Dim minID(Dim::fromMM(.3));
-    h.id = max(id, minID);
-    Dim od = w;
-    Dim minOD = h.id + Dim::fromMM(.3);
-    h.od = max(od, minOD);
+    h.id = max(0.5 * w, Board::minHoleID());
+    h.od = max(w, Board::minHoleOD(h.id));
     insert(Object(h));
   };
   if (hole_at_p1<0 && layers_at_p1.contains(tr.layer)) {

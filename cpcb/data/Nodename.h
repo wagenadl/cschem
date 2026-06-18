@@ -34,7 +34,7 @@ private:
 
 QDebug &operator<<(QDebug &dbg, Nodename const &);
 
-inline uint qHash(Nodename const &nn) {
+inline size_t qHash(Nodename const &nn) {
   return qHash(QPair<QString, QString>(nn.component(), nn.pin()));
 }
 

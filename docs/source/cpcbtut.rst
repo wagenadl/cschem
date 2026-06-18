@@ -256,7 +256,7 @@ if you don't get it quite right the first time.)
 
 The board is a lot bigger than it needs to be, but before we can
 shrink it, we first have to adjust the filled plane so it doesn't
-stick out too far. Press “Ctrl-5” (or click the button) to unhide the
+stick out too far. Press “Ctrl-7” (or click the button) to unhide the
 filled plane, then press “F7” (or click the button) to enable editing
 it. Drag the right and bottom edges to a reasonable position.
 

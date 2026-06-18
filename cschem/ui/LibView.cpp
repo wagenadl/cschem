@@ -9,6 +9,7 @@
 #include <QMimeData>
 #include <QGraphicsColorizeEffect>
 #include "Style.h"
+#include <QResizeEvent>
 
 class LibViewElement: public SvgItem {
 public:
@@ -101,13 +102,14 @@ void LibViewData::addSymbol(QString symbol) {
   scene->addItem(item);
   items[symbol] = item;
   item->setPos(QPointF(0, nextY()));
+  qDebug() << "addsymbol" << item->sceneBoundingRect();
 }
 
 void LibViewData::addHeader(QString symbol, QString label) {
   QGraphicsTextItem *header = new QGraphicsTextItem(label);
   QFont f = header->font();
   f.setStyle(QFont::StyleItalic);
-  f.setPointSize(f.pointSize() * .75);
+  f.setPointSize(f.pointSize() * 1.5);
   header->setFont(f);
   scene->addItem(header);
   headers[symbol] = header;
@@ -116,10 +118,11 @@ void LibViewData::addHeader(QString symbol, QString label) {
 
 LibView::LibView(QWidget *parent): QGraphicsView(parent),
                                    d(new LibViewData(this)) {
+  setBackgroundBrush(Qt::white);
   setScene(d->scene);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  resize(92, 1000);
+  //  resize(92, 1000);
 }
 
 void LibView::clear() {
@@ -129,7 +132,7 @@ void LibView::clear() {
   for (auto *i: d->headers)
     delete i;
   d->headers.clear();
-  d->scene->setSceneRect(d->scene->itemsBoundingRect());
+  d->scene->setSceneRect(QRectF(0, 0, 50, 50));
 }
 
 static bool symbolLessThan(QString a, QString b) {
@@ -142,10 +145,19 @@ static bool symbolLessThan(QString a, QString b) {
   return a.toLower() < b.toLower();
 }
 
-void  LibView::setLibrary(class SymbolLibrary const *lib) {
+void LibView::setLibrary(class SymbolLibrary const *lib) {
   d->lib = lib;
   rebuild();
 }
+
+void LibView::setScale(float scl) {
+  double scl0 = transform().m11();
+  scale(scl/scl0, scl/scl0);
+  //  resize(sizeHint());
+  setFixedWidth(std::max(sizeHint().width(), 92));
+  emit rescaled();
+}
+  
 
 void LibView::rebuild() {
   clear();
@@ -199,26 +211,21 @@ void LibView::rebuild() {
     QPointF p = it->pos();
     QRectF bb = it->sceneBoundingRect();
     it->setPos(QPointF(w/2 - bb.width()/2, p.y()));
+    qDebug() << "libview" << it->sceneBoundingRect();
   }
 
+  r = d->scene->itemsBoundingRect();
   d->scene->setSceneRect(r.adjusted(-7, -14, 7, 14));
-  setMinimumWidth(92);
+  setFixedWidth(92);
 }
 
 void LibView::resizeEvent(QResizeEvent *e) {
   QGraphicsView::resizeEvent(e);
-  double scl = transform().m11();
-  double x = viewport()->width() / sceneRect().width() / scl;
-  QGraphicsView::scale(x, x);
+//  double scl = transform().m11();
+//  double x = viewport()->width() / sceneRect().width() / scl;
+//  QGraphicsView::scale(x, x);
 }
 
-void LibView::scale(double x) {
-  return;
-  QGraphicsView::scale(x, x);
-  QRectF r = d->scene->sceneRect();
-  setMinimumWidth(mapFromScene(r.bottomRight()).x()
-		  - mapFromScene(r.topLeft()).x());
-}
 
 LibView::~LibView() {
   delete d;
@@ -237,4 +244,10 @@ void LibView::hover(QString symbol, QString pop) {
 void LibView::unhover() {
   //  qDebug () <<"libview unhover";
   emit hoveroff();
+}
+
+void LibView::wheelEvent(QWheelEvent *e) {
+  QGraphicsView::wheelEvent(e);
+  qDebug() << "wheelevent" << d->scene->sceneRect() << contentsRect()
+           << mapFromScene(d->scene->sceneRect());
 }

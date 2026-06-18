@@ -59,7 +59,7 @@ Group Clipboard::parseMimeData(QMimeData const *md) {
   QXmlStreamReader s(&buf);
   while (!s.atEnd()) {
     s.readNext();
-    if (s.isStartElement() && s.name()=="cpcbsel") {
+    if (s.isStartElement() && s.name()==QStringLiteral("cpcbsel")) {
       while (!s.atEnd()) {
         s.readNext();
         if (s.isStartElement()) {

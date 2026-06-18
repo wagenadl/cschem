@@ -10,6 +10,8 @@
 #include "svg/Geometry.h"
 #include <QWidget>
 #include "circuit/Net.h"
+#include "svg/SegmentDB.h"
+
 
 class PinMarker: public QGraphicsEllipseItem {
 public:
@@ -21,12 +23,6 @@ public:
   }
 };
 
-struct PointInfo {
-  PointInfo(QPoint pt, int elt, QString pin): pt(pt), elt(elt), pin(pin) { }
-  QPoint pt;
-  int elt;
-  QString pin;
-};
 
 class HoverManagerData {
 public:
@@ -75,38 +71,36 @@ public:
   SceneElement::WeakPtr hoverElt;
   SceneConnection::WeakPtr hoverCon;
   HoverManager::Purpose primaryPurpose;
-  QList<PointInfo> selectionPoints;
+  QMultiHash<QPoint, PinID> ourpoints;
+  QMultiHash<QPoint, PinID> theirpoints;
+  SegmentDB theircons;
   double r;
   QGraphicsEllipseItem *pinMarker;
   QList<QGraphicsEllipseItem *> floatMarkers;
   bool haveMagnet;
   QPoint magnetDelta;
-  QSet<int> avoidConnections;
 };
 
 void HoverManager::newDrag(Symbol const &symbol) {
+  Circuit const &circ = d->scene->circuit();
   SymbolLibrary const &lib = d->scene->library();
-  d->selectionPoints.clear();
+  Geometry geom(circ, lib);
+  d->ourpoints.clear();
   for (QString p: symbol.pinNames())
-    d->selectionPoints
-      << PointInfo(lib.downscale(symbol.shiftedPinPosition(p)), 0, p);
+    d->ourpoints.insert(lib.downscale(symbol.shiftedPinPosition(p)), PinID(0, p));
   d->haveMagnet = false;
-  d->avoidConnections.clear();
+  d->theirpoints = geom.allPoints();
+  d->theircons = geom.allSegments();
 }
 
 void HoverManager::formSelection(QSet<int> elts) {
   Circuit const &circ = d->scene->circuit();
   SymbolLibrary const &lib = d->scene->library();
   Geometry geom(circ, lib);
-  d->selectionPoints.clear();
-  for (int e: elts) {
-    Element const &elt(circ.elements[e]);
-    Symbol const &symbol(lib.symbol(elt.symbol()));
-    for (QString p: symbol.pinNames()) 
-      d->selectionPoints << PointInfo(geom.pinPosition(elt, p), e, p);
-  }
-  d->avoidConnections
-    = circ.connectionsFrom(elts) + circ.connectionsTo(elts);
+  d->ourpoints = geom.allPoints(elts, true);
+  d->theirpoints = geom.allPoints(elts, false);
+  d->theircons = geom.allSegments(circ.connectionsFrom(elts)
+                                  + circ.connectionsTo(elts), false);
   d->haveMagnet = false;
 }
 
@@ -114,12 +108,6 @@ void HoverManagerData::highlightPin() {
   if (!pinMarker)
     pinMarker = new PinMarker(scene);
   pinMarker->setRect(QRectF(pinpos - QPointF(r, r), 2 * QSizeF(r, r)));
-  // int N = scene->circuit().connectionsOn(elt, pin).size();
-  // if (primaryPurpose == HoverManager::Purpose::Connecting)
-  //   pinMarker->setBrush(Style::magnetHighlightColor());
-  // else if (N==0)
-  //   pinMarker->setBrush(Style::danglingColor());
-  // else
   pinMarker->setBrush(Style::pinHighlightColor());
 }
 
@@ -243,8 +231,8 @@ void HoverManagerData::update() {
     pin = scene->pinAt(pt, elt);
     if (pin==PinID::NOPIN) {
       // if not, shrink area of hovering
-      double x = scene->library().scale()/2;
-      if (!elts[elt]->boundingRect().adjusted(x,x,-x,-x)
+      double x = scene->library().scale() / 2.0;
+      if (!elts[elt]->boundingRect().adjusted(x, x, -x, -x)
           .contains(elts[elt]->mapFromScene(pt)))
         elt = -1;
     }
@@ -410,35 +398,11 @@ void HoverManager::unhover() {
 }
 
 QList<QPoint> HoverManagerData::seeWhatSticks(QPoint del) {
-  // qDebug() << "  SEEWHATSTICKS" << del;
-  Circuit const &circ = scene->circuit();
-  SymbolLibrary const &lib = scene->library();
-  Geometry geom(circ, lib);
   QList<QPoint> pts;
-  // Let's see what might stick here
-  for (auto const &info: selectionPoints) {
-    QPoint p = info.pt + del;
-    QPointF pup = lib.upscale(p);
-    int elt = scene->elementAt(pup, info.elt);
-    //qDebug() << "    seewhatsticks -- " << del << p << pup << elt << info.elt;
-    QString pin;
-    if (elt>0) {
-      pin = scene->pinAt(pup, elt);
-      //qDebug() << "     got stick -- " << del << p << pup << elt << pin << geom.pinPosition(elt, pin);
-      if (pin != PinID::NOPIN) {
-        if (geom.pinPosition(elt, pin)==p) {
-          pts << p;
-          continue;
-        }
-      }
-    }
-    int con = scene->connectionAt(pup, 0, avoidConnections);
-    if (con>0) {
-      QPolygon path = geom.connectionPath(con);
-      Geometry::Intersection ii = geom.intersection(p, path);
-      if (ii.index>=0 && ii.q==p)
-        pts << p;
-    }
+  for (auto it = ourpoints.begin(); it != ourpoints.end(); it++) {
+    QPoint p = it.key() + del;
+    if (theirpoints.contains(p) || theircons.contains(p))
+      pts << p;
   }
   return pts;
 }

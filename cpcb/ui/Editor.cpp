@@ -10,9 +10,12 @@
 #include <QApplication>
 #include <QInputDialog>
 #include <QResizeEvent>
-#include <QTimer>
 #include <algorithm>
-#include "PatternHelper.h"
+#include "data/PCBFileIO.h"
+#include "data/Clipboard.h"
+#include "data/TicToc.h"
+#include <QAbstractEventDispatcher>
+#include <QMessageBox>
 
 #include "ui/BOM.h"
 
@@ -27,6 +30,10 @@ Editor::Editor(QWidget *parent): QWidget(parent), d(new EData(this)) {
   setFocusPolicy(Qt::StrongFocus);
   scaleToFit();
   d->bom = new BOM(this);
+  connect(QAbstractEventDispatcher::instance(),
+          &QAbstractEventDispatcher::aboutToBlock,
+          this, [this]() { onIdle(); });
+  
 }
 
 Editor::~Editor() {
@@ -132,8 +139,16 @@ void Editor::wheelEvent(QWheelEvent *e) {
   if (e->modifiers() & Qt::ControlModifier) {
     d->zoom(pow(2, e->angleDelta().y()/240.));
   } else {
-    QPoint delta = e->pixelDelta()*2;
-    d->mils2widget.translate(delta.x()/d->mils2px, delta.y()/d->mils2px);
+    if (e->deviceType()==QInputDevice::DeviceType::TouchPad) {
+      QPoint delta = e->pixelDelta() * 2;
+      d->mils2widget.translate(delta.x()/d->mils2px, delta.y()/d->mils2px);
+    } else { // scroll wheel
+      int delta = e->angleDelta().y();
+      if (e->modifiers() & Qt::ShiftModifier) 
+        d->mils2widget.translate(delta/d->mils2px, 0);
+      else
+        d->mils2widget.translate(0, delta/d->mils2px);
+    }
     d->widget2mils = d->mils2widget.inverted();
     update();
   }
@@ -143,14 +158,7 @@ void Editor::resizeEvent(QResizeEvent *) {
   //  qDebug() << "editor::resizeevent" << e->oldSize() << e->size();
   if (!d->autofit)
     return;
-  if (!d->resizeTimer) {
-    d->resizeTimer = new QTimer(this);
-    d->resizeTimer->setInterval(10);
-    d->resizeTimer->setSingleShot(true);
-    connect(d->resizeTimer, &QTimer::timeout,
-	    [this]() { d->perhapsRefit(); });
-  }
-  d->resizeTimer->start();
+  d->pendingresize = true;
 }
 
 void Editor::mouseDoubleClickEvent(QMouseEvent *e) {
@@ -210,9 +218,6 @@ void Editor::mousePressEvent(QMouseEvent *e) {
         Q_ASSERT(d->planeeditor);
         d->planeeditor->mousePress(p, e->button(), e->modifiers());
         break;
-      case Mode::SetIncOrigin:
-	d->pressOrigin(p);
-	break;
       case Mode::PNPOrient:
         d->pressPNPOrient(p, e->modifiers());
       default:
@@ -240,9 +245,20 @@ void Editor::mouseMoveEvent(QMouseEvent *e) {
   emit hovering(p);
 
   if (!d->moving && !d->tracer)
-    updateOnNet();
+    d->pendingonnetupdate = true;
   if (d->planeeditor)
     d->planeeditor->mouseMove(p, e->button(), e->modifiers());
+}
+
+void Editor::onIdle() {
+  if (d->pendingonnetupdate) {
+    d->pendingonnetupdate = false;
+    updateOnNet();
+  }
+  if (d->pendingresize) {
+    d->pendingresize = false;
+    d->perhapsRefit();
+  }
 }
 
 void Editor::pretendOnNet(NodeID ids) {
@@ -314,7 +330,7 @@ void Editor::keyPressEvent(QKeyEvent *e) {
   }
 }
 
-void Editor::enterEvent(QEvent *) {
+void Editor::enterEvent(QEnterEvent *) {
 }
 
 void Editor::leaveEvent(QEvent *) {
@@ -579,7 +595,7 @@ void Editor::selectArea(Rect r, bool add) {
   for (int id: here.keys()) {
     Object const &obj(here.object(id));
     if (!d->selection.contains(id)) {
-      if (r.contains(obj.boundingRect())) {
+      if (r.contains(obj.boundingRect()) && d->isVisible(obj)) {
         if (obj.isText() && obj.asText().groupAffiliation()>0) {
           // don't rectangle select a group reference text
         } else if (obj.isGroup()) {
@@ -597,7 +613,7 @@ void Editor::selectArea(Rect r, bool add) {
   }
   for (int id: here.keys()) {
     Object const &obj(here.object(id));
-    if (obj.type()==Object::Type::Trace) {
+    if (obj.type()==Object::Type::Trace && d->isVisible(obj)) {
       Trace const &t(obj.asTrace());
       if (r.contains(t.p1) && !d->selpts[t.layer].contains(t.p1))
 	d->purepts[t.layer] << t.p1;
@@ -634,6 +650,7 @@ void Editor::setArcAngle(int angle) {
 }
 
 void Editor::setLineWidth(Dim l) {
+  l = max(l, Board::minLineWidth());
   d->props.linewidth = l;
   Group &here(d->currentGroup());
   UndoCreator uc(d);
@@ -676,6 +693,12 @@ void Editor::setLayer(Layer l) {
       uc.realize();
       d->currentGroup().object(id).asArc().layer = l;
       break;
+    case Object::Type::Plane:
+      if (l==Layer::Top || l==Layer::Bottom) {
+        uc.realize();
+        d->currentGroup().object(id).asPlane().layer = l;
+      }
+      break;
     default:
       break;
     }
@@ -685,8 +708,7 @@ void Editor::setLayer(Layer l) {
 }
 
 void Editor::setID(Dim x) {
-  if (x < Dim::fromInch(.005))
-    x = Dim::fromInch(.005);
+  x = max(x, Board::minHoleID());
   d->props.id = x;
 
   Group &here(d->currentGroup());
@@ -696,8 +718,8 @@ void Editor::setID(Dim x) {
     if (obj.isHole()) {
       uc.realize();
       obj.asHole().id = x;
-      if (obj.asHole().od < x + Dim::fromInch(.015))
-	obj.asHole().od = x + Dim::fromInch(.015);
+      if (obj.asHole().od < Board::minHoleOD(x))
+	obj.asHole().od = Board::minHoleOD(x);
     } else if (obj.isNPHole()) {
       uc.realize();
       obj.asNPHole().d = x;
@@ -727,8 +749,7 @@ void Editor::setSlotLength(Dim x) {
   
   
 void Editor::setOD(Dim x) {
-  if (x < Dim::fromInch(.02))
-    x = Dim::fromInch(.02);
+  x = max(x, Board::minHoleOD());
   d->props.od = x;
   UndoCreator uc(d);
 
@@ -738,15 +759,14 @@ void Editor::setOD(Dim x) {
     if (obj.type()==Object::Type::Hole) {
       uc.realize();
       obj.asHole().od = x;
-      if (obj.asHole().id > x - Dim::fromInch(.015))
-	obj.asHole().id = x - Dim::fromInch(.015);
+      if (obj.asHole().id > Board::maxHoleID(x))
+	obj.asHole().id = Board::maxHoleID(x);
     }      
   }
 }
 
 void Editor::setWidth(Dim x) {
-  if (x < Dim::fromInch(.01))
-    x = Dim::fromInch(.01);
+  x = max(x, Board::minLineWidth());
   d->props.w = x;
 
   Group &here(d->currentGroup());
@@ -761,8 +781,7 @@ void Editor::setWidth(Dim x) {
 }
 
 void Editor::setHeight(Dim x) {
-  if (x < Dim::fromInch(.01))
-    x = Dim::fromInch(.01);
+  x = max(x, Board::minLineWidth());
   d->props.h = x;
   UndoCreator uc(d);
   Group &here(d->currentGroup());
@@ -771,6 +790,19 @@ void Editor::setHeight(Dim x) {
     if (obj.type()==Object::Type::Pad) {
       uc.realize();
       obj.asPad().height = x;
+    }
+  }
+}
+
+void Editor::setVia(bool b) {
+  d->props.via = b;
+  UndoCreator uc(d);
+  Group &here(d->currentGroup());
+  for (int id: d->selection) {
+    Object &obj(here.object(id));
+    if (obj.type()==Object::Type::Hole) {
+      uc.realize();
+      obj.asHole().via = b;
     }
   }
 }
@@ -901,23 +933,25 @@ void Editor::linearPattern(int hcount, Dim hspacing,
   uc.realize();
   Group &here(d->currentGroup());
 
-  PatternHelper helper(here, d->selection);
-
   for (int x=0; x<hcount; x++) {
     for (int y=0; y<vcount; y++) {
       if (x==0 && y==0)
         continue;
       Point shift(x*hspacing, y*vspacing);
+      Group copy;
+      QMap<int, int> idmap;
       for (int id: d->selection) {
         Object obj = here.object(id);
         obj.translate(shift);
-        int newid = here.insert(obj);
-        helper.addItem(id, newid);
+        int copyid = copy.insert(obj);
+        idmap[id] = copyid;
       }
+      for (int id: d->selection) 
+        if (copy.object(idmap[id]).isGroup())
+          copy.object(idmap[id]).asGroup().setRefTextId(idmap[here.object(id).asGroup().refTextId()]);
+      here.merge(copy);
     }
   }
-
-  helper.apply();
 }
 
 void Editor::circularPattern(int count, FreeRotation const &angle,
@@ -928,10 +962,10 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
   uc.realize();
   Group &here(d->currentGroup());
 
-  PatternHelper helper(here, d->selection);
-
   FreeRotation a(0.0);
   for (int k=1; k<count; k++) {
+    Group copy;
+    QMap<int, int> idmap;
     a += angle;
     Point shift;
     if (!individual) {
@@ -945,12 +979,14 @@ void Editor::circularPattern(int count, FreeRotation const &angle,
         obj.freeRotate(a, center);
       else 
         obj.translate(shift);
-      int newid = here.insert(obj);
-      helper.addItem(id, newid);
+      int copyid = copy.insert(obj);
+      idmap[id] = copyid;
     }
+    for (int id: d->selection) 
+      if (copy.object(idmap[id]).isGroup())
+        copy.object(idmap[id]).asGroup().setRefTextId(idmap[here.object(id).asGroup().refTextId()]);
+    here.merge(copy);
   }
-
-  helper.apply();
 }
 
 void Editor::rotateCW(bool noundo, bool nottext) {
@@ -1298,7 +1334,7 @@ void Editor::dropEvent(QDropEvent *e) {
     int id = QString(md->data(ComponentView::dndformat)).toInt();
     ElementView const *src = ElementView::instance(id);
     Group grp(src->group());
-    Point droppos = Point::fromMils(d->widget2mils.map(e->pos()))
+    Point droppos = Point::fromMils(d->widget2mils.map(e->position().toPoint()))
       .roundedTo(d->layout.board().grid);
     QString ref = src->refText();
     QString pv = src->pvText();
@@ -1321,12 +1357,12 @@ void Editor::dropEvent(QDropEvent *e) {
     QList<QUrl> urls = md->urls();
     bool take = false;
     clearSelection();
-    for (QUrl url: urls) {
+    for (QUrl const &url: urls) {
       if (url.isLocalFile()) {
         QString fn1 = url.toLocalFile();
         if (fn1.toLower().endsWith(".svg"))
           take = insertComponent(fn1,
-			       Point::fromMils(d->widget2mils.map(e->pos())));
+                   Point::fromMils(d->widget2mils.map(e->position().toPoint())));
       }
     }
     if (take) {
@@ -1516,34 +1552,57 @@ void Editor::deleteDanglingTraces() {
     d->currentGroup() = here;
     d->updateOnWhat(true);
     update();
-  }
+    QString msg = "Found and removed dangling connections:\n\n";
+    TraceRepair::Result r = tr.result();
+    msg += QString("  Traces: %1\n").arg(r.ndeleted_dangling);
+    msg += QString("  Vias: %1").arg(r.ndeleted_dangling_via);
+    QMessageBox::information(this, "CPCB", msg);
+  } else {
+    QString msg = "No dangling connections found to remove.";
+    QMessageBox::information(this, "CPCB", msg);
+  }    
 }
 
 void Editor::cleanupIntersections() {
   Group here = currentGroup();
   TraceRepair tr(here);
-  bool tri = tr.fixAllTraceIntersections(pcbLayout().board().grid);
-  bool pni = tr.fixAllPinTouchings();
-  if (tri || pni) {
+  bool tri = tr.fixTraceIntersections();
+  bool pni = tr.fixPinTouchings();
+  bool frg = tr.fixTraceFragments();
+  if (tri || pni || frg) {
     clearSelection();
     UndoCreator uc(d, true);
     d->currentGroup() = here;
     d->updateOnWhat(true);
     update();
-  }
+    qDebug() << tri << pni << frg;
+    QString msg = "Found and repaired issues with traces:\n\n";
+    TraceRepair::Result r = tr.result();
+    msg += QString("  Split traces at pins: %1\n").arg(r.nsplit_pin);
+    msg += QString("  Split traces at intersections: %1\n").arg(r.nsplit_intersect);
+    msg += QString("  Moved endpoints to pins: %1\n").arg(r.nmoved_pin);
+    msg += QString("  Deleted overlapping traces: %1\n").arg(r.ndeleted_overlap);
+    msg += QString("  Truncated overlapping traces: %1\n").arg(r.nmoved_overlap);
+    msg += QString("  Joined continuous traces: %1\n\n").arg(r.njoined);
+    if (d->layout.board().grid.isInch()) 
+      msg += QString("  Max move: %1 in").arg(r.maxmove.toInch(), 0, 'f', 3);
+    else
+      msg += QString("  Max move: %1 mm\n").arg(r.maxmove.toMM(), 0, 'f', 2);
+    
+    QMessageBox::information(this, "CPCB", msg);
+  } else {
+    QString msg = "No trace issues found to repair.";
+    QMessageBox::information(this, "CPCB", msg);
+  }    
 }
 
-void Editor::setBoardSize(Dim w, Dim h, Board::Shape shp) {
+void Editor::setBoardSize(Dim w, Dim h, Dim cr) {
   d->layout.board().width = w;
   d->layout.board().height = h;
-  d->layout.board().shape = shp;
+  d->layout.board().cornerradius = cr;
   qDebug() << "setboardsize should create an undo step";
   update();
   emit boardChanged(d->layout.board());
-}
-
-Point Editor::userOrigin() const {
-  return d->userorigin;
 }
 
 void Editor::selectTrace(bool wholenet) {
@@ -1596,7 +1655,7 @@ void Editor::selectTrace(bool wholenet) {
 void Editor::setCurrentGroupRef(QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
-    d->bom->setData(d->bom->index(d->bom->findElement(nodeid[0]),
+    d->bom->setData(d->bom->index(d->bom->findElement(nodeid.first()),
                                   int(BOM::Column::Ref)), t);
   setGroupRef(breadcrumbs(), t);
 }
@@ -1640,7 +1699,7 @@ void Editor::setGroupRotation(NodeID path, int degccw) {
 void Editor::setCurrentGroupAttribute(Group::Attribute attr, QString t) {
   NodeID nodeid = breadcrumbs();
   if (nodeid.size()==1)
-    d->bom->setAttributeData(d->bom->findElement(nodeid[0]), attr, t);   
+    d->bom->setAttributeData(d->bom->findElement(nodeid.first()), attr, t);   
   setGroupAttribute(breadcrumbs(), attr, t);
 }
 

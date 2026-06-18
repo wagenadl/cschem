@@ -19,21 +19,26 @@ public:
   // Close enough means within a distance MRG.
   bool onP2(Point p, Dim mrg=Dim()) const;
   bool onSegment(Point p, Dim mrg=Dim()) const;
-  // ONSEGMENT(p, mrg) returns true if P is close enough to the line segment.
-  // Close enough means within a distance MRG.
-  // ONSEGMENT returns true even if ONP1 or ONP2 would return true as well.
   bool betweenEndpoints(Point p, Dim mrg=Dim()) const;
-  // Like ONSEGMENT, but not true when on either endpoint
-  bool intersects(Segment const &t, Point *intersection=0) const;
-  // The returned intersection point is on the segment if the result is true,
-  // otherwise it is on the line extended from the segment.
-  Point projectionOntoSegment(Point p) const;
-  // returns p1 or p2 if projection onto line would be outside of segment
+  // On the segment, but not on either endpoint
+  std::optional<Point> intersection(Segment const &t) const;
+  // The result may not be within the segment
+  // Returns nil for parallel segments, even if collinear
+  bool collinear(Segment const &t, Dim lmrg=Dim()) const;
+  bool parallel(Segment const &t) const;
+  Point projectionOntoLine(Point p) const { return _projection(p, false); }
   double angle(Segment const &t) const; // putting t after us. angle [-pi,+pi).
   double angle() const; // our angle wrt +ve x, [-pi,+pi).
+  bool intersects(Segment const &t) const; // intersection within end points
   bool intersects(Rect r) const;
+  bool projectsWithin(Point p, Dim mrg=Dim()) const;
+  Dim distanceToLine(Point p) const { return _distance(p, false); }
+  Dim distanceToSegment(Point p) const { return _distance(p, true); }
+  Point nearestPoint(Point p) const { return _projection(p, true); }
 protected:
   Fraction projectionCoefficient(Point p) const;
+  Point _projection(Point p, bool constrain) const;  
+  Dim _distance(Point p, bool constrain) const;
 };
 
 QDebug operator<<(QDebug, Segment const &);

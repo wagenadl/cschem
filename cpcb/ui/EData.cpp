@@ -9,9 +9,12 @@
 #include "svg/Symbol.h"
 #include <QIcon>
 #include <QMessageBox>
+#include <qnamespace.h>
+#include "data/NetGraph.h"
 
 constexpr int MOVETHRESHOLD_PIX = 4;
 constexpr int MARGIN_PIX = 5;
+#define GRIDCOLOR QColor(255, 255, 255, 128)
 
 EData::EData(Editor *ed): ed(ed) {
   autofit = false;
@@ -22,7 +25,6 @@ EData::EData(Editor *ed): ed(ed) {
   stuckptsvalid = false;
   stepsfromsaved = false;
   netsvisible = true;
-  resizeTimer = 0;
   tracer = 0;
   planeeditor = 0;
   bom = 0;
@@ -43,11 +45,11 @@ Group &EData::currentGroup() {
 
 bool EData::updateOnWhat(bool force) {
   Dim mrg = pressMargin();
-  NodeID ids = visibleNodeAt(hoverpt, mrg);
-  bool isnew = ids != onnode;
-  onnode = ids;
+  NodeID nid = visibleNodeAt(hoverpt, mrg);
+  bool isnew = nid != onnode;
+  onnode = nid;
   if (isnew || force) {
-    Nodename nn(currentGroup().nodeName(ids));
+    Nodename nn(currentGroup().nodeName(nid));
     Nodename alias(linkedschematic.pinAlias(nn));
     if (alias.isValid())
       onobject = alias.humanName();
@@ -55,17 +57,20 @@ bool EData::updateOnWhat(bool force) {
       onobject = nn.humanName();
   }
   if (netsvisible && (isnew || force))
-    updateNet(ids);
+    updateNet(onnode);
   return isnew;
 }
 
 void EData::updateNet(NodeID seed) {
-  net = PCBNet(layout.root().subgroup(crumbs), seed);
+  netseed = seed;
+  Group g0;
+  NetGraph graph(seed.isEmpty() ? g0 : layout.root().subgroup(crumbs));
+  net = graph.net(seed);
 
   linkednet = LinkedNet();
-  if (linkedschematic.isValid() && !net.nodes().isEmpty()
+  if (linkedschematic.isValid() && !net.isEmpty()
       && crumbs.isEmpty()) {
-    Nodename seed = net.someNode();
+    Nodename seed = graph.someNodename(net, onnode);
     for (LinkedNet const &lnet: linkedschematic.nets()) {
       if (lnet.containsMatch(seed)) {
 	linkednet = lnet;
@@ -75,7 +80,7 @@ void EData::updateNet(NodeID seed) {
   }
 
   if (linkedschematic.isValid() && crumbs.isEmpty()) 
-    netmismatch.recalculate(net, linkednet, layout.root());
+    netmismatch.recalculate(net, onnode, linkednet, layout.root());
   else
     netmismatch.reset();
 }
@@ -144,19 +149,12 @@ void EData::drawBoard(QPainter &p) const {
   p.setBrush(QBrush(ORenderer::boardColor()));
   double lw = layout.board().width.toMils();
   double lh = layout.board().height.toMils();
-  if (layout.board().shape == Board::Shape::Round) {
-    if (lw==lh) {
-      p.drawEllipse(QPointF(lw/2, lh/2), lw/2, lh/2);
-    } else if (lw<lh) {
-      p.setPen(QPen(ORenderer::boardColor(), lw, Qt::SolidLine, Qt::RoundCap));
-      p.drawLine(QPointF(lw/2, lw/2), QPointF(lw/2, lh - lw/2));
-    } else {
-      p.setPen(QPen(ORenderer::boardColor(), lh, Qt::SolidLine, Qt::RoundCap));
-      p.drawLine(QPointF(lh/2, lh/2), QPointF(lw - lh/2, lh/2));
-    }
-  } else {
+  double cr = layout.board().cornerradius.toMils();
+  if (cr > 0) 
+    p.drawRoundedRect(QRectF(QPointF(0,0), QPointF(lw, lh)),
+                      cr, cr);
+  else 
     p.drawRect(QRectF(QPointF(0,0), QPointF(lw, lh)));
-  }
 }
 
 void EData::drawGrid(QPainter &p) const {
@@ -173,7 +171,7 @@ void EData::drawGrid(QPainter &p) const {
   double wy0 = 0;
   double wy1 = layout.board().height.toMils();
   constexpr int major = 5;
-  p.setPen(QPen(QColor(255, 255, 255), 1.0/mils2px));
+  p.setPen(QPen(GRIDCOLOR, 1.0/mils2px));
   QPointF dpx(2,0);
   QPointF dpy(0,2);
   if (wgdy*mils2px >= 10 && wgdy*mils2px >= 10) {
@@ -218,8 +216,8 @@ void EData::drawObjects(QPainter &p) const {
     rndr.setLayer(l, s);
     for (int id: here.keys()) {
       QSet<NodeID> subnet;
-      if (netsvisible && mode!=Mode::PNPOrient)
-	for (NodeID nid: net.nodes())
+      if (netsvisible && mode != Mode::PNPOrient)
+	for (NodeID nid: net)
 	  if (!nid.isEmpty() && nid.first()==id)
 	    subnet << nid.tail();
       if (mode!=Mode::PNPOrient || here.object(id).isGroup())
@@ -242,16 +240,9 @@ void EData::drawObjects(QPainter &p) const {
         onesublayer(l, ORenderer::Sublayer::Extra);
         onesublayer(l, ORenderer::Sublayer::Main);
         rndr.setPainter(&p);
-        //p.setCompositionMode(QPainter::CompositionMode_SourceOver);
         p.setTransform(QTransform());
         p.drawPixmap(QPoint(0,0), pm);
         p.setTransform(mils2widget, true);
-//      } else if (l==Layer::Bottom) {
-//         p.setCompositionMode(QPainter::CompositionMode_Source);
-//        onesublayer(l, ORenderer::Sublayer::Plane);
-//        onesublayer(l, ORenderer::Sublayer::Clearance);
-//        onesublayer(l, ORenderer::Sublayer::Extra);
-//        onesublayer(l, ORenderer::Sublayer::Main);
       } else {
         onesublayer(l, ORenderer::Sublayer::Extra);
         onesublayer(l, ORenderer::Sublayer::Main);
@@ -368,6 +359,7 @@ void EData::pressHole(Point p) {
     t.od = props.od;
     t.id = props.id;
     t.square = props.square;
+    t.via = props.via;
     t.ref = props.text;
     here.insert(Object(t));
     ed->insertedPadOrHole();
@@ -541,23 +533,10 @@ NodeID EData::visibleNodeAt(Group const &grp, Point p, Dim mrg) const {
 
   nid << id;
   if (grp.object(id).isGroup()) 
-    nid += visibleNodeAt(grp.object(id).asGroup(), p, mrg);
+    nid.append(visibleNodeAt(grp.object(id).asGroup(), p, mrg));
   return nid;
 }
 
-void EData::pressOrigin(Point p) {
-  NodeID node = visibleNodeAt(p);
-  Object const &obj(currentGroup().object(node));
-  if (obj.isPad()) 
-    userorigin = obj.asPad().p;
-  else if (obj.isHole()) 
-    userorigin = obj.asHole().p;
-  else if (obj.isArc()) 
-    userorigin = obj.asArc().center;
-  else
-    return;
-  ed->userOriginChanged(userorigin);
-}
 
 EData::Prio EData::objectPriority(Object const &obj, Point p, Dim mrg) const {
   Board const &brd = layout.board();
@@ -968,7 +947,12 @@ QCursor EData::crossCursor() {
   static QCursor cursor;
   if (got)
     return cursor;
-  cursor = QCursor(QIcon(":icons/CursorCross.svg").pixmap(64,64), 32, 32);
+  QPixmap pm(QIcon(":icons/CursorCross.svg").pixmap(QSize(32, 32), 2));
+#if QT_VERSION < 0x060500
+  cursor = QCursor(pm, pm.width()/2, pm.height()/2);
+#else
+  cursor = QCursor(pm);
+#endif
   got = true;
   return cursor;
 }
@@ -978,7 +962,42 @@ QCursor EData::tinyCursor() {
   static QCursor cursor;
   if (got)
     return cursor;
-  cursor = QCursor(QIcon(":icons/CursorCross.svg").pixmap(32,32), 16, 16);
+  QPixmap pm(QIcon(":icons/CursorCross.svg").pixmap(QSize(16, 16), 2));
+#if QT_VERSION < 0x060500
+  cursor = QCursor(pm, pm.width()/2, pm.height()/2);
+#else
+  cursor = QCursor(pm);
+#endif
   got = true;
   return cursor;
+}
+
+bool EData::isVisible(Object const &obj) const {
+  Board const &brd = layout.board();
+  switch (obj.type()) {
+  case Object::Type::Hole:
+    return brd.layervisible[Layer::Top] || brd.layervisible[Layer::Bottom];
+  case Object::Type::Pad:
+    return brd.layervisible[obj.asPad().layer];
+  case Object::Type::Arc:
+    return brd.layervisible[obj.asArc().layer];
+  case Object::Type::Text:
+    return brd.layervisible[obj.asText().layer];
+  case Object::Type::Trace:
+    return brd.layervisible[obj.asTrace().layer];
+  case Object::Type::Plane:
+    return brd.planesvisible && brd.layervisible[obj.asPlane().layer];
+  case Object::Type::Group: {
+    Group const &grp(obj.asGroup());
+    for (int id: grp.keys())
+      if (isVisible(grp.object(id)))
+        return true;
+    }
+    return false;
+  case Object::Type::NPHole:
+    return true;
+  case Object::Type::Null:
+    return false;
+  }
+  return false; // just to avoid compiler warning
 }

@@ -9,21 +9,30 @@
 
 class TraceRepair {
 public:
+  struct Result {
+    int nmoved_overlap = 0;
+    int nsplit_intersect = 0;
+    int nmoved_pin = 0;
+    int nsplit_pin = 0;
+    int ndeleted_overlap = 0;
+    int njoined = 0;
+    int ndeleted_dangling = 0;
+    int ndeleted_dangling_via = 0;
+    Dim maxmove = Dim();
+  };
+public:
   TraceRepair(class Group &group);
   ~TraceRepair();
-  bool fixTraceIntersections(int id, Dim grid=Dim());
-  // id must be a trace in the group
-  // intersections are snapped to nearest grid point, if nonzero
-  // returns true if anything done
-  bool fixAllTraceIntersections(Dim grid=Dim());
-  bool fixPinTouchings(int id);
-  // id must be a trace in the group
-  // returns true if anything done
-  bool fixAllPinTouchings();
+
+  bool fixTraceIntersections();
+  bool fixPinTouchings();
+  bool fixTraceFragments();
   bool dropDanglingTraces();
-  // returns true if anything done
+  // return true if anything done
+  Result const &result() { return _result; }
 private:
   class RepairData *d;
+  Result _result;
 };
 
 #endif

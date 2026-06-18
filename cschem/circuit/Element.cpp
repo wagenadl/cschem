@@ -85,12 +85,12 @@ QString Element::symbol() const {
 
 QXmlStreamReader &operator>>(QXmlStreamReader &sr, Element &c) {
   c = Element();
-  QStringRef name = sr.name();
-  if (name=="component")
+  auto name = sr.name();
+  if (name==QStringLiteral("component"))
     c.type = Element::Type::Component;
-  else if (name=="port")
+  else if (name==QStringLiteral("port"))
     c.type = Element::Type::Port;
-  else if (name=="junction")
+  else if (name==QStringLiteral("junction"))
     c.type = Element::Type::Junction;
   else
     c.type = Element::Type::Invalid;
@@ -152,7 +152,7 @@ QXmlStreamWriter &operator<<(QXmlStreamWriter &sw, Element const &c) {
 QString Element::report() const {
   return QString("e#%1: [%2 at %3,%4 (%5) - %6 %7]")
     .arg(id).arg(symbol())
-    .arg(position.x()).arg(position.y()).arg(rotation)
+    .arg(position.x()).arg(position.y()).arg(int(rotation))
     .arg(value).arg(name);
 }
 

@@ -14,7 +14,6 @@ enum class Mode {
   PlaceArc,
   PlacePlane,
   PickupTrace,
-  SetIncOrigin,
   PlaceNPHole,
   BoardOutline,
   PNPOrient,

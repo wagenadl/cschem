@@ -87,32 +87,30 @@ bool Trace::touches(FilledPlane const &fp) const {
     return false;
   QPainterPath pp;
   pp.addPolygon(fp.perimeter.toMils());
-  return pp.intersects(outlinePath());
+  bool got = pp.intersects(outlinePath());
+  //  if (fp.layer == Layer::Bottom)
+  //qDebug() << "trace touch fp" << got;
+  return got;
 }
 
-
-bool Trace::touches(Trace const &t, Point *pt) const {
+bool Trace::touches(Trace const &t) const {
   if (layer != t.layer)
     return false;
   if (!boundingRect().intersects(t.boundingRect()))
     return false;
   if (!outlinePath().intersects(t.outlinePath()))
     return false;
-
-  Point intersect;
-  auto yes = [pt](Point p) {
-               if (pt)
-                 *pt = p;
-               return true;
-             };
-  intersects(t, &intersect); // this may not yield true, but if it doesn't
-  // ... it should still be close enough
-  if (onP1(intersect, t.width/2)) 
-    return yes(p1);
-  else if (onP2(intersect, t.width/2))
-    return yes(p2);
-  else
-    return yes(intersect);
+  Dim mrg = (width + t.width) / 2;
+  std::optional<Point> isec = intersection(t);
+  if (isec) {
+    return distanceToSegment(*isec) < mrg;
+  } else {
+    // parallel
+    return distanceToSegment(t.p1) < mrg
+    || distanceToSegment(t.p2) < mrg
+    || t.distanceToSegment(p1) < mrg
+    || t.distanceToSegment(p2) < mrg;
+  }
 }
 
 bool Trace::operator==(Trace const &t) const {
@@ -120,6 +118,6 @@ bool Trace::operator==(Trace const &t) const {
 }
 
 bool Trace::touches(Rect r) const {
-  r.grow(width);
+  r.grow(width / 2);
   return intersects(r);
 }

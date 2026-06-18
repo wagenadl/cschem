@@ -7,7 +7,10 @@
 #include <QPoint>
 #include <QPolygon>
 #include <QString>
+#include <QSet>
 #include "circuit/PinID.h"
+#include <QMultiHash>
+#include "svg/SegmentDB.h"
 
 class Geometry {
 public:
@@ -86,6 +89,9 @@ public:
   /* Finds out whether there is a pin at the point P and returns its
      identity. The first call is slow, because we have to set up a
      database of pin locations, but subsequent calls are fast. */
+  QMultiHash<QPoint, PinID> allPoints(QSet<int> elts=QSet<int>(),
+                                      bool inc_not_exc=false) const;
+  SegmentDB allSegments(QSet<int> cons=QSet<int>(), bool inc_not_exc=false) const;
 public:
   static QPolygon simplifiedPath(QPolygon path);
   static QPolygon viaFromPath(class Connection const &con, QPolygon path);

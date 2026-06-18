@@ -18,6 +18,7 @@ struct EProps {
   Dim slotlength;
   Dim w, h;
   bool square;
+  bool via;
   QString text;
   FreeRotation rota;
   bool flip;
@@ -33,6 +34,7 @@ struct EProps {
     w = Dim::fromMils(65);
     h = Dim::fromMils(65);
     square = false;
+    via = false;
     text = "";
     fs = Dim::fromMils(70);
     flip = false;

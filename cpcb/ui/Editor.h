@@ -36,7 +36,6 @@ public:
   Point hoverPoint() const;
   bool isAsSaved() const;
   double pixelsPerMil() const;
-  Point userOrigin() const;
   class BOM *bom() const;
   QString loadBOM(QString fn); // returns "" if OK, else error string
   Rect selectionBounds() const;
@@ -69,6 +68,7 @@ public slots:
   void setWidth(Dim);
   void setHeight(Dim);
   void setSquare(bool);
+  void setVia(bool);
   void setRefText(QString);
   void setFontSize(Dim);
   void setArcAngle(int angle);
@@ -108,9 +108,8 @@ public slots:
   void pretendOnNet(NodeID);
   void deleteDanglingTraces();
   void cleanupIntersections();
-  void setBoardSize(Dim w, Dim h, Board::Shape shp=Board::Shape::Rect);
+  void setBoardSize(Dim w, Dim h, Dim cr=Dim());
 signals:
-  void userOriginChanged(Point);
   void insertedPadOrHole();
   void boardChanged(Board const &);
   void hovering(Point);
@@ -135,7 +134,7 @@ protected:
   void mouseMoveEvent(QMouseEvent *) override;
   void mouseReleaseEvent(QMouseEvent *) override;
   void keyPressEvent(QKeyEvent *) override;
-  void enterEvent(QEvent *) override;
+  void enterEvent(QEnterEvent *) override;
   void leaveEvent(QEvent *) override;
   void paintEvent(QPaintEvent *) override;
   void resizeEvent(QResizeEvent *) override;
@@ -152,6 +151,7 @@ private:
   // SELECTPOINTSOFCOMPONENT adds points of holes and pads in group, but
   // not of contained traces and subgroups.
   friend class UndoCreator;
+  void onIdle();
 private:
   class EData *d;
 };

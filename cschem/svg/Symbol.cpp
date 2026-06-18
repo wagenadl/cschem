@@ -165,6 +165,7 @@ Symbol::Symbol() {
 }
 
 Symbol::Symbol(XmlElement const &elt, QString name) {
+  //  qDebug() << "Symbol" << name;
   d = new SymbolData;
   d->elt = elt;
   d->elt.removeAttribute("transform");
@@ -178,9 +179,11 @@ Symbol::Symbol(XmlElement const &elt, QString name) {
     d->setError("Symbol has no name.");
   else
     d->setValid();
+  // qDebug() << "  scanning" << d->valid;
   for (auto &e: elt.children()) 
     if (e.type()==XmlNode::Type::Element)
       d->scanPins(e.element());
+  // qDebug() << "  scanned" << d->valid << d->pins.isEmpty();
   if (d->valid && d->pins.isEmpty() && d->cpins.isEmpty())
     d->setError("No pins found in symbol definition for “" + d->name + "”.");
   d->ensureBBox();
@@ -203,8 +206,12 @@ static int tryGetGroup(XmlElement const &svg, Symbol &dst, QString &name) {
         if (lbl.startsWith("part:") || lbl.startsWith("port:"))
           name = lbl;
         dst = Symbol(elt, name);
-        if (!dst.isValid())
-          tryGetGroup(elt, dst, name);
+        if (!dst.isValid()) {
+          Symbol d2;
+          tryGetGroup(elt, d2, name);
+          if (d2.isValid())
+            dst = d2;
+        }
       }
     }
   }
@@ -224,7 +231,7 @@ Symbol Symbol::load(QString svgfn) {
   int groupcount = 0;
   while (!sr.atEnd()) {
     sr.readNext();
-    if (sr.isStartElement() && sr.name()=="svg") {
+    if (sr.isStartElement() && sr.name()==QStringLiteral("svg")) {
       XmlElement svg(sr);
       groupcount = tryGetGroup(svg, sym, name);
     }
@@ -256,15 +263,16 @@ void SymbolData::scanPins(XmlElement const &elt) {
     QString label = elt.title();
     if (label.isEmpty())
       label = elt.label();
-    if (label.startsWith("pin")) {
+    // qDebug() << "scanpins" << label;
+    if (label=="pin" || label.startsWith("pin:")) {
       QString name = label.mid(4);
       if (pins.contains(name)) {
-        setError("Repeated pin name “" + name + "” ignored");
+        setError("Invalid repeated pin name “" + name + "”");
         return;
       }
       pins[name] = QPointF(); // pin positions are determined by ensureBBox
       pinIds[name] = id;
-    } else if (label.startsWith("cp")) {
+    } else if (label.startsWith("cp:")) {
       QString name = label.mid(3);
       int sidx = name.indexOf("/");
       if (sidx>0 && name.mid(sidx+1)=="nc") {
@@ -275,13 +283,13 @@ void SymbolData::scanPins(XmlElement const &elt) {
 	  int n = name.mid(sidx+1,didx-sidx-1).toInt();
 	  if (n<=0) {
 	    qDebug() << "Symbol: Nonpositive slot??";
-          setError("All “CP” pins should have a positive slot number. “"
-                   + name + "” is ill-formed.");
+            setError("All “CP” pins should have a positive slot number. “"
+                     + name + "” is ill-formed.");
           }
 	  QString sub = name.mid(didx+1);
           if (cpins[n].contains(sub)) {
-            setError("Repeated contained pin name “" + sub
-                     + "” in subcomponent " + QString::number(n) + " ignored");
+            setError("Invalid repeated contained pin name “" + sub
+                     + "” in subcomponent " + QString::number(n));
             return;
           }
 	  cpins[n][sub] = name.left(sidx);

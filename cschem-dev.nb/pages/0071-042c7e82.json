@@ -1,0 +1,288 @@
+{ "typ": "page",
+  "cre": "2026-06-07T09:41:50.438",
+  "mod": "2026-06-07T17:50:37.530",
+  "cui": "2edabb2b1502c998",
+  "stampTime": 0,
+  "startPage": 71,
+  "unlocked": false,
+  "uuid": "042c7e82",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2026-06-07T09:41:50.435",
+      "mod": "2026-06-07T09:41:50.457",
+      "uuid": "7cb9acf9",
+      "cc": [
+        { "typ": "res",
+          "cre": "2026-06-07T09:41:50.456",
+          "mod": "2026-06-07T09:41:50.457",
+          "archive": "70_-c77e0f02.html",
+          "desc": "",
+          "preview": "70_-c77e0f02p.png",
+          "source": "page://0.0.0.70/71630e7d/5",
+          "tag": "70",
+          "title": "",
+          "uuid": "c77e0f02"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2026-06-07T09:41:50.439",
+      "mod": "2026-06-07T09:41:50.457",
+      "uuid": "55ad84e4",
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T09:41:50.439",
+          "mod": "2026-06-07T09:41:50.457",
+          "lines": [
+            0
+          ],
+          "text": "Better PCB net analysis (cont’d)",
+          "uuid": "28c79055",
+          "cc": [
+            { "typ": "gfxnote",
+              "cre": "2026-06-07T09:41:50.456",
+              "mod": "2026-06-07T09:41:50.457",
+              "dx": 0.0,
+              "dy": 0.0,
+              "sheet": 0,
+              "textWidth": 0.0,
+              "uuid": "1a4fbf2e",
+              "x": -46.8281,
+              "y": 45.06,
+              "cc": [
+                { "typ": "text",
+                  "cre": "2026-06-07T09:41:50.456",
+                  "mod": "2026-06-07T09:41:50.456",
+                  "lines": [
+                    0
+                  ],
+                  "text": "p. 70 >",
+                  "uuid": "95d5b102",
+                  "cc": [
+                    { "typ": "markup",
+                      "cre": "2026-06-07T09:41:50.456",
+                      "mod": "2026-06-07T09:41:50.456",
+                      "end": 5,
+                      "res": [
+                        "70"
+                      ],
+                      "start": 3,
+                      "style": 4,
+                      "uuid": "e8765cb0"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T09:41:52.546",
+      "mod": "2026-06-07T12:07:34.531",
+      "h": 73.498,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "d20b06ac",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T09:41:52.546",
+          "mod": "2026-06-07T12:07:34.531",
+          "lines": [
+            0,
+            56,
+            109
+          ],
+          "text": "With that, I got the updateNet() to about 50 ms and the verifyNets() nearly instantanously as well. However, paintEvent() still takes a long time. Why?",
+          "uuid": "69bc4189"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T16:51:33.981",
+      "mod": "2026-06-07T16:52:00.594",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "bb22c962",
+      "y0": 145.498,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T16:51:33.981",
+          "mod": "2026-06-07T16:52:00.594",
+          "lines": [
+            0,
+            64,
+            130
+          ],
+          "text": "I  made it a lot better by replacing NodeID with a std::vector. I also tried std::list and std::deque, but vector was faster than either.",
+          "uuid": "b80aeffa"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T16:52:05.617",
+      "mod": "2026-06-07T16:52:42.088",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "552baa52",
+      "y0": 218.996,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T16:52:05.617",
+          "mod": "2026-06-07T16:52:42.088",
+          "lines": [
+            0,
+            59
+          ],
+          "text": "Then I made the NetGraph slightly faster by using an rtree to find overlapping rectangles.",
+          "uuid": "2d52a42c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:25:59.985",
+      "mod": "2026-06-07T17:26:51.398",
+      "h": 96.664,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "5de02e70",
+      "y0": 269.328,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:25:59.985",
+          "mod": "2026-06-07T17:26:51.398",
+          "lines": [
+            0,
+            48,
+            108,
+            170
+          ],
+          "text": "This is good. Perfectly workable on my PC. Next improvement would be to have EData copy the Group, pass the work on to a thread that can be canceled, and take the result off-line.",
+          "uuid": "872d08c9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:40:07.541",
+      "mod": "2026-06-07T17:44:08.590",
+      "h": 166.162,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "ef566984",
+      "y0": 365.992,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:40:07.541",
+          "mod": "2026-06-07T17:44:08.590",
+          "lines": [
+            0,
+            59,
+            121,
+            186,
+            249,
+            311,
+            369
+          ],
+          "text": "Not needed. Instead, inserted a 1-ms delay between receipt of mouse move event and call of updateonnet. Then, if another mouse move event comes first, I cancel the timer and restart it. That way, the system is very responsive, but there is no build-up of a backlog, because the request to updateonnet is always moved to the back of the queue if there is a pending move event.",
+          "uuid": "36289263"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:44:09.159",
+      "mod": "2026-06-07T17:44:17.340",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "af83b77f",
+      "y0": 532.154,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:44:09.159",
+          "mod": "2026-06-07T17:44:17.340",
+          "lines": [
+            0
+          ],
+          "text": "Claude tells me that it may be better to do this through",
+          "uuid": "d723fb98"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:44:17.997",
+      "mod": "2026-06-07T17:44:19.225",
+      "h": 54.787,
+      "ind": 6,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0723c782",
+      "y0": 559.32,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:44:17.997",
+          "mod": "2026-06-07T17:44:17.997",
+          "lines": [
+            0,
+            46,
+            87
+          ],
+          "text": "connect(QAbstractEventDispatcher::instance(), &QAbstractEventDispatcher::aboutToBlock,\n        this, &MyClass::onIdle);",
+          "uuid": "71f84bb5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:44:27.334",
+      "mod": "2026-06-07T17:44:53.890",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "304ca4fb",
+      "y0": 614.107,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:44:27.334",
+          "mod": "2026-06-07T17:44:53.890",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "where “onIdle” would contain a simple test to see whether there is a pending updateonnet.",
+          "uuid": "b3d88640"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-07T17:50:33.956",
+      "mod": "2026-06-07T17:50:37.530",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "e365e830",
+      "y0": 664.439,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-07T17:50:33.956",
+          "mod": "2026-06-07T17:50:37.530",
+          "lines": [
+            0
+          ],
+          "text": "That feels very snappy.",
+          "uuid": "042f774b"
+        }
+      ]
+    }
+  ]
+}

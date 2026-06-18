@@ -20,14 +20,15 @@ PNPLine::PNPLine(Group const &g, Board const &board) {
   ref = g.ref;
   QStringList pins = g.pinNames();
   bbox = g.boundingRect();
-  Rect pinbox = Rect();
   for (QString pin: g.pinNames()) {
     if (pin=="1" || pin.startsWith("1/") || pin.endsWith("/1")) {
       valid = true;
       pin1 = g.pinPosition(pin);
     }
-    pinbox |= g.pinPosition(pin);
   }
+  Rect pinbox = Rect();
+  for (Point p: g.pinPoints())
+    pinbox |= p;
   center = pinbox.center();
   orient = (g.nominalRotation() % 360 + 360) % 360;
   footprint = g.attributes.value(Group::Attribute::Footprint);
@@ -89,7 +90,6 @@ PickNPlace::PickNPlace() {
 PickNPlace::PickNPlace(Layout const &layout, PickNPlace::Scope scope) {
   Group const &root{layout.root()};
   Board const &brd(layout.board());
-
   for (int id: root.keys()) {
     Object const &obj = root.object(id);
     if (!obj.isGroup())

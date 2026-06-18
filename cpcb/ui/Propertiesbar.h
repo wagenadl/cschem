@@ -12,6 +12,7 @@ class Propertiesbar: public QToolBar {
   Q_OBJECT;
 public:
   Propertiesbar(class Editor *editor, QWidget *parent=0);
+  Point userOrigin() const;
 public slots:
   void reflectMode(Mode);
   void reflectSelection();
@@ -20,6 +21,9 @@ public slots:
   void forwardAllProperties();
   void stepPinNumber();
   void setUserOrigin(Point);
+  void toggleAbsInc();
+signals:
+  void userOriginChanged(Point);
 private:
   class PBData *d;
 };

@@ -6,17 +6,12 @@
 
 #include "EProps.h"
 #include "Mode.h"
-#include "data/PCBFileIO.h"
 #include "data/Layout.h"
-#include "data/FreeRotation.h"
 #include "data/Object.h"
 #include "ORenderer.h"
 #include "data/LinkedSchematic.h"
-#include "ComponentView.h"
 #include "ElementView.h"
 #include "data/UndoStep.h"
-#include "data/Clipboard.h"
-#include "data/PCBNet.h"
 #include "data/LinkedNet.h"
 #include "data/NetMismatch.h"
 
@@ -60,7 +55,6 @@ public:
   Prio objectPriority(Object const &obj, Point p, Dim mrg) const;
   NodeID visibleNodeAt(Point p, Dim mrg=Dim()) const;
   NodeID visibleNodeAt(Group const &grp, Point p, Dim mrg) const;
-  void pressOrigin(Point);
   void pressPad(Point);
   void pressArc(Point);
   void pressHole(Point);
@@ -99,6 +93,7 @@ public:
   Point tracePoint(Point p, bool *onsomething_return=0) const;
   static QCursor crossCursor();
   static QCursor tinyCursor();
+  bool isVisible(Object const &obj) const;
 public:
   Editor *ed;
   Layout layout;
@@ -136,16 +131,17 @@ public:
   int stepsfromsaved;
   QString onobject;
   NodeID onnode;
-  PCBNet net;
+  QSet<NodeID> net;
+  NodeID netseed;
   LinkedNet linkednet;
   NetMismatch netmismatch;
   QSize lastsize;
-  QTimer *resizeTimer;
   class Tracer *tracer;
   class PlaneEditor *planeeditor;
-  Point userorigin;
   class BOM *bom;
   int undocreatorstackdepth;
+  bool pendingonnetupdate = false;
+  bool pendingresize = false;
 };
 
 

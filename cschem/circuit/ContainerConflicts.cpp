@@ -7,7 +7,6 @@
 
 ContainerConflicts::ContainerConflicts(Circuit const &circ,
 				       SymbolLibrary const &lib) {
-  int anon = 0; // count of anonymous elements
   for (Element const &elt: circ.elements) {
     if (elt.type != Element::Type::Component)
       continue;
@@ -19,7 +18,6 @@ ContainerConflicts::ContainerConflicts(Circuit const &circ,
 	  + " (containers should have simple names like " + elt.cname() + ")";
     } else {
       if (elt.name.isEmpty()) {
-	anon++;
       } else {
 	int cid = circ.containerOf(elt.id);
 	if (cid>0) {

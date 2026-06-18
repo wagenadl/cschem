@@ -43,10 +43,10 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Layout &t) {
   while (!s.atEnd()) {
     s.readNext();
     if (s.isStartElement()) {
-      if (s.name() == "board") {
+      if (s.name() == QStringLiteral("board")) {
 	s >> t.board();
         gotboard = true;
-      } else if (s.name() == "group") {
+      } else if (s.name() == QStringLiteral("group")) {
 	s >> t.root();
         // gotroot = true;
       } else {

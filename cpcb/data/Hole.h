@@ -42,6 +42,12 @@ public:
   void flipUpDown(Dim const &y0);
   bool isSlot() const;
   Segment slotEnds() const;
+  /*
+  Dim x(Qt::AlignmentFlag a) const;
+  void setX(Dim x, Qt::AlignmentFlag a);
+  Dim y(Qt::AlignmentFlag a) const;
+  void setY(Dim y, Qt::AlignmentFlag a);
+  */
 };
 
 QDebug operator<<(QDebug, Hole const &);

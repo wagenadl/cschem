@@ -4,7 +4,6 @@
 #include "Editor.h"
 #include "data/Object.h"
 
-#include <QRegExp>
 #include <QPainter>
 #include <QTextDocument>
 #include <QMouseEvent>

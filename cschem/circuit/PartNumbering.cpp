@@ -82,7 +82,7 @@ QString PartNumbering::prettyValue(QString value, QString name) {
 }
 
  
-static QRegularExpression wfn("^([A-Z]|JP)((\\d+)(.(\\d+))?)?$");
+static QRegularExpression wfn("^([A-Z]|JP|TP)((\\d+)(.(\\d+))?)?$");
 // e.g., "A1.2"
 
 bool PartNumbering::isNameWellFormed(QString name) {
@@ -116,7 +116,7 @@ QString PartNumbering::csuffix(QString name) { // the ".2" part
 
 bool PartNumbering::lessThan(QString a, QString b) {
   auto unpack = [](QString s) {
-                  QList<QVariant> l;
+                  QList<double> l;
                   bool isnum = false;
                   bool skip = false;
                   int num = 0;
@@ -134,7 +134,7 @@ bool PartNumbering::lessThan(QString a, QString b) {
                         l << num;
                       isnum = false;
                       num = 0;
-                      l << c;
+                      l << -1000 + c.unicode();
                     }
                   }
                   if (isnum)

@@ -50,7 +50,9 @@ public:
   bool isTrace() const;
   bool isText() const;
   bool isPlane() const;
-  bool isGroup() const;  
+  bool isGroup() const;
+  bool isHoleOrPad() const { return isHole() || isPad(); }
+  Point point() const; // only valid for hole, nphole, or pad
   Hole const &asHole() const;
   Hole &asHole();
   // Both const and nonconst versions ASSERT correct type.
@@ -71,6 +73,7 @@ public:
   FilledPlane &asPlane();
   Type type() const;
   bool touches(Point p, Dim mrg=Dim()) const;
+  bool touches(Object const &oth) const;
   Rect boundingRect() const;
   Layer layer() const;
   void translate(Point const &);

@@ -70,7 +70,7 @@ QXmlStreamReader &operator>>(QXmlStreamReader &s, Pad &t) {
     t.layer = Layer(a.value("l").toInt());
   else
     t.layer = Layer::Invalid;
-  t.fpcon = a.value("fp") != 0;
+  t.fpcon = a.value("fp").toInt() != 0;
   t.noclear = a.value("noclear").toInt() != 0;
   t.ref = a.value("ref").toString();
   t.rota = FreeRotation(a.value("rot").toInt());
@@ -166,14 +166,19 @@ bool Pad::touches(class Trace const &t) const {
 }
 
 bool Pad::touches(FilledPlane const &fp) const {
-  if (layer!=fp.layer)
+  if (layer != fp.layer)
     return false;
   if (noclear) {
-    return fp.perimeter.contains(p);
+    bool got = fp.perimeter.contains(p);
+    //qDebug() << "pad touches fp" << got;
+    return got;
     /* Warning: This is WRONG if an attached trace creates clearance */
   } else if (fpcon) {
     Dim r = width > height ? width/2 : height/2;
-    return fp.perimeter.contains(p, r);
+    bool got = fp.perimeter.contains(p, r);
+    //    if (fp.layer == Layer::Bottom)
+    //      qDebug() << "pad touches fp'" << got;
+    return got;
   } else {
     return false;
   }
