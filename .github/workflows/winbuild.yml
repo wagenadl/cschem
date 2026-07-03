@@ -31,7 +31,7 @@ jobs:
           version: '6.8.3'
           modules: "qtpositioning"
       - name: Set up MSVC developer environment
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: TheMrMilchmann/setup-msvc-dev@v4
       - name: Prepare build directory
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
           -G "Ninja" "-DBOOST_ROOT=${{ env.BOOST_ROOT }}"
