@@ -775,7 +775,7 @@ void MWData::makeMenus() {
                   [this]() { importBOMDialog(); });
   file->addAction("&Copy PCB image to clipboard",
                   QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_I),
-                  [this]() { copyPCBImage(); });
+                  [this]() { copyPCBImage(false); });
 		  
   
   file->addAction("&Quit", []() { QApplication::quit(); });
