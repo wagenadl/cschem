@@ -6,6 +6,7 @@ namespace CSV {
   QString quote(QString s) {
     s.replace("\"", "\"\"");
     s.replace("Ω", "ohm");
+    s.replace("µ", "u");
     QString out = "";
     for (QChar c: s) {
       if (c.unicode() <= 32)
@@ -25,11 +26,11 @@ namespace CSV {
       for (QString cell: line) {
         res += sep;
         res += quote(cell);
-        sep = ", ";
+        sep = ",";
       }
       res += "\n";
     }
-    return res.replace("µ", "u");
+    return res;
   }
 
   QList<QStringList> decode(QString csv) {
