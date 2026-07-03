@@ -1,0 +1,1738 @@
+{ "typ": "page",
+  "cre": "2026-06-17T07:47:56.610",
+  "mod": "2026-06-17T09:32:08.983",
+  "cui": "2edabb2b1502c998",
+  "stampTime": 0,
+  "startPage": 74,
+  "unlocked": false,
+  "uuid": "83d490fd",
+  "cc": [
+    { "typ": "resources",
+      "cre": "2026-06-17T07:47:56.601",
+      "mod": "2026-06-17T09:16:07.372",
+      "uuid": "c392d3b9",
+      "cc": [
+        { "typ": "res",
+          "cre": "2026-06-17T09:16:07.342",
+          "mod": "2026-06-17T09:16:07.372",
+          "archive": "_1_-d6c3f011.png",
+          "desc": "",
+          "preview": "",
+          "source": "",
+          "tag": "*1",
+          "title": "",
+          "uuid": "d6c3f011"
+        }
+      ]
+    },
+    { "typ": "title",
+      "cre": "2026-06-17T07:47:59.376",
+      "mod": "2026-06-17T07:48:18.368",
+      "uuid": "94021844",
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:47:59.376",
+          "mod": "2026-06-17T07:48:18.367",
+          "lines": [
+            0
+          ],
+          "text": "CSchem export (Basis for import into KiCAD)",
+          "uuid": "3f27e842"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T07:48:23.490",
+      "mod": "2026-06-17T07:48:35.769",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "0da49d97",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:48:23.490",
+          "mod": "2026-06-17T07:48:35.769",
+          "lines": [
+            0,
+            61
+          ],
+          "text": "At the most basic level, the things to extract from a CSchem file are:",
+          "uuid": "e25fd37c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T07:48:36.561",
+      "mod": "2026-06-17T07:49:08.105",
+      "h": 72.607,
+      "ind": 6,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "dfe8f6d6",
+      "y0": 122.332,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:48:36.561",
+          "mod": "2026-06-17T07:49:08.105",
+          "lines": [
+            0,
+            26,
+            93,
+            99
+          ],
+          "text": "* The component locations\n* The pin locations relative to the components (after rotation and flip)\n* The netlists",
+          "uuid": "c993673f"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T07:49:30.630",
+      "mod": "2026-06-17T07:49:35.974",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "28dcca7d",
+      "y0": 194.939,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:49:30.630",
+          "mod": "2026-06-17T07:49:35.974",
+          "lines": [
+            0
+          ],
+          "text": "I can picture this looking like",
+          "uuid": "5151045c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T07:49:40.660",
+      "mod": "2026-06-17T07:50:31.236",
+      "h": 90.427,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "141b6e90",
+      "y0": 222.105,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:49:40.660",
+          "mod": "2026-06-17T07:50:31.236",
+          "lines": [
+            0,
+            8,
+            36,
+            58,
+            68
+          ],
+          "text": "(cschem\n    (component ref type x y\n        (pin ref x y)\n        …\n     )",
+          "uuid": "17a276af",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T07:51:12.401",
+              "mod": "2026-06-17T07:51:12.401",
+              "end": 35,
+              "start": 23,
+              "style": 1,
+              "uuid": "b7703a73"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T07:51:16.423",
+              "mod": "2026-06-17T07:51:16.423",
+              "end": 56,
+              "start": 49,
+              "style": 1,
+              "uuid": "137f8701"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T07:49:40.660",
+      "mod": "2026-06-17T07:51:31.980",
+      "h": 72.607,
+      "ind": 2,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "141b6e90",
+      "y0": 312.532,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:49:40.660",
+          "mod": "2026-06-17T07:51:31.980",
+          "lines": [
+            0,
+            6,
+            29,
+            35
+          ],
+          "text": "    …\n    (net ref pinref …)\n    …\n)",
+          "uuid": "17a276af",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T07:51:21.482",
+              "mod": "2026-06-17T07:51:21.482",
+              "end": 18,
+              "start": 15,
+              "style": 1,
+              "uuid": "e3af0ee3"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T07:51:23.246",
+              "mod": "2026-06-17T07:51:23.246",
+              "end": 25,
+              "start": 19,
+              "style": 1,
+              "uuid": "0b372ea6"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T07:51:33.878",
+      "mod": "2026-06-17T07:51:37.319",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 0,
+      "split": [ ],
+      "uuid": "8389c52c",
+      "y0": 385.139,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:51:33.878",
+          "mod": "2026-06-17T07:51:37.319",
+          "lines": [
+            0
+          ],
+          "text": "For instance:",
+          "uuid": "36379691"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T07:51:41.334",
+      "mod": "2026-06-17T08:00:20.444",
+      "h": 411.187,
+      "ind": 2,
+      "sheet": 0,
+      "split": [
+        285.12
+      ],
+      "uuid": "30fbed1e",
+      "y0": 412.305,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:51:41.334",
+          "mod": "2026-06-17T08:00:20.444",
+          "lines": [
+            0,
+            8,
+            41,
+            62,
+            82,
+            88,
+            128,
+            150,
+            171,
+            193,
+            199,
+            242,
+            265,
+            288,
+            294,
+            332,
+            353,
+            373,
+            379,
+            407,
+            444,
+            474,
+            504
+          ],
+          "text": "(cschem\n    (component R1 resistor 30 50\n        (pin 1 −5 0)\n        (pin 2 5 0)\n    )\n    (component A1 virtual:opamp 200 100\n        (pin + −5 −5)\n        (pin − −5 5)\n        (pin out 5 0)\n    )\n    (component A1 container:opamp 200 500)\n        (pin Vdd 5 −5)\n        (pin Vss −5 5)\n    )\n    (component J1 connector:2 100 50)\n        (pin 1 0 −5)\n        (pin 2 0 5)\n    )\n    (net A1+ (A1 +) (R1 1))\n    (net A1– (A1 –) (R1 2) (A1 out))\n    (net +5V (A1 Vdd) (J1 1))\n    (net Gnd (A1 Vss) (J1 2))\n)",
+          "uuid": "82c81bc7"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T07:56:53.692",
+      "mod": "2026-06-17T08:01:43.709",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "9c25837e",
+      "y0": 198.067,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T07:56:53.692",
+          "mod": "2026-06-17T08:01:43.709",
+          "lines": [
+            0,
+            58
+          ],
+          "text": "Note that net names are generated automatically from port names, if available, otherwise from first named pin.",
+          "uuid": "f1555d5c"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:00:41.951",
+      "mod": "2026-06-17T08:01:17.615",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "4e501996",
+      "y0": 248.399,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:00:41.951",
+          "mod": "2026-06-17T08:01:17.615",
+          "lines": [
+            0,
+            56,
+            126
+          ],
+          "text": "Constructed netnames simply concatenate the pin name to the part ref. If that yields collisions, letters a, b, … are added to resolve.",
+          "uuid": "898541f3"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:01:22.048",
+      "mod": "2026-06-17T08:02:33.331",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "1afd4913",
+      "y0": 321.897,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:01:22.048",
+          "mod": "2026-06-17T08:02:33.331",
+          "lines": [
+            0,
+            59,
+            123
+          ],
+          "text": "part:pin references are converted to lisp style. For parts without pin names, the result is simply (part), maintaining the parens.",
+          "uuid": "484babfb",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T08:02:18.653",
+              "mod": "2026-06-17T08:02:18.653",
+              "end": 104,
+              "start": 100,
+              "style": 1,
+              "uuid": "57e3f728"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:03:07.654",
+      "mod": "2026-06-17T08:05:51.485",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "a3306502",
+      "y0": 395.395,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:03:07.654",
+          "mod": "2026-06-17T08:05:51.485",
+          "lines": [
+            0,
+            55
+          ],
+          "text": "Better idea? The components do not contain their pins. Rather, they specify rotation and flip, as in",
+          "uuid": "46cf5625"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:03:42.333",
+      "mod": "2026-06-17T08:03:51.083",
+      "h": 19.147,
+      "ind": 2,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "1ed15306",
+      "y0": 445.727,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:03:42.333",
+          "mod": "2026-06-17T08:03:51.083",
+          "lines": [
+            0
+          ],
+          "text": "(component R1 resistor 90 0)",
+          "uuid": "7eefa6cb"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:03:55.910",
+      "mod": "2026-06-17T08:04:23.744",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "7f4f0e6f",
+      "y0": 464.874,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:03:55.910",
+          "mod": "2026-06-17T08:04:23.744",
+          "lines": [
+            0
+          ],
+          "text": "and a separate block defines the symbol:",
+          "uuid": "6bca8065"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:04:26.005",
+      "mod": "2026-06-17T08:04:58.156",
+      "h": 72.607,
+      "ind": 2,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "61674e39",
+      "y0": 492.04,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:04:26.005",
+          "mod": "2026-06-17T08:04:58.156",
+          "lines": [
+            0,
+            17,
+            34,
+            50
+          ],
+          "text": "(symbol resistor\n    (pin 1 0 −5)\n    (pin 2 0 5)\n)",
+          "uuid": "9e943aa5"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:04:59.416",
+      "mod": "2026-06-17T08:05:34.451",
+      "h": 50.332,
+      "ind": 0,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "b2915b44",
+      "y0": 564.647,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:04:59.416",
+          "mod": "2026-06-17T08:05:34.451",
+          "lines": [
+            0,
+            70
+          ],
+          "text": "In the export +x is to right, +y is up, rotation is ccw, flip is left-to-right, before rotation.",
+          "uuid": "0fa4f866"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:05:58.151",
+      "mod": "2026-06-17T08:06:27.838",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 1,
+      "split": [ ],
+      "uuid": "ca44cfba",
+      "y0": 614.979,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:05:58.151",
+          "mod": "2026-06-17T08:06:27.838",
+          "lines": [
+            0,
+            55,
+            114
+          ],
+          "text": "The disadvantage is a little extra complexity, but the advantage is that one kicad symbol can be created for each cschem symbol.",
+          "uuid": "44d68c3d"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:06:29.296",
+      "mod": "2026-06-17T08:06:35.480",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "8d612fc8",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:06:29.296",
+          "mod": "2026-06-17T08:06:35.480",
+          "lines": [
+            0
+          ],
+          "text": "A potential future addition is",
+          "uuid": "831e53e9"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:06:41.626",
+      "mod": "2026-06-17T08:07:12.781",
+      "h": 90.427,
+      "ind": 2,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "8f370520",
+      "y0": 99.166,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:06:41.626",
+          "mod": "2026-06-17T08:07:12.781",
+          "lines": [
+            0,
+            18,
+            41,
+            47,
+            67
+          ],
+          "text": "(drawing resistor\n    (line x1 y1 x2 y2)\n    …\n    (text x y text)\n)",
+          "uuid": "6a5572d6",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T08:06:57.570",
+              "mod": "2026-06-17T08:06:57.570",
+              "end": 65,
+              "start": 61,
+              "style": 1,
+              "uuid": "ffc1f8a0"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T08:07:01.371",
+              "mod": "2026-06-17T08:07:01.371",
+              "end": 39,
+              "start": 28,
+              "style": 1,
+              "uuid": "730d83f4"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T08:07:04.486",
+              "mod": "2026-06-17T08:07:04.486",
+              "end": 60,
+              "start": 57,
+              "style": 1,
+              "uuid": "43145e77"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:07:15.013",
+      "mod": "2026-06-17T08:07:24.707",
+      "h": 27.166,
+      "ind": 0,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "45d16e07",
+      "y0": 189.593,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:07:15.013",
+          "mod": "2026-06-17T08:07:24.707",
+          "lines": [
+            0
+          ],
+          "text": "to export our svg drawings, but that may be overkill.",
+          "uuid": "37915c71"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:07:26.401",
+      "mod": "2026-06-17T08:08:42.237",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "4101c878",
+      "y0": 216.759,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:07:26.401",
+          "mod": "2026-06-17T08:08:42.237",
+          "lines": [
+            0,
+            62,
+            126
+          ],
+          "text": "For a small selection of cschem symbols, I’ll have a specific mapping to kicad symbols. For the rest, I’ll generate the kicad on the spot.",
+          "uuid": "6ce0512c",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T08:08:59.246",
+              "mod": "2026-06-17T08:08:59.246",
+              "end": 69,
+              "start": 53,
+              "style": 2,
+              "uuid": "30324111"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:08:47.371",
+      "mod": "2026-06-17T08:09:19.339",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "53a5c371",
+      "y0": 290.257,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:08:47.371",
+          "mod": "2026-06-17T08:09:19.339",
+          "lines": [
+            0,
+            62
+          ],
+          "text": "Pin directions are specified in kicad symbols. For auto, I’ll use this heuristic:",
+          "uuid": "a16400ab",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T08:09:03.144",
+              "mod": "2026-06-17T08:09:03.144",
+              "end": 14,
+              "start": 0,
+              "style": 2,
+              "uuid": "16460c26"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:09:22.064",
+      "mod": "2026-06-17T08:11:44.592",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "18c0d8c2",
+      "y0": 340.589,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:09:22.064",
+          "mod": "2026-06-17T08:11:44.592",
+          "lines": [
+            0,
+            44
+          ],
+          "text": "- n ≥ 1 pins all with same x: wires to left\n- n > 1 pins all with same y: first wire to left, last to right, rest down",
+          "uuid": "4655983e",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T08:09:36.842",
+              "mod": "2026-06-17T08:09:36.842",
+              "end": 3,
+              "start": 2,
+              "style": 1,
+              "uuid": "12450728"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T08:10:22.336",
+              "mod": "2026-06-17T08:10:50.614",
+              "end": 47,
+              "start": 46,
+              "style": 1,
+              "uuid": "9f18bd7d"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:11:02.145",
+      "mod": "2026-06-17T08:13:07.190",
+      "h": 96.664,
+      "ind": 0,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "200af9cb",
+      "y0": 377.556,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:11:02.145",
+          "mod": "2026-06-17T08:13:07.190",
+          "lines": [
+            0,
+            65,
+            119,
+            182
+          ],
+          "text": "If that does not catch, count pins at minx, maxx, miny, maxy. If more at miny and maxy than at minx and maxx, consider horizontally placed, else (same or fewer), consider vertically placed.",
+          "uuid": "a6e9b8e1"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2026-06-17T08:13:10.473",
+      "mod": "2026-06-17T08:15:05.822",
+      "h": 124.645,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "4f2e0800",
+      "xref": 0.0,
+      "y0": 474.22,
+      "yref": -15.0877,
+      "cc": [
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:10.474",
+          "mod": "2026-06-17T08:13:10.474",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "3264e269",
+          "x": 67.1031,
+          "y": 10.4856
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:11.588",
+          "mod": "2026-06-17T08:13:11.588",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "f024abed",
+          "x": 67.1031,
+          "y": 22.3034
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:12.553",
+          "mod": "2026-06-17T08:13:12.553",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "63086b96",
+          "x": 67.1031,
+          "y": 36.9176
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:14.328",
+          "mod": "2026-06-17T08:13:14.328",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "1113a3a5",
+          "x": 89.0244,
+          "y": 10.7338
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:15.671",
+          "mod": "2026-06-17T08:13:15.671",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "8c2e9992",
+          "x": 89.0244,
+          "y": 36.9176
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:17.006",
+          "mod": "2026-06-17T08:13:17.006",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "b03cfa3f",
+          "x": 195.587,
+          "y": 12.5605
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:18.084",
+          "mod": "2026-06-17T08:13:18.084",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "3d986517",
+          "x": 216.899,
+          "y": 12.5605
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:20.435",
+          "mod": "2026-06-17T08:13:20.435",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "44060a17",
+          "x": 235.167,
+          "y": 11.9516
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:21.635",
+          "mod": "2026-06-17T08:13:21.635",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "1ed27fb5",
+          "x": 194.369,
+          "y": 40.5712
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:23.289",
+          "mod": "2026-06-17T08:13:23.289",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "8fb5939f",
+          "x": 215.072,
+          "y": 38.1355
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:24.497",
+          "mod": "2026-06-17T08:13:24.497",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "12a68f20",
+          "x": 235.167,
+          "y": 38.1355
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:28.607",
+          "mod": "2026-06-17T08:13:28.608",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "c8e82523",
+          "x": 335.64,
+          "y": 10.1248
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:30.014",
+          "mod": "2026-06-17T08:13:30.014",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "c39eff28",
+          "x": 333.813,
+          "y": 43.8639
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:13:31.420",
+          "mod": "2026-06-17T08:13:31.420",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "ef31fca7",
+          "x": 309.456,
+          "y": 26.205
+        },
+        { "typ": "gfxnote",
+          "cre": "2026-06-17T08:13:47.266",
+          "mod": "2026-06-17T08:13:49.606",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "c02fa344",
+          "x": 71.3656,
+          "y": 51.171,
+          "cc": [
+            { "typ": "text",
+              "cre": "2026-06-17T08:13:47.266",
+              "mod": "2026-06-17T08:13:49.606",
+              "lines": [
+                0
+              ],
+              "text": "5x/4y",
+              "uuid": "9900b591"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2026-06-17T08:13:54.640",
+          "mod": "2026-06-17T08:13:55.719",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "b95fe70e",
+          "x": 206.547,
+          "y": 60.3049,
+          "cc": [
+            { "typ": "text",
+              "cre": "2026-06-17T08:13:54.640",
+              "mod": "2026-06-17T08:13:55.719",
+              "lines": [
+                0
+              ],
+              "text": "4x/6y",
+              "uuid": "7faa2677"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2026-06-17T08:13:57.714",
+          "mod": "2026-06-17T08:13:59.031",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "760b47f1",
+          "x": 317.372,
+          "y": 61.5228,
+          "cc": [
+            { "typ": "text",
+              "cre": "2026-06-17T08:13:57.714",
+              "mod": "2026-06-17T08:13:59.031",
+              "lines": [
+                0
+              ],
+              "text": "3x/2y",
+              "uuid": "1d69cfc8"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2026-06-17T08:14:09.041",
+          "mod": "2026-06-17T08:14:09.675",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "3ee18c65",
+          "x": 65.8852,
+          "y": 68.8299,
+          "cc": [
+            { "typ": "text",
+              "cre": "2026-06-17T08:14:09.041",
+              "mod": "2026-06-17T08:14:09.674",
+              "lines": [
+                0
+              ],
+              "text": "vertical",
+              "uuid": "8aa00949"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2026-06-17T08:14:12.001",
+          "mod": "2026-06-17T08:14:13.372",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "57614d3f",
+          "x": 199.24,
+          "y": 80.3995,
+          "cc": [
+            { "typ": "text",
+              "cre": "2026-06-17T08:14:12.001",
+              "mod": "2026-06-17T08:14:13.372",
+              "lines": [
+                0
+              ],
+              "text": "horizontal",
+              "uuid": "a68b4a54"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2026-06-17T08:14:15.836",
+          "mod": "2026-06-17T08:14:16.970",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "24900e51",
+          "x": 312.501,
+          "y": 81.6174,
+          "cc": [
+            { "typ": "text",
+              "cre": "2026-06-17T08:14:15.836",
+              "mod": "2026-06-17T08:14:16.970",
+              "lines": [
+                0
+              ],
+              "text": "vertical",
+              "uuid": "7ad7e5e4"
+            }
+          ]
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:14:42.249",
+          "mod": "2026-06-17T08:14:42.249",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "ec993b6f",
+          "x": 394.706,
+          "y": 12.8087
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:14:42.945",
+          "mod": "2026-06-17T08:14:42.945",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "ace730ad",
+          "x": 395.315,
+          "y": 32.9032
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:14:43.712",
+          "mod": "2026-06-17T08:14:43.712",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "13db9fa4",
+          "x": 395.923,
+          "y": 51.78
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:14:45.487",
+          "mod": "2026-06-17T08:14:45.487",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "5495680a",
+          "x": 431.241,
+          "y": 53.6067
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:14:46.190",
+          "mod": "2026-06-17T08:14:46.190",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "070c20f2",
+          "x": 431.85,
+          "y": 32.9032
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:14:47.326",
+          "mod": "2026-06-17T08:14:47.326",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "0a21be59",
+          "x": 430.632,
+          "y": 12.1997
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:14:50.245",
+          "mod": "2026-06-17T08:14:50.245",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "e968b5cb",
+          "x": 409.929,
+          "y": -0.587736
+        },
+        { "typ": "gfxnote",
+          "cre": "2026-06-17T08:15:01.521",
+          "mod": "2026-06-17T08:15:03.353",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "921c79c1",
+          "x": 393.488,
+          "y": 70.9048,
+          "cc": [
+            { "typ": "text",
+              "cre": "2026-06-17T08:15:01.521",
+              "mod": "2026-06-17T08:15:03.353",
+              "lines": [
+                0
+              ],
+              "text": "6x/3y",
+              "uuid": "ed458228"
+            }
+          ]
+        },
+        { "typ": "gfxnote",
+          "cre": "2026-06-17T08:15:05.172",
+          "mod": "2026-06-17T08:15:05.822",
+          "dx": 0.0,
+          "dy": 0.0,
+          "sheet": 0,
+          "textWidth": 0.0,
+          "uuid": "44d7a361",
+          "x": 395.315,
+          "y": 86.7369,
+          "cc": [
+            { "typ": "text",
+              "cre": "2026-06-17T08:15:05.172",
+              "mod": "2026-06-17T08:15:05.822",
+              "lines": [
+                0
+              ],
+              "text": "vertical",
+              "uuid": "9183b658"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:15:28.650",
+      "mod": "2026-06-17T08:16:15.567",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 2,
+      "split": [ ],
+      "uuid": "5443641e",
+      "y0": 598.865,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:15:28.650",
+          "mod": "2026-06-17T08:16:15.567",
+          "lines": [
+            0,
+            59,
+            118
+          ],
+          "text": "Either way, pins at minx get routed to left. Then, pins at maxx get wired to right. Then pins at miny get wired down. Then wires at maxy get wired up.",
+          "uuid": "a3788a7e"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:16:26.559",
+      "mod": "2026-06-17T08:17:02.621",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 2,
+      "split": [
+        23.166
+      ],
+      "uuid": "1cf754cb",
+      "y0": 672.363,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:16:26.559",
+          "mod": "2026-06-17T08:17:02.621",
+          "lines": [
+            0,
+            62
+          ],
+          "text": "Remarkably, this simple rule captures the earlier logistic as well. It even captures a typical opamp:",
+          "uuid": "8aa33dd8"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2026-06-17T08:16:43.208",
+      "mod": "2026-06-17T08:17:16.593",
+      "h": 121.255,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "ff8cf26f",
+      "xref": 0.0,
+      "y0": 99.166,
+      "yref": -18.0148,
+      "cc": [
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:16:43.209",
+          "mod": "2026-06-17T08:16:43.209",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "bc94050f",
+          "x": 79.2816,
+          "y": 19.5747
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:16:44.592",
+          "mod": "2026-06-17T08:16:44.592",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "2a785ed4",
+          "x": 76.8459,
+          "y": 50.63
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:16:45.687",
+          "mod": "2026-06-17T08:16:45.687",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "701c95dd",
+          "x": 106.074,
+          "y": 6.17831
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:16:46.921",
+          "mod": "2026-06-17T08:16:46.921",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "8fc459ad",
+          "x": 110.337,
+          "y": 63.6207
+        },
+        { "typ": "gfxmark",
+          "cre": "2026-06-17T08:16:50.670",
+          "mod": "2026-06-17T08:16:50.670",
+          "color": "#000000",
+          "shape": 0,
+          "size": 4.5,
+          "uuid": "bd135e38",
+          "x": 145.046,
+          "y": 31.9565
+        },
+        { "typ": "gfxsketch",
+          "cre": "2026-06-17T08:17:10.111",
+          "mod": "2026-06-17T08:17:10.658",
+          "color": "#ffd400",
+          "lineWidth": 1.5,
+          "uuid": "2ef9eb45",
+          "x": 68.9299,
+          "xx": [
+            0.0,
+            -3.65356,
+            -6.69819,
+            -9.74283,
+            -10.9607
+          ],
+          "y": 17.3423,
+          "yy": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        { "typ": "gfxsketch",
+          "cre": "2026-06-17T08:17:11.666",
+          "mod": "2026-06-17T08:17:11.914",
+          "color": "#ffd400",
+          "lineWidth": 1.5,
+          "uuid": "25159ad7",
+          "x": 67.712,
+          "xx": [
+            0.0,
+            -4.26249,
+            -7.91605,
+            -11.5696,
+            -15.2232,
+            -18.2678,
+            -20.0946
+          ],
+          "y": 52.0511,
+          "yy": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        { "typ": "gfxsketch",
+          "cre": "2026-06-17T08:17:12.972",
+          "mod": "2026-06-17T08:17:13.285",
+          "color": "#ffd400",
+          "lineWidth": 1.5,
+          "uuid": "4c3807fc",
+          "x": 110.946,
+          "xx": [
+            0.0,
+            0.608927,
+            1.21785,
+            1.82678,
+            1.82678,
+            1.82678,
+            1.82678
+          ],
+          "y": 73.3635,
+          "yy": [
+            0.0,
+            3.65356,
+            7.91605,
+            11.5696,
+            14.6142,
+            17.6589,
+            18.8767
+          ]
+        },
+        { "typ": "gfxsketch",
+          "cre": "2026-06-17T08:17:14.655",
+          "mod": "2026-06-17T08:17:14.981",
+          "color": "#ffd400",
+          "lineWidth": 1.5,
+          "uuid": "0e06963c",
+          "x": 106.074,
+          "xx": [
+            0.0,
+            0.0,
+            -0.608927,
+            -1.21785
+          ],
+          "y": -0.925518,
+          "yy": [
+            0.0,
+            -3.04463,
+            -6.08927,
+            -6.08927
+          ]
+        },
+        { "typ": "gfxsketch",
+          "cre": "2026-06-17T08:17:16.259",
+          "mod": "2026-06-17T08:17:16.593",
+          "color": "#ffd400",
+          "lineWidth": 1.5,
+          "uuid": "1791b0a9",
+          "x": 152.353,
+          "xx": [
+            0.0,
+            3.04463,
+            6.08927,
+            9.74283,
+            12.7875,
+            15.8321,
+            15.8321
+          ],
+          "y": 32.6152,
+          "yy": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.608927,
+            0.608927
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T08:17:33.909",
+      "mod": "2026-06-17T09:05:27.957",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "80393b15",
+      "y0": 220.421,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T08:17:33.909",
+          "mod": "2026-06-17T09:05:27.957",
+          "lines": [
+            0
+          ],
+          "text": "My export should do better with containers. Something like:",
+          "uuid": "2bcb5f15"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:05:29.216",
+      "mod": "2026-06-17T09:12:25.152",
+      "h": 90.427,
+      "ind": 2,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "1b280786",
+      "y0": 247.587,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:05:29.216",
+          "mod": "2026-06-17T09:12:25.152",
+          "lines": [
+            0,
+            10,
+            59,
+            101,
+            107
+          ],
+          "text": "(compound\n    (container A1 container:opamp2 x y rot flip)\n    (sub A1.1 virtual:opamp x y rot flip)\n    …\n)",
+          "uuid": "935d25c5",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T09:06:29.704",
+              "mod": "2026-06-17T09:06:29.704",
+              "end": 46,
+              "start": 45,
+              "style": 1,
+              "uuid": "a835d66f"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T09:06:30.438",
+              "mod": "2026-06-17T09:06:30.438",
+              "end": 48,
+              "start": 47,
+              "style": 1,
+              "uuid": "720f56c1"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T09:06:33.112",
+              "mod": "2026-06-17T09:06:33.113",
+              "end": 88,
+              "start": 87,
+              "style": 1,
+              "uuid": "5dd76ced"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T09:06:33.876",
+              "mod": "2026-06-17T09:06:33.876",
+              "end": 90,
+              "start": 89,
+              "style": 1,
+              "uuid": "d95cf242"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T09:06:35.191",
+              "mod": "2026-06-17T09:06:35.191",
+              "end": 94,
+              "start": 91,
+              "style": 1,
+              "uuid": "b26699a4"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T09:06:36.243",
+              "mod": "2026-06-17T09:06:36.243",
+              "end": 99,
+              "start": 95,
+              "style": 1,
+              "uuid": "8b55dcac"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T09:06:38.125",
+              "mod": "2026-06-17T09:06:38.125",
+              "end": 52,
+              "start": 49,
+              "style": 1,
+              "uuid": "43e8fab6"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T09:06:39.206",
+              "mod": "2026-06-17T09:06:39.206",
+              "end": 57,
+              "start": 53,
+              "style": 1,
+              "uuid": "2bb86333"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:08:14.038",
+      "mod": "2026-06-17T09:12:09.314",
+      "h": 258.826,
+      "ind": 0,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "00f54dd2",
+      "y0": 338.014,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:08:14.038",
+          "mod": "2026-06-17T09:12:09.314",
+          "lines": [
+            0,
+            61,
+            122,
+            188,
+            251,
+            312,
+            372,
+            437,
+            497,
+            556,
+            621
+          ],
+          "text": "Note that I am introducing a new “compound” type, because in this case there is no location associated with the top-level object. In cschem, it is possible that a container exists without virtual elements and vice versa. The above syntax allows that. Normally, containers live in the “container:” namespace, but that is not enforced. Likewise, contained elements normally live in the “virtual:” namespace, but that is also not enforced. For instance, it would be entirely reasonable to combine an LED and a photo-NPN into a container. I don’t know whether “U1.L”, “U1.Q” are valid part names, but if not, I can make that possible in the future.",
+          "uuid": "941cedf1"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:12:47.652",
+      "mod": "2026-06-17T09:12:59.910",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "c9e4d55b",
+      "y0": 596.84,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:12:47.652",
+          "mod": "2026-06-17T09:12:59.910",
+          "lines": [
+            0
+          ],
+          "text": "I do think it is a good idea for CSchem to do the grouping.",
+          "uuid": "6f7e6888"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:13:31.467",
+      "mod": "2026-06-17T09:14:40.601",
+      "h": 73.498,
+      "ind": 1,
+      "sheet": 3,
+      "split": [ ],
+      "uuid": "d040299b",
+      "y0": 624.006,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:13:31.467",
+          "mod": "2026-06-17T09:14:40.601",
+          "lines": [
+            0,
+            53,
+            111
+          ],
+          "text": "Note on pin names: CSchem often names pins “1/K” and such. I see no reason to deviate from that in the export. Perhaps slash needs to become underscore in kicad names?",
+          "uuid": "4ffaea2d",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T09:13:34.784",
+              "mod": "2026-06-17T09:13:34.784",
+              "end": 17,
+              "start": 0,
+              "style": 2,
+              "uuid": "7bd689bb"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:15:57.955",
+      "mod": "2026-06-17T09:16:06.902",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "db861a1f",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:15:57.955",
+          "mod": "2026-06-17T09:16:06.902",
+          "lines": [
+            0
+          ],
+          "text": "The “KiCAD Library Conventions” say:",
+          "uuid": "f833cdea"
+        }
+      ]
+    },
+    { "typ": "gfxblock",
+      "cre": "2026-06-17T09:16:07.340",
+      "mod": "2026-06-17T09:16:10.617",
+      "h": 154.568,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "03e0d7f5",
+      "xref": 0.0,
+      "y0": 99.166,
+      "yref": -9.0,
+      "cc": [
+        { "typ": "gfximage",
+          "cre": "2026-06-17T09:16:07.372",
+          "mod": "2026-06-17T09:16:10.617",
+          "cropBottom": 0.0,
+          "cropLeft": 0.0,
+          "cropRight": 0.0,
+          "cropTop": 0.0,
+          "height": 253.0,
+          "res": [
+            "*1"
+          ],
+          "resName": "*1",
+          "scale": 0.539794,
+          "uuid": "98b4a6f4",
+          "width": 593.0,
+          "x": 0.0,
+          "y": 0.0
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:16:13.136",
+      "mod": "2026-06-17T09:26:00.388",
+      "h": 235.66,
+      "ind": 0,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "1c383e25",
+      "y0": 253.734,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:16:13.136",
+          "mod": "2026-06-17T09:26:00.388",
+          "lines": [
+            0,
+            63,
+            127,
+            192,
+            255,
+            315,
+            376,
+            440,
+            504,
+            564
+          ],
+          "text": "are valid in names, but “.” is used to separate bus names from contained lines. I use “–” which needs to be replaced by “-”. I use “.” in part names which can be replaced with “,”. Can I also replace “/” with “,”? A cschem name “A1:3/−” and “A1.3:–” must not map to the same kicad name. Perhaps “A1,3_-” and “A1_3,–” is appropriate? That is, there is a comma between part and pin and underscores within parts and within pins. So “A1.2:3/–” becomes “A1_2,3_-”. I think I like a hyphen better: “A1_2-3_-”, even though that means that a simple “A1:-” becomes “A1--”. I’m ok with that.",
+          "uuid": "6cd16c98"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:27:39.782",
+      "mod": "2026-06-17T09:27:40.149",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "66667cb4",
+      "y0": 489.394,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:27:39.782",
+          "mod": "2026-06-17T09:27:40.149",
+          "lines": [
+            0
+          ],
+          "text": "- − -",
+          "uuid": "75f09894"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:27:49.789",
+      "mod": "2026-06-17T09:32:08.983",
+      "h": 119.83,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "9350d846",
+      "y0": 516.56,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:27:49.789",
+          "mod": "2026-06-17T09:32:08.983",
+          "lines": [
+            0,
+            57,
+            120,
+            183,
+            237
+          ],
+          "text": "All of this can be used to export schematic to kicad sch though without proper tracing. Instead, we’d attach net labels to all relevant pins. I am not sure how to handle a case where one effective net has two names because two ports are connected. Probably just pick one.",
+          "uuid": "394cc106"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:27:49.789",
+      "mod": "2026-06-17T09:30:56.631",
+      "h": 27.166,
+      "ind": 1,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "9350d846",
+      "y0": 636.39,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:27:49.789",
+          "mod": "2026-06-17T09:30:56.631",
+          "lines": [
+            0
+          ],
+          "text": "The wire list can of course be exported as well.",
+          "uuid": "394cc106"
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:28:46.128",
+      "mod": "2026-06-17T09:28:57.459",
+      "h": 36.967,
+      "ind": 2,
+      "sheet": 4,
+      "split": [ ],
+      "uuid": "c878de0b",
+      "y0": 663.556,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:28:46.128",
+          "mod": "2026-06-17T09:28:55.270",
+          "lines": [
+            0,
+            19
+          ],
+          "text": "(wire x1 y1 x2 y2)\n(junction x y)",
+          "uuid": "313f6496",
+          "cc": [
+            { "typ": "markup",
+              "cre": "2026-06-17T09:28:59.624",
+              "mod": "2026-06-17T09:28:59.624",
+              "end": 32,
+              "start": 29,
+              "style": 1,
+              "uuid": "2ec79f30"
+            },
+            { "typ": "markup",
+              "cre": "2026-06-17T09:29:02.890",
+              "mod": "2026-06-17T09:29:02.890",
+              "end": 17,
+              "start": 6,
+              "style": 1,
+              "uuid": "6eeb5db4"
+            }
+          ]
+        }
+      ]
+    },
+    { "typ": "textblock",
+      "cre": "2026-06-17T09:29:36.860",
+      "mod": "2026-06-17T09:30:17.036",
+      "h": 50.332,
+      "ind": 1,
+      "sheet": 5,
+      "split": [ ],
+      "uuid": "91043353",
+      "y0": 72.0,
+      "cc": [
+        { "typ": "text",
+          "cre": "2026-06-17T09:29:36.860",
+          "mod": "2026-06-17T09:30:17.036",
+          "lines": [
+            0,
+            57
+          ],
+          "text": "Generating ad-hoc kicad symbols is easy enough given pin locations and inferred wire directions.",
+          "uuid": "ef01116e"
+        }
+      ]
+    }
+  ]
+}
