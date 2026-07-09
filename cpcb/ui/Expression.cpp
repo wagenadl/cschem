@@ -102,7 +102,7 @@ Value ExprData::parseExpression(bool toplevel) {
 }
 
 Value ExprData::parseFactor() {
-  static const QRegularExpression n1("^([0-9]*\\.?[0-9]*)\\s*(mm|dm|cm|m|um|\"|”|in|inch)?");
+  static const QRegularExpression n1("^([0-9]*\\.?[0-9]*)\\s*(mm|dm|cm|m|um|\"|”|″|in|inch)?");
   static const QRegularExpression n2("[0-9]");
   QString s = str;
 

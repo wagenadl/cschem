@@ -160,9 +160,9 @@ void Statusbar::resetGridChoices() {
   gridui->clear();
   gridsp->setNoValueText("Off");
   gridui->addItem("Off", QVariant(Dim().toString()));
-  gridui->addItem("0.025”", QVariant(Dim::fromMils(25).toString()));
-  gridui->addItem("0.050”", QVariant(Dim::fromMils(50).toString()));
-  gridui->addItem("0.100”", QVariant(Dim::fromMils(100).toString()));
+  gridui->addItem("0.025″", QVariant(Dim::fromMils(25).toString()));
+  gridui->addItem("0.050″", QVariant(Dim::fromMils(50).toString()));
+  gridui->addItem("0.100″", QVariant(Dim::fromMils(100).toString()));
   gridui->addItem("0.5 mm", QVariant(Dim::fromMM(.5).toString()));  
   gridui->addItem("1.0 mm", QVariant(Dim::fromMM(1).toString()));  
   gridui->addItem("2.0 mm", QVariant(Dim::fromMM(2).toString()));
@@ -175,7 +175,7 @@ void Statusbar::resetGridChoices() {
     if (g.isMetric())
       gridui->setItemText(7, QString("%1 mm").arg(g.toMM()));
     else
-      gridui->setItemText(7, QString("%1”").arg(g.toInch()));
+      gridui->setItemText(7, QString("%1″").arg(g.toInch()));
     gridsp->parseValue();
   }
   if (g.isPositive())
@@ -194,7 +194,7 @@ void Statusbar::setGrid(Dim g) {
       gridui->addItem(QString("%1 mm").arg(g.toMM()),
 		      QVariant(g.toString()));
     else
-      gridui->addItem(QString("%1”").arg(g.toInch()),
+      gridui->addItem(QString("%1″").arg(g.toInch()),
 		      QVariant(g.toString()));
     gridui->setCurrentIndex(gridui->count()-1);
     gridsp->parseValue();
@@ -242,7 +242,7 @@ void Statusbar::updateCursor() {
 	.arg(p1.x.toMM(),5,'f',2, QChar(0x2007))
 	.arg(p1.y.toMM(),5,'f',2, QChar(0x2007));
     else
-      txt = QString("X:%1” Y:%2”")
+      txt = QString("X:%1″ Y:%2″")
 	.arg(p1.x.toInch(),0,'f',3)
 	.arg(p1.y.toInch(),0,'f',3);
     if (!obj.isEmpty())

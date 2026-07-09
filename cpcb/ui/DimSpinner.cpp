@@ -129,12 +129,12 @@ void DimSpinner::reflectValue() {
       if (metric_)
 	setText(QString("%1 mm").arg(v.toMM()));
       else
-	setText(QString("%1”").arg(v.toInch()));
+	setText(QString("%1″").arg(v.toInch()));
     } else {
       if (metric_)
 	setText(QString("%1 mm").arg(v.toMM(), 0, 'f', 2, QChar('0')));
       else
-	setText(QString("%1”").arg(v.toInch(), 0, 'f', 3, QChar('0')));
+	setText(QString("%1″").arg(v.toInch(), 0, 'f', 3, QChar('0')));
     }
   } else {
     setText(nvtext);
@@ -201,14 +201,14 @@ void DimSpinner::reflectValid(bool val) {
 
 QSize DimSpinner::sizeHint() const {
   QFontMetrics fm(font());
-  QString txt = metric_ ? "-000.00 mm" : "-00.000”";
+  QString txt = metric_ ? "-000.00 mm" : "-00.000″";
   QSize s = fm.boundingRect(txt).size();
   return QSize(10*s.width()/9, 5*s.height()/4);
 }
 
 QSize DimSpinner::minimumSizeHint() const {
   QFontMetrics fm(font());
-  QString txt = metric_ ? "0.00 mm" : "0.000”";
+  QString txt = metric_ ? "0.00 mm" : "0.000″";
   QSize s = fm.boundingRect(txt).size();
   return QSize(s.width(), 5*s.height()/4);
 }
