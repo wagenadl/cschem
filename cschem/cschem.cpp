@@ -2,6 +2,7 @@
 
 #include "file/FileIO.h"
 #include "circuit/Schem.h"
+#include "circuit/NetExporter.h"
 #include <QApplication>
 #include <QGraphicsView>
 #include "ui/MainWindow.h"
@@ -32,6 +33,22 @@ bool exportSvg(QString ofn, QString ifn) {
 bool exportPng(QString ofn, int res, QString ifn) {
   qDebug() << "exportpng not implemented" << ifn << ofn << res;
   return false;
+}
+
+bool exportNet(QString ofn, QString ifn) {
+  Schem s = FileIO::loadSchematic(ifn);
+  if (s.isEmpty()) {
+    qDebug() << "Failed to load schematic" << ifn;
+    return false;
+  }
+  NetExporter xp(s);
+  if (ofn.isEmpty())
+    ofn = ifn.replace(".cschem", "") + ".net";
+  if (!xp.exportNet(ofn)) {
+    qDebug() << "Failed to export net" << ofn;
+    return false;
+  }    
+  return true;
 }
 
 void ensureSymbolLibrary() {
@@ -102,6 +119,7 @@ int main(int argc, char **argv) {
 
   ensureSymbolLibrary();
 
+  QCommandLineOption cli_net("export-net", "Export schematic's netlist.");
   QCommandLineOption cli_svg("export-svg", "Convert schematic to SVG.");
   QCommandLineOption cli_png("export-png", "Convert schematic to PNG.");
   QCommandLineOption cli_res(QStringList{"resolution", "r"}, "Resolution for PNG export (pix/inch).", "ppi", "300");
@@ -115,19 +133,31 @@ int main(int argc, char **argv) {
   cli.addHelpOption();
   cli.addVersionOption();
   cli.addPositionalArgument("filename", "Specify file to open", "[filename.cschem]");
+  cli.addOption(cli_net);
   cli.addOption(cli_svg);
+  //cli.addOption(cli_png);
+  //cli.addOption(cli_res);
   cli.addOption(cli_ofn);
 
   cli.process(app);
   QStringList args = cli.positionalArguments();
 
   bool ok = true;
+  bool quit = false;
 
-  if (cli.isSet("export-svg"))
-    for (QString fn: args)
-      ok = exportSvg(cli.value("o"), fn) && ok;
+  if (cli.isSet("export-svg")) {
+    for (QString ifn: args)
+      ok = exportSvg(cli.value("o"), ifn) && ok;
+    quit = true;
+  }
 
-  if (cli.isSet("export-svg"))
+  if (cli.isSet("export-net")) {
+    for (QString ifn: args)
+      ok = exportNet(cli.value("o"), ifn) && ok;
+    quit = true;
+  }    
+
+  if (quit)
     return ok ? 0 : 1;
   
   QList<MainWindow *> mws;
