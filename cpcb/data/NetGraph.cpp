@@ -65,6 +65,10 @@ public:
   SparseGraph g;
 public:
   void addgroup(NodeID nid, Group const &g) {
+    bool isjumper = g.attributes.value(Group::Attribute::Footprint, "")
+                        .contains("jumper")
+                    || g.attributes.value(Group::Attribute::Notes, "")
+                        .contains("nowire");
     for (int id: g.keys()) {
       NodeID nid1 = nid.plus(id);
       Object const &obj(g.object(id));
@@ -72,7 +76,7 @@ public:
         addgroup(nid1, obj.asGroup());
       } else if (obj.type() == Object::Type::Hole
                  || obj.type() == Object::Type::Pad
-                 || obj.type() == Object::Type::Trace
+                 || (obj.type() == Object::Type::Trace && !isjumper)
                  || obj.type() == Object::Type::Plane) {
         int v = nodeids.size();
         revmap[nid1] = v;
