@@ -214,7 +214,7 @@ QString MWData::getOpenFilename(QString ext, QString caption, QString desc) {
   if (desc=="")
     desc = ext.toUpper() + " files (*." + ext + ")";
 
-  QString fn = QFileDialog::getOpenFileName(0, caption, pwd, desc);
+  QString fn = QFileDialog::getOpenFileName(mw, caption, pwd, desc);
   if (fn.isEmpty())
     return "";
 
@@ -235,7 +235,7 @@ QString MWData::getSaveFilename(QString ext, QString caption) {
     path += "." + ext;
   }
   
-  QString fn = QFileDialog::getSaveFileName(0, caption,
+  QString fn = QFileDialog::getSaveFileName(mw, caption,
 					    path,
 					    ext.toUpper() + " files (*."
                                             + ext + ")");
@@ -269,7 +269,7 @@ void MWData::setWindowTitle() {
 }
 
 void MWData::boardSizeDialog() {
-  BoardSizeDialog bsd;
+  BoardSizeDialog bsd(mw);
   bsd.setLayout(editor->pcbLayout());
   if (bsd.exec()) {
     editor->setBoardSize(bsd.boardWidth(), bsd.boardHeight(),
@@ -412,7 +412,7 @@ void MWData::saveComponentDialog() {
   QString sug = compwd;
   if (gname!="")
     sug += "/" + gname + ".svg";
-  QString fn = QFileDialog::getSaveFileName(0, "Save component…",
+  QString fn = QFileDialog::getSaveFileName(mw, "Save component…",
 					    sug,
 					    "PCB components (*.svg)");
   if (fn.isEmpty())
@@ -437,7 +437,7 @@ void MWData::insertComponentDialog() {
     QDir::home().mkpath(compwd);
   }
   Point pt = editor->hoverPoint();
-  QString fn = QFileDialog::getOpenFileName(0, "Select file to open…",
+  QString fn = QFileDialog::getOpenFileName(mw, "Select file to open…",
 					    compwd,
 					    "PCB components (*.svg)");
   if (fn.isEmpty())
@@ -585,7 +585,7 @@ bool MWData::exportDialog() {
 bool MWData::exportSvgDialog() {
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
-  QFileDialog dlg;
+  QFileDialog dlg(mw);
   dlg.setWindowTitle("Export layout as svg…");
   dlg.setAcceptMode(QFileDialog::AcceptSave);
   dlg.setDefaultSuffix("svg");
@@ -635,7 +635,7 @@ bool MWData::saveAsDialog() {
   if (pwd.isEmpty())
     pwd = Paths::defaultLocation();
   
-  QString fn = QFileDialog::getSaveFileName(0, "Save as…",
+  QString fn = QFileDialog::getSaveFileName(mw, "Save as…",
 					    pwd,
 					    "PCB layouts (*.cpcb)");
   if (fn.isEmpty())

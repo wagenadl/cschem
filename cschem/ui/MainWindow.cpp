@@ -427,7 +427,7 @@ void MainWindow::newAction() {
 void MainWindow::openAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = Paths::defaultLocation();
-  QString fn = QFileDialog::getOpenFileName(0,
+  QString fn = QFileDialog::getOpenFileName(this,
 					    "Open schematic file",
 					    d->lastdir,
                         tr("Schematics (*.schem *.cschem)"));
@@ -453,7 +453,7 @@ bool MainWindow::saveAction() {
 bool MainWindow::saveAsAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = Paths::defaultLocation();
-  QFileDialog dlg;
+  QFileDialog dlg(this);
   dlg.setWindowTitle(tr("Save schematic as…"));
   dlg.setAcceptMode(QFileDialog::AcceptSave);
   dlg.setDefaultSuffix("cschem");
@@ -684,7 +684,7 @@ void MainWindow::exportCircuitAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = Paths::defaultLocation();
   
-  QFileDialog dlg;
+  QFileDialog dlg(this);
   dlg.setWindowTitle(tr("Export schematic as svg…"));
   dlg.setAcceptMode(QFileDialog::AcceptSave);
   dlg.setDefaultSuffix("svg");
@@ -715,7 +715,7 @@ void MainWindow::exportPartListAction() {
   if (d->lastdir.isEmpty())
     d->lastdir = Paths::defaultLocation();
   
-  QFileDialog dlg;
+  QFileDialog dlg(this);
   dlg.setWindowTitle(tr("Export parts list as CSV…"));
   dlg.setAcceptMode(QFileDialog::AcceptSave);
   dlg.setDefaultSuffix("schem");
